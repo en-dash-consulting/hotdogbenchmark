@@ -1,0 +1,28 @@
+{
+  "id": "222ca7b0-6f80-40f2-bdd7-83f4ab6e016d",
+  "taskId": "be5bfe9d-d2fb-48f0-a407-3f89e003f5be",
+  "taskTitle": "Build vendor scorecards and Key Findings",
+  "startedAt": "2026-09-01T22:51:38.762Z",
+  "finishedAt": "2026-09-01T22:51:38.762Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

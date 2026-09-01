@@ -1,0 +1,28 @@
+{
+  "id": "2fd90ebc-a30c-45c3-b871-50ecbde139f6",
+  "taskId": "c7a8e168-2152-48ca-b2f3-549e2d38a642",
+  "taskTitle": "Write the Add a model page",
+  "startedAt": "2026-09-01T22:51:39.410Z",
+  "finishedAt": "2026-09-01T22:51:39.410Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

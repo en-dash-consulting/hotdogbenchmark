@@ -1,0 +1,28 @@
+{
+  "id": "93c5d9df-2525-4b8d-a263-bd3ffee135aa",
+  "taskId": "e51d406f-ab02-4619-ab06-51068c4ca20b",
+  "taskTitle": "Add SEO and social polish",
+  "startedAt": "2026-09-01T22:51:39.572Z",
+  "finishedAt": "2026-09-01T22:51:39.572Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

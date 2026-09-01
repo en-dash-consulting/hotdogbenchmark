@@ -6,6 +6,12 @@ pipeline easier to understand are as welcome as changes that make it more accura
 You do **not** need an API key to contribute. Mock mode runs the entire pipeline from recorded
 fixtures.
 
+## New here?
+
+Read [`docs/tutorial/`](docs/tutorial/) first — eight pages walking the pipeline in the order you
+would build it, each mapping a concept to the file that implements it. It is the fastest way to
+understand why the code is shaped the way it is.
+
 ## Setup
 
 ```sh

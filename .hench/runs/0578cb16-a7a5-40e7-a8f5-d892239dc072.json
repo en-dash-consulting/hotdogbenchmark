@@ -1,0 +1,28 @@
+{
+  "id": "0578cb16-a7a5-40e7-a8f5-d892239dc072",
+  "taskId": "12aeae0d-1828-41b0-b922-6dd5d79a31d6",
+  "taskTitle": "Perform and document an accessibility pass",
+  "startedAt": "2026-09-01T22:51:39.895Z",
+  "finishedAt": "2026-09-01T22:51:39.895Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

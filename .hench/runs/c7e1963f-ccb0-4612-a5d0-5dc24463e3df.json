@@ -1,0 +1,28 @@
+{
+  "id": "c7e1963f-ccb0-4612-a5d0-5dc24463e3df",
+  "taskId": "d47391a0-d076-4fe1-8374-6a1f4b5f3639",
+  "taskTitle": "Write the Methodology and caveats page",
+  "startedAt": "2026-09-01T22:51:39.247Z",
+  "finishedAt": "2026-09-01T22:51:39.247Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

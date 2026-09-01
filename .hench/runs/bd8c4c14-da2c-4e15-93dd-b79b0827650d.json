@@ -1,0 +1,28 @@
+{
+  "id": "bd8c4c14-da2c-4e15-93dd-b79b0827650d",
+  "taskId": "a5315449-f666-4e50-82b3-481a997fd268",
+  "taskTitle": "Write the How it works page",
+  "startedAt": "2026-09-01T22:51:39.088Z",
+  "finishedAt": "2026-09-01T22:51:39.088Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

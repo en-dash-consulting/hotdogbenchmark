@@ -1,0 +1,28 @@
+{
+  "id": "cf1ecd00-2049-40ce-b6b7-99f3e4bdeac9",
+  "taskId": "9eed27a8-206c-41af-82fe-2b1a7e94ba11",
+  "taskTitle": "Add Lighthouse CI budgets and JS size budget",
+  "startedAt": "2026-09-01T22:51:39.735Z",
+  "finishedAt": "2026-09-01T22:51:39.735Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

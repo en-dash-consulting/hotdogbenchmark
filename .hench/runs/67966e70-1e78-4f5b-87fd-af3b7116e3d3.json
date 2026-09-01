@@ -1,0 +1,28 @@
+{
+  "id": "67966e70-1e78-4f5b-87fd-af3b7116e3d3",
+  "taskId": "3ea67a3d-9af2-4d2a-a31e-145a4e15c42c",
+  "taskTitle": "Add print stylesheet and PDF edition",
+  "startedAt": "2026-09-01T22:51:38.927Z",
+  "finishedAt": "2026-09-01T22:51:38.927Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Site epic: visuals, learn pages, SEO, performance and accessibility",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

@@ -1,5 +1,10 @@
 # hotdogbenchmark
 
+[![CI](https://github.com/endash/hotdogbenchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/ci.yml)
+[![Weekly benchmark](https://github.com/endash/hotdogbenchmark/actions/workflows/benchmark.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/benchmark.yml)
+[![Deploy site](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Every Monday at 12:00 UTC, this project asks seven of the largest AI models the same question,
 records what they said and how long they took, and publishes the results as a completely
 straight-faced industry analyst report.
@@ -8,34 +13,47 @@ straight-faced industry analyst report.
 >
 > _One word answer._
 
-**Live report:** _(coming soon — the site deploys to GitHub Pages once the first real run lands)_
+**Live report:** _(deploys to GitHub Pages once the first real run lands)_
 
-**Want your own?** [`docs/self-hosting.md`](docs/self-hosting.md) takes you from fork to live site
-in about fifteen minutes. You never run the benchmark yourself — a scheduled GitHub Action does it
-weekly and redeploys the site.
+![The hot dog report, light theme](docs/images/report-light.png)
 
-The models are also asked about a hamburger and a taco, because a benchmark with one question
-is a demo and a benchmark with three is a research programme.
+<details>
+<summary>The same page in dark mode</summary>
+
+![The hot dog report, dark theme](docs/images/report-dark.png)
+
+</details>
+
+The models are also asked about a hamburger and a taco, because a benchmark with one question is
+a demo and a benchmark with three is a research programme.
+
+---
 
 ## This is a teaching project
 
 The question is deliberately silly. Nothing else about it is.
 
 Building a _real_ cross-provider LLM benchmark means solving a specific set of unglamorous
-problems: seven vendors with seven different wire formats, token counts that do not mean the
-same thing across providers, latency that depends on where your runner happens to be, models
-that answer differently on Tuesday than they did on Monday, and one provider having an outage
-in the middle of your data collection. This repository solves those problems in the smallest
-honest way, and then documents how — so you can throw away the hot dog and point it at a
-question you actually care about.
+problems: seven vendors with seven wire formats, token counts that do not mean the same thing
+across providers, latency that depends on where your runner happens to be, models that answer
+differently on Tuesday than they did on Monday, and one provider having an outage in the middle
+of your data collection.
 
-If you want the serious version of this: read [`docs/tutorial/`](docs/tutorial/), swap
-`questions.json`, and you have a benchmark.
+This repository solves those in the smallest honest way and documents how. Throw away the hot
+dog, change `questions.json`, and you have a benchmark.
+
+**One finding, as a sample of what is in here.** A live call asking one model the hot dog question
+returned 647 prompt tokens, 1 completion token, and a billed total of **1,295** — the difference
+being 647 reasoning tokens counted outside the completion count. Deriving the total as input plus
+output, the obvious implementation, would have understated that call by half. The schema stores
+the vendor's own total because of it. That kind of thing is what the tutorial is about.
+
+---
 
 ## Quickstart
 
-**No API keys required.** Mock mode replays recorded provider responses, so the entire
-pipeline runs offline:
+**No API keys required.** Mock mode replays recorded provider responses, so the whole pipeline
+runs offline.
 
 ```sh
 git clone https://github.com/endash/hotdogbenchmark.git
@@ -46,30 +64,37 @@ npm run bench -- run --mock     # ask all seven models, from recorded fixtures
 npm run dev                     # build and serve the report site
 ```
 
-That writes a schema-valid `data/runs/<iso-week>.json` marked `isMock: true`, refreshes
-`data/index.json`, and prints a per-question summary table. Everything downstream of the network
-call is real: answer classification, aggregation, cost estimation, schema validation, and the
-site build.
+Open <http://localhost:4321>. That is the whole loop, and it takes about two minutes on a fresh
+clone.
 
-Set `BENCH_SEED=1` to make mock timings deterministic, so two runs produce identical files.
-
-To see the plan without calling anything:
+Everything downstream of the network call is real: answer classification, aggregation, cost
+estimation, schema validation, and the site build. Set `BENCH_SEED=1` to make mock timings
+deterministic.
 
 ```sh
-npm run bench -- run --dry-run
+npm run bench -- run --dry-run  # print the plan without calling anything
 ```
 
 ### Running against real providers
 
 ```sh
-cp .env.example .env            # then fill in whatever keys you have
+cp .env.example .env            # fill in whatever keys you have
 npm run bench -- providers      # which keys are configured (never prints a key)
-npm run bench:smoke -- --provider anthropic   # one live call, prints text/usage/timing
+npm run bench:smoke -- --provider anthropic   # one live call: text, usage, timing
 npm run bench -- run            # the real thing
 ```
 
-Missing keys are skipped with a warning rather than failing the run, so a partial key set still
-produces a usable report.
+Missing keys are **skipped with a warning, not recorded as failures**, so a partial key set still
+produces a usable report. Per-provider setup, free tiers and real costs are in
+[`docs/providers.md`](docs/providers.md) — the whole benchmark runs for cents a month.
+
+### Running the weekly job yourself
+
+You do not need to. [`docs/self-hosting.md`](docs/self-hosting.md) takes you from fork to live
+site in about fifteen minutes: enable Pages, add secrets, done. A scheduled GitHub Action runs the
+benchmark, commits the data, and redeploys the site.
+
+---
 
 ## How it works
 
@@ -82,27 +107,49 @@ models.json ────┘     │                    ▲
               (one file per vendor)
 ```
 
-1. **`questions.json`** holds the questions. Adding one is a data change.
-2. **`models.json`** holds the models, their pricing, and the docs page each model ID was
-   verified against. No adapter ever hardcodes a model ID.
-3. **Provider adapters** (`src/providers/`) each turn one vendor's API into the same
-   `ProviderAdapter` shape. They receive credentials and `fetch` by injection and are forbidden
-   by lint from importing Node builtins, so the same code can run in a browser.
+1. **`questions.json`** holds the questions. Adding one is a data change. The schema enforces that
+   every question ends with `One word answer.`, which is what makes the compliance metric mean
+   anything.
+2. **`models.json`** holds the models. Every entry records the docs page its ID was verified
+   against and the date its pricing was read.
+3. **Provider adapters** (`src/providers/`) turn each vendor's API into one small shape. They
+   receive credentials and `fetch` by injection and are forbidden by lint from importing Node
+   builtins, so the same code can run in a browser.
 4. **The runner** (`src/runner/`) asks every model every question three times, with bounded
-   concurrency and never more than one in-flight call per provider, classifies each answer, and
-   tolerates any provider being down.
+   concurrency and never more than one in-flight call per provider — otherwise the benchmark ends
+   up measuring its own rate limiting.
 5. **`data/runs/`** stores one versioned JSON file per ISO week. Re-running a week corrects it
    rather than duplicating it.
-6. **The site** reads `data/` at build time and emits static HTML with no client JavaScript.
+6. **The site** reads `data/` at build time and emits static HTML with under 1 KB of JavaScript.
 
-Full walkthrough: [`docs/tutorial/`](docs/tutorial/). Data contract:
-[`docs/data-schema.md`](docs/data-schema.md). Why token counts are not comparable across
-vendors: [`docs/usage-normalization.md`](docs/usage-normalization.md).
+Longer version: [`docs/tutorial/`](docs/tutorial/) — eight pages, each mapping a concept to the
+file that implements it.
+
+---
+
+## Documentation
+
+|                                                    |                                                      |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| [Tutorial](docs/tutorial/)                         | Build a benchmark like this, in eight steps          |
+| [Self-hosting](docs/self-hosting.md)               | Fork to live site in fifteen minutes                 |
+| [Providers](docs/providers.md)                     | Keys, free tiers, rate limits, real costs            |
+| [Data schema](docs/data-schema.md)                 | Every field, its units, and why it may be null       |
+| [Usage normalization](docs/usage-normalization.md) | Why token counts are not comparable across vendors   |
+| [Accessibility](docs/a11y-checklist.md)            | What was verified, how, and what still needs a human |
+| [Contributing](CONTRIBUTING.md)                    | Adding a question, a model, or a provider            |
+| [Security](SECURITY.md)                            | How API keys are handled                             |
+
+---
 
 ## Adding a provider
 
-Adapters are one file each and stay under about 150 lines, because they are tutorial examples
-before they are infrastructure. See [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-provider).
+One file. Adapters stay under about 150 lines because they are tutorial examples before they are
+infrastructure. Start by reading
+[`src/providers/anthropic.ts`](src/providers/anthropic.ts), then see
+[CONTRIBUTING](CONTRIBUTING.md#adding-a-provider).
+
+---
 
 ## Development
 
@@ -111,35 +158,47 @@ nvm use          # Node version is pinned in .nvmrc
 npm install
 ```
 
-| Script              | What it does                                  |
-| ------------------- | --------------------------------------------- |
-| `npm run dev`       | Serve the Astro site locally with live reload |
-| `npm run build`     | Build the static site into `dist/`            |
-| `npm run bench`     | Run the benchmark (`-- --help` for usage)     |
-| `npm test`          | Run the Vitest unit suite                     |
-| `npm run lint`      | ESLint over the whole repo                    |
-| `npm run format`    | Rewrite files with Prettier                   |
-| `npm run typecheck` | `tsc --noEmit` against the strict config      |
+| Script                  | What it does                                            |
+| ----------------------- | ------------------------------------------------------- |
+| `npm run dev`           | Serve the site locally with live reload                 |
+| `npm run build`         | Build the site, OG images and PDF editions into `dist/` |
+| `npm run bench`         | Run the benchmark (`-- --help` for usage)               |
+| `npm run bench:smoke`   | One live call to one provider                           |
+| `npm run bench:record`  | Capture fresh mock fixtures from a provider             |
+| `npm run data:validate` | Check every file under `data/` against the schema       |
+| `npm run data:index`    | Regenerate `data/index.json`                            |
+| `npm test`              | Vitest unit and integration suite                       |
+| `npm run test:a11y`     | axe-core over every built page, both themes             |
+| `npm run test:audit`    | Keyboard, focus, 320px reflow, zoom, forced colors      |
+| `npm run test:budget`   | Client JavaScript size budget                           |
+| `npm run lint`          | ESLint                                                  |
+| `npm run typecheck`     | `tsc --noEmit`                                          |
+| `npm run validate`      | lint + typecheck + test, in one command                 |
 
 ### Why each dev dependency is here
 
-- **typescript** — strict types; also the reason `tsconfig.json` sets `erasableSyntaxOnly`,
-  since Node runs these `.ts` files directly by stripping types rather than compiling them.
-- **eslint**, **@eslint/js**, **typescript-eslint** — lint, plus the load-bearing rule that
-  keeps `src/providers` and `src/runner` free of Node builtins and `process.env` so the same
-  code can later run in a browser.
+- **typescript** — strict types. Also why `tsconfig.json` sets `erasableSyntaxOnly`: Node runs
+  these `.ts` files directly by stripping types rather than compiling them.
+- **eslint**, **@eslint/js**, **typescript-eslint** — lint, plus the load-bearing rule keeping
+  `src/providers` and `src/runner` free of Node builtins and `process.env`.
 - **prettier**, **prettier-plugin-astro** — one formatting answer, no debate.
-- **vitest** — fast unit tests with no extra configuration.
-- **yaml** — parsing GitHub issue forms and workflows in tests, so a malformed one fails
-  locally instead of silently on GitHub.
-- **@types/node** — types for the Node APIs used in the CLI and build scripts.
+- **vitest** — fast unit tests, no configuration.
+- **astro**, **@astrojs/sitemap** — static site, zero client JS by default.
+- **playwright**, **@axe-core/playwright** — accessibility checks, the PDF edition, OG cards and
+  README screenshots, all from one browser rather than four tools.
+- **@lhci/cli** — Lighthouse budgets in CI.
+- **yaml** — parsing workflows and issue forms in tests, so a malformed one fails locally.
+- **zod** — the schema that everything else trusts.
+- **@types/node** — types for the Node APIs in the CLI and build scripts.
 
-### API keys
+### What the tests actually check
 
-You do not need any to contribute. When you do want to run against real providers, copy
-[`.env.example`](.env.example) to `.env` and fill in whatever keys you have; missing providers
-are skipped with a warning rather than failing the run. Keys never leave `.env` locally or
-GitHub Actions secrets in CI — see [SECURITY.md](SECURITY.md).
+Beyond the usual: that the pull-request workflow references no secrets, that no file under
+`src/providers` reads `process.env`, that every committed fixture is free of key-shaped strings,
+that regenerating `data/index.json` produces no diff, that every colour pair meets its WCAG
+ratio, that no page ships an emoji, and that the client JavaScript budget is not exceeded.
+
+---
 
 ## Contributing
 
