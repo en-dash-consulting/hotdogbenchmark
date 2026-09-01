@@ -22,4 +22,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Open-source hygiene and secret-handling policy](./open-source-hygiene-and-secret-812d7f/index.md) | pending |
-| [Project scaffold and developer tooling](./project-scaffold-and-developer-7b491b/index.md) | pending |
+| [Project scaffold and developer tooling](./project-scaffold-and-developer-7b491b/index.md) | completed |

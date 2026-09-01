@@ -23,5 +23,5 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Add issue and pull request templates including an add-a-model template](./add-issue-and-pull-request-ca3fa3.md) | pending |
-| [Add LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, and SECURITY files](./add-license-contributing-code-cd4ccb.md) | pending |
+| [Add LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, and SECURITY files](./add-license-contributing-code-cd4ccb.md) | in_progress |
 | [Write .env.example, .gitignore secret rules, and README skeleton](./write-env-example-gitignore-295e20.md) | pending |
