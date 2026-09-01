@@ -22,6 +22,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Add issue and pull request templates including an add-a-model template](./add-issue-and-pull-request-ca3fa3.md) | in_progress |
+| [Add issue and pull request templates including an add-a-model template](./add-issue-and-pull-request-ca3fa3.md) | completed |
 | [Add LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, and SECURITY files](./add-license-contributing-code-cd4ccb.md) | completed |
-| [Write .env.example, .gitignore secret rules, and README skeleton](./write-env-example-gitignore-295e20.md) | pending |
+| [Write .env.example, .gitignore secret rules, and README skeleton](./write-env-example-gitignore-295e20.md) | in_progress |

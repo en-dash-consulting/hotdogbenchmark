@@ -12,3 +12,8 @@ coverage/
 
 # OS / editor noise
 .DS_Store
+
+# Secrets. .env holds real API keys; only the example file is ever committed.
+.env
+.env.*
+!.env.example
