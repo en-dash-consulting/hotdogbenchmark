@@ -39,7 +39,11 @@ export default tseslint.config(
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/consistent-type-imports': 'error',
-      eqeqeq: ['error', 'always'],
+      // `== null` is the idiom for "null or undefined", which this codebase
+      // relies on: the difference between a provider reporting zero and not
+      // reporting at all is load-bearing, and both null and undefined mean the
+      // latter. Every other loose comparison is still an error.
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-console': 'off',
     },
   },

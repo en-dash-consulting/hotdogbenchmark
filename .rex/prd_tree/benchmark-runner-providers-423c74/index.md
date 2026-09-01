@@ -28,6 +28,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Benchmark data contract: run schema, model registry, and storage layout](./benchmark-data-contract-run-5c1c0e/index.md) | completed |
-| [Provider adapter framework: interface, HTTP helpers, timing, and error normalization](./provider-adapter-framework-1385de/index.md) | pending |
+| [Provider adapter framework: interface, HTTP helpers, timing, and error normalization](./provider-adapter-framework-1385de/index.md) | completed |
 | [Provider adapters for major AI vendors](./provider-adapters-for-major-ai-98858d/index.md) | pending |
 | [Runner CLI, answer analysis, aggregation, cost estimates, and mock mode](./runner-cli-answer-analysis-37f720/index.md) | pending |
