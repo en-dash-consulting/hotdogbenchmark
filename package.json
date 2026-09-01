@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
     "build": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
-    "bench": "echo \"The benchmark runner is not implemented yet. Usage will be: npm run bench -- run [--mock]\" && exit 1",
+    "bench": "node src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",

@@ -22,5 +22,5 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Establish src and data directory layout with environment loading](./establish-src-and-data-605914.md) | pending |
-| [Initialize TypeScript package with lint, format, test, and typecheck scripts](./initialize-typescript-package-18b13b.md) | in_progress |
+| [Establish src and data directory layout with environment loading](./establish-src-and-data-605914.md) | in_progress |
+| [Initialize TypeScript package with lint, format, test, and typecheck scripts](./initialize-typescript-package-18b13b.md) | completed |
