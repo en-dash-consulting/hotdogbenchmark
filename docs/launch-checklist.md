@@ -20,7 +20,7 @@ API actions against a repository that does not yet exist.
 - [ ] Create the repository and push
 - [ ] **Settings → General → Description:**
       `A weekly cross-vendor LLM benchmark that asks every major model whether a hot dog is a
-    sandwich, published as a straight-faced analyst report. A teaching project.`
+  sandwich, published as a straight-faced analyst report. A teaching project.`
 - [ ] **Settings → General → Topics:**
       `llm`, `benchmark`, `ai`, `astro`, `github-pages`, `tutorial`, `hotdog`,
       `anthropic`, `openai`, `typescript`

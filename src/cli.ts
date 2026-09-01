@@ -8,7 +8,7 @@
  */
 import { configuredProviders, loadLocalEnv } from './env.ts'
 import { validateAllRuns, writeManifest } from './data/index.ts'
-import { runSmoke } from './cli/smoke.ts'
+import { runSmoke, runSmokeAll } from './cli/smoke.ts'
 import { runBenchCommand } from './cli/run-command.ts'
 import { runRecord } from './cli/record.ts'
 import { DEFAULT_CONCURRENCY, DEFAULT_SAMPLES, DEFAULT_TIMEOUT_MS } from './runner/run.ts'
@@ -24,6 +24,7 @@ Commands:
   data validate       Check every file under data/ against the schema
   data index          Regenerate data/index.json from the committed run files
   smoke               Make one live call to one provider and print the result
+                      (--all pings every provider that has a key)
   record              Capture fresh mock fixtures from one provider (live)
   help                Show this message
 
@@ -38,7 +39,8 @@ Options for \`run\`:
   --out <path>        Override the output file path
 
 Options for \`smoke\`:
-  --provider <id>     Which provider to call (required)
+  --provider <id>     Which provider to call
+  --all               Ping every provider that has a key configured
   --prompt <text>     Override the question asked
 
 Exit codes:
@@ -166,12 +168,15 @@ export async function main(argv: string[]): Promise<number> {
       return runDataCommand(argv[1])
 
     case 'smoke': {
+      const prompt = flagValue(argv, '--prompt')
+      if (argv.includes('--all')) return runSmokeAll({ prompt })
+
       const provider = flagValue(argv, '--provider')
       if (!provider) {
-        console.error('Usage: npm run bench:smoke -- --provider <id>')
+        console.error('Usage: npm run bench:smoke -- --provider <id>   (or --all)')
         return 2
       }
-      return runSmoke({ provider, prompt: flagValue(argv, '--prompt') })
+      return runSmoke({ provider, prompt })
     }
 
     case 'record': {

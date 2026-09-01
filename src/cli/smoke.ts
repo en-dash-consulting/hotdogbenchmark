@@ -23,6 +23,67 @@ export interface SmokeOptions {
   timeoutMs?: number
 }
 
+/**
+ * Ping every provider that has a key configured.
+ *
+ * The command to run after adding keys: it answers "does each of these
+ * actually work" in one go, which is otherwise seven invocations and seven
+ * chances to stop paying attention.
+ *
+ * Providers with no key are reported as skipped, not failed — the same
+ * distinction the runner makes. Exit code is 1 only if a *configured* provider
+ * failed, so a partial key set still exits 0.
+ */
+export async function runSmokeAll(options: { prompt?: string } = {}): Promise<number> {
+  registerAllAdapters()
+
+  const providers = [...new Set(loadModels().map((model) => model.provider))]
+  const credentials = credentialsFromEnv()
+
+  const configured = providers.filter((provider) => credentials[provider as ProviderId])
+  const skipped = providers.filter((provider) => !credentials[provider as ProviderId])
+
+  console.log(
+    `Pinging ${configured.length} of ${providers.length} providers ` +
+      `(${skipped.length} have no key configured).\n`,
+  )
+
+  const results: Array<{ provider: string; ok: boolean }> = []
+
+  for (const provider of configured) {
+    console.log('─'.repeat(64))
+    const code = await runSmoke({ provider, prompt: options.prompt })
+    results.push({ provider, ok: code === 0 })
+    console.log('')
+  }
+
+  console.log('─'.repeat(64))
+  console.log('\nSummary\n')
+
+  const width = Math.max(...providers.map((p) => p.length))
+  for (const provider of providers) {
+    const result = results.find((entry) => entry.provider === provider)
+    if (!result) {
+      const envVar = PROVIDER_ENV_VARS[provider as ProviderId] ?? '(unknown)'
+      console.log(`  ${provider.padEnd(width)}  skipped   set ${envVar} to include it`)
+    } else {
+      console.log(`  ${provider.padEnd(width)}  ${result.ok ? 'ok' : 'FAILED'}`)
+    }
+  }
+
+  const failed = results.filter((entry) => !entry.ok)
+  if (configured.length === 0) {
+    console.log('\nNo keys configured. Add them to .env, then run this again.')
+    return 2
+  }
+  if (failed.length > 0) {
+    console.error(`\n${failed.length} configured provider(s) failed.`)
+    return 1
+  }
+  console.log(`\nAll ${configured.length} configured provider(s) responded.`)
+  return 0
+}
+
 /** Run one live call. Returns a process exit code. */
 export async function runSmoke(options: SmokeOptions): Promise<number> {
   registerAllAdapters()
