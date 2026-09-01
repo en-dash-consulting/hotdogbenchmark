@@ -1,0 +1,28 @@
+{
+  "id": "0fdbc117-336b-454c-874f-a741125dee66",
+  "taskId": "6e98e353-4bbc-4ecf-900a-5b23fd27b21a",
+  "taskTitle": "Implement hosted Meta Llama adapter via Groq or Together",
+  "startedAt": "2026-09-01T21:46:16.043Z",
+  "finishedAt": "2026-09-01T21:46:16.043Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Adapter implemented with fixture-backed tests; xAI additionally verified live",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

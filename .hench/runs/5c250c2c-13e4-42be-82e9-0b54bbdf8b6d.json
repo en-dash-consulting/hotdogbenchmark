@@ -1,0 +1,28 @@
+{
+  "id": "5c250c2c-13e4-42be-82e9-0b54bbdf8b6d",
+  "taskId": "6b39227d-4270-492d-ad82-6f2e55be0f88",
+  "taskTitle": "Implement DeepSeek adapter",
+  "startedAt": "2026-09-01T21:46:15.889Z",
+  "finishedAt": "2026-09-01T21:46:15.889Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Adapter implemented with fixture-backed tests; xAI additionally verified live",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "40f94544-5e30-447f-b99c-43fb1f3d03fb",
+  "taskId": "7f2ec4c0-312c-46fc-9f17-6e7080a1c3d1",
+  "taskTitle": "Implement xAI Grok adapter",
+  "startedAt": "2026-09-01T21:46:15.579Z",
+  "finishedAt": "2026-09-01T21:46:15.579Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Adapter implemented with fixture-backed tests; xAI additionally verified live",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

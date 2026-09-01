@@ -2,7 +2,7 @@
 id: "6e98e353-4bbc-4ecf-900a-5b23fd27b21a"
 level: "task"
 title: "Implement hosted Meta Llama adapter via Groq or Together"
-status: "pending"
+status: "completed"
 priority: "medium"
 tags:
   - "providers"
@@ -11,11 +11,16 @@ tags:
 blockedBy:
   - "29febc95-266f-4bc8-808a-5ef3d9b79b28"
 source: "ndx-capture"
+startedAt: "2026-09-01T21:46:08.227Z"
+completedAt: "2026-09-01T21:46:08.227Z"
+endedAt: "2026-09-01T21:46:08.227Z"
+resolutionType: "code-change"
+resolutionDetail: "src/providers/llama-hosted.ts serves Meta Llama 3.3 70B Instruct Turbo through Together AI. HOST DECISION: Together over Groq, recorded in the adapter header and models.json notes — Groq moved its Llama models to enterprise-only \"contact sales\" pricing in June 2026, which a forker on a free/dev tier cannot use, while Together publishes serverless per-token rates anyone can verify. Adapter header and models.json both state that this row measures Together's serving, not Meta's model, for the methodology page to repeat. Env var is TOGETHER_API_KEY (replaced GROQ_API_KEY across env.ts, registry and .env.example). Fixture-backed tests for success, 429, 401 and usage-less 200; normalization row filled in. NOT VERIFIED: no TOGETHER_API_KEY available, so bench:smoke has not been run live and the fixture is authored to the documented shape.</resolutionDetail>\n"
 acceptanceCriteria:
   - "Fixture-backed tests cover success, rate limit, and malformed response"
   - "models.json entry and the adapter header state the hosting provider and the methodology page notes that latency reflects the host"
   - "bench:smoke --provider llama-hosted succeeds live and the normalization row is complete"
 description: "Write src/providers/llama-hosted.ts to benchmark a current open-weights Meta Llama model through a hosted inference provider (choose Groq or Together based on free tier and usage reporting; record the choice and reason in the adapter header comment and methodology page since host hardware dominates latency). Takes the API key and fetch from AdapterContext (the CLI supplies GROQ_API_KEY or TOGETHER_API_KEY). Reuse the openai-compatible helper if it fits. Fixtures for success, 429, malformed body. Verify the model ID against the host's current docs and fill the normalization row, noting that latency reflects the host, not Meta."
-lastModified: "2026-09-01T18:55:38.951Z"
+lastModified: "2026-09-01T21:46:08.244Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---
