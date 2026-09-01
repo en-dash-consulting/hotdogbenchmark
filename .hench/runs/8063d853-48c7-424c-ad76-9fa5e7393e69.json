@@ -1,0 +1,28 @@
+{
+  "id": "8063d853-48c7-424c-ad76-9fa5e7393e69",
+  "taskId": "cf6dba5b-f371-4739-aaa9-5f838314b7b6",
+  "taskTitle": "Run the benchmark in the browser and render client-side",
+  "startedAt": "2026-09-01T23:24:29.898Z",
+  "finishedAt": "2026-09-01T23:24:29.898Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Deferred epic: browser-ready core, OIDC proxy with allowlist and rate limits, BYOK runner UI",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

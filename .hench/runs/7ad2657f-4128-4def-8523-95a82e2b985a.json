@@ -1,0 +1,28 @@
+{
+  "id": "7ad2657f-4128-4def-8523-95a82e2b985a",
+  "taskId": "d0c121d9-cc4c-4ad2-b54f-9d92dba0a346",
+  "taskTitle": "Build the sign-in, key entry and model selection form",
+  "startedAt": "2026-09-01T23:24:29.715Z",
+  "finishedAt": "2026-09-01T23:24:29.715Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Deferred epic: browser-ready core, OIDC proxy with allowlist and rate limits, BYOK runner UI",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

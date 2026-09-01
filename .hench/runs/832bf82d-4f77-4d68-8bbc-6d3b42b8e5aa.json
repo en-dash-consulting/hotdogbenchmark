@@ -1,0 +1,28 @@
+{
+  "id": "832bf82d-4f77-4d68-8bbc-6d3b42b8e5aa",
+  "taskId": "9710135d-d6a7-4a49-ac48-4786f71e954f",
+  "taskTitle": "Implement the authenticated provider forward endpoint",
+  "startedAt": "2026-09-01T23:24:29.530Z",
+  "finishedAt": "2026-09-01T23:24:29.530Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Deferred epic: browser-ready core, OIDC proxy with allowlist and rate limits, BYOK runner UI",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

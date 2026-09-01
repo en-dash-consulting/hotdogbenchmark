@@ -1,0 +1,28 @@
+{
+  "id": "0f7ee7a2-a5a9-4564-a2ce-e137a324c0f6",
+  "taskId": "348e1746-9565-4b38-8dd6-db4b0646c06d",
+  "taskTitle": "Seed the first real benchmark run and verify the live site",
+  "startedAt": "2026-09-01T23:24:30.086Z",
+  "finishedAt": "2026-09-01T23:24:30.086Z",
+  "status": "cancelled",
+  "turns": 0,
+  "summary": "Blocked: needs all seven provider keys and a live GitHub repository; neither available",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

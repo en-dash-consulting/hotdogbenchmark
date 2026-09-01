@@ -1,0 +1,28 @@
+{
+  "id": "0b66b2c0-477a-404a-89bd-572122c91fd2",
+  "taskId": "f6306363-de1f-46ef-a7ca-cf5442a668a1",
+  "taskTitle": "Verify the six unverified adapters with live smoke calls",
+  "startedAt": "2026-09-01T23:24:30.465Z",
+  "finishedAt": "2026-09-01T23:24:30.465Z",
+  "status": "cancelled",
+  "turns": 0,
+  "summary": "Blocked: only XAI_API_KEY available. xAI verified end-to-end through a full live bench run",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

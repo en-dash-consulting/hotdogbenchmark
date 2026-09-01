@@ -1,0 +1,28 @@
+{
+  "id": "34b6ae31-20b3-4764-95c1-30e3381fba97",
+  "taskId": "58a30379-8953-4b95-a808-5c6167549bcb",
+  "taskTitle": "Complete the launch checklist and tag v1.0.0",
+  "startedAt": "2026-09-01T23:24:30.278Z",
+  "finishedAt": "2026-09-01T23:24:30.278Z",
+  "status": "cancelled",
+  "turns": 0,
+  "summary": "Repo-side artifacts done; GitHub settings and the v1.0.0 tag blocked pending a remote and a real run",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}
