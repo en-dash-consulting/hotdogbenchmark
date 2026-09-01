@@ -1,0 +1,70 @@
+name: Bug report
+description: Something in the runner, the data, or the site is wrong or broken.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing. If this is a security issue or an exposed API key, **stop** and
+        follow [SECURITY.md](../../blob/main/SECURITY.md) instead of opening an issue.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part is affected?
+      options:
+        - Runner / CLI (npm run bench)
+        - A provider adapter
+        - Data schema or validation
+        - The static site
+        - GitHub Actions workflow
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How do we reproduce it?
+      description: Exact commands, ideally starting from a fresh clone.
+      placeholder: |
+        1. npm install
+        2. npm run bench -- run --mock
+        3. ...
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Relevant output
+      description: >
+        Error messages or log output. **Check it for API keys before you paste it.**
+      render: shell
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node version
+      description: Output of `node --version`.
+      placeholder: v22.11.0
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: no-secrets
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have checked that this issue contains no API keys or other secrets.
+          required: true

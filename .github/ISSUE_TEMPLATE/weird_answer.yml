@@ -1,0 +1,37 @@
+name: A model gave a weird answer
+description: You saw something in a report that deserves to be pointed at.
+labels: ['weird-answer']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the fun one. No reproduction steps required.
+
+  - type: input
+    id: model
+    attributes:
+      label: Which model?
+      placeholder: Some Model 4, via Some Vendor
+    validations:
+      required: true
+
+  - type: input
+    id: edition
+    attributes:
+      label: Which edition?
+      description: The ISO week from the report, e.g. 2026-W36. A link to the report page works too.
+      placeholder: 2026-W36
+
+  - type: textarea
+    id: answer
+    attributes:
+      label: What did it say?
+      description: Paste the verbatim answer from the report.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it notable?
+      description: Hedged when it was asked for one word? Changed its mind since last week? Just good?

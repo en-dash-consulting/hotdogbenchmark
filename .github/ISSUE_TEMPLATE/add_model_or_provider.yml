@@ -1,0 +1,90 @@
+name: Add a model or provider
+description: Propose a model to benchmark, or a whole new provider to support.
+labels: ['add-model']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a **model** to a provider we already support is a `models.json` edit.
+        Adding a **provider** is one new adapter file. Both are documented in
+        [CONTRIBUTING.md](../../blob/main/CONTRIBUTING.md) — you are very welcome to open the
+        pull request yourself instead of filing this.
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options:
+        - A new model on a provider already supported
+        - A new provider (needs a new adapter)
+    validations:
+      required: true
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider
+      description: The vendor or hosting provider serving the model.
+      placeholder: Anthropic
+    validations:
+      required: true
+
+  - type: input
+    id: model-id
+    attributes:
+      label: Exact model ID
+      description: >
+        The literal string the API expects. Copy it from the docs; do not retype it from memory.
+      placeholder: claude-opus-4-20250514
+    validations:
+      required: true
+
+  - type: input
+    id: docs-url
+    attributes:
+      label: Documentation URL
+      description: The page you copied that model ID from. This gets recorded in models.json.
+    validations:
+      required: true
+
+  - type: input
+    id: pricing-url
+    attributes:
+      label: Pricing URL
+      description: >
+        Where per-token pricing is published. Cost estimates are stamped with the date the
+        price was read, so this link matters.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: streaming
+    attributes:
+      label: Does the API support streaming responses?
+      description: Streaming is how time-to-first-token gets measured. Without it, ttfb is null.
+      options:
+        - 'Yes'
+        - 'No'
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: usage-reporting
+    attributes:
+      label: Does the API report token usage?
+      description: Input and output token counts in the response body.
+      options:
+        - 'Yes, input and output'
+        - 'Yes, and also reasoning or cached tokens'
+        - 'No'
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: >
+        Free tier, rate limits, minimum spend, or quirks in the wire format worth knowing about.
