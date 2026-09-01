@@ -1,0 +1,61 @@
+# Deploys the bring-your-own-keys proxy.
+#
+# Manual only, and skipped entirely unless a Cloudflare token is configured.
+# The proxy is optional: a fork that does not want the "run your own" feature
+# never runs this workflow, and the site is unaffected.
+name: Deploy proxy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'proxy/**'
+      - '.github/workflows/proxy.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proxy-deploy
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test the proxy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Proxy test suite
+        run: npx vitest run proxy/tests
+
+  deploy:
+    name: Deploy to Cloudflare Workers
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Only when someone has actually configured a deployment target. A fork
+    # without one gets a skipped job rather than a red X.
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: proxy

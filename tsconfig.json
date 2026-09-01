@@ -26,6 +26,13 @@
 
     "types": ["node", "astro/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "tests/**/*.ts", "scripts/**/*.ts", "*.config.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "tests/**/*.ts",
+    "proxy/**/*.ts",
+    "scripts/**/*.ts",
+    "*.config.ts"
+  ],
   "exclude": ["node_modules", "dist", ".astro", "src/site/.astro"]
 }

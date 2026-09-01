@@ -1,0 +1,11 @@
+{
+  "name": "@hotdogbenchmark/proxy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Authenticated provider-forwarding proxy for the bring-your-own-keys benchmark runner.",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  }
+}
