@@ -1,0 +1,1076 @@
+{
+  "schemaVersion": 1,
+  "runId": "example-0000-0000-0000",
+  "isoWeek": "2026-W36",
+  "startedAt": "2026-09-01T12:00:00.000Z",
+  "finishedAt": "2026-09-01T12:04:00.000Z",
+  "runnerVersion": "0.1.0",
+  "gitSha": null,
+  "isMock": true,
+  "questions": [
+    {
+      "id": "hot-dog",
+      "text": "Is a hot dog a sandwich? One word answer."
+    },
+    {
+      "id": "hamburger",
+      "text": "Is a hamburger a sandwich? One word answer."
+    },
+    {
+      "id": "taco",
+      "text": "Is a taco a sandwich? One word answer."
+    }
+  ],
+  "results": [
+    {
+      "questionId": "hot-dog",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "model-a",
+          "displayName": "Model A",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 12,
+                "totalTokens": 26,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:00.000Z",
+                "ttfbMs": 328,
+                "totalMs": 780
+              },
+              "costEstimateUsd": 0.000222,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 13,
+                "totalTokens": 27,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:01.000Z",
+                "ttfbMs": 347,
+                "totalMs": 825
+              },
+              "costEstimateUsd": 0.000237,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 14,
+                "totalTokens": 28,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:02.000Z",
+                "ttfbMs": 365,
+                "totalMs": 870
+              },
+              "costEstimateUsd": 0.000252,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 825,
+              "min": 780,
+              "max": 870
+            },
+            "ttfbMs": {
+              "median": 347,
+              "min": 328,
+              "max": 365
+            },
+            "inputTokens": {
+              "median": 14,
+              "min": 14,
+              "max": 14
+            },
+            "outputTokens": {
+              "median": 13,
+              "min": 12,
+              "max": 14
+            },
+            "totalTokens": {
+              "median": 27,
+              "min": 26,
+              "max": 28
+            },
+            "tokensPerSecond": {
+              "median": 15.757575757575758,
+              "min": 15.384615384615383,
+              "max": 16.091954022988507
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000711
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "model-b",
+          "displayName": "Model B",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 15,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:00.000Z",
+                "ttfbMs": 470,
+                "totalMs": 1120
+              },
+              "costEstimateUsd": 0.000267,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 16,
+                "totalTokens": 30,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:01.000Z",
+                "ttfbMs": 489,
+                "totalMs": 1165
+              },
+              "costEstimateUsd": 0.000282,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 17,
+                "totalTokens": 31,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:02.000Z",
+                "ttfbMs": 508,
+                "totalMs": 1210
+              },
+              "costEstimateUsd": 0.000297,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1165,
+              "min": 1120,
+              "max": 1210
+            },
+            "ttfbMs": {
+              "median": 489,
+              "min": 470,
+              "max": 508
+            },
+            "inputTokens": {
+              "median": 14,
+              "min": 14,
+              "max": 14
+            },
+            "outputTokens": {
+              "median": 16,
+              "min": 15,
+              "max": 17
+            },
+            "totalTokens": {
+              "median": 30,
+              "min": 29,
+              "max": 31
+            },
+            "tokensPerSecond": {
+              "median": 13.733905579399142,
+              "min": 13.392857142857142,
+              "max": 14.049586776859504
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000846
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "model-c",
+          "displayName": "Model C",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 9,
+                "totalTokens": 23,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:00.000Z",
+                "ttfbMs": null,
+                "totalMs": 640
+              },
+              "costEstimateUsd": 0.000177,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 10,
+                "totalTokens": 24,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:01.000Z",
+                "ttfbMs": null,
+                "totalMs": 685
+              },
+              "costEstimateUsd": 0.000192,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 14,
+                "outputTokens": 11,
+                "totalTokens": 25,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:00:02.000Z",
+                "ttfbMs": null,
+                "totalMs": 730
+              },
+              "costEstimateUsd": 0.000207,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 685,
+              "min": 640,
+              "max": 730
+            },
+            "ttfbMs": null,
+            "inputTokens": {
+              "median": 14,
+              "min": 14,
+              "max": 14
+            },
+            "outputTokens": {
+              "median": 10,
+              "min": 9,
+              "max": 11
+            },
+            "totalTokens": {
+              "median": 24,
+              "min": 23,
+              "max": 25
+            },
+            "tokensPerSecond": {
+              "median": 14.5985401459854,
+              "min": 14.0625,
+              "max": 15.068493150684931
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000576
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "model-d",
+          "displayName": "Model D",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "Rate limit exceeded after 3 attempts.",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hamburger",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "model-a",
+          "displayName": "Model A",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 12,
+                "totalTokens": 27,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:00.000Z",
+                "ttfbMs": 328,
+                "totalMs": 780
+              },
+              "costEstimateUsd": 0.000225,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 13,
+                "totalTokens": 28,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:01.000Z",
+                "ttfbMs": 347,
+                "totalMs": 825
+              },
+              "costEstimateUsd": 0.00024,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 14,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:02.000Z",
+                "ttfbMs": 365,
+                "totalMs": 870
+              },
+              "costEstimateUsd": 0.000255,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 825,
+              "min": 780,
+              "max": 870
+            },
+            "ttfbMs": {
+              "median": 347,
+              "min": 328,
+              "max": 365
+            },
+            "inputTokens": {
+              "median": 15,
+              "min": 15,
+              "max": 15
+            },
+            "outputTokens": {
+              "median": 13,
+              "min": 12,
+              "max": 14
+            },
+            "totalTokens": {
+              "median": 28,
+              "min": 27,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 15.757575757575758,
+              "min": 15.384615384615383,
+              "max": 16.091954022988507
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.00072
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "model-b",
+          "displayName": "Model B",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 15,
+                "totalTokens": 30,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:00.000Z",
+                "ttfbMs": 470,
+                "totalMs": 1120
+              },
+              "costEstimateUsd": 0.00027,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 16,
+                "totalTokens": 31,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:01.000Z",
+                "ttfbMs": 489,
+                "totalMs": 1165
+              },
+              "costEstimateUsd": 0.000285,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 17,
+                "totalTokens": 32,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:02.000Z",
+                "ttfbMs": 508,
+                "totalMs": 1210
+              },
+              "costEstimateUsd": 0.0003,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1165,
+              "min": 1120,
+              "max": 1210
+            },
+            "ttfbMs": {
+              "median": 489,
+              "min": 470,
+              "max": 508
+            },
+            "inputTokens": {
+              "median": 15,
+              "min": 15,
+              "max": 15
+            },
+            "outputTokens": {
+              "median": 16,
+              "min": 15,
+              "max": 17
+            },
+            "totalTokens": {
+              "median": 31,
+              "min": 30,
+              "max": 32
+            },
+            "tokensPerSecond": {
+              "median": 13.733905579399142,
+              "min": 13.392857142857142,
+              "max": 14.049586776859504
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000855
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "model-c",
+          "displayName": "Model C",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 9,
+                "totalTokens": 24,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:00.000Z",
+                "ttfbMs": null,
+                "totalMs": 640
+              },
+              "costEstimateUsd": 0.00018,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 10,
+                "totalTokens": 25,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:01.000Z",
+                "ttfbMs": null,
+                "totalMs": 685
+              },
+              "costEstimateUsd": 0.000195,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 15,
+                "outputTokens": 11,
+                "totalTokens": 26,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:01:02.000Z",
+                "ttfbMs": null,
+                "totalMs": 730
+              },
+              "costEstimateUsd": 0.00021,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 685,
+              "min": 640,
+              "max": 730
+            },
+            "ttfbMs": null,
+            "inputTokens": {
+              "median": 15,
+              "min": 15,
+              "max": 15
+            },
+            "outputTokens": {
+              "median": 10,
+              "min": 9,
+              "max": 11
+            },
+            "totalTokens": {
+              "median": 25,
+              "min": 24,
+              "max": 26
+            },
+            "tokensPerSecond": {
+              "median": 14.5985401459854,
+              "min": 14.0625,
+              "max": 15.068493150684931
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000585
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "model-d",
+          "displayName": "Model D",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "Rate limit exceeded after 3 attempts.",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "taco",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "model-a",
+          "displayName": "Model A",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 12,
+                "totalTokens": 28,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:00.000Z",
+                "ttfbMs": 328,
+                "totalMs": 780
+              },
+              "costEstimateUsd": 0.000228,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 13,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:01.000Z",
+                "ttfbMs": 347,
+                "totalMs": 825
+              },
+              "costEstimateUsd": 0.000243,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 14,
+                "totalTokens": 30,
+                "reasoningTokens": null,
+                "cachedInputTokens": 8
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:02.000Z",
+                "ttfbMs": 365,
+                "totalMs": 870
+              },
+              "costEstimateUsd": 0.000258,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 825,
+              "min": 780,
+              "max": 870
+            },
+            "ttfbMs": {
+              "median": 347,
+              "min": 328,
+              "max": 365
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 13,
+              "min": 12,
+              "max": 14
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 28,
+              "max": 30
+            },
+            "tokensPerSecond": {
+              "median": 15.757575757575758,
+              "min": 15.384615384615383,
+              "max": 16.091954022988507
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000729
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "model-b",
+          "displayName": "Model B",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 15,
+                "totalTokens": 31,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:00.000Z",
+                "ttfbMs": 470,
+                "totalMs": 1120
+              },
+              "costEstimateUsd": 0.000273,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 16,
+                "totalTokens": 32,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:01.000Z",
+                "ttfbMs": 489,
+                "totalMs": 1165
+              },
+              "costEstimateUsd": 0.000288,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 17,
+                "totalTokens": 33,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:02.000Z",
+                "ttfbMs": 508,
+                "totalMs": 1210
+              },
+              "costEstimateUsd": 0.000303,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1165,
+              "min": 1120,
+              "max": 1210
+            },
+            "ttfbMs": {
+              "median": 489,
+              "min": 470,
+              "max": 508
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 16,
+              "min": 15,
+              "max": 17
+            },
+            "totalTokens": {
+              "median": 32,
+              "min": 31,
+              "max": 33
+            },
+            "tokensPerSecond": {
+              "median": 13.733905579399142,
+              "min": 13.392857142857142,
+              "max": 14.049586776859504
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000864
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "model-c",
+          "displayName": "Model C",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Technically, no.",
+              "verdict": "other",
+              "followedInstruction": false,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 9,
+                "totalTokens": 25,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:00.000Z",
+                "ttfbMs": null,
+                "totalMs": 640
+              },
+              "costEstimateUsd": 0.000183,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Technically, no.",
+              "verdict": "other",
+              "followedInstruction": false,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 10,
+                "totalTokens": 26,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:01.000Z",
+                "ttfbMs": null,
+                "totalMs": 685
+              },
+              "costEstimateUsd": 0.000198,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            },
+            {
+              "text": "Technically, no.",
+              "verdict": "other",
+              "followedInstruction": false,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 11,
+                "totalTokens": 27,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-01T12:02:02.000Z",
+                "ttfbMs": null,
+                "totalMs": 730
+              },
+              "costEstimateUsd": 0.000213,
+              "raw": {
+                "note": "vendor usage payload elided in fixtures"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 685,
+              "min": 640,
+              "max": 730
+            },
+            "ttfbMs": null,
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 10,
+              "min": 9,
+              "max": 11
+            },
+            "totalTokens": {
+              "median": 26,
+              "min": 25,
+              "max": 27
+            },
+            "tokensPerSecond": {
+              "median": 14.5985401459854,
+              "min": 14.0625,
+              "max": 15.068493150684931
+            },
+            "verdict": "other",
+            "followedInstructionRate": 0,
+            "costEstimateUsd": 0.000594
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "model-d",
+          "displayName": "Model D",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "Rate limit exceeded after 3 attempts.",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        }
+      ]
+    }
+  ]
+}

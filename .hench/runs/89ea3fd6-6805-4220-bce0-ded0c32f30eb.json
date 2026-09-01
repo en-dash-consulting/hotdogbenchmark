@@ -1,0 +1,28 @@
+{
+  "id": "89ea3fd6-6805-4220-bce0-ded0c32f30eb",
+  "taskId": "cd4ccb48-63ca-4360-8942-2d227b029c04",
+  "taskTitle": "Add LICENSE, CONTRIBUTING, CODE_OF_CONDUCT, and SECURITY files",
+  "startedAt": "2026-09-01T21:16:24.852Z",
+  "finishedAt": "2026-09-01T21:16:24.852Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "MIT LICENSE, Contributor Covenant 2.1, CONTRIBUTING with mock-mode-first setup, SECURITY key handling",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

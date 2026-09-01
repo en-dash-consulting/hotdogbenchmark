@@ -1,0 +1,28 @@
+{
+  "id": "24fb8bff-c1b5-4dc8-93ad-ae8ee77de4ec",
+  "taskId": "605914d2-79c7-4568-a847-3ae7cc099ce2",
+  "taskTitle": "Establish src and data directory layout with environment loading",
+  "startedAt": "2026-09-01T21:16:24.702Z",
+  "finishedAt": "2026-09-01T21:16:24.702Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "src/{runner,providers,schema,data,site} + data/runs READMEs; src/env.ts configuredProviders(); src/cli.ts --help",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "307c8765-3f74-4ecb-a2d4-9752441ee022",
+  "taskId": "ca3fa355-e371-4adf-b5e5-1a620ff8b59f",
+  "taskTitle": "Add issue and pull request templates including an add-a-model template",
+  "startedAt": "2026-09-01T21:16:25.006Z",
+  "finishedAt": "2026-09-01T21:16:25.006Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Three issue forms + PR template; schema-validation test for the forms",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

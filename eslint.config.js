@@ -73,4 +73,20 @@ export default tseslint.config(
     files: ['tests/**/*.ts', 'scripts/**/*.ts'],
     rules: { '@typescript-eslint/no-explicit-any': 'off' },
   },
+  {
+    // Plain-JS build scripts: not covered by the TypeScript program, so the
+    // Node and web globals they use have to be declared.
+    files: ['scripts/**/*.mjs', '*.config.js'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        fetch: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+      },
+    },
+  },
 )
