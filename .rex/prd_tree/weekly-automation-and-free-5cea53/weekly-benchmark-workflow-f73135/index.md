@@ -25,4 +25,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Add failure policy: exit-code handling, consecutive-failure detection, and GitHub issue automation](./add-failure-policy-exit-code-c64abe.md) | pending |
-| [Create benchmark.yml scheduled workflow that runs the benchmark and commits data](./create-benchmark-yml-scheduled-276e25.md) | pending |
+| [Create benchmark.yml scheduled workflow that runs the benchmark and commits data](./create-benchmark-yml-scheduled-276e25.md) | in_progress |

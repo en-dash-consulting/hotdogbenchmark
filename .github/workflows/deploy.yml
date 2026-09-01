@@ -1,0 +1,83 @@
+# Publish the site to GitHub Pages.
+#
+# Runs on every push to main, and again after the weekly benchmark commits new
+# data — so the published site is never a week behind the data in the repo.
+#
+# The workflow_run trigger is the piece people forget: without it, new data
+# lands on main but nothing rebuilds, and the site silently shows last week's
+# numbers.
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'data/**'
+      - 'public/**'
+      - 'questions.json'
+      - 'models.json'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy.yml'
+  workflow_run:
+    workflows: ['Weekly benchmark']
+    types: [completed]
+  workflow_dispatch:
+
+# Least privilege: Pages deployment needs exactly these three and nothing else.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A newer deploy supersedes an in-flight one; there is no value in publishing
+# an older build after a newer one has started.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # A failed benchmark run should not publish; a successful one should.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/configure-pages@v5
+
+      - name: Build the site
+        env:
+          # SITE_URL is set as a repository variable only when serving from a
+          # custom domain; otherwise the base path is derived from the repo name.
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

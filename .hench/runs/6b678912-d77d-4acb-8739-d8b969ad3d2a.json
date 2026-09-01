@@ -1,0 +1,28 @@
+{
+  "id": "6b678912-d77d-4acb-8739-d8b969ad3d2a",
+  "taskId": "373822e3-55d6-4282-ae9a-ba56ea9db457",
+  "taskTitle": "Create ci.yml with lint, typecheck, and unit test jobs",
+  "startedAt": "2026-09-01T22:16:03.450Z",
+  "finishedAt": "2026-09-01T22:16:03.450Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Completed in ndx-work session",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

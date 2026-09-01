@@ -10,6 +10,10 @@ straight-faced industry analyst report.
 
 **Live report:** _(coming soon — the site deploys to GitHub Pages once the first real run lands)_
 
+**Want your own?** [`docs/self-hosting.md`](docs/self-hosting.md) takes you from fork to live site
+in about fifteen minutes. You never run the benchmark yourself — a scheduled GitHub Action does it
+weekly and redeploys the site.
+
 The models are also asked about a hamburger and a taco, because a benchmark with one question
 is a demo and a benchmark with three is a research programme.
 

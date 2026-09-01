@@ -1,0 +1,28 @@
+{
+  "id": "edccd77a-353a-4184-83e5-e8dfa81c96c4",
+  "taskId": "634ddc20-50b0-4fdd-beb2-49bb764b0131",
+  "taskTitle": "Build semantic results table with progressive-enhancement sorting and filtering",
+  "startedAt": "2026-09-01T22:16:02.809Z",
+  "finishedAt": "2026-09-01T22:16:02.809Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Completed in ndx-work session",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

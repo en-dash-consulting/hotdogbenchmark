@@ -1,0 +1,195 @@
+# The weekly benchmark.
+#
+# This is the only workflow that sees provider API keys, and the only one that
+# writes to the repository. It runs the benchmark, commits the new data file,
+# and lets deploy.yml take it from there.
+#
+# **Nobody needs to run the benchmark locally.** Add the provider keys as
+# repository secrets once and this workflow is the whole operation. See
+# docs/self-hosting.md.
+name: Weekly benchmark
+
+on:
+  schedule:
+    # Monday 12:00 UTC. Deliberately not midnight: several providers publish
+    # rate-limit resets and maintenance windows around the day boundary, and a
+    # benchmark that runs during them measures the maintenance window.
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: 'Samples per model per question'
+        required: false
+        default: '3'
+      models:
+        description: 'Comma-separated model ids (blank = all enabled)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  issues: write
+
+# Never two benchmark runs at once: they would write the same week's file.
+# cancel-in-progress is false because losing a half-finished run wastes real
+# money, unlike cancelling a CI job.
+concurrency:
+  group: benchmark
+  cancel-in-progress: false
+
+jobs:
+  benchmark:
+    name: Run benchmark and commit data
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run the benchmark
+        id: bench
+        env:
+          # Every provider key. A provider with no secret set is skipped with a
+          # warning rather than recorded as an outage — see runBenchmark.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+          BENCH_SAMPLES: ${{ github.event.inputs.samples || '3' }}
+        run: |
+          set -o pipefail
+          ARGS=""
+          if [ -n "${{ github.event.inputs.models }}" ]; then
+            ARGS="--models ${{ github.event.inputs.models }}"
+          fi
+          npm run bench -- run $ARGS 2>&1 | tee /tmp/bench-output.txt
+
+      - name: Validate the output
+        run: npm run data:validate
+
+      - name: Regenerate the manifest
+        run: npm run data:index
+
+      - name: Write the step summary
+        if: always()
+        run: node scripts/step-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the new data
+        id: commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/
+          # Nothing to commit is a normal outcome — a re-run in the same week
+          # with identical results changes no bytes.
+          if git diff --staged --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No data changes to commit."
+          else
+            git commit -m "Weekly benchmark: $(date -u +%G-W%V)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for consistently failing providers
+        if: success()
+        id: health
+        run: node scripts/provider-health.mjs >> "$GITHUB_OUTPUT"
+
+      # A provider that has failed three editions running is a real problem
+      # that a passing job would otherwise hide.
+      - name: Open or update the degraded-provider issue
+        if: steps.health.outputs.degraded != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const degraded = '${{ steps.health.outputs.degraded }}'
+            const title = 'Provider degraded: sustained failures'
+            const body = [
+              'The following providers have returned no usable data in each of the last three editions:',
+              '',
+              degraded.split(',').map((p) => `- \`${p}\``).join('\n'),
+              '',
+              'Check the provider console for a billing or key problem, then either fix it or set',
+              '`enabled: false` for that model in `models.json` so the report stops showing an outage',
+              'that nobody intends to resolve.',
+              '',
+              `Detected by [this run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+            ].join('\n')
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'provider-degraded',
+            })
+
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['provider-degraded'],
+              })
+            }
+
+      # Exit code 1 from the runner means every single job failed, which is
+      # systemic rather than one provider having a bad day.
+      - name: Open or update the run-failure issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Weekly benchmark run failed'
+            const body = [
+              'The weekly benchmark did not complete successfully.',
+              '',
+              `[View the run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+              '',
+              'Common causes, in rough order of likelihood:',
+              '- Every provider secret is missing or expired',
+              '- A provider changed its wire format (check the adapter tests)',
+              '- The schema rejected the output (run `npm run data:validate` locally)',
+            ].join('\n')
+
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'benchmark-failure',
+            })
+
+            if (existing.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.data[0].number,
+                body,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['benchmark-failure'],
+              })
+            }

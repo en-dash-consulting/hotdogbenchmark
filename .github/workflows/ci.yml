@@ -56,3 +56,86 @@ jobs:
         env:
           BENCH_SEED: '1'
         run: npm run bench -- run --mock --out /tmp/ci-run.json
+
+  data:
+    name: Validate committed data
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate every run file against the schema
+        # Names the offending file and the JSON pointer, so a contributor who
+        # hand-edited a run file learns exactly what is wrong.
+        run: npm run data:validate
+
+      - name: Check data/index.json is up to date
+        # The manifest is committed and generated. Regenerating it must produce
+        # no diff; a diff means a run file was added without refreshing it.
+        run: |
+          npm run data:index
+          if ! git diff --exit-code data/index.json; then
+            echo "::error::data/index.json is stale. Run 'npm run data:index' and commit the result."
+            exit 1
+          fi
+
+  build:
+    name: Build the site
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # Uploaded so the accessibility job can check the real built output
+      # rather than rebuilding it.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
+          retention-days: 7
+
+  a11y:
+    name: Accessibility
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: dist
+
+      - name: Install the browser axe runs in
+        run: npx playwright install --with-deps chromium
+
+      - name: Run axe over every built page
+        run: npm run test:a11y

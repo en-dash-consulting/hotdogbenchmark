@@ -1,0 +1,28 @@
+{
+  "id": "64571db9-2667-4085-8846-f3c568cc7c27",
+  "taskId": "b69fd9c5-e664-4f5d-a811-81bdcd952d97",
+  "taskTitle": "Build layout shell",
+  "startedAt": "2026-09-01T22:16:03.289Z",
+  "finishedAt": "2026-09-01T22:16:03.289Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Completed in ndx-work session",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

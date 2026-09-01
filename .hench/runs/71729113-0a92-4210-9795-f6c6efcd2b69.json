@@ -1,0 +1,28 @@
+{
+  "id": "71729113-0a92-4210-9795-f6c6efcd2b69",
+  "taskId": "7023a879-e2e4-44d0-b0e0-1fabdb712cb1",
+  "taskTitle": "Build per-model vendor profile cards",
+  "startedAt": "2026-09-01T22:16:02.652Z",
+  "finishedAt": "2026-09-01T22:16:02.652Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Completed in ndx-work session",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

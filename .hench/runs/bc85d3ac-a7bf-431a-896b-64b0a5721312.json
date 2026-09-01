@@ -1,0 +1,28 @@
+{
+  "id": "bc85d3ac-a7bf-431a-896b-64b0a5721312",
+  "taskId": "24d567a1-dafe-450c-af88-728724aaee10",
+  "taskTitle": "Define analyst-report design tokens and themes",
+  "startedAt": "2026-09-01T22:16:03.126Z",
+  "finishedAt": "2026-09-01T22:16:03.126Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Completed in ndx-work session",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}
