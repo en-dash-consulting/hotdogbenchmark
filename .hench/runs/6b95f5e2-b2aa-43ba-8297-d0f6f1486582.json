@@ -1,0 +1,28 @@
+{
+  "id": "6b95f5e2-b2aa-43ba-8297-d0f6f1486582",
+  "taskId": "6d8676b6-9031-42f8-be35-82aee8fc19b9",
+  "taskTitle": "Implement --mock mode with recorded fixtures for keyless end-to-end runs",
+  "startedAt": "2026-09-01T21:58:17.807Z",
+  "finishedAt": "2026-09-01T21:58:17.807Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "mock adapter + fixtures + bench:record; verified end to end with all API keys stripped",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

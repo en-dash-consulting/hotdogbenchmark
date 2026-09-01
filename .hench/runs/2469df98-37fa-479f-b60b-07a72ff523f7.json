@@ -1,0 +1,28 @@
+{
+  "id": "2469df98-37fa-479f-b60b-07a72ff523f7",
+  "taskId": "12dc8157-cf91-4f6f-93dd-7fb7c9b17f75",
+  "taskTitle": "Implement runner orchestration and bench run CLI",
+  "startedAt": "2026-09-01T21:58:17.640Z",
+  "finishedAt": "2026-09-01T21:58:17.640Z",
+  "status": "completed",
+  "turns": 52,
+  "summary": "runBenchmark with per-provider serialization, partial-failure tolerance, dry-run, exit codes",
+  "tokenUsage": {
+    "input": 104,
+    "output": 106735,
+    "cacheCreationInput": 124220,
+    "cacheReadInput": 22679097
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 104,
+    "output": 106735,
+    "cached": 22803317,
+    "total": 22910156
+  }
+}

@@ -22,5 +22,5 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Create ci.yml with lint, typecheck, and unit test jobs](./create-ci-yml-with-lint-373822.md) | pending |
+| [Create ci.yml with lint, typecheck, and unit test jobs](./create-ci-yml-with-lint-373822.md) | in_progress |
 | [Extend ci.yml with data schema validation and site build jobs](./extend-ci-yml-with-data-schema-b17721.md) | pending |

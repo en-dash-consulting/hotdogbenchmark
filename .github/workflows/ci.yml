@@ -1,0 +1,58 @@
+# Pull-request quality gate.
+#
+# Deliberately references NO secrets. That is what makes it safe to run on pull
+# requests from forks: a malicious PR cannot exfiltrate a provider key from a
+# workflow that was never given one. Every job here works from recorded
+# fixtures, which is the whole reason mock mode exists.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Read-only. This workflow never writes to the repository.
+permissions:
+  contents: read
+
+# One run per branch. A new push supersedes an in-flight run rather than
+# queueing behind it.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Read from .nvmrc so the pinned version lives in exactly one place.
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Benchmark runs end to end without any API key
+        # The seed makes this reproducible; the absence of provider secrets in
+        # this workflow makes it a real test of the keyless path.
+        env:
+          BENCH_SEED: '1'
+        run: npm run bench -- run --mock --out /tmp/ci-run.json
