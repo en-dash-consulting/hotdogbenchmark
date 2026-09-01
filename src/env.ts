@@ -11,19 +11,17 @@
  */
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { CREDENTIAL_ENV_VARS, type KnownProviderId } from './providers/registry.ts'
 
-/** Provider id → the environment variable holding that provider's API key. */
-export const PROVIDER_ENV_VARS = {
-  anthropic: 'ANTHROPIC_API_KEY',
-  openai: 'OPENAI_API_KEY',
-  gemini: 'GOOGLE_API_KEY',
-  xai: 'XAI_API_KEY',
-  mistral: 'MISTRAL_API_KEY',
-  deepseek: 'DEEPSEEK_API_KEY',
-  'llama-hosted': 'TOGETHER_API_KEY',
-} as const satisfies Record<string, string>
+/**
+ * Provider id → the environment variable holding that provider's API key.
+ *
+ * Defined next to the adapters so adding a provider touches one directory, and
+ * re-exported here because this module is the only one allowed to act on it.
+ */
+export const PROVIDER_ENV_VARS = CREDENTIAL_ENV_VARS
 
-export type ProviderId = keyof typeof PROVIDER_ENV_VARS
+export type ProviderId = KnownProviderId
 
 export const PROVIDER_IDS = Object.keys(PROVIDER_ENV_VARS) as ProviderId[]
 

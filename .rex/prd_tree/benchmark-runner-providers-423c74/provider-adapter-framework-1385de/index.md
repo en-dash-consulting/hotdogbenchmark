@@ -24,6 +24,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Define ProviderAdapter interface, CompleteResult shape, and adapter registry](./define-provideradapter-32695d.md) | pending |
+| [Define ProviderAdapter interface, CompleteResult shape, and adapter registry](./define-provideradapter-32695d.md) | in_progress |
 | [Implement shared HTTP helper with timeout, retry with backoff, and error normalization](./implement-shared-http-helper-86f8e9.md) | pending |
 | [Implement timing instrumentation and document cross-provider usage normalization](./implement-timing-86fb9a.md) | pending |
