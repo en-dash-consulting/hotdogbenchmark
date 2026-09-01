@@ -1,0 +1,99 @@
+---
+/**
+ * One report per question, always showing the latest edition.
+ *
+ * Archive pages under /runs/<isoWeek>/ render the same components against a
+ * historical run.
+ */
+import Base from '../../layouts/Base.astro'
+import Masthead from '../../components/report/Masthead.astro'
+import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
+import KpiTiles from '../../components/report/KpiTiles.astro'
+import VendorProfile from '../../components/report/VendorProfile.astro'
+import ResultsTable from '../../components/report/ResultsTable.astro'
+import {
+  getLatestRun,
+  getModelResults,
+  getPreviousRun,
+  getQuestions,
+  getQuestionTextInRun,
+} from '../../lib/data.ts'
+import { formatEdition } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+
+export function getStaticPaths() {
+  return getQuestions().map((question) => ({
+    params: { questionId: question.id },
+    props: { question },
+  }))
+}
+
+const { question } = Astro.props
+const run = getLatestRun()
+const results = run ? getModelResults(run, question.id) : []
+const previous = run ? getPreviousRun(run.isoWeek) : null
+const previousResults = previous ? getModelResults(previous, question.id) : null
+const askedText = run ? getQuestionTextInRun(run, question.id) : null
+---
+
+<Base
+  title={question.reportTitle}
+  description={`Cross-vendor evaluation of how leading AI models classify ${question.subject}. ${run ? formatEdition(run.isoWeek) : ''} edition.`}
+>
+  {
+    run ? (
+      <>
+        <Masthead question={question} run={run} questionText={askedText ?? question.text} />
+
+        {results.length === 0 ? (
+          <p class="empty">
+            This question was not evaluated in the {formatEdition(run.isoWeek)} edition. See the{' '}
+            <a href={routes.history()}>archive</a> for prior editions.
+          </p>
+        ) : (
+          <>
+            <KpiTiles results={results} previous={previousResults} />
+            <ExecutiveSummary subject={question.subject} results={results} />
+
+            <section aria-labelledby="profiles-heading">
+              <h2 id="profiles-heading">Vendor profiles</h2>
+              <div class="profile-grid">
+                {results.map((result) => (
+                  <VendorProfile result={result} />
+                ))}
+              </div>
+            </section>
+
+            <ResultsTable
+              results={results}
+              caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
+            />
+          </>
+        )}
+      </>
+    ) : (
+      <>
+        <h1>{question.reportTitle}</h1>
+        <p class="empty">
+          No editions have been published yet. Run <code>npm run bench -- run --mock</code> to
+          generate sample data.
+        </p>
+      </>
+    )
+  }
+</Base>
+
+<style>
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-s);
+  }
+
+  .empty {
+    padding: var(--space-l);
+    background: var(--surface);
+    border-left: 3px solid var(--rule-strong);
+    color: var(--muted);
+  }
+</style>

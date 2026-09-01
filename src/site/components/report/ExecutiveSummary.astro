@@ -1,0 +1,60 @@
+---
+/**
+ * The executive summary and key findings.
+ *
+ * Both are generated at build time from the same numbers the tables show, so
+ * the prose cannot contradict the data.
+ */
+import { executiveSummary, keyFindings } from '../../lib/prose.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  subject: string
+  results: ModelResult[]
+}
+
+const { subject, results } = Astro.props
+const summary = executiveSummary({ subject, results })
+const findings = keyFindings({ subject, results })
+---
+
+<section aria-labelledby="summary-heading" class="summary">
+  <h2 id="summary-heading">Executive summary</h2>
+  <p class="summary-text">{summary}</p>
+
+  <h3 id="findings-heading">Key findings</h3>
+  <ul class="findings">
+    {
+      findings.map((finding) => (
+        <li>
+          <strong>{finding.label}.</strong> {finding.text}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .summary {
+    margin-bottom: var(--space-xl);
+    max-width: var(--measure);
+  }
+
+  .summary-text {
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+    color: var(--text);
+  }
+
+  .findings {
+    padding-left: var(--space-m);
+  }
+
+  .findings li + li {
+    margin-top: var(--space-2xs);
+  }
+
+  .findings strong {
+    color: var(--text-strong);
+  }
+</style>

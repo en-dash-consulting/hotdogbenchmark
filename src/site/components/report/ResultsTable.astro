@@ -1,0 +1,339 @@
+---
+/**
+ * The same data as the profile cards, as a semantic table.
+ *
+ * **It is fully readable with JavaScript disabled**, sorted by composite score
+ * descending. The script below is an enhancement: it adds click-to-sort with
+ * aria-sort, filtering by provider and verdict with a live-region count, and
+ * URL-hash state so a view can be shared. Nothing it adds is required to read
+ * the data.
+ *
+ * The enhancement is deliberately vanilla and tiny. A framework here would cost
+ * more than every other byte of JavaScript on the site combined.
+ */
+import VerdictBadge from './VerdictBadge.astro'
+import { formatDuration, formatInteger, formatPercent, formatUsd } from '../../lib/format.ts'
+import { scoreModels } from '../../lib/scores.ts'
+import { getModelEntry } from '../../lib/data.ts'
+import { routes } from '../../lib/urls.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  results: ModelResult[]
+  caption: string
+}
+
+const { results, caption } = Astro.props
+
+// Default order is composite score descending — a defensible order that does
+// not depend on JavaScript having run.
+const rows = scoreModels(results)
+  .sort((a, b) => b.composite - a.composite)
+  .map((scored) => ({
+    ...scored,
+    vendor:
+      getModelEntry(scored.result.provider, scored.result.modelId)?.vendor ??
+      scored.result.provider,
+  }))
+
+const COLUMNS = [
+  { key: 'model', label: 'Model', type: 'text' },
+  { key: 'vendor', label: 'Vendor', type: 'text' },
+  { key: 'verdict', label: 'Verdict', type: 'text' },
+  { key: 'decisiveness', label: 'Decisiveness', type: 'number' },
+  { key: 'efficiency', label: 'Efficiency', type: 'number' },
+  { key: 'latency', label: 'Median latency', type: 'number' },
+  { key: 'tokens', label: 'Output tokens', type: 'number' },
+  { key: 'compliance', label: 'Compliance', type: 'number' },
+  { key: 'cost', label: 'Cost est.', type: 'number' },
+  { key: 'composite', label: 'Composite', type: 'number' },
+] as const
+
+const providers = [...new Set(rows.map((row) => row.vendor))].sort()
+---
+
+<section aria-labelledby="table-heading" class="results-table" data-results-table>
+  <h2 id="table-heading">Data table</h2>
+
+  <div class="controls" data-controls hidden>
+    <div class="control">
+      <label for="filter-vendor">Vendor</label>
+      <select id="filter-vendor" data-filter="vendor">
+        <option value="">All vendors</option>
+        {providers.map((vendor) => <option value={vendor}>{vendor}</option>)}
+      </select>
+    </div>
+    <div class="control">
+      <label for="filter-verdict">Verdict</label>
+      <select id="filter-verdict" data-filter="verdict">
+        <option value="">All verdicts</option>
+        <option value="yes">Affirmative</option>
+        <option value="no">Negative</option>
+        <option value="other">Non-committal</option>
+        <option value="none">No determination</option>
+      </select>
+    </div>
+    <button type="button" data-reset>Reset</button>
+    <p class="status" role="status" data-status></p>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <caption>{caption}</caption>
+      <thead>
+        <tr>
+          {
+            COLUMNS.map((column) => (
+              <th
+                scope="col"
+                class:list={[column.type === 'number' && 'numeric']}
+                data-column={column.key}
+                data-type={column.type}
+              >
+                {column.label}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => {
+            const a = row.result.aggregate
+            return (
+              <tr
+                data-vendor={row.vendor}
+                data-verdict={a.verdict ?? 'none'}
+                data-model={row.result.displayName}
+                data-decisiveness={row.decisiveness}
+                data-efficiency={row.efficiency}
+                data-latency={a.totalMs?.median ?? ''}
+                data-tokens={a.outputTokens?.median ?? ''}
+                data-compliance={a.followedInstructionRate ?? ''}
+                data-cost={a.costEstimateUsd ?? ''}
+                data-composite={row.composite}
+              >
+                <th scope="row">{row.result.displayName}</th>
+                <td>{row.vendor}</td>
+                <td>
+                  <VerdictBadge verdict={a.verdict} />
+                </td>
+                <td class="numeric">{row.decisiveness.toFixed(2)}</td>
+                <td class="numeric">{row.efficiency.toFixed(2)}</td>
+                <td class="numeric">{formatDuration(a.totalMs?.median)}</td>
+                <td class="numeric">{formatInteger(a.outputTokens?.median)}</td>
+                <td class="numeric">{formatPercent(a.followedInstructionRate)}</td>
+                <td class="numeric">{formatUsd(a.costEstimateUsd)}</td>
+                <td class="numeric">{row.composite.toFixed(2)}</td>
+              </tr>
+            )
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="footnote">
+    Rows are ordered by composite score. Decisiveness, efficiency and the composite score are
+    defined on the <a href={routes.methodology()}>methodology page</a>; they are constructed
+    measures, not observations.
+  </p>
+</section>
+
+<script>
+  // Progressive enhancement only. Everything below is additive: with this
+  // script absent the table is still complete, ordered and readable.
+  const root = document.querySelector<HTMLElement>('[data-results-table]')
+  const table = root?.querySelector('table')
+  const tbody = table?.querySelector('tbody')
+  const controls = root?.querySelector<HTMLElement>('[data-controls]')
+  const status = root?.querySelector<HTMLElement>('[data-status]')
+
+  if (root && table && tbody && controls && status) {
+    // The controls are hidden in the markup and revealed here, so a
+    // no-JavaScript reader is never shown a filter that cannot work.
+    controls.hidden = false
+
+    const allRows = Array.from(tbody.querySelectorAll('tr'))
+    const filters = Array.from(controls.querySelectorAll<HTMLSelectElement>('[data-filter]'))
+    let sortKey = 'composite'
+    let sortDirection: 'asc' | 'desc' = 'desc'
+
+    const valueOf = (row: HTMLElement, key: string, type: string) => {
+      const raw = row.dataset[key] ?? ''
+      if (type === 'number') return raw === '' ? Number.NEGATIVE_INFINITY : Number(raw)
+      return raw.toLowerCase()
+    }
+
+    function apply() {
+      const vendor = filters.find((f) => f.dataset.filter === 'vendor')?.value ?? ''
+      const verdict = filters.find((f) => f.dataset.filter === 'verdict')?.value ?? ''
+
+      const header = table!.querySelector<HTMLElement>(`th[data-column="${sortKey}"]`)
+      const type = header?.dataset.type ?? 'text'
+
+      const sorted = [...allRows].sort((a, b) => {
+        const left = valueOf(a, sortKey, type)
+        const right = valueOf(b, sortKey, type)
+        const order = left < right ? -1 : left > right ? 1 : 0
+        return sortDirection === 'asc' ? order : -order
+      })
+
+      let visible = 0
+      for (const row of sorted) {
+        const matches =
+          (!vendor || row.dataset.vendor === vendor) &&
+          (!verdict || row.dataset.verdict === verdict)
+        row.hidden = !matches
+        if (matches) visible += 1
+        tbody!.append(row)
+      }
+
+      for (const th of table!.querySelectorAll('th[data-column]')) {
+        th.setAttribute(
+          'aria-sort',
+          th.getAttribute('data-column') === sortKey
+            ? sortDirection === 'asc'
+              ? 'ascending'
+              : 'descending'
+            : 'none',
+        )
+      }
+
+      status!.textContent =
+        visible === allRows.length
+          ? `${visible} models shown.`
+          : `${visible} of ${allRows.length} models shown.`
+
+      const state = new URLSearchParams()
+      if (vendor) state.set('vendor', vendor)
+      if (verdict) state.set('verdict', verdict)
+      if (sortKey !== 'composite' || sortDirection !== 'desc') {
+        state.set('sort', `${sortKey}:${sortDirection}`)
+      }
+      const hash = state.toString()
+      history.replaceState(null, '', hash ? `#${hash}` : location.pathname)
+    }
+
+    for (const th of table.querySelectorAll<HTMLElement>('th[data-column]')) {
+      th.tabIndex = 0
+      th.setAttribute('role', 'columnheader')
+      th.classList.add('sortable')
+      const activate = () => {
+        const key = th.dataset.column!
+        if (key === sortKey) {
+          sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'
+        } else {
+          sortKey = key
+          sortDirection = th.dataset.type === 'number' ? 'desc' : 'asc'
+        }
+        apply()
+      }
+      th.addEventListener('click', activate)
+      th.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          activate()
+        }
+      })
+    }
+
+    for (const filter of filters) filter.addEventListener('change', apply)
+    controls.querySelector('[data-reset]')?.addEventListener('click', () => {
+      for (const filter of filters) filter.value = ''
+      sortKey = 'composite'
+      sortDirection = 'desc'
+      apply()
+    })
+
+    // Restore a shared view from the hash.
+    const initial = new URLSearchParams(location.hash.slice(1))
+    for (const filter of filters) {
+      const value = initial.get(filter.dataset.filter!)
+      if (value) filter.value = value
+    }
+    const sort = initial.get('sort')
+    if (sort) {
+      const [key, direction] = sort.split(':')
+      if (key) sortKey = key
+      if (direction === 'asc' || direction === 'desc') sortDirection = direction
+    }
+    apply()
+  }
+</script>
+
+<style>
+  .results-table {
+    margin-block: var(--space-xl);
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--space-s);
+    margin-bottom: var(--space-s);
+    padding: var(--space-s);
+    background: var(--surface);
+    border: var(--hairline) solid var(--rule);
+  }
+
+  .control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .control label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  select,
+  button {
+    font: inherit;
+    font-size: var(--step--1);
+    padding: var(--space-3xs) var(--space-2xs);
+    background: var(--surface);
+    color: var(--text);
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .status {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  th.sortable {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  th.sortable::after {
+    content: '';
+    display: inline-block;
+    width: 0.75em;
+  }
+
+  th[aria-sort='ascending']::after {
+    content: ' ▲';
+  }
+
+  th[aria-sort='descending']::after {
+    content: ' ▼';
+  }
+
+  .footnote {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-2xs);
+  }
+</style>

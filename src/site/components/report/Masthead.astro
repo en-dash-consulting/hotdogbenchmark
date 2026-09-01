@@ -1,0 +1,155 @@
+---
+/**
+ * The report masthead.
+ *
+ * Everything a subscription research note puts above the fold: title, edition,
+ * a "prepared by" line, a document reference number, and the research question
+ * set out as a formal callout.
+ *
+ * When the underlying run is mock data this says so, prominently. Publishing
+ * simulated numbers unlabelled would undermine the one thing this project is
+ * actually serious about.
+ */
+import { documentReference, formatDate, formatEdition } from '../../lib/format.ts'
+import type { BenchmarkRun } from '../../../schema/run.ts'
+import type { QuestionEntry } from '../../../schema/questions.ts'
+
+interface Props {
+  question: QuestionEntry
+  run: BenchmarkRun
+  /** Shown on archive pages. */
+  archived?: boolean
+  questionText?: string
+}
+
+const { question, run, archived = false, questionText } = Astro.props
+const asked = questionText ?? question.text
+---
+
+<header class="report-masthead">
+  <p class="kicker">Sandwich Classification Benchmark</p>
+  <h1>{question.reportTitle}</h1>
+
+  <dl class="meta">
+    <div>
+      <dt>Edition</dt>
+      <dd>{formatEdition(run.isoWeek)}</dd>
+    </div>
+    <div>
+      <dt>Published</dt>
+      <dd>{formatDate(run.finishedAt)}</dd>
+    </div>
+    <div>
+      <dt>Prepared by</dt>
+      <dd>Sandwich Classification Benchmark</dd>
+    </div>
+    <div>
+      <dt>Document</dt>
+      <dd class="tabular">{documentReference(run.runId, question.id)}</dd>
+    </div>
+  </dl>
+
+  {
+    run.isMock && (
+      <p class="notice" role="note">
+        <strong>Sample data.</strong> This edition was generated from recorded fixtures rather than
+        live provider calls. The figures below are illustrative and describe no real model.
+      </p>
+    )
+  }
+
+  {
+    archived && (
+      <p class="notice archived" role="note">
+        <strong>Archived edition.</strong> This is a historical record. The current edition is
+        published on the report page.
+      </p>
+    )
+  }
+
+  <blockquote class="research-question">
+    <p class="research-question-label">Research question</p>
+    <p class="research-question-text">{asked}</p>
+  </blockquote>
+</header>
+
+<style>
+  .report-masthead {
+    margin-bottom: var(--space-xl);
+  }
+
+  .kicker {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  h1 {
+    margin-bottom: var(--space-m);
+    max-width: 22ch;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m) var(--space-xl);
+    margin: 0 0 var(--space-m);
+    padding: var(--space-s) 0;
+    border-top: var(--hairline) solid var(--rule);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .meta div {
+    min-width: 0;
+  }
+
+  dt {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: var(--space-3xs);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .notice {
+    padding: var(--space-2xs) var(--space-s);
+    border-left: 3px solid var(--accent);
+    background: var(--surface-sunken);
+    font-size: var(--step--1);
+    margin: 0 0 var(--space-m);
+  }
+
+  .notice.archived {
+    border-left-color: var(--muted);
+  }
+
+  .research-question {
+    margin: 0;
+    padding: var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--text-strong);
+  }
+
+  .research-question-label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .research-question-text {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--text-strong);
+    margin: 0;
+  }
+</style>

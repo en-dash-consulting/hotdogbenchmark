@@ -32,4 +32,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | [Learn pages: how it works, methodology and caveats, add a model](./learn-pages-how-it-works-fce91e/index.md) | pending |
 | [Performance, accessibility, and SEO hardening](./performance-accessibility-and-6f906c/index.md) | pending |
 | [Report pages: executive summary, KPI tiles, and per-model vendor profiles for each question](./report-pages-executive-summary-255024/index.md) | pending |
-| [Site foundation: Astro scaffold, analyst-report design system, theming, and layout shell](./site-foundation-astro-scaffold-9d9cc8/index.md) | pending |
+| [Site foundation: Astro scaffold, analyst-report design system, theming, and layout shell](./site-foundation-astro-scaffold-9d9cc8/index.md) | completed |

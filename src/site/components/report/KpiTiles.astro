@@ -1,0 +1,177 @@
+---
+/**
+ * The KPI row.
+ *
+ * Five tiles, each with a week-over-week delta when a prior edition exists and
+ * nothing at all when one does not — an empty delta slot is better than a
+ * placeholder implying a comparison that cannot be made.
+ *
+ * Deltas are labelled with direction words as well as arrows, so the change is
+ * legible to a screen reader and in forced-colors mode.
+ */
+import { formatDuration, formatInteger, formatPercent, NOT_REPORTED } from '../../lib/format.ts'
+import { complianceRate, consensusOf } from '../../lib/prose.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  results: ModelResult[]
+  previous?: ModelResult[] | null
+}
+
+const { results, previous = null } = Astro.props
+
+const answering = results.filter((r) => r.samples.length > 0)
+const consensus = consensusOf(results)
+
+const medianOf = (entries: ModelResult[], pick: (r: ModelResult) => number | null | undefined) => {
+  const values = entries.map(pick).filter((v): v is number => v != null)
+  if (values.length === 0) return null
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!
+}
+
+const latency = medianOf(answering, (r) => r.aggregate.totalMs?.median)
+const outputTokens = medianOf(answering, (r) => r.aggregate.outputTokens?.median)
+const compliance = complianceRate(answering)
+
+const priorAnswering = previous?.filter((r) => r.samples.length > 0) ?? null
+const priorLatency = priorAnswering
+  ? medianOf(priorAnswering, (r) => r.aggregate.totalMs?.median)
+  : null
+const priorTokens = priorAnswering
+  ? medianOf(priorAnswering, (r) => r.aggregate.outputTokens?.median)
+  : null
+const priorCompliance = priorAnswering ? complianceRate(priorAnswering) : null
+
+/** A delta, or null when there is nothing to compare against. */
+function delta(
+  current: number | null,
+  prior: number | null,
+  format: (v: number) => string,
+  lowerIsBetter = false,
+): { text: string; direction: 'up' | 'down' | 'flat' } | null {
+  if (current == null || prior == null) return null
+  const difference = current - prior
+  if (Math.abs(difference) < 1e-9) return { text: 'unchanged', direction: 'flat' }
+  const direction = difference > 0 ? 'up' : 'down'
+  const word = direction === 'up' ? 'up' : 'down'
+  // "Better" is not asserted; the reader is told the direction and the unit.
+  void lowerIsBetter
+  return { text: `${word} ${format(Math.abs(difference))}`, direction }
+}
+
+const tiles = [
+  {
+    label: 'Models evaluated',
+    value: String(answering.length),
+    sub:
+      results.length > answering.length ? `${results.length - answering.length} unavailable` : null,
+    delta: null,
+  },
+  {
+    label: 'Consensus position',
+    value: consensus.verdict
+      ? consensus.verdict === 'yes'
+        ? 'Affirmative'
+        : consensus.verdict === 'no'
+          ? 'Negative'
+          : 'Non-committal'
+      : 'None',
+    sub: consensus.verdict ? `${formatPercent(consensus.share)} of the field` : 'Field divided',
+    delta: null,
+  },
+  {
+    label: 'Median latency',
+    value: latency == null ? NOT_REPORTED : formatDuration(latency),
+    sub: null,
+    delta: delta(latency, priorLatency, formatDuration, true),
+  },
+  {
+    label: 'Median output tokens',
+    value: outputTokens == null ? NOT_REPORTED : formatInteger(outputTokens),
+    sub: null,
+    delta: delta(outputTokens, priorTokens, (v) => formatInteger(v), true),
+  },
+  {
+    label: 'Instruction compliance',
+    value: compliance == null ? NOT_REPORTED : formatPercent(compliance),
+    sub: null,
+    delta: delta(compliance, priorCompliance, (v) => formatPercent(v)),
+  },
+]
+---
+
+<section aria-labelledby="kpi-heading" class="kpi-section">
+  <h2 id="kpi-heading" class="visually-hidden">Key performance indicators</h2>
+  <ul class="kpi-row">
+    {
+      tiles.map((tile) => (
+        <li class="kpi">
+          <p class="kpi-label">{tile.label}</p>
+          <p class="kpi-value tabular">{tile.value}</p>
+          {tile.sub && <p class="kpi-sub">{tile.sub}</p>}
+          {tile.delta && (
+            <p class:list={['kpi-delta', tile.delta.direction]}>
+              <span aria-hidden="true">
+                {tile.delta.direction === 'up' ? '▲' : tile.delta.direction === 'down' ? '▼' : '—'}
+              </span>
+              <span>{tile.delta.text} vs prior edition</span>
+            </p>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .kpi-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-s);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .kpi {
+    padding: var(--space-s);
+    background: var(--surface);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .kpi-label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    color: var(--text-strong);
+    margin: 0;
+    line-height: var(--leading-tight);
+  }
+
+  .kpi-sub,
+  .kpi-delta {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin: var(--space-3xs) 0 0;
+  }
+
+  .kpi-delta {
+    display: flex;
+    gap: var(--space-3xs);
+    align-items: baseline;
+  }
+</style>
