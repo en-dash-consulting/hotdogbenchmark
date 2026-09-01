@@ -1,0 +1,2 @@
+data: {"candidates":[],"promptFeedback":{"blockReason":"SAFETY"},"usageMetadata":{"promptTokenCount":11,"totalTokenCount":11},"modelVersion":"gemini-3.7-flash"}
+

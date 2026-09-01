@@ -23,7 +23,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Implement Anthropic adapter as the reference implementation](./implement-anthropic-adapter-as-29febc.md) | pending |
+| [Implement Anthropic adapter as the reference implementation](./implement-anthropic-adapter-as-29febc.md) | in_progress |
 | [Implement DeepSeek adapter](./implement-deepseek-adapter-6b3922.md) | pending |
 | [Implement Google Gemini adapter](./implement-google-gemini-adapter-1cdf15.md) | pending |
 | [Implement hosted Meta Llama adapter via Groq or Together](./implement-hosted-meta-llama-6e98e3.md) | pending |

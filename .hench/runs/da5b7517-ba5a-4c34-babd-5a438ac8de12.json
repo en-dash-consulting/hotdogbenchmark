@@ -1,0 +1,28 @@
+{
+  "id": "da5b7517-ba5a-4c34-babd-5a438ac8de12",
+  "taskId": "86fb9a65-080e-408d-8eae-b984e8cfa71e",
+  "taskTitle": "Implement timing instrumentation and document cross-provider usage normalization",
+  "startedAt": "2026-09-01T21:36:20.540Z",
+  "finishedAt": "2026-09-01T21:36:20.540Z",
+  "status": "completed",
+  "turns": 15,
+  "summary": "timing.ts measure/markFirstToken/normalizeUsage + docs/usage-normalization.md with per-provider table skeleton",
+  "tokenUsage": {
+    "input": 30,
+    "output": 14883,
+    "cacheCreationInput": 36160,
+    "cacheReadInput": 4607763
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 30,
+    "output": 14883,
+    "cached": 4643923,
+    "total": 4658836
+  }
+}

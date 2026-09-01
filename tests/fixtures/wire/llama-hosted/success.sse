@@ -1,0 +1,10 @@
+data: {"id":"llama-together-example","object":"chat.completion.chunk","created":1788298852,"model":"meta-llama/Llama-3.3-70B-Instruct-Turbo","choices":[{"index":0,"delta":{"role":"assistant","content":""},"finish_reason":null}]}
+
+data: {"id":"llama-together-example","object":"chat.completion.chunk","created":1788298852,"model":"meta-llama/Llama-3.3-70B-Instruct-Turbo","choices":[{"index":0,"delta":{"content":"No"},"finish_reason":null}]}
+
+data: {"id":"llama-together-example","object":"chat.completion.chunk","created":1788298852,"model":"meta-llama/Llama-3.3-70B-Instruct-Turbo","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: {"id":"llama-together-example","object":"chat.completion.chunk","created":1788298852,"model":"meta-llama/Llama-3.3-70B-Instruct-Turbo","choices":[],"usage":{"prompt_tokens":18,"completion_tokens":1,"total_tokens":19}}
+
+data: [DONE]
+

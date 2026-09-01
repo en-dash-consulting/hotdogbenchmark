@@ -8,6 +8,7 @@
  */
 import { configuredProviders, loadLocalEnv } from './env.ts'
 import { validateAllRuns, writeManifest } from './data/index.ts'
+import { runSmoke } from './cli/smoke.ts'
 
 const USAGE = `hotdogbenchmark — ask every model whether a hot dog is a sandwich
 
@@ -19,6 +20,7 @@ Commands:
   providers           List providers and whether a key is configured
   data validate       Check every file under data/ against the schema
   data index          Regenerate data/index.json from the committed run files
+  smoke               Make one live call to one provider and print the result
   help                Show this message
 
 Options for \`run\`:
@@ -30,6 +32,10 @@ Options for \`run\`:
   --models <ids>      Comma-separated model ids; default is every enabled model
   --questions <ids>   Comma-separated question ids; default is every enabled question
   --out <path>        Override the output file path
+
+Options for \`smoke\`:
+  --provider <id>     Which provider to call (required)
+  --prompt <text>     Override the question asked
 
 Exit codes:
   0  success (at least one model answered)
@@ -51,6 +57,14 @@ function printProviders(): void {
   if (count === 0) {
     console.log('Run `npm run bench -- run --mock` to try the pipeline with no keys at all.')
   }
+}
+
+/** Read `--flag value` from argv, or undefined. */
+function flagValue(argv: string[], flag: string): string | undefined {
+  const index = argv.indexOf(flag)
+  if (index === -1) return undefined
+  const value = argv[index + 1]
+  return value === undefined || value.startsWith('--') ? undefined : value
 }
 
 /**
@@ -106,6 +120,15 @@ export async function main(argv: string[]): Promise<number> {
 
     case 'data':
       return runDataCommand(argv[1])
+
+    case 'smoke': {
+      const provider = flagValue(argv, '--provider')
+      if (!provider) {
+        console.error('Usage: npm run bench:smoke -- --provider <id>')
+        return 2
+      }
+      return runSmoke({ provider, prompt: flagValue(argv, '--prompt') })
+    }
 
     default:
       console.error(`Unknown command: ${command}\n`)

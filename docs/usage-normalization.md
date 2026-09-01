@@ -47,21 +47,59 @@ efficient for free.
 
 ## Per-provider mapping
 
-Filled in as each adapter lands. The **Reasoning inside output?** column is the one that changes
-how you read a chart.
+**Verified** means a live call was made and the numbers below were read off the response.
+**Documented** means the mapping follows the vendor's published API reference but no live call has
+been made yet — replace it with a real capture via `npm run bench:record -- --provider <id>` and
+change the status.
 
-| Provider                 | Input     | Output    | Total     | Reasoning | Cached input | Reasoning inside output? | Streams (ttfb)? |
-| ------------------------ | --------- | --------- | --------- | --------- | ------------ | ------------------------ | --------------- |
-| Anthropic                | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| OpenAI                   | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| Google Gemini            | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| xAI                      | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| Mistral                  | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| DeepSeek                 | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
-| Meta Llama (Together AI) | _pending_ | _pending_ | _pending_ | _pending_ | _pending_    | _pending_                | _pending_       |
+| Provider                 | Status                  | Input                | Output                 | Total                | Reasoning                                    | Cached input                          | Reasoning inside output?                                                      | Streams (ttfb)? |
+| ------------------------ | ----------------------- | -------------------- | ---------------------- | -------------------- | -------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- | --------------- |
+| Anthropic                | Documented              | `input_tokens`       | `output_tokens`        | derived              | — (not reported)                             | `cache_read_input_tokens`             | n/a — no separate count; thinking tokens are inside `output_tokens`           | Yes             |
+| OpenAI                   | Documented              | `usage.input_tokens` | `usage.output_tokens`  | `usage.total_tokens` | `output_tokens_details.reasoning_tokens`     | `input_tokens_details.cached_tokens`  | **Yes** — also broken out separately                                          | Yes             |
+| Google Gemini            | Documented              | `promptTokenCount`   | `candidatesTokenCount` | `totalTokenCount`    | `thoughtsTokenCount`                         | `cachedContentTokenCount`             | **No** — `totalTokenCount` includes thoughts, `candidatesTokenCount` does not | Yes             |
+| xAI                      | **Verified 2026-09-01** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_tokens_details.cached_tokens` | **No** — see below                                                            | Yes             |
+| Mistral                  | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                           | Yes             |
+| DeepSeek                 | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_cache_hit_tokens`             | **No** — total exceeds prompt + completion                                    | Yes             |
+| Meta Llama (Together AI) | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                           | Yes             |
 
-Every adapter's pull request is expected to fill in its own row. The PR template asks for it, and
-a stale row here is worse than an empty one, because a reader will believe it.
+Each adapter's pull request is expected to keep its own row honest. A stale row here is worse
+than a blank one, because a reader will believe it.
+
+### The xAI measurement, in full
+
+This is the clearest illustration of why this document exists, so it is written out rather than
+summarized. A live call on 2026-09-01 asking `grok-4.6` "Is a hot dog a sandwich? One word
+answer." returned:
+
+```json
+{
+  "prompt_tokens": 647,
+  "completion_tokens": 1,
+  "total_tokens": 1295,
+  "prompt_tokens_details": { "cached_tokens": 640 },
+  "completion_tokens_details": { "reasoning_tokens": 647 }
+}
+```
+
+Three things follow from those five numbers.
+
+**The total is not the sum of its parts.** 647 + 1 = 648, but the billed total is 1295. The
+difference is exactly the reasoning tokens. Deriving `totalTokens` as input + output — the
+obvious implementation — would understate this call by half. That is why the schema stores the
+vendor's own total and only derives one when the vendor sends none.
+
+**A one-word answer can cost 647 output-side tokens.** `completion_tokens` is 1, and it is
+correct: the model said "No". The other 647 went on deciding to. Any chart that ranks models by
+output tokens is measuring verbosity for some vendors and thinking for others.
+
+**Time-to-first-token means the first _content_ token.** This call's stream sent
+`delta.reasoning_content` chunks for about ten seconds before the first `delta.content` chunk, so
+its ttfb is ~9,800 ms for a two-letter answer. The adapter deliberately does not mark reasoning
+chunks as the first token: doing so would report a ttfb near zero for a model that had said
+nothing yet.
+
+The same prompt on two consecutive calls returned "Yes" and then "No". That is not a bug in
+anything; it is why the benchmark takes several samples and reports a majority verdict.
 
 ## Timing
 

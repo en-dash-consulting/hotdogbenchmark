@@ -1,0 +1,9 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_example","object":"response","model":"gpt-5.6-sol","status":"in_progress"}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":5,"item_id":"msg_example","output_index":0,"content_index":0,"delta":"No"}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":9,"response":{"id":"resp_example","object":"response","model":"gpt-5.6-sol","status":"completed","usage":{"input_tokens":15,"input_tokens_details":{"cached_tokens":0},"output_tokens":193,"output_tokens_details":{"reasoning_tokens":192},"total_tokens":208}}}
+
