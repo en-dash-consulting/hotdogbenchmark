@@ -45,23 +45,22 @@ The web package forms a hub topology with `web-viewer` at the centre:
 
 Measured zone metrics are not reproduced here — they change with every analysis. Run `ndx analyze --deep .` and read `.sourcevision/zones.json`; per-package policies live in `packages/*/CLAUDE.md`.
 
-
 ### Package conventions
 
-| Convention | Pattern | Notes |
-|-----------|---------|-------|
-| Naming | All packages are `@n-dx/` scoped (`@n-dx/core`, `@n-dx/rex`, `@n-dx/sourcevision`, `@n-dx/hench`, `@n-dx/llm-client`, `@n-dx/web`) | The unscoped `rex` / `hench` / `sourcevision` / `sv` names are **bin aliases**, not package names — they exist so the CLIs can be invoked directly after install, not for `npx <name>`. Changesets must use the scoped name — an unscoped name fails `changeset status` with "not in the workspace" |
-| Subpath exports | `"./dist/*": "./dist/*"` | Intentional escape hatch — not public API, no stability guarantee. See `PACKAGE_GUIDELINES.md` for acceptable/prohibited uses |
+| Convention      | Pattern                                                                                                                            | Notes                                                                                                                                                                                                                                                                                               |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Naming          | All packages are `@n-dx/` scoped (`@n-dx/core`, `@n-dx/rex`, `@n-dx/sourcevision`, `@n-dx/hench`, `@n-dx/llm-client`, `@n-dx/web`) | The unscoped `rex` / `hench` / `sourcevision` / `sv` names are **bin aliases**, not package names — they exist so the CLIs can be invoked directly after install, not for `npx <name>`. Changesets must use the scoped name — an unscoped name fails `changeset status` with "not in the workspace" |
+| Subpath exports | `"./dist/*": "./dist/*"`                                                                                                           | Intentional escape hatch — not public API, no stability guarantee. See `PACKAGE_GUIDELINES.md` for acceptable/prohibited uses                                                                                                                                                                       |
 
 ## Assistant Instruction Files
 
 `ndx init` generates per-assistant instruction files from a shared source of truth (`packages/core/assistant-assets/project-guidance.md`). Each file has a defined role:
 
-| File | Role | Generated from |
-|------|------|----------------|
-| `AGENTS.md` | **Canonical shared guidance surface.** Read by Codex and any future assistants. Contains project docs, workflow, skill inventory, and MCP tool reference derived from the asset manifest. | `project-guidance.md` (filtered) + manifest-derived sections + `codex-troubleshooting.md` |
-| `CLAUDE.md` | **Claude-facing bridge.** Read by Claude Code on startup. Imports the same shared guidance plus Claude-specific deep sections (zone governance, gateway details, concurrency contract). | `project-guidance.md` + `claude-addendum.md` |
-| `.codex/config.toml` | **Codex MCP configuration.** Auto-read by Codex — no manual registration required. | Manifest MCP server descriptors |
+| File                 | Role                                                                                                                                                                                      | Generated from                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `AGENTS.md`          | **Canonical shared guidance surface.** Read by Codex and any future assistants. Contains project docs, workflow, skill inventory, and MCP tool reference derived from the asset manifest. | `project-guidance.md` (filtered) + manifest-derived sections + `codex-troubleshooting.md` |
+| `CLAUDE.md`          | **Claude-facing bridge.** Read by Claude Code on startup. Imports the same shared guidance plus Claude-specific deep sections (zone governance, gateway details, concurrency contract).   | `project-guidance.md` + `claude-addendum.md`                                              |
+| `.codex/config.toml` | **Codex MCP configuration.** Auto-read by Codex — no manual registration required.                                                                                                        | Manifest MCP server descriptors                                                           |
 
 **Design invariant:** Both `AGENTS.md` and `CLAUDE.md` derive their base project documentation (Packages, Architecture, Commands, Key Files) from `project-guidance.md`. Vendor-specific additions are layered on top — never inlined into the shared template. This prevents instruction drift between assistant surfaces.
 
@@ -82,22 +81,22 @@ Run `ndx <command> --help` for full usage, or see `README.md` for the command re
 
 ## Key Files
 
-| Path | Purpose |
-|------|---------|
-| `.rex/prd_tree/` | PRD storage root — slug-based folder tree; one directory per item (epic/feature/task) containing `index.md` |
-| `.rex/prd.md` | (Legacy) flat Markdown PRD; migration source for `rex migrate-to-folder-tree`. Absent after migration. |
-| `.rex/prd.json` | (Legacy) JSON PRD; migration source when neither `prd.md` nor the tree exists. |
-| `.rex/execution-log.jsonl` | Append-only structured activity log (rotates to `.rex/execution-log.1.jsonl` at 1 MB) |
-| `.rex/archive.json` | Pruned/reshaped item archive (written by `rex prune` and `rex reshape`; max 100 batches, auto-trimmed; safe to delete — only used for item recovery/audit) |
-| `.hench/usage-cursors/` | Per-session watermarks recording how far through a Claude Code transcript `hench record` has already attributed tokens (machine-local; safe to delete) |
-| `.n-dx.json` | Project-level config overrides (web.port, llm.vendor, llm.claude.model, llm.codex.model) |
-| `tests/e2e/architecture-policy.test.js` | Spawn-only enforcement, intra-package layering, zone-cycle detection |
-| `tests/e2e/domain-isolation.test.js` | Gateway enforcement, domain layer isolation, foundation tier boundary |
-| `tests/e2e/mcp-transport.test.js` | MCP HTTP transport end-to-end validation (session management, tool calls) |
-| `tests/e2e/integration-coverage-policy.test.js` | Minimum integration test file count, cross-package contract verification |
-| `tests/e2e/cli-dev.test.js` | **Required test** — see [TESTING.md](TESTING.md#required-tests) |
-| `tests/integration/scheduler-startup.test.js` | **Required test** — see [TESTING.md](TESTING.md#required-tests) |
-| `OPEN_SOURCE_SCOPE.md` | Licensing boundaries, included/excluded components, and contribution expectations |
+| Path                                            | Purpose                                                                                                                                                    |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.rex/prd_tree/`                                | PRD storage root — slug-based folder tree; one directory per item (epic/feature/task) containing `index.md`                                                |
+| `.rex/prd.md`                                   | (Legacy) flat Markdown PRD; migration source for `rex migrate-to-folder-tree`. Absent after migration.                                                     |
+| `.rex/prd.json`                                 | (Legacy) JSON PRD; migration source when neither `prd.md` nor the tree exists.                                                                             |
+| `.rex/execution-log.jsonl`                      | Append-only structured activity log (rotates to `.rex/execution-log.1.jsonl` at 1 MB)                                                                      |
+| `.rex/archive.json`                             | Pruned/reshaped item archive (written by `rex prune` and `rex reshape`; max 100 batches, auto-trimmed; safe to delete — only used for item recovery/audit) |
+| `.hench/usage-cursors/`                         | Per-session watermarks recording how far through a Claude Code transcript `hench record` has already attributed tokens (machine-local; safe to delete)     |
+| `.n-dx.json`                                    | Project-level config overrides (web.port, llm.vendor, llm.claude.model, llm.codex.model)                                                                   |
+| `tests/e2e/architecture-policy.test.js`         | Spawn-only enforcement, intra-package layering, zone-cycle detection                                                                                       |
+| `tests/e2e/domain-isolation.test.js`            | Gateway enforcement, domain layer isolation, foundation tier boundary                                                                                      |
+| `tests/e2e/mcp-transport.test.js`               | MCP HTTP transport end-to-end validation (session management, tool calls)                                                                                  |
+| `tests/e2e/integration-coverage-policy.test.js` | Minimum integration test file count, cross-package contract verification                                                                                   |
+| `tests/e2e/cli-dev.test.js`                     | **Required test** — see [TESTING.md](TESTING.md#required-tests)                                                                                            |
+| `tests/integration/scheduler-startup.test.js`   | **Required test** — see [TESTING.md](TESTING.md#required-tests)                                                                                            |
+| `OPEN_SOURCE_SCOPE.md`                          | Licensing boundaries, included/excluded components, and contribution expectations                                                                          |
 
 > **PRD file layout.** Subtasks are encoded as sections within the parent task's `index.md` (not separate directories). `.rex/.cache/prd.json` is an ephemeral derived file generated only while `ndx start` is running — do not read it from code outside the web server. See [`docs/architecture/prd-folder-tree-schema.md`](docs/architecture/prd-folder-tree-schema.md) for the full naming-convention, field schema, and serializer/parser contracts.
 
@@ -199,43 +198,55 @@ Two MCP servers provide structured access to project data. They are configured i
 ### 1) Malformed Codex output (parse fallback)
 
 Symptoms:
+
 - Task run does not crash, but summary contains raw payload text.
 - Warnings appear for missing/unknown block types.
 
 Verify:
+
 ```sh
 rg -n "normalizeCodexResponse|Codex block missing type|Unknown Codex block type" packages/hench/src/agent/lifecycle/cli-loop.ts
 ```
+
 Expected:
+
 - Matches exist for `normalizeCodexResponse`.
 - Warning strings are present: `Codex block missing type; ignoring block.` and `Unknown Codex block type "..."`
 
 ```sh
 pnpm --filter hench exec vitest run tests/unit/agent/codex-normalization.test.ts
 ```
+
 Expected:
+
 - Test names include `truncated JSON payload falls back to plain text` and `applies deterministic fallback behavior for malformed fixtures`.
 - Suite passes without throwing on malformed payloads.
 
 Operational signal during a run:
+
 - `[Warn] Codex block missing type; ignoring block.`
 - `[Warn] Unknown Codex block type "<type>" ignored.`
 
 Remediation:
+
 - If you wrap `codex exec`, ensure blocks include a `type` and text fields (`text`, `content`, `delta`, or `output_text`).
 - Plain text output is supported; malformed JSON is treated as plain text fallback.
 
 ### 2) Missing usage fields / token mismatch in Codex mode
 
 Symptoms:
+
 - `hench show` reports `0 in / 0 out` despite a non-empty response.
 - Token budget behavior looks lower than expected for that turn.
 
 Verify:
+
 ```sh
 rg -n "mapCodexUsageToTokenUsage|codex_usage_missing|input_tokens|prompt_tokens|completion_tokens|total_tokens" packages/hench/src/agent/lifecycle/token-usage.ts packages/hench/src/agent/lifecycle/cli-loop.ts
 ```
+
 Expected:
+
 - Mapping exists for:
   - input: `input_tokens | prompt_tokens | input`
   - output: `output_tokens | completion_tokens | output`
@@ -246,7 +257,9 @@ Expected:
 ```sh
 pnpm --filter hench exec vitest run tests/unit/agent/token-usage.test.ts
 ```
+
 Expected:
+
 - `mapCodexUsageToTokenUsage` cases pass, including:
   - nested `response.usage` mapping
   - zeroed usage with `codex_usage_missing` when usage is absent/empty
@@ -254,12 +267,15 @@ Expected:
 ```sh
 ndx hench show <run-id> --format=json .
 ```
+
 Expected when usage fields are missing:
+
 - `tokenUsage.input = 0`
 - `tokenUsage.output = 0`
 - `turnTokenUsage` still records the turn with zeros.
 
 Remediation:
+
 - Prefer emitting `usage.input_tokens` and `usage.output_tokens` from Codex-compatible wrappers.
 - If upstream only provides `prompt_tokens`/`completion_tokens`, those are already mapped.
 - If no usage fields are available, zero fallback is intentional; treat the warning as a data-quality signal.

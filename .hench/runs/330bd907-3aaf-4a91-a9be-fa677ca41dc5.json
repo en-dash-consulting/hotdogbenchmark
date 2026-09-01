@@ -1,0 +1,28 @@
+{
+  "id": "330bd907-3aaf-4a91-a9be-fa677ca41dc5",
+  "taskId": "2108dbe8-4cc0-4d85-8278-8431554ee55f",
+  "taskTitle": "ndx-capture: Hot dog benchmark project plan (6 epics, 22 features, 60 tasks)",
+  "startedAt": "2026-09-01T14:36:48-04:00",
+  "finishedAt": "2026-09-01T18:57:49.131Z",
+  "status": "completed",
+  "turns": 154,
+  "summary": "Captured full PRD tree for the sandwich-classification benchmark site: foundation, runner, automation, analyst-grade static site, docs/launch, and deferred SSO/BYOK epic",
+  "tokenUsage": {
+    "input": 9362,
+    "output": 1173166,
+    "cacheCreationInput": 2538863,
+    "cacheReadInput": 17113308
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 9362,
+    "output": 1173166,
+    "cached": 19652171,
+    "total": 20834699
+  }
+}

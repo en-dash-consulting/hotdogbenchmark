@@ -1,0 +1,35 @@
+{
+  "name": "hotdogbenchmark",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A weekly cross-provider LLM benchmark that asks every major model whether a hot dog is a sandwich, and publishes the results as a straight-faced industry analyst report.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
+    "build": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
+    "bench": "echo \"The benchmark runner is not implemented yet. Usage will be: npm run bench -- run [--mock]\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.0",
+    "@types/node": "^22.7.0",
+    "eslint": "^9.11.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.7.0",
+    "vitest": "^2.1.1",
+    "prettier-plugin-astro": "^0.14.1"
+  }
+}

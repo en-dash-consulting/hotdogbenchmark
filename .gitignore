@@ -1,3 +1,14 @@
 .n-dx.local.json
 .rex/n-dx_workflow.md
 .rex/execution-log*.jsonl
+
+# Dependencies and build output
+node_modules/
+dist/
+src/site/dist/
+src/site/.astro/
+coverage/
+*.tsbuildinfo
+
+# OS / editor noise
+.DS_Store

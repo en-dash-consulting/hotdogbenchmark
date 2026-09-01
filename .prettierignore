@@ -1,0 +1,13 @@
+node_modules
+dist
+src/site/dist
+src/site/.astro
+coverage
+data/runs
+data/index.json
+.rex
+.hench
+.sourcevision
+.claude
+.agents
+tests/fixtures
