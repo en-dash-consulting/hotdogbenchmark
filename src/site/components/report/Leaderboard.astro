@@ -1,0 +1,120 @@
+---
+/**
+ * The ranked leaderboard.
+ *
+ * A semantic table with rank, movement since the prior edition, and the scores
+ * that produced the ranking. Movement is conveyed by an arrow **and** a word,
+ * so it survives a screen reader and forced-colors mode.
+ */
+import VerdictBadge from './VerdictBadge.astro'
+import { MOVEMENT_GLYPH, MOVEMENT_LABEL, rankWithDeltas } from '../../lib/rank.ts'
+import { formatDuration, formatInteger } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  results: ModelResult[]
+  previous?: ModelResult[] | null
+  caption: string
+}
+
+const { results, previous = null, caption } = Astro.props
+const ranked = rankWithDeltas(results, previous)
+---
+
+<section aria-labelledby="leaderboard-heading" class="leaderboard">
+  <h2 id="leaderboard-heading">Vendor standings</h2>
+
+  <div class="table-scroll">
+    <table>
+      <caption>{caption}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="numeric">Rank</th>
+          <th scope="col">Movement</th>
+          <th scope="col">Vendor</th>
+          <th scope="col">Position</th>
+          <th scope="col" class="numeric">Decisiveness</th>
+          <th scope="col" class="numeric">Efficiency</th>
+          <th scope="col" class="numeric">Median latency</th>
+          <th scope="col" class="numeric">Output tokens</th>
+          <th scope="col" class="numeric">Composite</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ranked.map((entry) => (
+            <tr>
+              <td class="numeric rank">{entry.rank}</td>
+              <td class:list={['movement', entry.movement]}>
+                {MOVEMENT_GLYPH[entry.movement] && (
+                  <span aria-hidden="true">{MOVEMENT_GLYPH[entry.movement]}</span>
+                )}
+                <span>
+                  {entry.delta !== null && entry.delta !== 0
+                    ? `${MOVEMENT_LABEL[entry.movement]} ${Math.abs(entry.delta)}`
+                    : MOVEMENT_LABEL[entry.movement]}
+                </span>
+              </td>
+              <th scope="row">{entry.result.displayName}</th>
+              <td>
+                <VerdictBadge verdict={entry.result.aggregate.verdict} />
+              </td>
+              <td class="numeric">{entry.decisiveness.toFixed(2)}</td>
+              <td class="numeric">{entry.efficiency.toFixed(2)}</td>
+              <td class="numeric">{formatDuration(entry.result.aggregate.totalMs?.median)}</td>
+              <td class="numeric">{formatInteger(entry.result.aggregate.outputTokens?.median)}</td>
+              <td class="numeric composite">{entry.composite.toFixed(2)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="footnote">
+    Ranked by composite score. Ties share a rank and the following rank skips; within a tie the
+    order is alphabetical and carries no meaning. Movement compares against the immediately prior
+    edition; a vendor with no prior appearance is marked as a new entry rather than as having risen.
+    Score definitions are on the <a href={routes.methodology()}>methodology page</a>.
+  </p>
+</section>
+
+<style>
+  .leaderboard {
+    margin-block: var(--space-xl);
+  }
+
+  .rank {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .composite {
+    font-weight: 600;
+  }
+
+  .movement {
+    display: flex;
+    gap: var(--space-3xs);
+    align-items: baseline;
+    white-space: nowrap;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .movement.up {
+    color: var(--verdict-yes);
+  }
+
+  .movement.down {
+    color: var(--verdict-no);
+  }
+
+  .footnote {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-2xs);
+    max-width: var(--measure);
+  }
+</style>

@@ -1,0 +1,28 @@
+{
+  "id": "d768a1ce-b02d-4b58-9859-5917646ef60b",
+  "taskId": "c92c6196-5164-4b5a-84d6-a0c47f8c3879",
+  "taskTitle": "Generate a static archive page per run",
+  "startedAt": "2026-09-01T22:28:01.957Z",
+  "finishedAt": "2026-09-01T22:28:01.957Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Build-time SVG charts with table fallbacks; archive and history pages",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

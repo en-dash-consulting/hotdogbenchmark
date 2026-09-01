@@ -15,6 +15,12 @@ import {
   keyFindings,
   vendorVerdictLine,
 } from '../../src/site/lib/prose.ts'
+import {
+  MOVEMENT_GLYPH,
+  MOVEMENT_LABEL,
+  rankModels,
+  rankWithDeltas,
+} from '../../src/site/lib/rank.ts'
 import type { ModelResult, Sample, Verdict } from '../../src/schema/run.ts'
 
 function sample(verdict: Verdict, followed = true, totalMs = 900, outputTokens = 1): Sample {
@@ -410,5 +416,87 @@ describe('vendorVerdictLine', () => {
     for (const entry of field) {
       expect(vendorVerdictLine(entry, field)).not.toMatch(/undefined|NaN/)
     }
+  })
+})
+
+describe('rankModels and rankWithDeltas', () => {
+  it('ranks by composite score descending', () => {
+    const fast = result('Fast', ['yes', 'yes', 'yes'], { totalMs: 100 })
+    const slow = result('Slow', ['other'], { followed: false, totalMs: 9000 })
+    const ranked = rankModels([slow, fast])
+    expect(ranked.map((r) => r.result.displayName)).toEqual(['Fast', 'Slow'])
+    expect(ranked.map((r) => r.rank)).toEqual([1, 2])
+  })
+
+  it('shares a rank on a tie and skips the next, as any standings table does', () => {
+    const a = result('A', ['yes'], { totalMs: 500 })
+    const b = result('B', ['yes'], { totalMs: 500 })
+    const c = result('C', ['other'], { followed: false, totalMs: 9000 })
+    const ranked = rankModels([a, b, c])
+    expect(ranked.map((r) => r.rank)).toEqual([1, 1, 3])
+  })
+
+  it('breaks ties alphabetically so the page is deterministic', () => {
+    const zeta = result('Zeta', ['yes'], { totalMs: 500 })
+    const alpha = result('Alpha', ['yes'], { totalMs: 500 })
+    expect(rankModels([zeta, alpha])[0]?.result.displayName).toBe('Alpha')
+  })
+
+  it('computes rank movement against the prior edition', () => {
+    const previous = [
+      result('A', ['other'], { followed: false, totalMs: 9000 }),
+      result('B', ['yes'], { totalMs: 100 }),
+    ]
+    const current = [
+      result('A', ['yes'], { totalMs: 100 }),
+      result('B', ['other'], { followed: false, totalMs: 9000 }),
+    ]
+    const ranked = rankWithDeltas(current, previous)
+    const a = ranked.find((r) => r.result.displayName === 'A')!
+    const b = ranked.find((r) => r.result.displayName === 'B')!
+    expect(a.movement).toBe('up')
+    expect(a.delta).toBe(1)
+    expect(b.movement).toBe('down')
+    expect(b.delta).toBe(-1)
+  })
+
+  it('marks a model with no prior appearance as new rather than as having risen', () => {
+    // There is no earlier position to have moved from.
+    const ranked = rankWithDeltas([result('New', ['yes'])], [result('Old', ['yes'])])
+    const entry = ranked.find((r) => r.result.displayName === 'New')!
+    expect(entry.movement).toBe('new')
+    expect(entry.delta).toBeNull()
+  })
+
+  it('marks everything new when there is no prior edition at all', () => {
+    const ranked = rankWithDeltas([result('A', ['yes']), result('B', ['no'])], null)
+    expect(ranked.every((r) => r.movement === 'new')).toBe(true)
+  })
+
+  it('reports unchanged when a model holds its position', () => {
+    const field = [result('A', ['yes'], { totalMs: 100 }), result('B', ['no'], { totalMs: 900 })]
+    const ranked = rankWithDeltas(field, field)
+    expect(ranked.every((r) => r.movement === 'unchanged' && r.delta === 0)).toBe(true)
+  })
+
+  it('handles an empty field', () => {
+    expect(rankModels([])).toEqual([])
+    expect(rankWithDeltas([], null)).toEqual([])
+  })
+
+  it('labels every movement in words, so no meaning rests on a glyph', () => {
+    for (const movement of ['up', 'down', 'unchanged', 'new', 'returning'] as const) {
+      expect(MOVEMENT_LABEL[movement].length, movement).toBeGreaterThan(0)
+    }
+  })
+
+  it('gives new and returning entries no glyph at all', () => {
+    // They have not moved, so an arrow would be wrong, and a star or similar
+    // flourish is out of register for this report — the build-output emoji
+    // check caught exactly that when it was tried.
+    expect(MOVEMENT_GLYPH.new).toBe('')
+    expect(MOVEMENT_GLYPH.returning).toBe('')
+    expect(MOVEMENT_GLYPH.up).not.toBe('')
+    expect(MOVEMENT_GLYPH.down).not.toBe('')
   })
 })

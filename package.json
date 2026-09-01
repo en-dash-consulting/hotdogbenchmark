@@ -10,7 +10,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/pdf.mjs",
+    "build:site": "astro build",
+    "build:pdf": "node scripts/pdf.mjs",
     "bench": "node src/cli.ts",
     "bench:smoke": "node src/cli.ts smoke",
     "bench:record": "node src/cli.ts record",

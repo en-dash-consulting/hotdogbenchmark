@@ -1,0 +1,154 @@
+/*
+ * Print.
+ *
+ * The point of this report format is that it could plausibly be left on a
+ * conference table, so printing has to produce something that survives being
+ * picked up. That means: light theme regardless of the screen setting, no
+ * navigation chrome, expanded link URLs, and — the part that actually matters —
+ * nothing splitting across a page break that should not.
+ */
+
+@media print {
+  /*
+   * Force the light palette. A dark-theme print is a solid black page, and the
+   * printer will happily produce it.
+   */
+  :root,
+  :root[data-theme='dark'] {
+    color-scheme: light;
+
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-sunken: #f4f5f7;
+    --text: #14181f;
+    --text-strong: #0b1a2b;
+    --muted: #4a5464;
+    --faint: #5c6675;
+    --rule: #d5d9e0;
+    --rule-strong: #a9b1bd;
+    --accent: #6f5518;
+    --primary: #12283f;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 18mm 16mm 20mm;
+  }
+
+  /* US Letter is shorter and wider; the same margins work on both. */
+  @page :first {
+    margin-top: 14mm;
+  }
+
+  body {
+    background: #ffffff;
+    font-size: 10.5pt;
+    line-height: 1.45;
+  }
+
+  /* Chrome that means nothing on paper. */
+  .skip-link,
+  .theme-toggle,
+  nav[aria-label='Primary'],
+  .question-switch,
+  .edition-nav,
+  .controls,
+  .chart-data,
+  .sparkline-data,
+  .pdf-download {
+    display: none !important;
+  }
+
+  .masthead-inner {
+    padding-block: 0 4mm;
+  }
+
+  main {
+    padding-block: 0;
+    min-height: 0;
+  }
+
+  /* Expand links to footnoted URLs — a printed link is otherwise dead text. */
+  main a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 8pt;
+    color: #4a5464;
+    word-break: break-all;
+  }
+
+  /* Internal links keep their text; the URL would be meaningless on paper. */
+  main a:not([href^='http'])::after {
+    content: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  /*
+   * Break control. These are the rules that separate a report that prints
+   * from one that prints badly.
+   */
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  tr,
+  .profile,
+  .scorecard,
+  .kpi,
+  figure,
+  blockquote {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  .report-masthead {
+    break-after: avoid;
+  }
+
+  section {
+    break-before: auto;
+  }
+
+  /* Charts sized to the printed column rather than the screen. */
+  .chart-canvas svg,
+  .scorecard svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .profile-grid,
+  .scorecard-grid,
+  .spark-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  /* Surfaces that rely on a background need a rule instead, since most
+     browsers do not print backgrounds by default. */
+  .kpi,
+  .profile,
+  .scorecard,
+  .research-question {
+    border: 0.5pt solid #a9b1bd;
+    background: transparent;
+  }
+
+  .site-footer {
+    border-top: 0.5pt solid #a9b1bd;
+    padding-block: 4mm 0;
+  }
+}

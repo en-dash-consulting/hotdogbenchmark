@@ -11,6 +11,9 @@ import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../components/report/KpiTiles.astro'
 import VendorProfile from '../../components/report/VendorProfile.astro'
 import ResultsTable from '../../components/report/ResultsTable.astro'
+import Quadrant from '../../components/report/Quadrant.astro'
+import Leaderboard from '../../components/report/Leaderboard.astro'
+import Scorecard from '../../components/report/Scorecard.astro'
 import {
   getLatestRun,
   getModelResults,
@@ -55,6 +58,25 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
             <KpiTiles results={results} previous={previousResults} />
             <ExecutiveSummary subject={question.subject} results={results} />
 
+            <Quadrant results={results} title="Sandwich Certainty Quadrant" />
+
+            <Leaderboard
+              results={results}
+              previous={previousResults}
+              caption={`Vendor standings — ${formatEdition(run.isoWeek)} edition`}
+            />
+
+            <section aria-labelledby="scorecards-heading">
+              <h2 id="scorecards-heading">Vendor scorecards</h2>
+              <div class="scorecard-grid">
+                {results
+                  .filter((result) => result.samples.length > 0)
+                  .map((result) => (
+                    <Scorecard result={result} peers={results} />
+                  ))}
+              </div>
+            </section>
+
             <section aria-labelledby="profiles-heading">
               <h2 id="profiles-heading">Vendor profiles</h2>
               <div class="profile-grid">
@@ -68,6 +90,13 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
               results={results}
               caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
             />
+
+            <p class="pdf-download">
+              <a href={routes.reportPdf(question.id)} download>
+                Download this report (PDF)
+              </a>
+              <span class="muted"> — the print edition, generated from this page.</span>
+            </p>
           </>
         )}
       </>
@@ -88,6 +117,19 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
     gap: var(--space-s);
+  }
+
+  .scorecard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: var(--space-s);
+    margin-bottom: var(--space-xl);
+  }
+
+  .pdf-download {
+    padding: var(--space-s);
+    border-top: var(--hairline) solid var(--rule);
+    font-size: var(--step--1);
   }
 
   .empty {

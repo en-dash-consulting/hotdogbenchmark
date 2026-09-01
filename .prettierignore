@@ -11,3 +11,4 @@ data/index.json
 .claude
 .agents
 tests/fixtures
+dist/**/.report-pdf-runid

@@ -28,7 +28,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Analyst-grade report visuals: quadrant chart, leaderboard, scorecards, key findings, and print edition](./analyst-grade-report-visuals-19e13b/index.md) | pending |
-| [History and trends: run archive, week-over-week charts, and flip-flop tracker](./history-and-trends-run-archive-83ed89/index.md) | pending |
+| [History and trends: run archive, week-over-week charts, and flip-flop tracker](./history-and-trends-run-archive-83ed89/index.md) | completed |
 | [Learn pages: how it works, methodology and caveats, add a model](./learn-pages-how-it-works-fce91e/index.md) | pending |
 | [Performance, accessibility, and SEO hardening](./performance-accessibility-and-6f906c/index.md) | pending |
 | [Report pages: executive summary, KPI tiles, and per-model vendor profiles for each question](./report-pages-executive-summary-255024/index.md) | completed |

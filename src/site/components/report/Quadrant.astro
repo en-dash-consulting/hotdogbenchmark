@@ -1,0 +1,225 @@
+---
+/**
+ * The Sandwich Certainty Quadrant.
+ *
+ * A build-time SVG scatter of efficiency (x) against decisiveness (y), with the
+ * four regions named in the register of an analyst quadrant.
+ *
+ * The names are deliberately *not* the famous ones — those are a registered
+ * trademark of a real firm and this is a parody, not an imitation. "Category
+ * Definers", "Rapid Responders", "Considered Voices" and "Emerging
+ * Participants" carry the same weightless authority without borrowing anyone's
+ * marks.
+ *
+ * Labels are placed with a simple collision-avoidance pass: any label that
+ * would overlap one already placed is nudged downward until it does not. With
+ * seven models on a 640×420 canvas that converges immediately, and a label that
+ * cannot be placed cleanly is still readable in the data table below.
+ */
+import ChartFrame from '../charts/ChartFrame.astro'
+import { plotArea, round, scaleLinear } from '../../lib/scale.ts'
+import { scoreModels } from '../../lib/scores.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  results: ModelResult[]
+  title: string
+}
+
+const { results, title } = Astro.props
+
+const BOX = { width: 640, height: 420, padding: { top: 28, right: 24, bottom: 48, left: 56 } }
+const area = plotArea(BOX)
+
+// Only models that produced data are plotted; an errored model has no
+// coordinates. They are listed under the chart instead of being placed at the
+// origin, which would read as a genuine score of zero.
+const scored = scoreModels(results)
+const plotted = scored.filter((entry) => entry.result.samples.length > 0)
+const absent = scored.filter((entry) => entry.result.samples.length === 0)
+
+const median = (values: number[]) => {
+  if (values.length === 0) return 0.5
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!
+}
+
+const crosshairX = median(plotted.map((entry) => entry.efficiency))
+const crosshairY = median(plotted.map((entry) => entry.decisiveness))
+
+const toX = (value: number) =>
+  round(scaleLinear(value, { min: 0, max: 1 }, { start: area.x, end: area.x + area.width }))
+const toY = (value: number) =>
+  round(scaleLinear(value, { min: 0, max: 1 }, { start: area.y + area.height, end: area.y }))
+
+/** Nudge overlapping labels downward until they clear. */
+const placed: Array<{ x: number; y: number }> = []
+const points = plotted.map((entry) => {
+  const x = toX(entry.efficiency)
+  const y = toY(entry.decisiveness)
+  let labelY = y - 8
+  while (placed.some((p) => Math.abs(p.x - x) < 90 && Math.abs(p.y - labelY) < 13)) {
+    labelY += 13
+  }
+  placed.push({ x, y: labelY })
+  return { entry, x, y, labelY, anchor: x > area.x + area.width * 0.7 ? 'end' : 'start' }
+})
+
+const QUADRANTS = [
+  { label: 'Considered Voices', x: 0.02, y: 0.97, align: 'start' },
+  { label: 'Category Definers', x: 0.98, y: 0.97, align: 'end' },
+  { label: 'Emerging Participants', x: 0.02, y: 0.04, align: 'start' },
+  { label: 'Rapid Responders', x: 0.98, y: 0.04, align: 'end' },
+]
+
+const leader = [...plotted].sort((a, b) => b.composite - a.composite)[0]
+const summary =
+  plotted.length === 0
+    ? 'Quadrant chart: no models produced data in this edition.'
+    : `Scatter chart plotting efficiency against decisiveness for ${plotted.length} models. ` +
+      `${leader?.result.displayName} holds the strongest combined position at decisiveness ${leader?.decisiveness.toFixed(2)} and efficiency ${leader?.efficiency.toFixed(2)}. ` +
+      `The full values are in the accompanying table.`
+---
+
+<ChartFrame
+  title={title}
+  summary={summary}
+  caption="Axes are constructed measures, not observations. Efficiency is normalised against the other models in this edition, so a vendor's horizontal position depends on the company it keeps. Quadrant boundaries are the medians of this edition, not fixed thresholds."
+>
+  <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} width={BOX.width} height={BOX.height}>
+    <rect
+      x={area.x}
+      y={area.y}
+      width={area.width}
+      height={area.height}
+      fill="var(--surface)"
+      stroke="var(--rule-strong)"
+      stroke-width="1"></rect>
+
+    {/* Median crosshairs — the quadrant boundaries. */}
+    <line
+      x1={toX(crosshairX)}
+      y1={area.y}
+      x2={toX(crosshairX)}
+      y2={area.y + area.height}
+      stroke="var(--chart-grid)"
+      stroke-width="1"
+      stroke-dasharray="4 3"></line>
+    <line
+      x1={area.x}
+      y1={toY(crosshairY)}
+      x2={area.x + area.width}
+      y2={toY(crosshairY)}
+      stroke="var(--chart-grid)"
+      stroke-width="1"
+      stroke-dasharray="4 3"></line>
+
+    {
+      QUADRANTS.map((quadrant) => (
+        <text
+          x={round(area.x + quadrant.x * area.width)}
+          y={round(area.y + (1 - quadrant.y) * area.height + (quadrant.y > 0.5 ? 14 : -6))}
+          text-anchor={quadrant.align}
+          class="quadrant-label"
+        >
+          {quadrant.label}
+        </text>
+      ))
+    }
+
+    {
+      points.map((point) => (
+        <g>
+          <circle cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
+          <text
+            x={point.anchor === 'end' ? point.x - 8 : point.x + 8}
+            y={point.labelY}
+            text-anchor={point.anchor}
+            class="point-label"
+          >
+            {point.entry.result.displayName}
+          </text>
+        </g>
+      ))
+    }
+
+    <text x={area.x} y={BOX.height - 16} class="axis-title">Efficiency →</text>
+    <text
+      x={-(area.y + area.height / 2)}
+      y="14"
+      transform="rotate(-90)"
+      text-anchor="middle"
+      class="axis-title">Decisiveness →</text
+    >
+  </svg>
+
+  <table slot="table">
+    <caption>{title} — plotted values</caption>
+    <thead>
+      <tr>
+        <th scope="col">Vendor</th>
+        <th scope="col" class="numeric">Decisiveness</th>
+        <th scope="col" class="numeric">Efficiency</th>
+        <th scope="col" class="numeric">Composite</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        plotted.map((entry) => (
+          <tr>
+            <th scope="row">{entry.result.displayName}</th>
+            <td class="numeric">{entry.decisiveness.toFixed(2)}</td>
+            <td class="numeric">{entry.efficiency.toFixed(2)}</td>
+            <td class="numeric">{entry.composite.toFixed(2)}</td>
+          </tr>
+        ))
+      }
+      {
+        absent.map((entry) => (
+          <tr>
+            <th scope="row">{entry.result.displayName}</th>
+            <td colspan="3">Not plotted — no data in this edition</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</ChartFrame>
+
+{
+  absent.length > 0 && (
+    <p class="absent-note">
+      {absent.map((e) => e.result.displayName).join(', ')} {absent.length === 1 ? 'is' : 'are'}{' '}
+      omitted from the plot: a vendor with no data has no position, and placing it at the origin
+      would read as a score of zero rather than an absence.
+    </p>
+  )
+}
+
+<style>
+  .quadrant-label {
+    font-size: 11px;
+    fill: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .point-label {
+    font-size: 12px;
+    fill: var(--text-strong);
+  }
+
+  .axis-title {
+    font-size: 12px;
+    fill: var(--muted);
+  }
+
+  .absent-note {
+    font-size: var(--step--1);
+    color: var(--muted);
+    max-width: var(--measure);
+    margin-top: calc(-1 * var(--space-m));
+    margin-bottom: var(--space-l);
+  }
+</style>

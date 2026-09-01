@@ -1,0 +1,146 @@
+---
+/**
+ * A vendor scorecard: a five-axis radar plus a one-line analyst verdict.
+ *
+ * The radar is decorative-adjacent — it shows shape, not values — so the axis
+ * values are always available as a table underneath. All five axes are
+ * normalised so that higher is better, which means the reader does not have to
+ * remember which ones are inverted to read the area.
+ */
+import { RADAR_AXIS_LABELS, radarAxes } from '../../lib/scores.ts'
+import { vendorVerdictLine } from '../../lib/prose.ts'
+import { polarPoint, polygonPath, round } from '../../lib/scale.ts'
+import { formatPercent } from '../../lib/format.ts'
+import type { ModelResult } from '../../../schema/run.ts'
+
+interface Props {
+  result: ModelResult
+  peers: ModelResult[]
+}
+
+const { result, peers } = Astro.props
+
+const SIZE = 168
+const CENTRE = { x: SIZE / 2, y: SIZE / 2 }
+const RADIUS = 56
+
+const axes = radarAxes(result, peers)
+const keys = Object.keys(RADAR_AXIS_LABELS) as Array<keyof typeof RADAR_AXIS_LABELS>
+
+const shape = polygonPath(
+  keys.map((key, index) => polarPoint(CENTRE, RADIUS * axes[key], index, keys.length)),
+)
+const outline = polygonPath(keys.map((_, index) => polarPoint(CENTRE, RADIUS, index, keys.length)))
+const midline = polygonPath(
+  keys.map((_, index) => polarPoint(CENTRE, RADIUS * 0.5, index, keys.length)),
+)
+
+const verdictLine = vendorVerdictLine(result, peers)
+const summary = `Radar chart for ${result.displayName}. ${keys
+  .map((key) => `${RADAR_AXIS_LABELS[key]} ${formatPercent(axes[key])}`)
+  .join(', ')}.`
+const tableId = `radar-${result.provider}-${result.modelId}`.replace(/[^a-zA-Z0-9-]/g, '-')
+---
+
+<article class="scorecard">
+  <h3>{result.displayName}</h3>
+
+  <div class="scorecard-body">
+    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width={SIZE} height={SIZE} role="img" aria-label={summary}>
+      <path d={outline} fill="none" stroke="var(--rule-strong)" stroke-width="1"></path>
+      <path d={midline} fill="none" stroke="var(--chart-grid)" stroke-width="1"></path>
+      {
+        keys.map((_, index) => {
+          const point = polarPoint(CENTRE, RADIUS, index, keys.length)
+          return (
+            <line
+              x1={CENTRE.x}
+              y1={CENTRE.y}
+              x2={point.x}
+              y2={point.y}
+              stroke="var(--chart-grid)"
+              stroke-width="1"
+            />
+          )
+        })
+      }
+      <path
+        d={shape}
+        fill="var(--chart-1)"
+        fill-opacity="0.25"
+        stroke="var(--chart-1)"
+        stroke-width="1.5"></path>
+      {
+        keys.map((key, index) => {
+          const point = polarPoint(CENTRE, RADIUS * axes[key], index, keys.length)
+          return <circle cx={point.x} cy={point.y} r="2.5" fill="var(--chart-1)" />
+        })
+      }
+    </svg>
+
+    <div class="scorecard-axes">
+      <table id={tableId}>
+        <caption class="visually-hidden">{result.displayName} scorecard axes</caption>
+        <tbody>
+          {
+            keys.map((key) => (
+              <tr>
+                <th scope="row">{RADAR_AXIS_LABELS[key]}</th>
+                <td class="numeric">{formatPercent(axes[key])}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="verdict-line">{verdictLine}</p>
+</article>
+
+<style>
+  .scorecard {
+    padding: var(--space-s);
+    background: var(--surface);
+    border-top: var(--hairline) solid var(--rule-strong);
+  }
+
+  .scorecard h3 {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--step-1);
+  }
+
+  .scorecard-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    align-items: center;
+  }
+
+  .scorecard svg {
+    flex: 0 0 auto;
+  }
+
+  .scorecard-axes {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+
+  .scorecard-axes table {
+    font-size: var(--step--1);
+  }
+
+  .scorecard-axes th {
+    font-weight: 400;
+    color: var(--muted);
+    padding-left: 0;
+  }
+
+  .verdict-line {
+    margin: var(--space-s) 0 0;
+    font-size: var(--step--1);
+    color: var(--text);
+    font-style: italic;
+    max-width: var(--measure);
+  }
+</style>
