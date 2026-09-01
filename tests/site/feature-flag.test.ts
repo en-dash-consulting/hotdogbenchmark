@@ -49,9 +49,14 @@ describe('RUN_YOUR_OWN_ENABLED', () => {
     expect(page).toMatch(/Cleared on sign-out/i)
     expect(page).toMatch(/never logged/i)
     expect(page).toMatch(/never written to/i)
-    // A disabled control, not a live one.
-    expect(page).toMatch(/<button[^>]*disabled/)
-    // And a pointer to the thing that does work today.
+    // The working form, with the controls the flow needs.
+    expect(page).toContain('id="run-form"')
+    expect(page).toContain('id="sign-in"')
+    expect(page).toContain('id="key-fields"')
+    expect(page).toContain('id="prompt-preview"')
+    // A live region for progress, since a run takes seconds.
+    expect(page).toMatch(/aria-live="polite"/)
+    // And a pointer to the thing that needs no proxy at all.
     expect(page).toContain('npm run bench')
 
     const home = readFileSync(join(DIST, 'index.html'), 'utf8')

@@ -46,21 +46,75 @@ const walk = (dir) =>
   })
 
 const files = walk(DIST)
+const htmlFiles = files.filter((file) => file.endsWith('.html'))
+
+/**
+ * Which pages reference which script files.
+ *
+ * The feature-flagged /run/ page ships a real bundle, and that bundle lands in
+ * `_astro/` like any other — so excluding by output path does not work. What
+ * identifies it is that no page outside /run/ references it.
+ *
+ * An earlier version filtered on `relative(DIST, file).startsWith('run/')`,
+ * which excluded nothing and quietly counted a 24 KB bundle against a budget
+ * meant for the rest of the site.
+ */
+const referencedBy = new Map()
+for (const file of htmlFiles) {
+  const route = relative(DIST, file).replace(/index\.html$/, '')
+  const html = readFileSync(file, 'utf8')
+  for (const match of html.matchAll(/<script[^>]+src="([^"]+)"/g)) {
+    const src = match[1].replace(/^\//, '')
+    if (!referencedBy.has(src)) referencedBy.set(src, new Set())
+    referencedBy.get(src).add(route)
+  }
+}
+
+/** True when every page referencing this script lives under /run/. */
+function onlyForRunPage(scriptPath) {
+  const pages = referencedBy.get(scriptPath)
+  if (!pages || pages.size === 0) return false
+  return [...pages].every((route) => route.startsWith('run/'))
+}
+
+/**
+ * True when no built page references this script at all.
+ *
+ * This happens for real: Astro processes a `<script>` in a page component even
+ * when that page's getStaticPaths yields nothing, so building with
+ * RUN_YOUR_OWN_ENABLED off still emits the run page's bundle — orphaned, since
+ * the page that would load it does not exist.
+ *
+ * It costs no user anything, because nothing links it, so it does not count
+ * against the budget. It is still dead weight on the CDN, so it is reported.
+ */
+function unreferenced(scriptPath) {
+  return !referencedBy.has(scriptPath)
+}
+
 const contributions = []
+const excluded = []
+const orphaned = []
 
 for (const file of files) {
-  // The deferred Run Your Own page is opt-in and budgeted separately.
-  if (relative(DIST, file).startsWith('run/')) continue
-
   if (file.endsWith('.js')) {
-    contributions.push({
-      what: relative(DIST, file),
-      bytes: gzipSync(readFileSync(file)).length,
-    })
+    const relativePath = relative(DIST, file)
+    const bytes = gzipSync(readFileSync(file)).length
+    if (relativePath.startsWith('run/') || onlyForRunPage(relativePath)) {
+      excluded.push({ what: relativePath, bytes })
+      continue
+    }
+    if (unreferenced(relativePath)) {
+      orphaned.push({ what: relativePath, bytes })
+      continue
+    }
+    contributions.push({ what: relativePath, bytes })
     continue
   }
 
   if (file.endsWith('.html')) {
+    // Inline scripts on the run page are excluded on the same basis.
+    if (relative(DIST, file).startsWith('run/')) continue
     const html = readFileSync(file, 'utf8')
     for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
       const body = match[1].trim()
@@ -87,6 +141,21 @@ for (const entry of [...shared].sort((a, b) => b.bytes - a.bytes).slice(0, 10)) 
 }
 if (worstInline > 0) {
   console.log(`  ${String(worstInline).padStart(7)} B  worst single page's inline scripts`)
+}
+
+if (excluded.length > 0) {
+  console.log('\nExcluded — loaded only by the feature-flagged /run/ page:')
+  for (const entry of excluded) {
+    console.log(`  ${String(entry.bytes).padStart(7)} B  ${entry.what}`)
+  }
+}
+
+if (orphaned.length > 0) {
+  console.log('\nOrphaned — emitted but referenced by no page, so never downloaded:')
+  for (const entry of orphaned) {
+    console.log(`  ${String(entry.bytes).padStart(7)} B  ${entry.what}`)
+  }
+  console.log("  (Astro emits a page component's script even when the page is not generated.)")
 }
 
 const budget = BUDGET_KB * 1024

@@ -3,7 +3,6 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { gzipSync } from 'node:zlib'
 
 /**
  * Assertions over the actual built HTML.
@@ -134,20 +133,16 @@ describe('internal links', () => {
 })
 
 describe('the client JavaScript budget', () => {
-  it('is under 30 KB gzipped across the whole site', () => {
-    const scripts = readdirSync(join(DIST, '_astro'), { withFileTypes: true })
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.js'))
-      .map((entry) => readFileSync(join(DIST, '_astro', entry.name)))
-
-    // Inline module scripts count too — this site's theme toggle is one.
-    const inline = pages.flatMap((page) =>
-      [...page.html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)].map((m) =>
-        Buffer.from(m[1]!),
-      ),
-    )
-
-    const total = [...scripts, ...inline].reduce((sum, buffer) => sum + gzipSync(buffer).length, 0)
-    expect(total, `${total} bytes gzipped`).toBeLessThan(30 * 1024)
+  it('is enforced by scripts/js-budget.mjs against the built site', () => {
+    // Delegated rather than reimplemented here. The rule has real subtleties —
+    // the feature-flagged /run/ bundle is excluded, and Astro emits that bundle
+    // even when the page is not generated, leaving it orphaned — and having two
+    // implementations of it means one of them is wrong.
+    const output = execFileSync('node', ['scripts/js-budget.mjs'], {
+      cwd: ROOT,
+      encoding: 'utf8',
+    })
+    expect(output).toContain('Within budget.')
   })
 })
 

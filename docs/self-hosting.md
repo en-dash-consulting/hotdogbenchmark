@@ -148,9 +148,10 @@ count. With seven models at three samples, one more question is 21 more API call
 bring-your-own-keys capability, plus a nav entry for it. It is **off by default**, and when off
 the page is not built at all.
 
-Leave it off unless you have deployed the proxy it depends on. The page currently describes a
-service that does not exist; publishing it without the backend promises your visitors something
-you cannot deliver.
+Set `PROXY_ORIGIN` to the deployed proxy as well, or sign-in will never succeed.
+
+Leave both off unless you have deployed the proxy — see [`proxy.md`](proxy.md). Publishing the
+page without the backend promises your visitors something you cannot deliver.
 
 ## Optional: a custom domain
 

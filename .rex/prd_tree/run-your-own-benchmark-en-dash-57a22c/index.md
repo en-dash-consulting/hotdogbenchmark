@@ -27,4 +27,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 |-------|--------|
 | [Bring-your-own-keys custom question runner UI](./bring-your-own-keys-custom-a87124/index.md) | pending |
 | [Browser-ready runner core and feature-flagged Run Your Own stub page](./browser-ready-runner-core-and-80acfc/index.md) | completed |
-| [Serverless proxy with En Dash single sign-on and per-user rate limits](./serverless-proxy-with-en-dash-e51955/index.md) | pending |
+| [Serverless proxy with En Dash single sign-on and per-user rate limits](./serverless-proxy-with-en-dash-e51955/index.md) | completed |

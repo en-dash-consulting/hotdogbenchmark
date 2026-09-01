@@ -1,6 +1,6 @@
 ---
 /**
- * The deferred "run your own benchmark" page.
+ * The bring-your-own-keys benchmark runner.
  *
  * Emitted only when RUN_YOUR_OWN_ENABLED is true at build time. When the flag
  * is off, getStaticPaths returns nothing and the page is absent from dist/ —
@@ -11,18 +11,24 @@
  * page ignores it entirely and is emitted unconditionally, which is exactly the
  * bug the build test caught when this was `run.astro`.
  *
- * Until the proxy is deployed this is a stub that says what is coming and,
- * more importantly, exactly what will and will not happen to a visitor's API
- * keys. Making those commitments before building the thing is the point: they
- * constrain the implementation rather than describing it after the fact.
+ * This is the only page on the site that ships a meaningful JavaScript bundle,
+ * which is why the site-wide budget check excludes it.
  */
 import Base from '../../layouts/Base.astro'
+import { getModels } from '../../lib/data.ts'
 import { REPO_URL, RUN_YOUR_OWN_ENABLED, routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
   // An empty list means Astro emits no page at all for this route.
   return RUN_YOUR_OWN_ENABLED ? [{ params: { path: undefined } }] : []
 }
+
+/**
+ * Where the proxy lives. Without it configured the page still renders and still
+ * explains itself; sign-in simply never succeeds.
+ */
+const proxyOrigin = import.meta.env.PROXY_ORIGIN ?? ''
+const models = getModels()
 ---
 
 <Base
@@ -33,44 +39,24 @@ export function getStaticPaths() {
     <h1>Run your own benchmark</h1>
 
     <p class="lede">
-      A planned capability: sign in, supply your own provider keys, ask your own question, and get a
-      full report rendered in your browser.
-    </p>
-
-    <div class="callout status">
-      <p>
-        <strong>Not yet available.</strong> This page describes what is being built. The control below
-        is disabled because the service behind it does not exist yet.
-      </p>
-    </div>
-
-    <h2>What it will do</h2>
-
-    <p>
-      Sign in with an En Dash account, enter API keys for the providers you want to evaluate, type a
-      research question, choose models, and run. Results render with the same report components as
-      the published editions — masthead, KPI tiles, quadrant, leaderboard, vendor profiles — under a
-      persistent banner marking the run as unofficial.
+      Sign in, supply your own provider keys, ask your own question, and get a full report rendered
+      in your browser.
     </p>
 
     <p>
-      The runner is the same code that produces the weekly editions. That is already true and
-      already tested: a CI test bundles the runner core and every adapter for a browser target with
-      no Node polyfills and executes a benchmark in headless Chromium.
+      The runner is the same code that produces the weekly editions — the same adapters, the same
+      sampling, the same classification. Only the <code>fetch</code> differs, routing through a proxy
+      so your keys never reach a provider from an origin you do not control.
     </p>
 
-    <h2>What will happen to your keys</h2>
-
-    <p>These are commitments, published before the feature exists so that they constrain it:</p>
+    <h2>What happens to your keys</h2>
 
     <ul class="commitments">
       <li>
-        <strong>Held in browser session storage only.</strong> Never in a cookie, never in local storage,
+        <strong>Held in this tab's session storage only.</strong> Never in a cookie, never in local storage,
         never persisted past the tab.
       </li>
-      <li>
-        <strong>Cleared on sign-out</strong> and when the tab closes.
-      </li>
+      <li><strong>Cleared on sign-out</strong>, when the tab closes, or on demand.</li>
       <li>
         <strong>Sent only to the proxy origin</strong>, over TLS, once per request, and never to any
         other host.
@@ -80,42 +66,100 @@ export function getStaticPaths() {
         a status and a duration. Not headers, not keys, not prompts, not bodies.
       </li>
       <li>
-        <strong>Never written to <code>data/</code></strong>. Your runs are yours; they are not
-        published and do not enter the archive.
+        <strong>Never written to <code>data/</code>.</strong> Your runs are yours; they are not published
+        and do not enter the archive.
       </li>
     </ul>
 
     <p>
-      The proxy exists because a static site cannot call a provider API directly without exposing
-      keys to every origin the browser talks to, and because a benchmark hosted on GitHub Pages has
-      nowhere to put a secret. Its threat model will be published at
-      <code>docs/proxy.md</code> alongside the implementation.
+      The full threat model, including the residual risks, is in
+      <a href={`${REPO_URL}/blob/main/docs/proxy.md`}>docs/proxy.md</a>. If a key is too valuable to
+      put in a browser at all, use the CLI instead — that is the honest recommendation, and it is
+      what the published editions use.
     </p>
 
-    <h2>Available now: run it locally</h2>
-
-    <p>
-      Everything above already works from the command line, where your keys never leave your
-      machine:
-    </p>
-
-    <pre><code>git clone {REPO_URL}.git
+    <details class="cli-alternative">
+      <summary>Run it locally instead</summary>
+      <pre><code>git clone {REPO_URL}.git
 cd hotdogbenchmark && npm install
 cp .env.example .env      # add your keys
 npm run bench -- run</code></pre>
-
-    <p>
-      Edit <code>questions.json</code> to ask something else. The
-      <a href={routes.howItWorks()}>how it works</a> page explains the pipeline, and
-      <a href={`${REPO_URL}/blob/main/docs/self-hosting.md`}>self-hosting</a> covers running it weekly
-      in your own fork.
-    </p>
-
-    <p>
-      <button type="button" disabled aria-describedby="signin-note"> Sign in with En Dash </button>
-      <span id="signin-note" class="muted">Not yet available.</span>
-    </p>
+      <p>
+        Edit <code>questions.json</code> to ask something else. The
+        <a href={routes.howItWorks()}>how it works</a> page explains the pipeline.
+      </p>
+    </details>
   </div>
+
+  <section
+    class="run-app"
+    data-run-app
+    data-proxy-origin={proxyOrigin}
+    data-models={JSON.stringify(models)}
+    aria-labelledby="run-heading"
+  >
+    <h2 id="run-heading">Run a benchmark</h2>
+
+    <div class="identity-row">
+      <p id="identity" class="muted">Checking sign-in…</p>
+      <button type="button" id="sign-in" hidden>Sign in with En Dash</button>
+      <button type="button" id="sign-out" hidden>Sign out</button>
+    </div>
+
+    <form id="run-form" hidden>
+      <fieldset>
+        <legend>Provider keys</legend>
+        <p class="field-note">
+          Held in this tab only, cleared when it closes or when you sign out. Leave a field blank to
+          skip that provider.
+        </p>
+        <div id="key-fields" class="key-fields"></div>
+        <button type="button" id="clear-keys">Clear all keys</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Research question</legend>
+        <label for="question">Your question</label>
+        <textarea id="question" rows="3" placeholder="Is a burrito a sandwich?"></textarea>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="append-template" checked />
+          <label for="append-template">
+            Append &ldquo;One word answer.&rdquo; — this is what makes the compliance metric
+            meaningful
+          </label>
+        </div>
+
+        <p class="preview-label">Exactly what will be sent:</p>
+        <pre id="prompt-preview" class="prompt-preview">(nothing yet)</pre>
+      </fieldset>
+
+      <fieldset>
+        <legend>Models</legend>
+        <div id="model-choices" class="model-choices"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Sampling</legend>
+        <label for="samples">Samples per model</label>
+        <input type="number" id="samples" value="3" min="1" max="5" />
+        <p class="field-note">
+          More samples give a more reliable majority verdict and cost proportionally more.
+        </p>
+      </fieldset>
+
+      <p class="submit-row">
+        <button type="submit">Run benchmark</button>
+      </p>
+    </form>
+
+    <p id="run-status" class="run-status" role="status" aria-live="polite"></p>
+    <div id="run-output"></div>
+  </section>
+
+  <script>
+    import '../../run/app.ts'
+  </script>
 </Base>
 
 <style>
@@ -124,28 +168,149 @@ npm run bench -- run</code></pre>
     color: var(--muted);
   }
 
-  .callout {
-    padding: var(--space-m);
-    background: var(--surface);
-    border-left: 3px solid var(--accent);
-    margin-block: var(--space-l);
-  }
-
-  .callout p {
-    margin: 0;
-  }
-
   .commitments li {
     margin-bottom: var(--space-2xs);
   }
 
-  button[disabled] {
-    font: inherit;
-    padding: var(--space-2xs) var(--space-s);
-    background: var(--surface-sunken);
+  .cli-alternative {
+    margin-block: var(--space-l);
+  }
+
+  .cli-alternative summary {
+    cursor: pointer;
     color: var(--muted);
+  }
+
+  .run-app {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .identity-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-m);
+  }
+
+  .identity-row p {
+    margin: 0;
+  }
+
+  fieldset {
+    border: var(--hairline) solid var(--rule);
+    padding: var(--space-m);
+    margin-bottom: var(--space-m);
+  }
+
+  legend {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    padding-inline: var(--space-2xs);
+  }
+
+  label {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .field-note {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: 0;
+  }
+
+  input[type='password'],
+  input[type='number'],
+  textarea {
+    font: inherit;
+    width: 100%;
+    max-width: 32rem;
+    padding: var(--space-2xs);
+    background: var(--surface);
+    color: var(--text);
     border: var(--hairline) solid var(--rule-strong);
     border-radius: var(--radius);
-    cursor: not-allowed;
+  }
+
+  .key-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+    gap: var(--space-s);
+    margin-bottom: var(--space-s);
+  }
+
+  .checkbox-row,
+  .model-choice {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin-block: var(--space-2xs);
+  }
+
+  .checkbox-row label,
+  .model-choice label {
+    margin: 0;
+    color: var(--text);
+  }
+
+  .prompt-preview {
+    white-space: pre-wrap;
+    margin-top: var(--space-3xs);
+  }
+
+  .preview-label {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+
+  button {
+    font: inherit;
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--primary);
+    color: var(--on-primary);
+    border: 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  #clear-keys,
+  #sign-out {
+    background: var(--surface);
+    color: var(--text);
+    border: var(--hairline) solid var(--rule-strong);
+  }
+
+  .run-status {
+    min-height: 1.5em;
+    font-size: var(--step--1);
+    color: var(--text-strong);
+    font-weight: 600;
+  }
+</style>
+
+<style is:global>
+  /* Applied to markup the client script generates, so it cannot be scoped. */
+  .unofficial-banner {
+    padding: var(--space-s);
+    background: var(--surface-sunken);
+    border-left: 3px solid var(--accent);
+    margin-bottom: var(--space-m);
+  }
+
+  .unofficial-banner p {
+    margin: 0;
+  }
+
+  .run-actions {
+    display: flex;
+    gap: var(--space-s);
+    flex-wrap: wrap;
   }
 </style>
