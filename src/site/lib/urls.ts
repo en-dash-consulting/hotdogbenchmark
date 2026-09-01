@@ -39,6 +39,16 @@ export const routes = {
   reportPdf: (questionId: string) => href(`reports/${questionId}/report.pdf`),
 }
 
+/**
+ * Whether the deferred "run your own benchmark" page is emitted.
+ *
+ * Off by default. When off the page is not built at all and no nav entry
+ * appears — not hidden with CSS, absent from `dist/`.
+ */
+export const RUN_YOUR_OWN_ENABLED: boolean =
+  import.meta.env.RUN_YOUR_OWN_ENABLED === 'true' ||
+  import.meta.env.PUBLIC_RUN_YOUR_OWN_ENABLED === 'true'
+
 /** The GitHub repository this site is built from. */
 export const REPO_URL = 'https://github.com/endash/hotdogbenchmark'
 

@@ -11,7 +11,7 @@
 import '../styles/global.css'
 import { getLatestRun } from '../lib/data.ts'
 import { formatDate, formatEdition } from '../lib/format.ts'
-import { REPO_URL, routes } from '../lib/urls.ts'
+import { REPO_URL, RUN_YOUR_OWN_ENABLED, routes } from '../lib/urls.ts'
 import ThemeToggle from '../components/ThemeToggle.astro'
 
 interface Props {
@@ -40,6 +40,8 @@ const latest = getLatestRun()
 const NAV = [
   { href: routes.home(), label: 'Reports' },
   { href: routes.history(), label: 'History' },
+  // Only present when the deferred feature is switched on at build time.
+  ...(RUN_YOUR_OWN_ENABLED ? [{ href: routes.runYourOwn(), label: 'Run your own' }] : []),
   { href: routes.methodology(), label: 'Methodology' },
   { href: routes.howItWorks(), label: 'How it works' },
   { href: routes.about(), label: 'About' },

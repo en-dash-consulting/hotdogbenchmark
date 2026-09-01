@@ -25,5 +25,5 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Learner-facing documentation: README, tutorial series, and provider setup guide](./learner-facing-documentation-de9c4d/index.md) | pending |
+| [Learner-facing documentation: README, tutorial series, and provider setup guide](./learner-facing-documentation-de9c4d/index.md) | completed |
 | [Seed first real run and launch v1.0.0](./seed-first-real-run-and-launch-fe0fa5/index.md) | pending |

@@ -35,7 +35,9 @@ export default defineConfig({
   trailingSlash: 'always',
   srcDir: './src/site',
   publicDir: './public',
-  outDir: './dist',
+  // Overridable so a test can build into its own directory rather than racing
+  // another test for dist/.
+  outDir: process.env.ASTRO_OUT_DIR || './dist',
   build: {
     // One stylesheet rather than many small ones: this site's CSS is small
     // enough that per-page files would cost more in requests than they save.

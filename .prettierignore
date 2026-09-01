@@ -1,5 +1,6 @@
 node_modules
 dist
+dist-feature-flag-test
 src/site/dist
 src/site/.astro
 coverage

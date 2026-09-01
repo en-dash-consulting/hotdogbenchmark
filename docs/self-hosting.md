@@ -142,6 +142,16 @@ to match.
 Each additional question multiplies the weekly cost by the number of models times the sample
 count. With seven models at three samples, one more question is 21 more API calls a week.
 
+## Optional: the "Run your own" page
+
+`RUN_YOUR_OWN_ENABLED=true` at build time emits a `/run/` page describing the planned
+bring-your-own-keys capability, plus a nav entry for it. It is **off by default**, and when off
+the page is not built at all.
+
+Leave it off unless you have deployed the proxy it depends on. The page currently describes a
+service that does not exist; publishing it without the backend promises your visitors something
+you cannot deliver.
+
 ## Optional: a custom domain
 
 1. Add a `CNAME` file at the repository root containing your domain, e.g. `bench.example.com`.

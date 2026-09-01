@@ -1,0 +1,151 @@
+---
+/**
+ * The deferred "run your own benchmark" page.
+ *
+ * Emitted only when RUN_YOUR_OWN_ENABLED is true at build time. When the flag
+ * is off, getStaticPaths returns nothing and the page is absent from dist/ —
+ * not hidden with CSS, not returning a 404 page, simply not built.
+ *
+ * It is a **rest route** (`[...path]`) rather than a plain `run.astro` for one
+ * specific reason: Astro only calls getStaticPaths for dynamic routes. A static
+ * page ignores it entirely and is emitted unconditionally, which is exactly the
+ * bug the build test caught when this was `run.astro`.
+ *
+ * Until the proxy is deployed this is a stub that says what is coming and,
+ * more importantly, exactly what will and will not happen to a visitor's API
+ * keys. Making those commitments before building the thing is the point: they
+ * constrain the implementation rather than describing it after the fact.
+ */
+import Base from '../../layouts/Base.astro'
+import { REPO_URL, RUN_YOUR_OWN_ENABLED, routes } from '../../lib/urls.ts'
+
+export function getStaticPaths() {
+  // An empty list means Astro emits no page at all for this route.
+  return RUN_YOUR_OWN_ENABLED ? [{ params: { path: undefined } }] : []
+}
+---
+
+<Base
+  title="Run your own"
+  description="Run the Sandwich Classification Benchmark on your own question, with your own provider keys."
+>
+  <div class="prose">
+    <h1>Run your own benchmark</h1>
+
+    <p class="lede">
+      A planned capability: sign in, supply your own provider keys, ask your own question, and get a
+      full report rendered in your browser.
+    </p>
+
+    <div class="callout status">
+      <p>
+        <strong>Not yet available.</strong> This page describes what is being built. The control below
+        is disabled because the service behind it does not exist yet.
+      </p>
+    </div>
+
+    <h2>What it will do</h2>
+
+    <p>
+      Sign in with an En Dash account, enter API keys for the providers you want to evaluate, type a
+      research question, choose models, and run. Results render with the same report components as
+      the published editions — masthead, KPI tiles, quadrant, leaderboard, vendor profiles — under a
+      persistent banner marking the run as unofficial.
+    </p>
+
+    <p>
+      The runner is the same code that produces the weekly editions. That is already true and
+      already tested: a CI test bundles the runner core and every adapter for a browser target with
+      no Node polyfills and executes a benchmark in headless Chromium.
+    </p>
+
+    <h2>What will happen to your keys</h2>
+
+    <p>These are commitments, published before the feature exists so that they constrain it:</p>
+
+    <ul class="commitments">
+      <li>
+        <strong>Held in browser session storage only.</strong> Never in a cookie, never in local storage,
+        never persisted past the tab.
+      </li>
+      <li>
+        <strong>Cleared on sign-out</strong> and when the tab closes.
+      </li>
+      <li>
+        <strong>Sent only to the proxy origin</strong>, over TLS, once per request, and never to any
+        other host.
+      </li>
+      <li>
+        <strong>Never stored server-side and never logged.</strong> The proxy records a user id, a provider,
+        a status and a duration. Not headers, not keys, not prompts, not bodies.
+      </li>
+      <li>
+        <strong>Never written to <code>data/</code></strong>. Your runs are yours; they are not
+        published and do not enter the archive.
+      </li>
+    </ul>
+
+    <p>
+      The proxy exists because a static site cannot call a provider API directly without exposing
+      keys to every origin the browser talks to, and because a benchmark hosted on GitHub Pages has
+      nowhere to put a secret. Its threat model will be published at
+      <code>docs/proxy.md</code> alongside the implementation.
+    </p>
+
+    <h2>Available now: run it locally</h2>
+
+    <p>
+      Everything above already works from the command line, where your keys never leave your
+      machine:
+    </p>
+
+    <pre><code>git clone {REPO_URL}.git
+cd hotdogbenchmark && npm install
+cp .env.example .env      # add your keys
+npm run bench -- run</code></pre>
+
+    <p>
+      Edit <code>questions.json</code> to ask something else. The
+      <a href={routes.howItWorks()}>how it works</a> page explains the pipeline, and
+      <a href={`${REPO_URL}/blob/main/docs/self-hosting.md`}>self-hosting</a> covers running it weekly
+      in your own fork.
+    </p>
+
+    <p>
+      <button type="button" disabled aria-describedby="signin-note"> Sign in with En Dash </button>
+      <span id="signin-note" class="muted">Not yet available.</span>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .lede {
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .callout {
+    padding: var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    margin-block: var(--space-l);
+  }
+
+  .callout p {
+    margin: 0;
+  }
+
+  .commitments li {
+    margin-bottom: var(--space-2xs);
+  }
+
+  button[disabled] {
+    font: inherit;
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--surface-sunken);
+    color: var(--muted);
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+    cursor: not-allowed;
+  }
+</style>

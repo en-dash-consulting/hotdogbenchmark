@@ -57,6 +57,31 @@ jobs:
           BENCH_SEED: '1'
         run: npm run bench -- run --mock --out /tmp/ci-run.json
 
+  browser:
+    name: Runner core bundles for the browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install the browser the bundle runs in
+        run: npx playwright install --with-deps chromium
+
+      # The enforcement mechanism for the runtime-agnostic constraint: bundles
+      # the runner and every adapter for a browser target with no polyfills and
+      # executes a benchmark in headless Chromium. Lint rules can be worked
+      # around; this cannot.
+      - name: Bundle and run in a browser
+        run: npx vitest run tests/browser/bundle.test.ts
+
   data:
     name: Validate committed data
     runs-on: ubuntu-latest

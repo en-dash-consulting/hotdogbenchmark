@@ -1,0 +1,28 @@
+{
+  "id": "dd77fc41-0aa4-448e-870b-90590a47e731",
+  "taskId": "0910c270-6b38-4916-907d-ac512efe035b",
+  "taskTitle": "Write docs/providers.md",
+  "startedAt": "2026-09-01T22:59:21.835Z",
+  "finishedAt": "2026-09-01T22:59:21.835Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Learner documentation: README with generated screenshots, provider cost guide, eight-page tutorial",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

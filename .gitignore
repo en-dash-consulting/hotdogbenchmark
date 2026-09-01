@@ -5,7 +5,9 @@
 # Dependencies and build output
 node_modules/
 dist/
+dist-feature-flag-test/
 src/site/dist/
+dist-feature-flag-test/
 src/site/.astro/
 .astro/
 coverage/
