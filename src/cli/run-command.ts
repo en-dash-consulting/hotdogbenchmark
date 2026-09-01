@@ -1,0 +1,260 @@
+/**
+ * `bench run` — the command the weekly job invokes.
+ *
+ * This is the Node-only half of running a benchmark: read the registries and
+ * the environment, call the runtime-agnostic `runBenchmark`, then write the
+ * result to disk and refresh the manifest. The loop itself knows nothing about
+ * any of that.
+ */
+import { execFileSync } from 'node:child_process'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
+import { randomUUID } from 'node:crypto'
+import { planJobs, runBenchmark } from '../runner/run.ts'
+import { getAdapter } from '../providers/registry.ts'
+import { registerAllAdapters } from '../providers/all.ts'
+import { installMockAdapters } from './mock-fixtures.ts'
+import { loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
+import { writeManifest } from '../data/index.ts'
+import { isoWeekFor, runPathFor } from '../data/paths.ts'
+import { credentialsFromEnv } from '../env.ts'
+import { formatCost } from '../runner/cost.ts'
+import type { BenchmarkRun } from '../schema/run.ts'
+import type { QuestionEntry } from '../schema/questions.ts'
+
+export interface RunCommandOptions {
+  mock: boolean
+  dryRun: boolean
+  samples: number
+  concurrency: number
+  timeoutMs: number
+  /** Comma-separated model ids to restrict to. Empty means all enabled. */
+  modelIds: string[]
+  /** Comma-separated question ids to restrict to. Empty means all enabled. */
+  questionIds: string[]
+  /** Override the output path. */
+  out?: string
+  root?: string
+}
+
+/** Exit codes: 0 success, 1 every job failed, 2 invalid usage. */
+export async function runBenchCommand(options: RunCommandOptions): Promise<number> {
+  const root = options.root ?? REPO_ROOT
+
+  let questions = loadQuestions(root)
+  let models = loadModels(root)
+
+  if (options.questionIds.length > 0) {
+    const wanted = new Set(options.questionIds)
+    const unknown = options.questionIds.filter((id) => !questions.some((q) => q.id === id))
+    if (unknown.length > 0) {
+      console.error(
+        `Unknown question id(s): ${unknown.join(', ')}\n` +
+          `Enabled questions: ${questions.map((q) => q.id).join(', ')}`,
+      )
+      return 2
+    }
+    questions = questions.filter((q) => wanted.has(q.id))
+  }
+
+  if (options.modelIds.length > 0) {
+    const wanted = new Set(options.modelIds)
+    const unknown = options.modelIds.filter((id) => !models.some((m) => m.modelId === id))
+    if (unknown.length > 0) {
+      console.error(
+        `Unknown model id(s): ${unknown.join(', ')}\n` +
+          `Enabled models: ${models.map((m) => m.modelId).join(', ')}`,
+      )
+      return 2
+    }
+    models = models.filter((m) => wanted.has(m.modelId))
+  }
+
+  // In mock mode every adapter is replaced by the fixture replayer and every
+  // provider gets a placeholder credential, so no key is needed anywhere.
+  registerAllAdapters()
+  const credentials = options.mock
+    ? Object.fromEntries(models.map((m) => [m.provider, 'mock']))
+    : credentialsFromEnv()
+
+  let restoreAdapters: (() => void) | undefined
+  if (options.mock) restoreAdapters = installMockAdapters(root)
+
+  const plan = planJobs(questions, models, credentials)
+
+  if (plan.jobs.length === 0) {
+    console.error(
+      'Nothing to run: no model has a credential configured.\n' +
+        'Set provider keys in .env, or run with --mock to replay recorded fixtures.',
+    )
+    return 2
+  }
+
+  const outPath = options.out ?? runPathFor(isoWeekFor(new Date()))
+
+  if (options.dryRun) {
+    printPlan(options, questions, plan, outPath)
+    restoreAdapters?.()
+    return 0
+  }
+
+  console.log(
+    `Running ${plan.jobs.length} job${plan.jobs.length === 1 ? '' : 's'} ` +
+      `(${questions.length} question${questions.length === 1 ? '' : 's'} x ` +
+      `${plan.jobs.length / questions.length} model${plan.jobs.length / questions.length === 1 ? '' : 's'}) ` +
+      `at ${options.samples} sample${options.samples === 1 ? '' : 's'} each` +
+      `${options.mock ? ', in mock mode' : ''}.\n`,
+  )
+
+  try {
+    const outcome = await runBenchmark({
+      questions,
+      models,
+      credentials,
+      getAdapter,
+      fetch: globalThis.fetch,
+      samples: options.samples,
+      concurrency: options.concurrency,
+      timeoutMs: options.timeoutMs,
+      runId: randomUUID(),
+      runnerVersion: readRunnerVersion(root),
+      gitSha: currentGitSha(root),
+      isMock: options.mock,
+      onProgress: (event) => {
+        if (event.type === 'job-done') {
+          console.log(`  ok    ${event.questionId.padEnd(12)} ${event.displayName}`)
+        } else if (event.type === 'job-error') {
+          console.log(`  error ${event.questionId.padEnd(12)} ${event.displayName}: ${event.error}`)
+        }
+      },
+    })
+
+    for (const skip of outcome.skipped) {
+      console.log(`  skip  ${skip.provider} (no key configured)`)
+    }
+
+    const target = resolve(root, outPath)
+    mkdirSync(dirname(target), { recursive: true })
+    writeFileSync(target, JSON.stringify(outcome.run, null, 2) + '\n')
+
+    const manifest = writeManifest(root)
+
+    console.log(`\nWrote ${outPath}`)
+    console.log(`Wrote ${manifest.path} (${manifest.runs} run${manifest.runs === 1 ? '' : 's'})\n`)
+    printSummary(outcome.run)
+
+    // Exit 1 only when nothing at all worked. One provider being down is a
+    // result worth publishing, not a failed run.
+    if (outcome.okJobs === 0) {
+      console.error('\nEvery job failed. Not treating this as a successful run.')
+      return 1
+    }
+    return 0
+  } finally {
+    restoreAdapters?.()
+  }
+}
+
+function printPlan(
+  options: RunCommandOptions,
+  questions: QuestionEntry[],
+  plan: ReturnType<typeof planJobs>,
+  outPath: string,
+): void {
+  const models = [...new Set(plan.jobs.map((job) => job.model.modelId))]
+  console.log('Dry run — no provider will be called.\n')
+  console.log(`Questions:    ${questions.length}`)
+  for (const question of questions) {
+    console.log(`  ${question.id}: ${question.text}`)
+  }
+  console.log(`\nModels:       ${models.length}`)
+  for (const modelId of models) {
+    const job = plan.jobs.find((j) => j.model.modelId === modelId)!
+    console.log(`  ${job.model.provider.padEnd(14)} ${modelId}`)
+  }
+  if (plan.skipped.length > 0) {
+    console.log(`\nSkipped (no key configured):`)
+    for (const model of plan.skipped) {
+      console.log(`  ${model.provider.padEnd(14)} ${model.modelId}`)
+    }
+  }
+  console.log(`\nSamples:      ${options.samples} per model per question`)
+  console.log(`Concurrency:  ${options.concurrency} (never more than one per provider)`)
+  console.log(`Timeout:      ${options.timeoutMs} ms per request`)
+  console.log(`Total calls:  ${plan.jobs.length * options.samples}`)
+  console.log(`Output:       ${outPath}`)
+}
+
+/** A compact per-question, per-model table. */
+function printSummary(run: BenchmarkRun): void {
+  for (const result of run.results) {
+    const question = run.questions.find((q) => q.id === result.questionId)
+    console.log(`${result.questionId} — ${question?.text ?? ''}`)
+
+    const nameWidth = Math.max(...result.models.map((m) => m.displayName.length), 5)
+    console.log(
+      `  ${'model'.padEnd(nameWidth)}  ${'verdict'.padEnd(8)} ${'latency'.padStart(9)} ` +
+        `${'out tok'.padStart(8)} ${'cost'.padStart(11)}  answer`,
+    )
+
+    for (const model of result.models) {
+      if (model.status === 'error') {
+        console.log(
+          `  ${model.displayName.padEnd(nameWidth)}  ${'ERROR'.padEnd(8)} ` +
+            `${(model.error?.category ?? 'unknown').padStart(9)} — ${model.error?.message ?? ''}`,
+        )
+        continue
+      }
+      const latency = model.aggregate.totalMs
+        ? `${Math.round(model.aggregate.totalMs.median)}ms`
+        : '—'
+      const outTokens = model.aggregate.outputTokens
+        ? String(Math.round(model.aggregate.outputTokens.median))
+        : '—'
+      const answer = model.samples[0]?.text.replace(/\s+/g, ' ').slice(0, 40) ?? ''
+      console.log(
+        `  ${model.displayName.padEnd(nameWidth)}  ${(model.aggregate.verdict ?? '—').padEnd(8)} ` +
+          `${latency.padStart(9)} ${outTokens.padStart(8)} ` +
+          `${formatCost(model.aggregate.costEstimateUsd).padStart(11)}  ${JSON.stringify(answer)}`,
+      )
+    }
+
+    const tally = { yes: 0, no: 0, other: 0 }
+    for (const model of result.models) {
+      if (model.aggregate.verdict) tally[model.aggregate.verdict] += 1
+    }
+    console.log(`  → ${tally.yes} yes, ${tally.no} no, ${tally.other} other\n`)
+  }
+}
+
+/** The runner's own version, stamped into every run file. */
+function readRunnerVersion(root: string): string {
+  try {
+    const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as {
+      version?: string
+    }
+    return pkg.version ?? '0.0.0'
+  } catch {
+    return '0.0.0'
+  }
+}
+
+/**
+ * The commit this run was produced from.
+ *
+ * Read from `GITHUB_SHA` in CI, otherwise from git. Null outside a checkout,
+ * which is a legitimate state (someone running from a tarball) rather than an
+ * error.
+ */
+function currentGitSha(root: string): string | null {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA
+  try {
+    return execFileSync('git', ['rev-parse', 'HEAD'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    return null
+  }
+}

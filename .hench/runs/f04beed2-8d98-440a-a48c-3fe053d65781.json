@@ -1,0 +1,28 @@
+{
+  "id": "f04beed2-8d98-440a-a48c-3fe053d65781",
+  "taskId": "cd84a5a1-91b1-4d96-8ff9-4fba90da9e13",
+  "taskTitle": "Implement per-model aggregation and pricing-based cost estimates",
+  "startedAt": "2026-09-01T21:49:25.849Z",
+  "finishedAt": "2026-09-01T21:49:25.849Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "aggregate.ts medians/majority-verdict/compliance-rate and cost.ts upper-bound USD estimates",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

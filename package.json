@@ -13,6 +13,7 @@
     "build": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
     "bench": "node src/cli.ts",
     "bench:smoke": "node src/cli.ts smoke",
+    "bench:record": "node src/cli.ts record",
     "data:index": "node src/cli.ts data index",
     "data:validate": "node src/cli.ts data validate",
     "test": "vitest run",

@@ -30,13 +30,70 @@ If you want the serious version of this: read [`docs/tutorial/`](docs/tutorial/)
 
 ## Quickstart
 
-_(Populated by the runner epic. The first command will be `npm run bench -- run --mock`, which
-runs the full pipeline from recorded fixtures — no API keys, no network.)_
+**No API keys required.** Mock mode replays recorded provider responses, so the entire
+pipeline runs offline:
+
+```sh
+git clone https://github.com/endash/hotdogbenchmark.git
+cd hotdogbenchmark
+nvm use && npm install
+
+npm run bench -- run --mock     # ask all seven models, from recorded fixtures
+npm run dev                     # build and serve the report site
+```
+
+That writes a schema-valid `data/runs/<iso-week>.json` marked `isMock: true`, refreshes
+`data/index.json`, and prints a per-question summary table. Everything downstream of the network
+call is real: answer classification, aggregation, cost estimation, schema validation, and the
+site build.
+
+Set `BENCH_SEED=1` to make mock timings deterministic, so two runs produce identical files.
+
+To see the plan without calling anything:
+
+```sh
+npm run bench -- run --dry-run
+```
+
+### Running against real providers
+
+```sh
+cp .env.example .env            # then fill in whatever keys you have
+npm run bench -- providers      # which keys are configured (never prints a key)
+npm run bench:smoke -- --provider anthropic   # one live call, prints text/usage/timing
+npm run bench -- run            # the real thing
+```
+
+Missing keys are skipped with a warning rather than failing the run, so a partial key set still
+produces a usable report.
 
 ## How it works
 
-_(Populated by the runner and site epics: `models.json` → provider adapters → runner →
-versioned JSON in `data/runs/` → Astro build → GitHub Actions cron → Pages.)_
+```
+questions.json ─┐
+                ├─► runner ──► data/runs/<iso-week>.json ──► Astro build ──► GitHub Pages
+models.json ────┘     │                    ▲
+                      ▼                    │
+              provider adapters      data/index.json
+              (one file per vendor)
+```
+
+1. **`questions.json`** holds the questions. Adding one is a data change.
+2. **`models.json`** holds the models, their pricing, and the docs page each model ID was
+   verified against. No adapter ever hardcodes a model ID.
+3. **Provider adapters** (`src/providers/`) each turn one vendor's API into the same
+   `ProviderAdapter` shape. They receive credentials and `fetch` by injection and are forbidden
+   by lint from importing Node builtins, so the same code can run in a browser.
+4. **The runner** (`src/runner/`) asks every model every question three times, with bounded
+   concurrency and never more than one in-flight call per provider, classifies each answer, and
+   tolerates any provider being down.
+5. **`data/runs/`** stores one versioned JSON file per ISO week. Re-running a week corrects it
+   rather than duplicating it.
+6. **The site** reads `data/` at build time and emits static HTML with no client JavaScript.
+
+Full walkthrough: [`docs/tutorial/`](docs/tutorial/). Data contract:
+[`docs/data-schema.md`](docs/data-schema.md). Why token counts are not comparable across
+vendors: [`docs/usage-normalization.md`](docs/usage-normalization.md).
 
 ## Adding a provider
 

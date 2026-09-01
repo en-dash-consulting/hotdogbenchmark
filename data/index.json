@@ -4,9 +4,9 @@
     {
       "isoWeek": "2026-W36",
       "path": "data/runs/2026-W36.json",
-      "runId": "sample-2026-W36",
-      "startedAt": "2026-09-01T12:00:00.000Z",
-      "finishedAt": "2026-09-01T12:05:00.000Z",
+      "runId": "8a81724e-21bf-4036-8947-c2ba579046f3",
+      "startedAt": "2026-09-01T21:54:38.166Z",
+      "finishedAt": "2026-09-01T21:54:39.265Z",
       "isMock": true,
       "questionIds": [
         "hot-dog",

@@ -1,0 +1,48 @@
+{
+  "provider": "gemini",
+  "modelId": "gemini-3.7-flash",
+  "source": "authored",
+  "recordedAt": "2026-09-01",
+  "note": "Authored to this vendor’s documented response shape; no key was available to capture a live call. Replace with: npm run bench:record -- --provider gemini",
+  "responses": [
+    {
+      "questionId": "hot-dog",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 18,
+        "outputTokens": 1,
+        "totalTokens": 65,
+        "reasoningTokens": 46,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 520,
+      "approxTtfbMs": 210
+    },
+    {
+      "questionId": "hamburger",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 18,
+        "outputTokens": 1,
+        "totalTokens": 65,
+        "reasoningTokens": 46,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 520,
+      "approxTtfbMs": 210
+    },
+    {
+      "questionId": "taco",
+      "text": "No",
+      "usage": {
+        "inputTokens": 17,
+        "outputTokens": 1,
+        "totalTokens": 64,
+        "reasoningTokens": 46,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 520,
+      "approxTtfbMs": 210
+    }
+  ]
+}

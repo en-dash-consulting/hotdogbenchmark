@@ -9,6 +9,9 @@
 import { configuredProviders, loadLocalEnv } from './env.ts'
 import { validateAllRuns, writeManifest } from './data/index.ts'
 import { runSmoke } from './cli/smoke.ts'
+import { runBenchCommand } from './cli/run-command.ts'
+import { runRecord } from './cli/record.ts'
+import { DEFAULT_CONCURRENCY, DEFAULT_SAMPLES, DEFAULT_TIMEOUT_MS } from './runner/run.ts'
 
 const USAGE = `hotdogbenchmark — ask every model whether a hot dog is a sandwich
 
@@ -21,6 +24,7 @@ Commands:
   data validate       Check every file under data/ against the schema
   data index          Regenerate data/index.json from the committed run files
   smoke               Make one live call to one provider and print the result
+  record              Capture fresh mock fixtures from one provider (live)
   help                Show this message
 
 Options for \`run\`:
@@ -57,6 +61,32 @@ function printProviders(): void {
   if (count === 0) {
     console.log('Run `npm run bench -- run --mock` to try the pipeline with no keys at all.')
   }
+}
+
+/** Read a positive number from the environment, falling back to a default. */
+function envNumber(name: string, fallback: number): number {
+  const raw = process.env[name]
+  if (raw === undefined) return fallback
+  const value = Number(raw)
+  return Number.isFinite(value) && value > 0 ? value : fallback
+}
+
+/** Read a numeric `--flag value`, falling back to a default. */
+function numberFlag(argv: string[], flag: string, fallback: number): number {
+  const raw = flagValue(argv, flag)
+  if (raw === undefined) return fallback
+  const value = Number(raw)
+  return Number.isFinite(value) && value > 0 ? value : fallback
+}
+
+/** Read a comma-separated `--flag a,b,c`, or an empty list. */
+function listFlag(argv: string[], flag: string): string[] {
+  const raw = flagValue(argv, flag)
+  if (!raw) return []
+  return raw
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
 }
 
 /** Read `--flag value` from argv, or undefined. */
@@ -115,8 +145,22 @@ export async function main(argv: string[]): Promise<number> {
       return 0
 
     case 'run':
-      console.error('`run` is not implemented yet. See the runner epic.')
-      return 2
+      return runBenchCommand({
+        mock: argv.includes('--mock'),
+        dryRun: argv.includes('--dry-run'),
+        // Flag beats environment beats built-in default, so the weekly
+        // workflow can set BENCH_SAMPLES once without editing any command.
+        samples: numberFlag(argv, '--samples', envNumber('BENCH_SAMPLES', DEFAULT_SAMPLES)),
+        concurrency: numberFlag(
+          argv,
+          '--concurrency',
+          envNumber('BENCH_CONCURRENCY', DEFAULT_CONCURRENCY),
+        ),
+        timeoutMs: numberFlag(argv, '--timeout', envNumber('BENCH_TIMEOUT_MS', DEFAULT_TIMEOUT_MS)),
+        modelIds: listFlag(argv, '--models'),
+        questionIds: listFlag(argv, '--questions'),
+        out: flagValue(argv, '--out'),
+      })
 
     case 'data':
       return runDataCommand(argv[1])
@@ -128,6 +172,15 @@ export async function main(argv: string[]): Promise<number> {
         return 2
       }
       return runSmoke({ provider, prompt: flagValue(argv, '--prompt') })
+    }
+
+    case 'record': {
+      const provider = flagValue(argv, '--provider')
+      if (!provider) {
+        console.error('Usage: npm run bench:record -- --provider <id>')
+        return 2
+      }
+      return runRecord({ provider })
     }
 
     default:

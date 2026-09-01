@@ -24,7 +24,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Implement answer normalization: verdict classification and one-word compliance](./implement-answer-normalization-88a2d0.md) | in_progress |
-| [Implement --mock mode with recorded fixtures for keyless end-to-end runs](./implement-mock-mode-with-6d8676.md) | pending |
-| [Implement per-model aggregation and pricing-based cost estimates](./implement-per-model-aggregation-cd84a5.md) | pending |
-| [Implement runner orchestration and bench run CLI with bounded concurrency and partial-failure tolerance](./implement-runner-orchestration-12dc81.md) | pending |
+| [Implement answer normalization: verdict classification and one-word compliance](./implement-answer-normalization-88a2d0.md) | completed |
+| [Implement --mock mode with recorded fixtures for keyless end-to-end runs](./implement-mock-mode-with-6d8676.md) | in_progress |
+| [Implement per-model aggregation and pricing-based cost estimates](./implement-per-model-aggregation-cd84a5.md) | completed |
+| [Implement runner orchestration and bench run CLI with bounded concurrency and partial-failure tolerance](./implement-runner-orchestration-12dc81.md) | in_progress |

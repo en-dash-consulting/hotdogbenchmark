@@ -1,0 +1,48 @@
+{
+  "provider": "xai",
+  "modelId": "grok-4.6",
+  "source": "live",
+  "recordedAt": "2026-09-01",
+  "note": "Token counts and timing taken from a real captured call on 2026-09-01.",
+  "responses": [
+    {
+      "questionId": "hot-dog",
+      "text": "No",
+      "usage": {
+        "inputTokens": 647,
+        "outputTokens": 1,
+        "totalTokens": 1295,
+        "reasoningTokens": 647,
+        "cachedInputTokens": 640
+      },
+      "approxTotalMs": 9800,
+      "approxTtfbMs": 9790
+    },
+    {
+      "questionId": "hamburger",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 647,
+        "outputTokens": 1,
+        "totalTokens": 1295,
+        "reasoningTokens": 647,
+        "cachedInputTokens": 640
+      },
+      "approxTotalMs": 9800,
+      "approxTtfbMs": 9790
+    },
+    {
+      "questionId": "taco",
+      "text": "Depends.",
+      "usage": {
+        "inputTokens": 647,
+        "outputTokens": 1,
+        "totalTokens": 1295,
+        "reasoningTokens": 647,
+        "cachedInputTokens": 640
+      },
+      "approxTotalMs": 9800,
+      "approxTtfbMs": 9790
+    }
+  ]
+}

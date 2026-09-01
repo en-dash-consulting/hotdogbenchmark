@@ -9,7 +9,14 @@ import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 /** Files that must stay runtime-agnostic: no Node builtins, no process.env. */
-const RUNTIME_AGNOSTIC = ['src/providers/**/*.ts', 'src/runner/**/*.ts', 'src/schema/**/*.ts']
+const RUNTIME_AGNOSTIC = [
+  'src/providers/**/*.ts',
+  'src/runner/**/*.ts',
+  'src/schema/**/*.ts',
+  // Pure path/week arithmetic that the runner needs. The rest of src/data does
+  // real filesystem work and is deliberately not in this list.
+  'src/data/paths.ts',
+]
 
 export default tseslint.config(
   {

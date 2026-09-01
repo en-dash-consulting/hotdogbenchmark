@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "runId": "sample-2026-W36",
+  "runId": "8a81724e-21bf-4036-8947-c2ba579046f3",
   "isoWeek": "2026-W36",
-  "startedAt": "2026-09-01T12:00:00.000Z",
-  "finishedAt": "2026-09-01T12:05:00.000Z",
+  "startedAt": "2026-09-01T21:54:38.166Z",
+  "finishedAt": "2026-09-01T21:54:39.265Z",
   "runnerVersion": "0.1.0",
-  "gitSha": null,
+  "gitSha": "8a1e2cc1a644dc3cee9ac3452b4d0251e3468038",
   "isMock": true,
   "questions": [
     {
@@ -37,19 +37,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 395,
-                "totalMs": 957
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 300,
+                "totalMs": 834
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -58,19 +60,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 318,
-                "totalMs": 813
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 300,
+                "totalMs": 834
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -79,33 +83,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 539,
-                "totalMs": 1022
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 300,
+                "totalMs": 834
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 957,
-              "min": 813,
-              "max": 1022
+              "median": 834,
+              "min": 834,
+              "max": 834
             },
             "ttfbMs": {
-              "median": 395,
-              "min": 318,
-              "max": 539
+              "median": 300,
+              "min": 300,
+              "max": 300
             },
             "inputTokens": {
               "median": 18,
@@ -113,23 +119,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 2.0899,
-              "min": 1.9569,
-              "max": 2.46
+              "median": 1.199,
+              "min": 1.199,
+              "max": 1.199
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00042
+            "costEstimateUsd": 0.000345
           },
           "error": null
         },
@@ -145,19 +151,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 516,
-                "totalMs": 1353
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2729,
+                "totalMs": 2868
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -166,19 +174,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 518,
-                "totalMs": 1425
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2729,
+                "totalMs": 2868
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -187,33 +197,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 628,
-                "totalMs": 1391
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2729,
+                "totalMs": 2868
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1391,
-              "min": 1353,
-              "max": 1425
+              "median": 2868,
+              "min": 2868,
+              "max": 2868
             },
             "ttfbMs": {
-              "median": 518,
-              "min": 516,
-              "max": 628
+              "median": 2729,
+              "min": 2729,
+              "max": 2729
             },
             "inputTokens": {
               "median": 18,
@@ -221,23 +233,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 211,
+              "min": 211,
+              "max": 211
             },
             "tokensPerSecond": {
-              "median": 1.4378,
-              "min": 1.4035,
-              "max": 1.4782
+              "median": 0.3487,
+              "min": 0.3487,
+              "max": 0.3487
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000336
+            "costEstimateUsd": 0.000276
           },
           "error": null
         },
@@ -253,19 +265,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 240,
-                "totalMs": 489
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 502
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -274,19 +288,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 267,
-                "totalMs": 496
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 502
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -295,33 +311,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 181,
-                "totalMs": 512
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 502
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 496,
-              "min": 489,
-              "max": 512
+              "median": 502,
+              "min": 502,
+              "max": 502
             },
             "ttfbMs": {
-              "median": 240,
-              "min": 181,
-              "max": 267
+              "median": 203,
+              "min": 203,
+              "max": 203
             },
             "inputTokens": {
               "median": 18,
@@ -329,23 +347,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 65,
+              "min": 65,
+              "max": 65
             },
             "tokensPerSecond": {
-              "median": 4.0323,
-              "min": 3.9063,
-              "max": 4.09
+              "median": 1.992,
+              "min": 1.992,
+              "max": 1.992
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.000051
           },
           "error": null
         },
@@ -356,104 +374,110 @@
           "status": "ok",
           "samples": [
             {
-              "text": "Yes",
-              "verdict": "yes",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 448,
-                "totalMs": 862
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8426,
+                "totalMs": 8435
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
-              "text": "Yes",
-              "verdict": "yes",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 318,
-                "totalMs": 890
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8426,
+                "totalMs": 8435
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
-              "text": "Yes",
-              "verdict": "yes",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 402,
-                "totalMs": 897
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8426,
+                "totalMs": 8435
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 890,
-              "min": 862,
-              "max": 897
+              "median": 8435,
+              "min": 8435,
+              "max": 8435
             },
             "ttfbMs": {
-              "median": 402,
-              "min": 318,
-              "max": 448
+              "median": 8426,
+              "min": 8426,
+              "max": 8426
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 647,
+              "min": 647,
+              "max": 647
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 1295,
+              "min": 1295,
+              "max": 1295
             },
             "tokensPerSecond": {
-              "median": 2.2472,
-              "min": 2.2297,
-              "max": 2.3202
+              "median": 0.1186,
+              "min": 0.1186,
+              "max": 0.1186
             },
-            "verdict": "yes",
+            "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000144
+            "costEstimateUsd": 0.0039
           },
           "error": null
         },
@@ -469,19 +493,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 366,
-                "totalMs": 695
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 227,
+                "totalMs": 624
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.000011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -490,19 +516,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 252,
-                "totalMs": 671
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 227,
+                "totalMs": 624
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.000011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -511,33 +539,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 348,
-                "totalMs": 712
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 227,
+                "totalMs": 624
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.000011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 695,
-              "min": 671,
-              "max": 712
+              "median": 624,
+              "min": 624,
+              "max": 624
             },
             "ttfbMs": {
-              "median": 348,
-              "min": 252,
-              "max": 366
+              "median": 227,
+              "min": 227,
+              "max": 227
             },
             "inputTokens": {
               "median": 18,
@@ -545,23 +575,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 2.8777,
-              "min": 2.809,
-              "max": 2.9806
+              "median": 1.6026,
+              "min": 1.6026,
+              "max": 1.6026
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000036
+            "costEstimateUsd": 0.000033
           },
           "error": null
         },
@@ -578,18 +608,20 @@
               "usage": {
                 "inputTokens": 18,
                 "outputTokens": 3,
-                "totalTokens": 21,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "totalTokens": 233,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 679,
-                "totalMs": 1516
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 568,
+                "totalMs": 1615
               },
               "costEstimateUsd": 0.000018,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -599,18 +631,20 @@
               "usage": {
                 "inputTokens": 18,
                 "outputTokens": 3,
-                "totalTokens": 21,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "totalTokens": 233,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 497,
-                "totalMs": 1290
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 568,
+                "totalMs": 1615
               },
               "costEstimateUsd": 0.000018,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -620,32 +654,34 @@
               "usage": {
                 "inputTokens": 18,
                 "outputTokens": 3,
-                "totalTokens": 21,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "totalTokens": 233,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 735,
-                "totalMs": 1379
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 568,
+                "totalMs": 1615
               },
               "costEstimateUsd": 0.000018,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1379,
-              "min": 1290,
-              "max": 1516
+              "median": 1615,
+              "min": 1615,
+              "max": 1615
             },
             "ttfbMs": {
-              "median": 679,
-              "min": 497,
-              "max": 735
+              "median": 568,
+              "min": 568,
+              "max": 568
             },
             "inputTokens": {
               "median": 18,
@@ -658,14 +694,14 @@
               "max": 3
             },
             "totalTokens": {
-              "median": 21,
-              "min": 21,
-              "max": 21
+              "median": 233,
+              "min": 233,
+              "max": 233
             },
             "tokensPerSecond": {
-              "median": 2.1755,
-              "min": 1.9789,
-              "max": 2.3256
+              "median": 1.8576,
+              "min": 1.8576,
+              "max": 1.8576
             },
             "verdict": "other",
             "followedInstructionRate": 0,
@@ -680,80 +716,86 @@
           "status": "ok",
           "samples": [
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:00.000Z",
-                "ttfbMs": 129,
-                "totalMs": 355
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 110,
+                "totalMs": 312
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:02.000Z",
-                "ttfbMs": 127,
-                "totalMs": 319
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 110,
+                "totalMs": 312
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:00:04.000Z",
-                "ttfbMs": 170,
-                "totalMs": 356
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 110,
+                "totalMs": 312
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 355,
-              "min": 319,
-              "max": 356
+              "median": 312,
+              "min": 312,
+              "max": 312
             },
             "ttfbMs": {
-              "median": 129,
-              "min": 127,
-              "max": 170
+              "median": 110,
+              "min": 110,
+              "max": 110
             },
             "inputTokens": {
               "median": 18,
@@ -761,23 +803,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 5.6338,
-              "min": 5.618,
-              "max": 6.2696
+              "median": 3.2051,
+              "min": 3.2051,
+              "max": 3.2051
             },
-            "verdict": "no",
+            "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.00006
           },
           "error": null
         }
@@ -798,19 +840,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 460,
-                "totalMs": 840
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 307,
+                "totalMs": 855
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -819,19 +863,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 386,
-                "totalMs": 808
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 307,
+                "totalMs": 855
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -840,33 +886,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 378,
-                "totalMs": 868
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 307,
+                "totalMs": 855
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.000115,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 840,
-              "min": 808,
-              "max": 868
+              "median": 855,
+              "min": 855,
+              "max": 855
             },
             "ttfbMs": {
-              "median": 386,
-              "min": 378,
-              "max": 460
+              "median": 307,
+              "min": 307,
+              "max": 307
             },
             "inputTokens": {
               "median": 18,
@@ -874,23 +922,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 2.381,
-              "min": 2.3041,
-              "max": 2.4752
+              "median": 1.1696,
+              "min": 1.1696,
+              "max": 1.1696
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00042
+            "costEstimateUsd": 0.000345
           },
           "error": null
         },
@@ -906,19 +954,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 632,
-                "totalMs": 1317
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2939,
+                "totalMs": 3089
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -927,19 +977,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 722,
-                "totalMs": 1384
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2939,
+                "totalMs": 3089
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -948,33 +1000,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 499,
-                "totalMs": 1088
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 2939,
+                "totalMs": 3089
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000092,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1317,
-              "min": 1088,
-              "max": 1384
+              "median": 3089,
+              "min": 3089,
+              "max": 3089
             },
             "ttfbMs": {
-              "median": 632,
-              "min": 499,
-              "max": 722
+              "median": 2939,
+              "min": 2939,
+              "max": 2939
             },
             "inputTokens": {
               "median": 18,
@@ -982,23 +1036,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 211,
+              "min": 211,
+              "max": 211
             },
             "tokensPerSecond": {
-              "median": 1.5186,
-              "min": 1.4451,
-              "max": 1.8382
+              "median": 0.3237,
+              "min": 0.3237,
+              "max": 0.3237
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000336
+            "costEstimateUsd": 0.000276
           },
           "error": null
         },
@@ -1014,19 +1068,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 209,
-                "totalMs": 475
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 503
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1035,19 +1091,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 281,
-                "totalMs": 545
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 503
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1056,33 +1114,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 65,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 244,
-                "totalMs": 511
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 203,
+                "totalMs": 503
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 511,
-              "min": 475,
-              "max": 545
+              "median": 503,
+              "min": 503,
+              "max": 503
             },
             "ttfbMs": {
-              "median": 244,
-              "min": 209,
-              "max": 281
+              "median": 203,
+              "min": 203,
+              "max": 203
             },
             "inputTokens": {
               "median": 18,
@@ -1090,23 +1150,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 65,
+              "min": 65,
+              "max": 65
             },
             "tokensPerSecond": {
-              "median": 3.9139,
-              "min": 3.6697,
-              "max": 4.2105
+              "median": 1.9881,
+              "min": 1.9881,
+              "max": 1.9881
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.000051
           },
           "error": null
         },
@@ -1121,20 +1181,22 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 353,
-                "totalMs": 980
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8431,
+                "totalMs": 8440
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1142,20 +1204,22 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 443,
-                "totalMs": 905
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8431,
+                "totalMs": 8440
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1163,58 +1227,60 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 487,
-                "totalMs": 1004
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8431,
+                "totalMs": 8440
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 980,
-              "min": 905,
-              "max": 1004
+              "median": 8440,
+              "min": 8440,
+              "max": 8440
             },
             "ttfbMs": {
-              "median": 443,
-              "min": 353,
-              "max": 487
+              "median": 8431,
+              "min": 8431,
+              "max": 8431
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 647,
+              "min": 647,
+              "max": 647
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 1295,
+              "min": 1295,
+              "max": 1295
             },
             "tokensPerSecond": {
-              "median": 2.0408,
-              "min": 1.992,
-              "max": 2.2099
+              "median": 0.1185,
+              "min": 0.1185,
+              "max": 0.1185
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000144
+            "costEstimateUsd": 0.0039
           },
           "error": null
         },
@@ -1230,75 +1296,81 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 297,
-                "totalMs": 597
-              },
-              "costEstimateUsd": 0.000012,
-              "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 275,
-                "totalMs": 737
-              },
-              "costEstimateUsd": 0.000012,
-              "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 313,
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 213,
                 "totalMs": 586
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.000011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 18,
+                "outputTokens": 1,
+                "totalTokens": 19,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 213,
+                "totalMs": 586
+              },
+              "costEstimateUsd": 0.000011,
+              "raw": {
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 18,
+                "outputTokens": 1,
+                "totalTokens": 19,
+                "reasoningTokens": null,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 213,
+                "totalMs": 586
+              },
+              "costEstimateUsd": 0.000011,
+              "raw": {
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 597,
+              "median": 586,
               "min": 586,
-              "max": 737
+              "max": 586
             },
             "ttfbMs": {
-              "median": 297,
-              "min": 275,
-              "max": 313
+              "median": 213,
+              "min": 213,
+              "max": 213
             },
             "inputTokens": {
               "median": 18,
@@ -1306,23 +1378,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 3.3501,
-              "min": 2.7137,
-              "max": 3.413
+              "median": 1.7065,
+              "min": 1.7065,
+              "max": 1.7065
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000036
+            "costEstimateUsd": 0.000033
           },
           "error": null
         },
@@ -1338,19 +1410,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 231,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 625,
-                "totalMs": 1452
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 502,
+                "totalMs": 1428
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000014,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1359,19 +1433,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 231,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 677,
-                "totalMs": 1443
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 502,
+                "totalMs": 1428
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000014,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1380,33 +1456,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "outputTokens": 1,
+                "totalTokens": 231,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 732,
-                "totalMs": 1633
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 502,
+                "totalMs": 1428
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000014,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1452,
-              "min": 1443,
-              "max": 1633
+              "median": 1428,
+              "min": 1428,
+              "max": 1428
             },
             "ttfbMs": {
-              "median": 677,
-              "min": 625,
-              "max": 732
+              "median": 502,
+              "min": 502,
+              "max": 502
             },
             "inputTokens": {
               "median": 18,
@@ -1414,23 +1492,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 231,
+              "min": 231,
+              "max": 231
             },
             "tokensPerSecond": {
-              "median": 1.3774,
-              "min": 1.2247,
-              "max": 1.386
+              "median": 0.7003,
+              "min": 0.7003,
+              "max": 0.7003
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000048
+            "costEstimateUsd": 0.000042
           },
           "error": null
         },
@@ -1446,19 +1524,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:30.000Z",
-                "ttfbMs": 172,
-                "totalMs": 326
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 131,
+                "totalMs": 371
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1467,19 +1547,21 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:32.000Z",
-                "ttfbMs": 166,
-                "totalMs": 361
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 131,
+                "totalMs": 371
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1488,33 +1570,35 @@
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 19,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:01:34.000Z",
-                "ttfbMs": 118,
-                "totalMs": 325
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 131,
+                "totalMs": 371
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.00002,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 326,
-              "min": 325,
-              "max": 361
+              "median": 371,
+              "min": 371,
+              "max": 371
             },
             "ttfbMs": {
-              "median": 166,
-              "min": 118,
-              "max": 172
+              "median": 131,
+              "min": 131,
+              "max": 131
             },
             "inputTokens": {
               "median": 18,
@@ -1522,23 +1606,23 @@
               "max": 18
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 19,
+              "min": 19,
+              "max": 19
             },
             "tokensPerSecond": {
-              "median": 6.135,
-              "min": 5.5402,
-              "max": 6.1538
+              "median": 2.6954,
+              "min": 2.6954,
+              "max": 2.6954
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.00006
           },
           "error": null
         }
@@ -1558,20 +1642,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 445,
-                "totalMs": 956
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 331,
+                "totalMs": 920
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.00011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1579,20 +1665,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 419,
-                "totalMs": 794
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 331,
+                "totalMs": 920
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.00011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1600,58 +1688,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 475,
-                "totalMs": 940
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 331,
+                "totalMs": 920
               },
-              "costEstimateUsd": 0.00014,
+              "costEstimateUsd": 0.00011,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 940,
-              "min": 794,
-              "max": 956
+              "median": 920,
+              "min": 920,
+              "max": 920
             },
             "ttfbMs": {
-              "median": 445,
-              "min": 419,
-              "max": 475
+              "median": 331,
+              "min": 331,
+              "max": 331
             },
             "inputTokens": {
+              "median": 17,
+              "min": 17,
+              "max": 17
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
               "median": 18,
               "min": 18,
               "max": 18
             },
-            "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
-            },
-            "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
-            },
             "tokensPerSecond": {
-              "median": 2.1277,
-              "min": 2.0921,
-              "max": 2.5189
+              "median": 1.087,
+              "min": 1.087,
+              "max": 1.087
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00042
+            "costEstimateUsd": 0.00033
           },
           "error": null
         },
@@ -1666,20 +1756,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 210,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 541,
-                "totalMs": 1338
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 3137,
+                "totalMs": 3297
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000088,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1687,20 +1779,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 210,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 606,
-                "totalMs": 1272
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 3137,
+                "totalMs": 3297
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000088,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1708,58 +1802,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 210,
+                "reasoningTokens": 192,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 650,
-                "totalMs": 1347
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 3137,
+                "totalMs": 3297
               },
-              "costEstimateUsd": 0.000112,
+              "costEstimateUsd": 0.000088,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1338,
-              "min": 1272,
-              "max": 1347
+              "median": 3297,
+              "min": 3297,
+              "max": 3297
             },
             "ttfbMs": {
-              "median": 606,
-              "min": 541,
-              "max": 650
+              "median": 3137,
+              "min": 3137,
+              "max": 3137
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 17,
+              "min": 17,
+              "max": 17
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 210,
+              "min": 210,
+              "max": 210
             },
             "tokensPerSecond": {
-              "median": 1.4948,
-              "min": 1.4848,
-              "max": 1.5723
+              "median": 0.3033,
+              "min": 0.3033,
+              "max": 0.3033
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000336
+            "costEstimateUsd": 0.000264
           },
           "error": null
         },
@@ -1774,20 +1870,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 64,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 239,
-                "totalMs": 465
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 196,
+                "totalMs": 486
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1795,20 +1893,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 64,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 310,
-                "totalMs": 590
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 196,
+                "totalMs": 486
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1816,58 +1916,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 64,
+                "reasoningTokens": 46,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 253,
-                "totalMs": 526
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 196,
+                "totalMs": 486
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000017,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 526,
-              "min": 465,
-              "max": 590
+              "median": 486,
+              "min": 486,
+              "max": 486
             },
             "ttfbMs": {
-              "median": 253,
-              "min": 239,
-              "max": 310
+              "median": 196,
+              "min": 196,
+              "max": 196
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 17,
+              "min": 17,
+              "max": 17
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 64,
+              "min": 64,
+              "max": 64
             },
             "tokensPerSecond": {
-              "median": 3.8023,
-              "min": 3.3898,
-              "max": 4.3011
+              "median": 2.0576,
+              "min": 2.0576,
+              "max": 2.0576
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.000051
           },
           "error": null
         },
@@ -1882,20 +1984,22 @@
               "verdict": "other",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 431,
-                "totalMs": 1079
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8346,
+                "totalMs": 8354
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1903,20 +2007,22 @@
               "verdict": "other",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 412,
-                "totalMs": 1119
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8346,
+                "totalMs": 8354
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -1924,58 +2030,60 @@
               "verdict": "other",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1295,
+                "reasoningTokens": 647,
+                "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 421,
-                "totalMs": 961
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 8346,
+                "totalMs": 8354
               },
-              "costEstimateUsd": 0.000048,
+              "costEstimateUsd": 0.0013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "live",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1079,
-              "min": 961,
-              "max": 1119
+              "median": 8354,
+              "min": 8354,
+              "max": 8354
             },
             "ttfbMs": {
-              "median": 421,
-              "min": 412,
-              "max": 431
+              "median": 8346,
+              "min": 8346,
+              "max": 8346
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 647,
+              "min": 647,
+              "max": 647
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 1295,
+              "min": 1295,
+              "max": 1295
             },
             "tokensPerSecond": {
-              "median": 1.8536,
-              "min": 1.7873,
-              "max": 2.0812
+              "median": 0.1197,
+              "min": 0.1197,
+              "max": 0.1197
             },
             "verdict": "other",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000144
+            "costEstimateUsd": 0.0039
           },
           "error": null
         },
@@ -1990,20 +2098,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 347,
-                "totalMs": 744
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 260,
+                "totalMs": 716
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.00001,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2011,20 +2121,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 281,
-                "totalMs": 631
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 260,
+                "totalMs": 716
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.00001,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2032,58 +2144,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 364,
-                "totalMs": 678
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 260,
+                "totalMs": 716
               },
-              "costEstimateUsd": 0.000012,
+              "costEstimateUsd": 0.00001,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 678,
-              "min": 631,
-              "max": 744
+              "median": 716,
+              "min": 716,
+              "max": 716
             },
             "ttfbMs": {
-              "median": 347,
-              "min": 281,
-              "max": 364
+              "median": 260,
+              "min": 260,
+              "max": 260
             },
             "inputTokens": {
+              "median": 17,
+              "min": 17,
+              "max": 17
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
               "median": 18,
               "min": 18,
               "max": 18
             },
-            "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
-            },
-            "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
-            },
             "tokensPerSecond": {
-              "median": 2.9499,
-              "min": 2.6882,
-              "max": 3.1696
+              "median": 1.3966,
+              "min": 1.3966,
+              "max": 1.3966
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000036
+            "costEstimateUsd": 0.00003
           },
           "error": null
         },
@@ -2098,20 +2212,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 230,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 593,
-                "totalMs": 1452
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 499,
+                "totalMs": 1419
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2119,20 +2235,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 230,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 563,
-                "totalMs": 1395
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 499,
+                "totalMs": 1419
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2140,58 +2258,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 230,
+                "reasoningTokens": 212,
+                "cachedInputTokens": 12
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 471,
-                "totalMs": 1266
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 499,
+                "totalMs": 1419
               },
-              "costEstimateUsd": 0.000016,
+              "costEstimateUsd": 0.000013,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 1395,
-              "min": 1266,
-              "max": 1452
+              "median": 1419,
+              "min": 1419,
+              "max": 1419
             },
             "ttfbMs": {
-              "median": 563,
-              "min": 471,
-              "max": 593
+              "median": 499,
+              "min": 499,
+              "max": 499
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 17,
+              "min": 17,
+              "max": 17
             },
             "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
+              "median": 1,
+              "min": 1,
+              "max": 1
             },
             "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
+              "median": 230,
+              "min": 230,
+              "max": 230
             },
             "tokensPerSecond": {
-              "median": 1.4337,
-              "min": 1.3774,
-              "max": 1.5798
+              "median": 0.7047,
+              "min": 0.7047,
+              "max": 0.7047
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000048
+            "costEstimateUsd": 0.000039
           },
           "error": null
         },
@@ -2206,20 +2326,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:00.000Z",
-                "ttfbMs": 133,
-                "totalMs": 331
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 124,
+                "totalMs": 352
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000019,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2227,20 +2349,22 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:02.000Z",
-                "ttfbMs": 123,
-                "totalMs": 341
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 124,
+                "totalMs": 352
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000019,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             },
             {
@@ -2248,58 +2372,60 @@
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 2,
-                "totalTokens": 20,
+                "inputTokens": 17,
+                "outputTokens": 1,
+                "totalTokens": 18,
                 "reasoningTokens": null,
                 "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "2026-09-01T12:03:04.000Z",
-                "ttfbMs": 149,
-                "totalMs": 380
+                "startedAt": "1970-01-01T00:00:00.000Z",
+                "ttfbMs": 124,
+                "totalMs": 352
               },
-              "costEstimateUsd": 0.000021,
+              "costEstimateUsd": 0.000019,
               "raw": {
-                "note": "placeholder sample data, not a recorded provider response"
+                "mock": true,
+                "source": "authored",
+                "recordedAt": "2026-09-01"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 341,
-              "min": 331,
-              "max": 380
+              "median": 352,
+              "min": 352,
+              "max": 352
             },
             "ttfbMs": {
-              "median": 133,
-              "min": 123,
-              "max": 149
+              "median": 124,
+              "min": 124,
+              "max": 124
             },
             "inputTokens": {
+              "median": 17,
+              "min": 17,
+              "max": 17
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
               "median": 18,
               "min": 18,
               "max": 18
             },
-            "outputTokens": {
-              "median": 2,
-              "min": 2,
-              "max": 2
-            },
-            "totalTokens": {
-              "median": 20,
-              "min": 20,
-              "max": 20
-            },
             "tokensPerSecond": {
-              "median": 5.8651,
-              "min": 5.2632,
-              "max": 6.0423
+              "median": 2.8409,
+              "min": 2.8409,
+              "max": 2.8409
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000063
+            "costEstimateUsd": 0.000057
           },
           "error": null
         }

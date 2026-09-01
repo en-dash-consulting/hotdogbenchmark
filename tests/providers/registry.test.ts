@@ -170,6 +170,7 @@ describe('toProviderError', () => {
  */
 describe('the runtime-agnostic boundary', () => {
   const dirs = ['src/providers', 'src/runner', 'src/schema']
+  const extraFiles = ['src/data/paths.ts']
   const root = fileURLToPath(new URL('../../', import.meta.url))
 
   /**
@@ -181,21 +182,28 @@ describe('the runtime-agnostic boundary', () => {
   const stripComments = (code: string) =>
     code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
-  const sourceFiles = dirs.flatMap((dir) => {
-    let names: string[]
-    try {
-      names = readdirSync(join(root, dir))
-    } catch {
-      return []
-    }
-    return names
-      .filter((name) => name.endsWith('.ts'))
-      .map((name) => ({
-        path: `${dir}/${name}`,
-        raw: readFileSync(join(root, dir, name), 'utf8'),
-        code: stripComments(readFileSync(join(root, dir, name), 'utf8')),
-      }))
-  })
+  const sourceFiles = [
+    ...extraFiles.map((path) => ({
+      path,
+      raw: readFileSync(join(root, path), 'utf8'),
+      code: stripComments(readFileSync(join(root, path), 'utf8')),
+    })),
+    ...dirs.flatMap((dir) => {
+      let names: string[]
+      try {
+        names = readdirSync(join(root, dir))
+      } catch {
+        return []
+      }
+      return names
+        .filter((name) => name.endsWith('.ts'))
+        .map((name) => ({
+          path: `${dir}/${name}`,
+          raw: readFileSync(join(root, dir, name), 'utf8'),
+          code: stripComments(readFileSync(join(root, dir, name), 'utf8')),
+        }))
+    }),
+  ]
 
   it('covers a non-trivial number of files', () => {
     expect(sourceFiles.length).toBeGreaterThan(3)

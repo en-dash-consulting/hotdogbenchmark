@@ -1,0 +1,48 @@
+{
+  "provider": "openai",
+  "modelId": "gpt-5.6-sol",
+  "source": "authored",
+  "recordedAt": "2026-09-01",
+  "note": "Authored to this vendor’s documented response shape; no key was available to capture a live call. Replace with: npm run bench:record -- --provider openai",
+  "responses": [
+    {
+      "questionId": "hot-dog",
+      "text": "No",
+      "usage": {
+        "inputTokens": 18,
+        "outputTokens": 1,
+        "totalTokens": 211,
+        "reasoningTokens": 192,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3100,
+      "approxTtfbMs": 2950
+    },
+    {
+      "questionId": "hamburger",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 18,
+        "outputTokens": 1,
+        "totalTokens": 211,
+        "reasoningTokens": 192,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3100,
+      "approxTtfbMs": 2950
+    },
+    {
+      "questionId": "taco",
+      "text": "No",
+      "usage": {
+        "inputTokens": 17,
+        "outputTokens": 1,
+        "totalTokens": 210,
+        "reasoningTokens": 192,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3100,
+      "approxTtfbMs": 2950
+    }
+  ]
+}
