@@ -85,6 +85,7 @@ export function createAnthropicAdapter(policy: Partial<RetryPolicy> = {}): Provi
         let text = ''
         let usage: AnthropicUsage = {}
 
+        // #region anthropic-stream
         for await (const event of readSseJson<AnthropicEvent>(response)) {
           switch (event.type) {
             case 'message_start':
@@ -120,6 +121,7 @@ export function createAnthropicAdapter(policy: Partial<RetryPolicy> = {}): Provi
               )
           }
         }
+        // #endregion anthropic-stream
 
         if (usage.input_tokens === undefined || usage.output_tokens === undefined) {
           // A 200 whose body did not carry usage is a response we cannot

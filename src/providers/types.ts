@@ -107,6 +107,7 @@ export interface CompleteResult {
  * Deliberately one method. Anything an adapter is tempted to add — model lists,
  * pricing, retry policy — already lives somewhere shared.
  */
+// #region adapter-interface
 export interface ProviderAdapter {
   /** Stable id matching `models.json` and the credential map. */
   readonly id: string
@@ -115,6 +116,7 @@ export interface ProviderAdapter {
   /** Ask the model. Throws {@link ProviderError} on any failure. */
   complete(request: CompleteRequest, context: AdapterContext): Promise<CompleteResult>
 }
+// #endregion adapter-interface
 
 /**
  * A normalized provider failure.

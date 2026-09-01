@@ -247,3 +247,77 @@ describe('the print stylesheet', () => {
     expect(css).toMatch(/@page\s*\{[\s\S]*?margin:/)
   })
 })
+
+/**
+ * The learn pages carry the project's honesty. These checks make sure the
+ * specific claims that matter are actually on the page, and that the code
+ * excerpts really came from source.
+ */
+describe('the learn pages', () => {
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+
+  it('how-it-works excerpts the real adapter interface from source', () => {
+    const html = read('how-it-works')
+    // If this string is not present, the excerpt marker was removed and the
+    // page would be describing code that no longer exists.
+    expect(html).toContain('complete(request: CompleteRequest, context: AdapterContext)')
+    expect(html).toContain('readSseJson')
+  })
+
+  it('how-it-works has a diagram with a text alternative and seven steps', () => {
+    const html = read('how-it-works')
+    expect(html).toMatch(/role="img"[^>]*aria-label="Pipeline diagram/)
+    expect((html.match(/<h2/g) ?? []).length).toBeGreaterThanOrEqual(7)
+  })
+
+  it('methodology renders the live synonym lists rather than a copy', () => {
+    // Astro adds a scoping attribute to every element, so match the content of
+    // a <code> element rather than an exact tag string.
+    const codeContents = new Set(
+      [...read('methodology').matchAll(/<code[^>]*>([^<]+)<\/code>/g)].map((m) => m[1]!),
+    )
+    for (const word of ['yes', 'yeah', 'absolutely', 'nope', 'never', 'technically']) {
+      expect(codeContents, `missing synonym: ${word}`).toContain(word)
+    }
+  })
+
+  it('methodology states the limitations plainly', () => {
+    const html = read('methodology')
+    expect(html).toContain('Limitations of this research')
+    expect(html).toMatch(/questions are silly/i)
+    expect(html).toMatch(
+      /nothing in this publication measures model\s*<\/strong>?\s*quality|measures model\s+quality/i,
+    )
+  })
+
+  it('methodology explains what latency does and does not measure', () => {
+    const html = read('methodology')
+    expect(html).toMatch(/not a measure of inference speed/i)
+    expect(html).toMatch(/GitHub-hosted runner/i)
+  })
+
+  it('methodology has keyboard-navigable footnotes with back-links', () => {
+    const html = read('methodology')
+    expect(html).toContain('id="fn1"')
+    expect(html).toContain('href="#fnref1"')
+    expect(html).toContain('id="fnref1"')
+  })
+
+  it('methodology documents every constructed score with its formula', () => {
+    const html = read('methodology')
+    for (const name of ['Decisiveness', 'Efficiency', 'Composite score']) {
+      expect(html, `missing score: ${name}`).toContain(name)
+    }
+    expect(html).toMatch(/constructed measures, not/i)
+  })
+
+  it('add-a-model gives exact commands and file paths', () => {
+    const html = read('add-a-model')
+    expect(html).toContain('bench:smoke')
+    expect(html).toContain('bench:record')
+    expect(html).toContain('models.json')
+    expect(html).toContain('anthropic.ts')
+    expect(html).toContain('add_model_or_provider.yml')
+    expect(html).toContain('CONTRIBUTING.md')
+  })
+})

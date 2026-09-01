@@ -1,0 +1,361 @@
+---
+/**
+ * Methodology and caveats, in the register of an analyst firm's appendix — and
+ * completely honest, because the honesty is the actual content.
+ *
+ * The synonym lists and score formulas are imported from the modules that
+ * implement them, so this page cannot describe rules the code does not follow.
+ */
+import Base from '../layouts/Base.astro'
+import { HEDGE_WORDS, NO_WORDS, YES_WORDS } from '../../runner/analyze.ts'
+import { SCORE_DEFINITIONS } from '../lib/scores.ts'
+import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
+import { getModels, getQuestions } from '../lib/data.ts'
+import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
+
+const questions = getQuestions()
+const models = getModels()
+const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
+---
+
+<Base
+  title="Methodology and caveats"
+  description="How the Sandwich Classification Benchmark is conducted, what it measures, and what it does not."
+>
+  <div class="prose">
+    <h1>Methodology and caveats</h1>
+
+    <p class="lede">
+      This appendix describes how the research is conducted and, more importantly, the limits of
+      what it can support. Every figure in this publication is produced by the code linked from this
+      page.
+    </p>
+
+    <h2 id="questions">1. Research questions</h2>
+
+    <p>
+      {questions.length} questions are evaluated each period. All follow a single template, which is enforced
+      by the schema rather than by convention:
+    </p>
+
+    <ul>
+      {
+        questions.map((question) => (
+          <li>
+            <q>{question.text}</q>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p>
+      Every question ends with <q>One word answer.</q> That is not stylistic. It is what makes the instruction-compliance
+      measure below mean anything: a compliance rate is only meaningful if compliance was actually requested.<sup
+        ><a href="#fn1" id="fnref1">1</a></sup
+      >
+    </p>
+
+    <h2 id="parameters">2. Model parameters</h2>
+
+    <p>
+      Each model receives the question as a single user message with no system prompt. Maximum
+      output is capped at {DEFAULT_MAX_OUTPUT_TOKENS} tokens — enough for a model to demonstrate that
+      it is ignoring the instruction, and bounded enough that doing so costs a known amount.
+    </p>
+
+    <p>
+      <strong>Temperature is not set.</strong> Pinning it to zero across several vendors would not make
+      them comparable, because they implement it differently, and it would suppress exactly the week-to-week
+      variation this research exists to observe.
+    </p>
+
+    <h2 id="sampling">3. Sampling and aggregation</h2>
+
+    <p>
+      Each model is asked each question {DEFAULT_SAMPLES} times per period. Language model output is not
+      deterministic; a single sample records what happened once. Three is an odd number, so a majority
+      verdict exists.
+    </p>
+
+    <p>
+      Aggregates are <strong>medians, not means</strong>. With three samples, one cold start or one
+      retried request drags a mean somewhere unrepresentative, and the report would then be
+      describing an artefact of the collection rather than the model.
+    </p>
+
+    <p>
+      Where a model's samples are evenly split between two verdicts, its position is recorded as
+      non-committal. It has not given a consistent answer, and reporting either side as
+      <q>its</q> position would be taking a side on its behalf.
+    </p>
+
+    <h2 id="latency">4. What latency measures</h2>
+
+    <p>
+      <strong>Total latency</strong> is wall-clock time from issuing the request to finishing reading
+      the response. It includes DNS resolution, TLS negotiation, network transit, provider-side queueing,
+      and generation.
+      <strong>It is not a measure of inference speed</strong> and this publication does not present it
+      as one.<sup><a href="#fn2" id="fnref2">2</a></sup>
+    </p>
+
+    <p>
+      <strong>Time to first token</strong> is the interval before the first <em>content</em> token arrives.
+      For models that reason before answering, this can be many seconds even when the eventual answer
+      is a single word — the reasoning is not counted as content, deliberately, because counting it would
+      report a near-zero interval for a model that had said nothing yet.
+    </p>
+
+    <p>
+      Measurements are taken from a GitHub-hosted runner in a region GitHub selects and does not
+      publish. A provider with a point of presence near that runner appears faster for reasons
+      unrelated to its model. Open-weights models are served by a host, and the host's hardware
+      dominates: the Llama figures measure Together AI's serving, not Meta's model.
+    </p>
+
+    <h2 id="verdicts">5. How answers are classified</h2>
+
+    <p>
+      An answer is normalised — trimmed, stripped of surrounding quotes, markdown emphasis and
+      trailing punctuation, lowercased — and then classified. <strong
+        >Only a single-word answer receives a yes or no verdict.</strong
+      > Anything longer is recorded as non-committal, including <q>Yes, but…</q>, because a model
+      that wrote a paragraph has told us something different from one that wrote <q>Yes</q>.
+    </p>
+
+    <div class="word-lists">
+      <div>
+        <h3>Counted as affirmative</h3>
+        <ul class="word-list">
+          {
+            YES_WORDS.map((word) => (
+              <li>
+                <code>{word}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h3>Counted as negative</h3>
+        <ul class="word-list">
+          {
+            NO_WORDS.map((word) => (
+              <li>
+                <code>{word}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h3>Recognised hedges</h3>
+        <ul class="word-list">
+          {
+            HEDGE_WORDS.map((word) => (
+              <li>
+                <code>{word}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <p class="list-source">
+      These lists are imported directly from
+      <a href={sourceUrl('src/runner/analyze.ts')}><code>src/runner/analyze.ts</code></a> when this page
+      is built. They are what the classifier actually uses. If you disagree with an entry, that is a legitimate
+      disagreement about method, and the
+      <a href={`${REPO_URL}/issues`}>issue tracker</a> is the right place for it.
+    </p>
+
+    <h2 id="compliance">6. Instruction compliance</h2>
+
+    <p>
+      Reported separately from classification throughout, because they measure different
+      capabilities. A model can be decisive and disobedient, or obedient and evasive. Collapsing
+      them into a single score would hide the more interesting half of the result.
+    </p>
+
+    <h2 id="scores">7. Constructed scores</h2>
+
+    <p>
+      The quadrant axes and the leaderboard ranking are <strong
+        >constructed measures, not observations</strong
+      >. They are arithmetic applied to opinions about what matters. They are stated in full here so
+      that a reader can decide how much weight to give them:
+    </p>
+
+    <dl class="scores">
+      {
+        SCORE_DEFINITIONS.map((definition) => (
+          <div>
+            <dt>
+              {definition.name} <span class="range">({definition.range})</span>
+            </dt>
+            <dd>
+              <p class="formula">
+                <code>{definition.formula}</code>
+              </p>
+              <p>{definition.note}</p>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p>
+      Quadrant regions are named <q>Category Definers</q>, <q>Rapid Responders</q>,
+      <q>Considered Voices</q> and <q>Emerging Participants</q>. The boundaries are the medians of
+      the current edition, not fixed thresholds, so a vendor's region can change because its
+      competitors changed.
+    </p>
+
+    <h2 id="tokens">8. Token counts are not comparable across vendors</h2>
+
+    <p>
+      Three independent reasons, each sufficient on its own: every vendor tokenises differently;
+      vendors disagree about whether reasoning tokens are counted inside output tokens; and vendors
+      report prompt-cache hits differently. A live measurement in this repository found one vendor
+      reporting a total of 1,295 tokens for a call whose prompt and completion summed to 648 — the
+      difference being reasoning tokens counted separately.
+    </p>
+
+    <p>
+      The full per-provider mapping is in
+      <a href={sourceUrl('docs/usage-normalization.md')}>usage-normalization.md</a>. Do not rank
+      models by token count.
+    </p>
+
+    <h2 id="cost">9. Cost estimates</h2>
+
+    <p>
+      Cost figures are <strong>estimates</strong> computed from a per-token price table recorded in <code
+        >models.json</code
+      >, last read {asOf}. They are not figures from an invoice. Cached input is charged at the full
+      input rate, which makes every estimate a consistent upper bound rather than a
+      differently-wrong number per vendor.
+    </p>
+
+    <h2 id="availability">10. Provider availability</h2>
+
+    <p>
+      Where a provider returns no usable data, that is recorded and published rather than
+      suppressed. Excluding unavailable providers would bias the longitudinal record toward
+      whichever vendors happened to be operating.
+    </p>
+
+    <h2 id="limitations">Limitations of this research</h2>
+
+    <p>
+      The questions are silly. Whether a hot dog is a sandwich is not a matter of fact, there is no
+      correct answer, and consequently <strong
+        >nothing in this publication measures model quality</strong
+      >. A model that answers <q>No</q> is not better or worse than one that answers <q>Yes</q>, and
+      the scores here are deliberately verdict-agnostic to avoid implying otherwise.
+    </p>
+
+    <p>
+      This project exists to demonstrate how a cross-provider benchmark is built: the adapter layer,
+      usage normalisation, latency measurement, sampling, versioned data, scheduled collection, and
+      honest presentation. Those parts are sincere. The subject matter is a vehicle for them.
+    </p>
+
+    <p>
+      If you want to use it for something real, fork it and change
+      <code>questions.json</code>. The <a href={routes.howItWorks()}>how it works</a> page explains the
+      pieces.
+    </p>
+
+    <hr />
+
+    <ol class="footnotes">
+      <li id="fn1">
+        A compliance rate against an instruction that was never given would measure nothing.
+        <a href="#fnref1" aria-label="Back to reference 1">↩</a>
+      </li>
+      <li id="fn2">
+        Inference speed would require controlling for network position, hardware, batching and load.
+        This publication controls for none of them.
+        <a href="#fnref2" aria-label="Back to reference 2">↩</a>
+      </li>
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .lede {
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .word-lists {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-m);
+    margin-block: var(--space-m);
+  }
+
+  .word-lists h3 {
+    font-size: var(--step-0);
+    margin-top: 0;
+  }
+
+  .word-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .word-list code {
+    background: var(--surface-sunken);
+    padding: 0.1em 0.4em;
+    border-radius: var(--radius);
+  }
+
+  .list-source {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .scores > div {
+    padding: var(--space-s) 0;
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .scores dt {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    font-size: var(--step-1);
+  }
+
+  .scores .range {
+    font-family: var(--font-text);
+    font-weight: 400;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .scores dd {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .formula code {
+    background: var(--surface-sunken);
+    padding: 0.2em 0.4em;
+    display: inline-block;
+  }
+
+  .footnotes {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .footnotes li {
+    margin-bottom: var(--space-2xs);
+  }
+</style>

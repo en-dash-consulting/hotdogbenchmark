@@ -1,0 +1,280 @@
+---
+/**
+ * How the pipeline works, aimed at a developer who has never called two LLM
+ * APIs side by side.
+ *
+ * Code excerpts are read from source at build time, so they cannot drift; a
+ * missing marker fails the build rather than producing a page that describes
+ * code that no longer exists.
+ */
+import Base from '../layouts/Base.astro'
+import { excerpt } from '../lib/excerpt.ts'
+import { sourceUrl, routes } from '../lib/urls.ts'
+
+const adapterInterface = excerpt('src/providers/types.ts', 'adapter-interface')
+const anthropicStream = excerpt('src/providers/anthropic.ts', 'anthropic-stream')
+
+const STEPS = [
+  {
+    file: 'questions.json',
+    title: 'Decide what you are asking',
+    body: 'Questions live in a JSON file, not in code. Adding one is a data change, and the schema enforces that every question ends with the same instruction — which is what makes the compliance metric mean anything.',
+  },
+  {
+    file: 'models.json',
+    title: 'Decide who you are asking',
+    body: 'Model IDs live here and nowhere else. Every entry records the documentation page its ID was verified against and the date its pricing was read, because both go stale and a cost estimate from an undated table is a number with no meaning.',
+  },
+  {
+    file: 'src/providers/anthropic.ts',
+    title: 'Write one adapter per vendor',
+    body: 'Each adapter turns one vendor’s HTTP API into the same small shape. It receives its API key and its fetch by injection, so it can be tested with no network and later run in a browser.',
+  },
+  {
+    file: 'src/providers/http.ts',
+    title: 'Share the boring parts',
+    body: 'Timeouts, retries with jittered backoff, and error classification are identical across every vendor, so they are written once. An adapter that called fetch directly would reimplement this badly.',
+  },
+  {
+    file: 'src/runner/run.ts',
+    title: 'Ask everything, several times, politely',
+    body: 'The runner asks every model every question three times, with bounded concurrency and never more than one in-flight request per provider. That second constraint matters: three simultaneous calls to one vendor invites a rate limit, and a retried request measures your own impatience rather than the provider.',
+  },
+  {
+    file: 'data/runs',
+    title: 'Write the answer down, permanently',
+    body: 'One JSON file per ISO week, validated against a versioned schema and committed. Re-running a week corrects that edition rather than creating a second one.',
+  },
+  {
+    file: '.github/workflows/benchmark.yml',
+    title: 'Do it again next week without being asked',
+    body: 'A scheduled GitHub Action runs the benchmark with keys from repository secrets, commits the new data, and triggers a redeploy. Nobody runs the benchmark by hand.',
+  },
+]
+---
+
+<Base
+  title="How it works"
+  description="The pipeline behind the Sandwich Classification Benchmark, from question registry to published report."
+>
+  <div class="prose">
+    <h1>How it works</h1>
+
+    <p>
+      This is a small, complete, cross-provider LLM benchmark. About two thousand lines, no
+      framework, and every part of it is here to solve a problem you will hit too if you build one.
+      This page walks the pipeline in order.
+    </p>
+  </div>
+
+  <figure class="pipeline">
+    <svg
+      viewBox="0 0 760 130"
+      width="760"
+      height="130"
+      role="img"
+      aria-label="Pipeline diagram: questions.json and models.json feed the runner, which calls provider adapters; the runner writes versioned JSON into data/runs, which the Astro build reads to produce static HTML, which GitHub Actions deploys to GitHub Pages on a weekly schedule."
+    >
+      <defs>
+        <marker
+          id="arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--chart-axis)"></path>
+        </marker>
+      </defs>
+      {
+        [
+          { x: 10, y: 10, w: 120, h: 34, label: 'questions.json' },
+          { x: 10, y: 58, w: 120, h: 34, label: 'models.json' },
+          { x: 180, y: 34, w: 110, h: 34, label: 'runner' },
+          { x: 180, y: 88, w: 110, h: 34, label: 'adapters' },
+          { x: 340, y: 34, w: 120, h: 34, label: 'data/runs/' },
+          { x: 510, y: 34, w: 110, h: 34, label: 'Astro build' },
+          { x: 660, y: 34, w: 90, h: 34, label: 'Pages' },
+        ].map((box) => (
+          <g>
+            <rect
+              x={box.x}
+              y={box.y}
+              width={box.w}
+              height={box.h}
+              fill="var(--surface)"
+              stroke="var(--rule-strong)"
+              rx="2"
+            />
+            <text
+              x={box.x + box.w / 2}
+              y={box.y + box.h / 2 + 4}
+              text-anchor="middle"
+              class="node-label"
+            >
+              {box.label}
+            </text>
+          </g>
+        ))
+      }
+      <line x1="132" y1="27" x2="178" y2="48" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+      <line x1="132" y1="75" x2="178" y2="54" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+      <line x1="235" y1="86" x2="235" y2="70" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+      <line x1="292" y1="51" x2="338" y2="51" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+      <line x1="462" y1="51" x2="508" y2="51" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+      <line x1="622" y1="51" x2="658" y2="51" stroke="var(--chart-axis)" marker-end="url(#arrow)"
+      ></line>
+    </svg>
+    <figcaption>
+      Questions and models are data. The runner asks; the adapters translate. Results are written as
+      versioned JSON, read at build time, and published on a schedule.
+    </figcaption>
+  </figure>
+
+  <ol class="steps">
+    {
+      STEPS.map((step) => (
+        <li>
+          <h2>{step.title}</h2>
+          <p>{step.body}</p>
+          <p class="step-file">
+            <a href={sourceUrl(step.file)}>
+              <code>{step.file}</code>
+            </a>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <div class="prose">
+    <h2>The whole interface a provider has to satisfy</h2>
+
+    <p>
+      This is the entire abstraction. Adding a vendor means writing one function that satisfies it.
+      Everything a provider might be tempted to own — model IDs, pricing, retry policy — already
+      lives somewhere shared.
+    </p>
+  </div>
+
+  <pre><code>{adapterInterface}</code></pre>
+
+  <p class="excerpt-source">
+    From <a href={sourceUrl('src/providers/types.ts')}><code>src/providers/types.ts</code></a>, read
+    from source when this page was built.
+  </p>
+
+  <div class="prose">
+    <h2>What an adapter actually does</h2>
+
+    <p>
+      The middle of the Anthropic adapter, which is the one to read first. It consumes a
+      server-sent-event stream, accumulates the text, and marks the moment the first content token
+      arrives — which is the only way time-to-first-token can be measured at all.
+    </p>
+
+    <p>
+      Note the comment on <code>message_delta</code>. Anthropic documents those token counts as
+      cumulative, so the last one wins. That is the kind of detail you only learn by reading the
+      documentation carefully or by getting it wrong for a month.
+    </p>
+  </div>
+
+  <pre><code>{anthropicStream}</code></pre>
+
+  <p class="excerpt-source">
+    From <a href={sourceUrl('src/providers/anthropic.ts')}
+      ><code>src/providers/anthropic.ts</code></a
+    >.
+  </p>
+
+  <div class="prose">
+    <h2>Try it without an API key</h2>
+
+    <p>
+      The entire pipeline runs from recorded fixtures. Everything except the network call is real —
+      classification, aggregation, cost estimation, schema validation, and this site:
+    </p>
+
+    <pre><code>npm run bench -- run --mock
+npm run dev</code></pre>
+
+    <p>
+      What the numbers do and do not mean is covered on the
+      <a href={routes.methodology()}>methodology page</a>. Adding a model or a provider is described
+      on <a href={routes.addAModel()}>add a model</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .pipeline {
+    margin: var(--space-xl) 0;
+  }
+
+  .pipeline svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .node-label {
+    font-size: 12px;
+    fill: var(--text-strong);
+    font-family: var(--font-mono);
+  }
+
+  .pipeline figcaption {
+    font-size: var(--step--1);
+    color: var(--muted);
+    max-width: var(--measure);
+    margin-top: var(--space-2xs);
+  }
+
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    max-width: var(--measure);
+  }
+
+  .steps li {
+    counter-increment: step;
+    padding-left: var(--space-xl);
+    position: relative;
+    margin-bottom: var(--space-l);
+  }
+
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .steps h2 {
+    margin-top: 0;
+    font-size: var(--step-1);
+  }
+
+  .step-file {
+    font-size: var(--step--1);
+    margin: 0;
+  }
+
+  .excerpt-source {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: calc(-1 * var(--space-2xs));
+  }
+</style>
