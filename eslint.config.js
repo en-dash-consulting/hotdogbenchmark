@@ -89,9 +89,18 @@ export default tseslint.config(
   {
     // Plain-JS build scripts: not covered by the TypeScript program, so the
     // Node and web globals they use have to be declared.
+    //
+    // The DOM globals are for code inside Playwright `page.evaluate()`
+    // callbacks. Those function bodies are serialized and run *in the browser*,
+    // so `document` and `getComputedStyle` are genuinely defined there even
+    // though the surrounding file is a Node script.
     files: ['scripts/**/*.mjs', '*.config.js', '*.config.mjs'],
     languageOptions: {
       globals: {
+        document: 'readonly',
+        window: 'readonly',
+        getComputedStyle: 'readonly',
+        location: 'readonly',
         console: 'readonly',
         Buffer: 'readonly',
         process: 'readonly',

@@ -114,15 +114,21 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
 </Base>
 
 <style>
+  /*
+   * minmax(min(Xrem, 100%), 1fr) rather than minmax(Xrem, 1fr): a bare rem
+   * minimum forces a track wider than the container on a 320px screen, which
+   * produces horizontal scrolling that nothing on the page explains. The
+   * accessibility audit caught exactly that here.
+   */
   .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
     gap: var(--space-s);
   }
 
   .scorecard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
     gap: var(--space-s);
     margin-bottom: var(--space-xl);
   }

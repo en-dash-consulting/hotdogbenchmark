@@ -22,6 +22,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:a11y": "node scripts/a11y.mjs",
+    "test:audit": "node scripts/a11y-audit.mjs",
     "test:budget": "node scripts/js-budget.mjs",
     "test:lighthouse": "lhci autorun",
     "lint": "eslint .",

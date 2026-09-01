@@ -292,7 +292,7 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
 
   .word-lists {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     gap: var(--space-m);
     margin-block: var(--space-m);
   }
