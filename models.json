@@ -1,0 +1,124 @@
+{
+  "$schema": "./src/schema/models.ts",
+  "models": [
+    {
+      "provider": "anthropic",
+      "modelId": "claude-opus-5",
+      "displayName": "Claude Opus 5",
+      "vendor": "Anthropic",
+      "docsUrl": "https://platform.claude.com/docs/en/about-claude/models/overview",
+      "pricing": {
+        "inputUsdPerMTok": 5,
+        "outputUsdPerMTok": 25,
+        "pricingUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Reference adapter. Reports cache_read_input_tokens, which matters here because the same short prompt is sent 9 times a week."
+    },
+    {
+      "provider": "openai",
+      "modelId": "gpt-5.6-sol",
+      "displayName": "GPT-5.6 Sol",
+      "vendor": "OpenAI",
+      "docsUrl": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+      "pricing": {
+        "inputUsdPerMTok": 4,
+        "outputUsdPerMTok": 20,
+        "pricingUrl": "https://developers.openai.com/api/docs/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Promotional pricing published as running at least through 2026-11-21; re-read the pricing page after that date."
+    },
+    {
+      "provider": "gemini",
+      "modelId": "gemini-3.7-flash",
+      "displayName": "Gemini 3.7 Flash",
+      "vendor": "Google",
+      "docsUrl": "https://ai.google.dev/gemini-api/docs/models",
+      "pricing": {
+        "inputUsdPerMTok": 0.75,
+        "outputUsdPerMTok": 3.75,
+        "pricingUrl": "https://ai.google.dev/gemini-api/docs/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Introductory pricing through 2026-12-31, after which it doubles to 1.50/7.50. Reports thoughtsTokenCount separately from candidatesTokenCount."
+    },
+    {
+      "provider": "xai",
+      "modelId": "grok-4.6",
+      "displayName": "Grok 4.6",
+      "vendor": "xAI",
+      "docsUrl": "https://docs.x.ai/developers/models",
+      "pricing": {
+        "inputUsdPerMTok": 2,
+        "outputUsdPerMTok": 6,
+        "pricingUrl": "https://docs.x.ai/developers/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Model id and prices confirmed against the live GET /v1/language-models endpoint on 2026-09-01. Long-context tier (200k+ prompt tokens) is double these rates; this benchmark's prompts are ~15 tokens, so the base rate always applies."
+    },
+    {
+      "provider": "mistral",
+      "modelId": "mistral-large-3-25-12",
+      "displayName": "Mistral Large 3",
+      "vendor": "Mistral AI",
+      "docsUrl": "https://docs.mistral.ai/inference/pricing",
+      "pricing": {
+        "inputUsdPerMTok": 0.5,
+        "outputUsdPerMTok": 1.5,
+        "pricingUrl": "https://mistral.ai/pricing/api/",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Mistral's flagship is currently cheaper per token than its mid-tier Medium 3.5, which is unusual enough to be worth stating rather than assuming a mistake."
+    },
+    {
+      "provider": "deepseek",
+      "modelId": "deepseek-v4-pro",
+      "displayName": "DeepSeek V4 Pro",
+      "vendor": "DeepSeek",
+      "docsUrl": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "pricing": {
+        "inputUsdPerMTok": 0.66,
+        "outputUsdPerMTok": 1.98,
+        "pricingUrl": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "DeepSeek charges peak and off-peak rates. Peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays; the weekly run is Monday 12:00 UTC, which is off-peak, so the off-peak rate is the one recorded here. The retired deepseek-chat alias now routes to the v4 family."
+    },
+    {
+      "provider": "llama-hosted",
+      "modelId": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+      "displayName": "Llama 3.3 70B Instruct",
+      "vendor": "Meta (served by Together AI)",
+      "docsUrl": "https://docs.together.ai/docs/serverless/models",
+      "pricing": {
+        "inputUsdPerMTok": 1.04,
+        "outputUsdPerMTok": 1.04,
+        "pricingUrl": "https://www.together.ai/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Open weights, so somebody else's hardware answers. Together AI was chosen over Groq because Groq moved its Llama models to enterprise-only 'contact sales' pricing in June 2026, which a forker on a free tier cannot use. Latency for this row measures Together's serving, not Meta's model."
+    }
+  ]
+}

@@ -9,7 +9,7 @@ import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
 /** Files that must stay runtime-agnostic: no Node builtins, no process.env. */
-const RUNTIME_AGNOSTIC = ['src/providers/**/*.ts', 'src/runner/**/*.ts']
+const RUNTIME_AGNOSTIC = ['src/providers/**/*.ts', 'src/runner/**/*.ts', 'src/schema/**/*.ts']
 
 export default tseslint.config(
   {

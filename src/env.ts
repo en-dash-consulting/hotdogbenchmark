@@ -20,7 +20,7 @@ export const PROVIDER_ENV_VARS = {
   xai: 'XAI_API_KEY',
   mistral: 'MISTRAL_API_KEY',
   deepseek: 'DEEPSEEK_API_KEY',
-  'llama-hosted': 'GROQ_API_KEY',
+  'llama-hosted': 'TOGETHER_API_KEY',
 } as const satisfies Record<string, string>
 
 export type ProviderId = keyof typeof PROVIDER_ENV_VARS

@@ -1,0 +1,28 @@
+{
+  "id": "e3f41145-0f1e-4943-9228-d9364a91d298",
+  "taskId": "70964147-34bd-4a6e-89e4-f40dfc9ab5f5",
+  "taskTitle": "Define versioned zod schema and types for a benchmark run",
+  "startedAt": "2026-09-01T21:20:01.746Z",
+  "finishedAt": "2026-09-01T21:20:01.746Z",
+  "status": "completed",
+  "turns": 18,
+  "summary": "src/schema/run.ts with BenchmarkRun/Question/QuestionResult/ModelResult/Sample/Usage/Timing/ProviderError, cross-field refinements, 24 tests, example fixture, docs/data-schema.md",
+  "tokenUsage": {
+    "input": 36,
+    "output": 35695,
+    "cacheCreationInput": 51899,
+    "cacheReadInput": 3016822
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 36,
+    "output": 35695,
+    "cached": 3068721,
+    "total": 3104452
+  }
+}
