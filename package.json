@@ -12,6 +12,8 @@
     "dev": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
     "build": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
     "bench": "node src/cli.ts",
+    "data:index": "node src/cli.ts data index",
+    "data:validate": "node src/cli.ts data validate",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",

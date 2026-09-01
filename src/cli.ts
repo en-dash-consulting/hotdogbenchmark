@@ -7,6 +7,7 @@
  * `src/providers`) stays runtime-agnostic so the same logic can run in a browser.
  */
 import { configuredProviders, loadLocalEnv } from './env.ts'
+import { validateAllRuns, writeManifest } from './data/index.ts'
 
 const USAGE = `hotdogbenchmark — ask every model whether a hot dog is a sandwich
 
@@ -16,6 +17,8 @@ Usage:
 Commands:
   run                 Run the benchmark and write data/runs/<isoWeek>.json
   providers           List providers and whether a key is configured
+  data validate       Check every file under data/ against the schema
+  data index          Regenerate data/index.json from the committed run files
   help                Show this message
 
 Options for \`run\`:
@@ -50,6 +53,37 @@ function printProviders(): void {
   }
 }
 
+/**
+ * `data validate` and `data index`.
+ *
+ * Validation reports every bad file rather than only the first, so a
+ * contributor fixing several sees them all in one run.
+ */
+function runDataCommand(subcommand: string | undefined): number {
+  switch (subcommand) {
+    case 'validate': {
+      const problems = validateAllRuns()
+      if (problems.length > 0) {
+        console.error(`${problems.length} invalid file(s) under data/:\n`)
+        for (const problem of problems) console.error(problem + '\n')
+        return 1
+      }
+      console.log('All files under data/ validate against the schema.')
+      return 0
+    }
+
+    case 'index': {
+      const { path, runs } = writeManifest()
+      console.log(`Wrote ${path} (${runs} run${runs === 1 ? '' : 's'}).`)
+      return 0
+    }
+
+    default:
+      console.error(`Usage: npm run bench -- data <validate|index>`)
+      return 2
+  }
+}
+
 export async function main(argv: string[]): Promise<number> {
   loadLocalEnv()
   const [command] = argv
@@ -69,6 +103,9 @@ export async function main(argv: string[]): Promise<number> {
     case 'run':
       console.error('`run` is not implemented yet. See the runner epic.')
       return 2
+
+    case 'data':
+      return runDataCommand(argv[1])
 
     default:
       console.error(`Unknown command: ${command}\n`)

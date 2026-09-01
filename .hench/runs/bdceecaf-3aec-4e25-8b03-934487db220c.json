@@ -1,0 +1,28 @@
+{
+  "id": "bdceecaf-3aec-4e25-8b03-934487db220c",
+  "taskId": "b78a714a-10e9-49b2-8bcf-c45d2e986e36",
+  "taskTitle": "Create models.json registry with zod validation",
+  "startedAt": "2026-09-01T21:25:17.013Z",
+  "finishedAt": "2026-09-01T21:25:17.013Z",
+  "status": "completed",
+  "turns": 2,
+  "summary": "Seven flagship models, IDs verified live against vendor docs; Together AI replaces Groq for Llama hosting",
+  "tokenUsage": {
+    "input": 4,
+    "output": 1316,
+    "cacheCreationInput": 1560,
+    "cacheReadInput": 453134
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 4,
+    "output": 1316,
+    "cached": 454694,
+    "total": 456014
+  }
+}

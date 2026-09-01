@@ -25,7 +25,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Create models.json registry with zod validation](./create-models-json-registry-b78a71.md) | pending |
-| [Create questions.json registry with the hot dog, hamburger, and taco questions](./create-questions-json-registry-bbacec.md) | in_progress |
+| [Create models.json registry with zod validation](./create-models-json-registry-b78a71.md) | completed |
+| [Create questions.json registry with the hot dog, hamburger, and taco questions](./create-questions-json-registry-bbacec.md) | completed |
 | [Define versioned zod schema and types for a benchmark run](./define-versioned-zod-schema-and-709641.md) | completed |
-| [Implement data storage layout, index manifest generator, and data:validate script](./implement-data-storage-layout-ca13dc.md) | pending |
+| [Implement data storage layout, index manifest generator, and data:validate script](./implement-data-storage-layout-ca13dc.md) | in_progress |
