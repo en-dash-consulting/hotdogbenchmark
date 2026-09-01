@@ -321,3 +321,85 @@ describe('the learn pages', () => {
     expect(html).toContain('CONTRIBUTING.md')
   })
 })
+
+describe('SEO and social metadata', () => {
+  it('gives every page OpenGraph and Twitter card tags with an absolute image URL', () => {
+    for (const page of pages) {
+      expect(page.html, `${page.path} has no og:title`).toMatch(/property="og:title"/)
+      expect(page.html, `${page.path} has no og:description`).toMatch(/property="og:description"/)
+      expect(page.html, `${page.path} has no og:image`).toMatch(/property="og:image"/)
+      expect(page.html, `${page.path} has no twitter:card`).toMatch(/name="twitter:card"/)
+      // A relative og:image is silently ignored by every card validator.
+      const image = /property="og:image" content="([^"]+)"/.exec(page.html)?.[1]
+      expect(image, `${page.path} og:image is not absolute`).toMatch(/^https?:\/\//)
+    }
+  })
+
+  it('gives every OG image alt text and explicit dimensions', () => {
+    for (const page of pages) {
+      expect(page.html).toMatch(/property="og:image:alt"/)
+      expect(page.html).toContain('content="1200"')
+      expect(page.html).toContain('content="630"')
+    }
+  })
+
+  it('renders an OG card per report plus a site default', () => {
+    const ogDir = join(DIST, 'og')
+    expect(existsSync(ogDir)).toBe(true)
+    const cards = readdirSync(ogDir).filter((name) => name.endsWith('.png'))
+    expect(cards).toContain('default.png')
+    expect(cards).toContain('hot-dog.png')
+    for (const card of cards) {
+      const bytes = readFileSync(join(ogDir, card))
+      // PNG magic number: it is a real image, not an empty file.
+      expect(bytes.subarray(1, 4).toString(), card).toBe('PNG')
+      expect(bytes.length, `${card} is suspiciously small`).toBeGreaterThan(5000)
+    }
+  })
+
+  it('emits a sitemap, robots.txt and both feeds', () => {
+    for (const file of ['sitemap-index.xml', 'robots.txt', 'feed.json', 'feed.xml']) {
+      expect(existsSync(join(DIST, file)), `missing ${file}`).toBe(true)
+    }
+  })
+
+  it('points robots.txt at the sitemap on the deployed origin', () => {
+    const robots = readFileSync(join(DIST, 'robots.txt'), 'utf8')
+    expect(robots).toMatch(/^Sitemap: https?:\/\/.+sitemap-index\.xml$/m)
+  })
+
+  it('produces a valid JSON Feed with one entry per edition', () => {
+    const feed = JSON.parse(readFileSync(join(DIST, 'feed.json'), 'utf8'))
+    expect(feed.version).toBe('https://jsonfeed.org/version/1.1')
+    expect(feed.title.length).toBeGreaterThan(0)
+    expect(Array.isArray(feed.items)).toBe(true)
+
+    const manifest = JSON.parse(readFileSync(join(ROOT, 'data/index.json'), 'utf8'))
+    expect(feed.items).toHaveLength(manifest.runs.length)
+
+    for (const item of feed.items) {
+      expect(item.id).toMatch(/^https?:\/\//)
+      expect(item.title.length).toBeGreaterThan(0)
+      expect(item.content_text).toMatch(/affirmative/)
+      expect(Number.isNaN(Date.parse(item.date_published))).toBe(false)
+    }
+  })
+
+  it('produces well-formed RSS with escaped content', () => {
+    const rss = readFileSync(join(DIST, 'feed.xml'), 'utf8')
+    expect(rss.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true)
+    expect(rss).toContain('<rss version="2.0"')
+    expect(rss).toContain('</rss>')
+    // Balanced item tags.
+    expect((rss.match(/<item>/g) ?? []).length).toBe((rss.match(/<\/item>/g) ?? []).length)
+    // Nothing unescaped leaked into an element body. Extract the bodies first:
+    // an earlier version of this check matched the closing </description> tag
+    // and would have failed on a perfectly well-formed feed.
+    const bodies = [...rss.matchAll(/<(description|title)>([\s\S]*?)<\/\1>/g)].map((m) => m[2]!)
+    expect(bodies.length).toBeGreaterThan(0)
+    for (const body of bodies) {
+      expect(body, `unescaped < or > in: ${body}`).not.toMatch(/[<>]/)
+      expect(body, `unescaped & in: ${body}`).not.toMatch(/&(?!(amp|lt|gt|quot|apos|#\d+);)/)
+    }
+  })
+})

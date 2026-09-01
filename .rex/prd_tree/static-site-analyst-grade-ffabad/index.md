@@ -29,7 +29,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 |-------|--------|
 | [Analyst-grade report visuals: quadrant chart, leaderboard, scorecards, key findings, and print edition](./analyst-grade-report-visuals-19e13b/index.md) | completed |
 | [History and trends: run archive, week-over-week charts, and flip-flop tracker](./history-and-trends-run-archive-83ed89/index.md) | completed |
-| [Learn pages: how it works, methodology and caveats, add a model](./learn-pages-how-it-works-fce91e/index.md) | pending |
+| [Learn pages: how it works, methodology and caveats, add a model](./learn-pages-how-it-works-fce91e/index.md) | completed |
 | [Performance, accessibility, and SEO hardening](./performance-accessibility-and-6f906c/index.md) | pending |
 | [Report pages: executive summary, KPI tiles, and per-model vendor profiles for each question](./report-pages-executive-summary-255024/index.md) | completed |
 | [Site foundation: Astro scaffold, analyst-report design system, theming, and layout shell](./site-foundation-astro-scaffold-9d9cc8/index.md) | completed |

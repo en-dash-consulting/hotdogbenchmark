@@ -19,14 +19,22 @@ interface Props {
   description: string
   /** Rendered in the <title> as "<title> — Sandwich Classification Benchmark". */
   bareTitle?: boolean
+  /** Name of a card under /og/, without the extension. Defaults to the site card. */
+  ogImage?: string
 }
 
-const { title, description, bareTitle = false } = Astro.props
+const { title, description, bareTitle = false, ogImage = 'default' } = Astro.props
 
 const SITE_NAME = 'Sandwich Classification Benchmark'
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
+// OpenGraph requires an absolute URL; a relative one is silently ignored by
+// every card validator, which is a slow way to find out it is wrong.
+const ogImageUrl = new URL(
+  `${import.meta.env.BASE_URL.replace(/\/$/, '')}/og/${ogImage}.png`,
+  Astro.site ?? 'http://localhost:4321',
+).href
 const latest = getLatestRun()
 
 const NAV = [
@@ -56,7 +64,12 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${title} — Sandwich Classification Benchmark`} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
 

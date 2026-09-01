@@ -10,7 +10,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/pdf.mjs",
+    "build": "astro build && node scripts/og-images.mjs && node scripts/pdf.mjs",
+    "build:og": "node scripts/og-images.mjs",
     "build:site": "astro build",
     "build:pdf": "node scripts/pdf.mjs",
     "bench": "node src/cli.ts",
@@ -21,6 +22,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:a11y": "node scripts/a11y.mjs",
+    "test:budget": "node scripts/js-budget.mjs",
+    "test:lighthouse": "lhci autorun",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -36,6 +39,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.11.0",
+    "@lhci/cli": "^0.15.1",
     "@types/node": "^22.7.0",
     "eslint": "^9.11.0",
     "playwright": "^1.62.1",

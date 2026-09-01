@@ -41,6 +41,7 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
 
 <Base
   title={question.reportTitle}
+  ogImage={question.id}
   description={`Cross-vendor evaluation of how leading AI models classify ${question.subject}. ${run ? formatEdition(run.isoWeek) : ''} edition.`}
 >
   {

@@ -42,6 +42,7 @@ const askedText = getQuestionTextInRun(run, question.id)
 
 <Base
   title={`${question.reportTitle} — ${formatEdition(run.isoWeek)}`}
+  ogImage={question.id}
   description={`Archived ${formatEdition(run.isoWeek)} results for: ${askedText ?? question.text}`}
 >
   <Masthead question={question} run={run} archived questionText={askedText ?? question.text} />
