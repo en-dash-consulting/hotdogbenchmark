@@ -1,0 +1,46 @@
+# Keep the tutorial current.
+#
+# This repository exists to be read and copied, so a dependency list that
+# rots teaches the wrong thing. Weekly, grouped, so a fork does not drown in
+# single-package pull requests.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: tuesday
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the toolchain rather than six.
+      dev-tooling:
+        patterns:
+          - '@eslint/*'
+          - 'eslint*'
+          - 'prettier*'
+          - 'typescript*'
+          - 'vitest'
+          - '@types/*'
+        update-types: ['minor', 'patch']
+      astro:
+        patterns:
+          - 'astro'
+          - '@astrojs/*'
+        update-types: ['minor', 'patch']
+      testing:
+        patterns:
+          - 'playwright'
+          - '@axe-core/*'
+          - '@lhci/*'
+          - 'esbuild'
+        update-types: ['minor', 'patch']
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: tuesday
+    groups:
+      actions:
+        patterns: ['*']

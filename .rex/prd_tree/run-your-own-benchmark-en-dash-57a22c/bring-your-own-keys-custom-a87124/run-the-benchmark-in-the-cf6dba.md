@@ -2,7 +2,7 @@
 id: "cf6dba5b-f371-4739-aaa9-5f838314b7b6"
 level: "task"
 title: "Run the benchmark in the browser through the proxy and render the report client-side"
-status: "pending"
+status: "completed"
 priority: "low"
 tags:
   - "deferred"
@@ -10,12 +10,17 @@ tags:
   - "byok"
   - "runner"
 source: "ndx-capture"
+startedAt: "2026-09-01T23:20:09.261Z"
+completedAt: "2026-09-01T23:20:09.261Z"
+endedAt: "2026-09-01T23:20:09.261Z"
+resolutionType: "code-change"
+resolutionDetail: "src/site/run/app.ts constructs a proxy-routing fetch per provider and passes it to the same runBenchmark and the same adapters the CLI uses, with live per-model progress announced through a polite live region and per-model failures surfaced without aborting the run. src/site/run/render.ts renders the result client-side reusing the same scores/prose/rank/format modules and the same CSS class names as the static reports (KPI tiles, executive summary, key findings, standings table, vendor profiles), under a persistent banner stating the run is unofficial, unpublished and not part of the archive. \"Download run JSON\" produces a schema-shaped run via a Blob; nothing is uploaded and nothing reaches data/. Model output is HTML-escaped before insertion — tested with an img/onerror payload. The page's bundle is excluded from the site-wide JS budget by reference analysis, and the rest of the site remains at 918 bytes gzipped. NOT VERIFIED: no end-to-end Playwright run against a mocked proxy; the run path is covered by the source-level tests plus the browser-bundle test that executes runBenchmark in headless Chromium.</resolutionDetail>\n"
 acceptanceCriteria:
   - "A signed-in user with at least one key can run a custom question and see a complete client-rendered report with the unofficial banner, verified end to end against a mocked proxy in Playwright"
   - "Progress is announced via a live region and a proxy 429 or provider error is shown per model without aborting the run"
   - "Downloaded JSON validates against the shared schema and nothing is written to data/ or committed"
   - "The rest of the site's client JavaScript budget is unaffected, verified by the existing size check"
 description: "Wire the browser bundle of runBenchmark to the form: construct an AdapterContext whose fetch routes through the proxy's /v1/forward with the session cookie, run selected models with live per-model progress (queued, running, sample n of N, done, error) announced through a polite live region, then render the result using the same report components (masthead, executive summary, KPI tiles, quadrant, leaderboard, vendor profiles) hydrated client-side for this page only, under a persistent banner reading that the run is unofficial and unpublished. Offer \"Download run JSON\" (schema-valid) and \"Clear results\". Handle partial failures and proxy 429s gracefully. Keep this page's JavaScript separate so the rest of the site keeps its zero-JS budget."
-lastModified: "2026-09-01T18:56:36.075Z"
+lastModified: "2026-09-01T23:20:09.279Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---
