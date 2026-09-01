@@ -1,0 +1,230 @@
+---
+/**
+ * Verdict share per edition, as a stacked bar.
+ *
+ * Each segment carries a **direct label** when it is tall enough to hold one,
+ * and every segment is additionally distinguished by a hatch pattern. Colour is
+ * never the only encoding: that fails WCAG 1.4.1, and it disappears entirely in
+ * forced-colors mode where the patterns still read.
+ */
+import ChartFrame from './ChartFrame.astro'
+import { bandCentres, bandWidth, plotArea, round } from '../../lib/scale.ts'
+import { formatEdition } from '../../lib/format.ts'
+import type { Verdict } from '../../../schema/run.ts'
+
+interface Point {
+  isoWeek: string
+  counts: Record<Verdict, number>
+}
+
+interface Props {
+  points: Point[]
+  title: string
+  caption?: string
+}
+
+const { points, title, caption } = Astro.props
+
+const BOX = { width: 720, height: 260, padding: { top: 16, right: 16, bottom: 44, left: 44 } }
+const area = plotArea(BOX)
+
+const SERIES: Array<{ key: Verdict; label: string; colour: string; pattern: string }> = [
+  { key: 'yes', label: 'Affirmative', colour: 'var(--chart-1)', pattern: 'pattern-yes' },
+  { key: 'no', label: 'Negative', colour: 'var(--chart-2)', pattern: 'pattern-no' },
+  { key: 'other', label: 'Non-committal', colour: 'var(--chart-3)', pattern: 'pattern-other' },
+]
+
+const centres = bandCentres(points.length, area.x, area.x + area.width)
+const width = bandWidth(points.length, area.x, area.x + area.width, 0.35)
+
+const bars = points.map((point, index) => {
+  const total = SERIES.reduce((sum, series) => sum + point.counts[series.key], 0)
+  let offset = 0
+  const segments = SERIES.map((series) => {
+    const count = point.counts[series.key]
+    const share = total > 0 ? count / total : 0
+    const height = round(share * area.height)
+    const y = round(area.y + area.height - offset - height)
+    offset += height
+    return { ...series, count, share, y, height }
+  })
+  return {
+    isoWeek: point.isoWeek,
+    total,
+    x: round(centres[index]! - width / 2),
+    segments,
+  }
+})
+
+const latest = points.at(-1)
+const latestTotal = latest ? SERIES.reduce((s, series) => s + latest.counts[series.key], 0) : 0
+const summary =
+  latest && latestTotal > 0
+    ? `Stacked bar chart of verdict share across ${points.length} editions. In the most recent edition, ${formatEdition(latest.isoWeek)}, ${SERIES.map((s) => `${latest.counts[s.key]} ${s.label.toLowerCase()}`).join(', ')}.`
+    : `Stacked bar chart of verdict share across ${points.length} editions.`
+---
+
+<ChartFrame title={title} summary={summary} caption={caption}>
+  <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} width={BOX.width} height={BOX.height}>
+    <defs>
+      {/* Patterns, so the series stay distinguishable without colour. */}
+      <pattern id="pattern-yes" width="6" height="6" patternUnits="userSpaceOnUse">
+        <rect width="6" height="6" fill="var(--chart-1)"></rect>
+      </pattern>
+      <pattern
+        id="pattern-no"
+        width="6"
+        height="6"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(45)"
+      >
+        <rect width="6" height="6" fill="var(--chart-2)"></rect>
+        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--surface)" stroke-width="2"></line>
+      </pattern>
+      <pattern
+        id="pattern-other"
+        width="6"
+        height="6"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(-45)"
+      >
+        <rect width="6" height="6" fill="var(--chart-3)"></rect>
+        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--surface)" stroke-width="2"></line>
+      </pattern>
+    </defs>
+
+    <line
+      x1={area.x}
+      y1={area.y + area.height}
+      x2={area.x + area.width}
+      y2={area.y + area.height}
+      stroke="var(--chart-axis)"
+      stroke-width="1"></line>
+
+    {
+      bars.map((bar) => (
+        <g>
+          {bar.segments.map(
+            (segment) =>
+              segment.height > 0 && (
+                <>
+                  <rect
+                    x={bar.x}
+                    y={segment.y}
+                    width={round(width)}
+                    height={segment.height}
+                    fill={`url(#${segment.pattern})`}
+                  />
+                  {segment.height > 18 && (
+                    <text
+                      x={round(bar.x + width / 2)}
+                      y={round(segment.y + segment.height / 2 + 4)}
+                      text-anchor="middle"
+                      class="segment-label"
+                    >
+                      {segment.count}
+                    </text>
+                  )}
+                </>
+              ),
+          )}
+          <text
+            x={round(bar.x + width / 2)}
+            y={BOX.height - 24}
+            text-anchor="middle"
+            class="axis-label"
+          >
+            {bar.isoWeek.replace(/^\d{4}-/, '')}
+          </text>
+        </g>
+      ))
+    }
+
+    <text x={area.x} y={BOX.height - 6} class="axis-title">Edition (ISO week)</text>
+  </svg>
+
+  <table slot="table">
+    <caption>{title} — data</caption>
+    <thead>
+      <tr>
+        <th scope="col">Edition</th>
+        {
+          SERIES.map((series) => (
+            <th scope="col" class="numeric">
+              {series.label}
+            </th>
+          ))
+        }
+        <th scope="col" class="numeric">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        bars.map((bar) => (
+          <tr>
+            <th scope="row">{formatEdition(bar.isoWeek)}</th>
+            {bar.segments.map((segment) => (
+              <td class="numeric">{segment.count}</td>
+            ))}
+            <td class="numeric">{bar.total}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</ChartFrame>
+
+<ul class="legend">
+  {
+    SERIES.map((series) => (
+      <li>
+        <span class="swatch" style={`background: ${series.colour}`} aria-hidden="true" />
+        {series.label}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .segment-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--surface);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .axis-label {
+    font-size: 11px;
+    fill: var(--chart-axis);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .axis-title {
+    font-size: 11px;
+    fill: var(--muted);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    list-style: none;
+    padding: 0;
+    margin: calc(-1 * var(--space-m)) 0 var(--space-l);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+  }
+
+  .swatch {
+    width: 0.75em;
+    height: 0.75em;
+    display: inline-block;
+    border: var(--hairline) solid var(--rule-strong);
+  }
+</style>

@@ -26,6 +26,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Build build-time SVG chart components for verdict share and per-model trends with table fallbacks](./build-build-time-svg-chart-3b89db.md) | pending |
+| [Build build-time SVG chart components for verdict share and per-model trends with table fallbacks](./build-build-time-svg-chart-3b89db.md) | in_progress |
 | [Build the /history/ page with per-question trend charts and the Position Changes tracker](./build-the-history-page-with-per-7e82c1.md) | pending |
 | [Generate a static archive page per run at /runs/[isoWeek]/](./generate-a-static-archive-page-c92c61.md) | pending |

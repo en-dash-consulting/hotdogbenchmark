@@ -1,0 +1,178 @@
+---
+/**
+ * A model's metric across editions.
+ *
+ * Small, label-free by design — the current value and the delta are printed
+ * next to it, which is what a reader actually reads. The line shows shape.
+ *
+ * Gaps are real: a null point breaks the line rather than being interpolated
+ * across, so an edition where a model was unavailable looks different from one
+ * where it was fast.
+ */
+import { boundsOf, linePath, plotArea, round, scaleLinear } from '../../lib/scale.ts'
+import { formatEdition } from '../../lib/format.ts'
+
+interface Props {
+  /** Oldest first. Null means no data for that edition. */
+  points: Array<{ isoWeek: string; value: number | null }>
+  label: string
+  /** Renders the value, e.g. "834 ms". */
+  format: (value: number) => string
+  colour?: string
+}
+
+const { points, label, format, colour = 'var(--chart-1)' } = Astro.props
+
+const BOX = { width: 200, height: 44, padding: { top: 4, right: 4, bottom: 4, left: 4 } }
+const area = plotArea(BOX)
+
+const values = points.map((point) => point.value).filter((v): v is number => v !== null)
+const bounds = boundsOf(values, false)
+
+const coordinates = points.map((point, index) => {
+  if (point.value === null) return null
+  const x =
+    points.length === 1
+      ? area.x + area.width / 2
+      : scaleLinear(
+          index,
+          { min: 0, max: points.length - 1 },
+          {
+            start: area.x,
+            end: area.x + area.width,
+          },
+        )
+  // y is inverted: a larger value sits higher on the page.
+  const y = scaleLinear(point.value, bounds, {
+    start: area.y + area.height,
+    end: area.y,
+  })
+  return { x: round(x), y: round(y) }
+})
+
+const path = linePath(coordinates)
+const last = [...coordinates].reverse().find((c) => c !== null) ?? null
+
+const latest = [...points].reverse().find((p) => p.value !== null)?.value ?? null
+const previous =
+  [...points]
+    .reverse()
+    .slice(1)
+    .find((p) => p.value !== null)?.value ?? null
+const delta = latest !== null && previous !== null ? latest - previous : null
+
+const summary =
+  values.length === 0
+    ? `${label}: no data recorded.`
+    : `${label} across ${points.length} editions, from ${format(values[0]!)} to ${format(values.at(-1)!)}.` +
+      (delta === null
+        ? ''
+        : ` ${delta === 0 ? 'Unchanged' : delta > 0 ? 'Up' : 'Down'} ${format(Math.abs(delta))} since the prior edition.`)
+---
+
+<div class="sparkline">
+  <div class="sparkline-head">
+    <span class="sparkline-label">{label}</span>
+    <span class="sparkline-value tabular">{latest === null ? '—' : format(latest)}</span>
+  </div>
+
+  {
+    values.length > 0 ? (
+      <svg
+        viewBox={`0 0 ${BOX.width} ${BOX.height}`}
+        width={BOX.width}
+        height={BOX.height}
+        role="img"
+        aria-label={summary}
+      >
+        <path d={path} fill="none" stroke={colour} stroke-width="1.5" stroke-linejoin="round" />
+        {last && <circle cx={last.x} cy={last.y} r="2.5" fill={colour} />}
+      </svg>
+    ) : (
+      <p class="sparkline-empty">No data</p>
+    )
+  }
+
+  {
+    delta !== null && (
+      <p class:list={['sparkline-delta', delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat']}>
+        <span aria-hidden="true">{delta > 0 ? '▲' : delta < 0 ? '▼' : '—'}</span>
+        <span>{delta === 0 ? 'unchanged' : `${format(Math.abs(delta))} vs prior`}</span>
+      </p>
+    )
+  }
+
+  <details class="sparkline-data">
+    <summary>Data</summary>
+    <table>
+      <caption class="visually-hidden">{label} by edition</caption>
+      <thead>
+        <tr>
+          <th scope="col">Edition</th>
+          <th scope="col" class="numeric">{label}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          points.map((point) => (
+            <tr>
+              <th scope="row">{formatEdition(point.isoWeek)}</th>
+              <td class="numeric">{point.value === null ? '—' : format(point.value)}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </details>
+</div>
+
+<style>
+  .sparkline {
+    padding: var(--space-2xs);
+    background: var(--surface);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .sparkline-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2xs);
+  }
+
+  .sparkline-label {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .sparkline-value {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .sparkline svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-block: var(--space-3xs);
+  }
+
+  .sparkline-empty,
+  .sparkline-delta {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .sparkline-delta {
+    display: flex;
+    gap: var(--space-3xs);
+  }
+
+  .sparkline-data summary {
+    font-size: var(--step--1);
+    color: var(--faint);
+    cursor: pointer;
+    margin-top: var(--space-3xs);
+  }
+</style>

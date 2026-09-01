@@ -1,0 +1,108 @@
+---
+/**
+ * The archive page for one edition.
+ *
+ * Reuses the report components against a historical run, under a banner
+ * marking it as archived, with previous/next navigation.
+ */
+import Base from '../../layouts/Base.astro'
+import Masthead from '../../components/report/Masthead.astro'
+import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
+import KpiTiles from '../../components/report/KpiTiles.astro'
+import VendorProfile from '../../components/report/VendorProfile.astro'
+import {
+  getAllRuns,
+  getModelResults,
+  getNextRun,
+  getPreviousRun,
+  getQuestion,
+} from '../../lib/data.ts'
+import { formatEdition } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+
+export function getStaticPaths() {
+  return getAllRuns().map((run) => ({ params: { isoWeek: run.isoWeek }, props: { run } }))
+}
+
+const { run } = Astro.props
+const previous = getPreviousRun(run.isoWeek)
+const next = getNextRun(run.isoWeek)
+---
+
+<Base
+  title={`${formatEdition(run.isoWeek)} edition`}
+  description={`Archived Sandwich Classification Benchmark results for ${formatEdition(run.isoWeek)}.`}
+>
+  <nav class="edition-nav" aria-label="Edition">
+    {
+      previous ? (
+        <a href={routes.run(previous.isoWeek)}>← {formatEdition(previous.isoWeek)}</a>
+      ) : (
+        <span class="muted">← Earliest edition</span>
+      )
+    }
+    <a href={routes.runs()}>All editions</a>
+    {
+      next ? (
+        <a href={routes.run(next.isoWeek)}>{formatEdition(next.isoWeek)} →</a>
+      ) : (
+        <span class="muted">Latest edition →</span>
+      )
+    }
+  </nav>
+
+  <h1>{formatEdition(run.isoWeek)} edition</h1>
+
+  <p class="archive-note">
+    An archived record of every question asked in this edition. Current reports are on the
+    <a href={routes.home()}>home page</a>.
+  </p>
+
+  {
+    run.questions.map((asked) => {
+      const question = getQuestion(asked.id)
+      const results = getModelResults(run, asked.id)
+      if (!question) return null
+      return (
+        <section class="archived-report" aria-labelledby={`q-${asked.id}`}>
+          <h2 id={`q-${asked.id}`}>{question.reportTitle}</h2>
+          <p class="asked">
+            <a href={routes.runQuestion(run.isoWeek, asked.id)}>Full archived report →</a>
+          </p>
+          <KpiTiles
+            results={results}
+            previous={previous ? getModelResults(previous, asked.id) : null}
+          />
+          <ExecutiveSummary subject={question.subject} results={results} />
+        </section>
+      )
+    })
+  }
+</Base>
+
+<style>
+  .edition-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    font-size: var(--step--1);
+    padding-bottom: var(--space-s);
+    border-bottom: var(--hairline) solid var(--rule);
+    margin-bottom: var(--space-l);
+  }
+
+  .archive-note {
+    color: var(--muted);
+    max-width: var(--measure);
+  }
+
+  .archived-report {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .asked {
+    font-size: var(--step--1);
+  }
+</style>

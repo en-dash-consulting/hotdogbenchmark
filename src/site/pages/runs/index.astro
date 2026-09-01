@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro'
+import { getAllRuns } from '../../lib/data.ts'
+import { formatDate, formatEdition } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+
+const runs = getAllRuns()
+---
+
+<Base
+  title="All editions"
+  description="Every published edition of the Sandwich Classification Benchmark."
+>
+  <h1>All editions</h1>
+  <p class="muted">Every edition published, newest first. Editions are never revised.</p>
+
+  {
+    runs.length === 0 ? (
+      <p>No editions have been published yet.</p>
+    ) : (
+      <div class="table-scroll">
+        <table>
+          <caption class="visually-hidden">Published editions</caption>
+          <thead>
+            <tr>
+              <th scope="col">Edition</th>
+              <th scope="col">Published</th>
+              <th scope="col" class="numeric">
+                Questions
+              </th>
+              <th scope="col" class="numeric">
+                Models
+              </th>
+              <th scope="col">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {runs.map((run) => (
+              <tr>
+                <th scope="row">
+                  <a href={routes.run(run.isoWeek)}>{formatEdition(run.isoWeek)}</a>
+                </th>
+                <td>{formatDate(run.finishedAt)}</td>
+                <td class="numeric">{run.questions.length}</td>
+                <td class="numeric">
+                  {
+                    new Set(
+                      run.results.flatMap((r) => r.models.map((m) => `${m.provider}/${m.modelId}`)),
+                    ).size
+                  }
+                </td>
+                <td>{run.isMock ? 'Sample data' : ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+</Base>

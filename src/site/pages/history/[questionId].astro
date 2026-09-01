@@ -1,0 +1,172 @@
+---
+/**
+ * Trends for one question across every edition.
+ */
+import Base from '../../layouts/Base.astro'
+import StackedShare from '../../components/charts/StackedShare.astro'
+import Sparkline from '../../components/charts/Sparkline.astro'
+import VerdictBadge from '../../components/report/VerdictBadge.astro'
+import { getAllRuns, getQuestions } from '../../lib/data.ts'
+import { metricOverTime, positionChanges, verdictShareOverTime } from '../../lib/history.ts'
+import { formatDuration, formatEdition, formatInteger } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+
+export function getStaticPaths() {
+  return getQuestions().map((question) => ({
+    params: { questionId: question.id },
+    props: { question },
+  }))
+}
+
+const { question } = Astro.props
+const questions = getQuestions()
+const runs = getAllRuns()
+
+const share = verdictShareOverTime(runs, question.id)
+const changes = positionChanges(runs, question.id)
+const latency = metricOverTime(runs, question.id, (r) => r.aggregate.totalMs?.median)
+const tokens = metricOverTime(runs, question.id, (r) => r.aggregate.outputTokens?.median)
+
+const singleEdition = runs.length < 2
+---
+
+<Base
+  title={`History — ${question.reportTitle}`}
+  description={`Verdict share and per-model trends for: ${question.text}`}
+>
+  <h1>History: {question.reportTitle}</h1>
+
+  <nav class="question-switch" aria-label="Question">
+    {
+      questions.map((other) => (
+        <a
+          href={routes.historyForQuestion(other.id)}
+          aria-current={other.id === question.id ? 'page' : undefined}
+        >
+          {other.subject}
+        </a>
+      ))
+    }
+  </nav>
+
+  {
+    singleEdition ? (
+      <p class="empty-state">
+        Only one edition has been published so far. Trend analysis becomes available once a second
+        edition is collected — by design, since a trend drawn through a single point would be an
+        illustration rather than a measurement.
+      </p>
+    ) : (
+      <>
+        <StackedShare
+          points={share}
+          title="Verdict share by edition"
+          caption="Each model contributes one vote, based on its majority verdict across samples, so a model sampled three times does not outvote one sampled once."
+        />
+
+        <section aria-labelledby="latency-heading">
+          <h2 id="latency-heading">Median latency by model</h2>
+          <div class="spark-grid">
+            {latency.map((series) => (
+              <Sparkline
+                points={series.points}
+                label={series.displayName}
+                format={(value) => formatDuration(value)}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="tokens-heading">
+          <h2 id="tokens-heading">Median output tokens by model</h2>
+          <div class="spark-grid">
+            {tokens.map((series) => (
+              <Sparkline
+                points={series.points}
+                label={series.displayName}
+                format={(value) => formatInteger(value)}
+                colour="var(--chart-2)"
+              />
+            ))}
+          </div>
+        </section>
+      </>
+    )
+  }
+
+  <section aria-labelledby="changes-heading">
+    <h2 id="changes-heading">Position changes</h2>
+    {
+      changes.length === 0 ? (
+        <p class="empty-state">
+          No model has revised its classification of {question.subject} between consecutive
+          editions. Positions in this category remain stable.
+        </p>
+      ) : (
+        <div class="table-scroll">
+          <table>
+            <caption>Models whose majority verdict changed between consecutive editions</caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Previous position</th>
+                <th scope="col">Revised position</th>
+                <th scope="col">Between editions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {changes.map((change) => (
+                <tr>
+                  <th scope="row">{change.displayName}</th>
+                  <td>
+                    <VerdictBadge verdict={change.from} />
+                  </td>
+                  <td>
+                    <VerdictBadge verdict={change.to} />
+                  </td>
+                  <td>
+                    <a href={routes.run(change.fromEdition)}>{formatEdition(change.fromEdition)}</a>
+                    {' → '}
+                    <a href={routes.run(change.toEdition)}>{formatEdition(change.toEdition)}</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .question-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    padding-bottom: var(--space-s);
+    border-bottom: var(--hairline) solid var(--rule);
+    margin-bottom: var(--space-l);
+    font-size: var(--step--1);
+  }
+
+  .question-switch a[aria-current='page'] {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .spark-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-s);
+    margin-bottom: var(--space-l);
+  }
+
+  .empty-state {
+    padding: var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--rule-strong);
+    color: var(--muted);
+    max-width: var(--measure);
+  }
+</style>

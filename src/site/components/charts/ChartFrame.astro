@@ -1,0 +1,88 @@
+---
+/**
+ * The wrapper every chart on this site uses.
+ *
+ * Provides the two things that make a build-time SVG chart accessible, so no
+ * individual chart has to remember them:
+ *
+ *   1. `role="img"` with an `aria-label` that states what the chart shows in
+ *      words. A screen reader gets the finding, not a list of coordinates.
+ *   2. A real data table containing the same numbers, in a `<details>` so it is
+ *      available to everyone rather than hidden from sighted users. "Chart plus
+ *      hidden table" is the pattern that survives contact with reality — people
+ *      want the numbers too.
+ *
+ * Charts ship no client JavaScript. `<details>` is a browser primitive.
+ */
+interface Props {
+  title: string
+  /** A sentence describing what the chart shows, including the headline number. */
+  summary: string
+  /** Caption printed under the chart. */
+  caption?: string
+}
+
+const { title, summary, caption } = Astro.props
+---
+
+<figure class="chart-frame">
+  <figcaption class="chart-title">{title}</figcaption>
+
+  <div class="chart-canvas" role="img" aria-label={summary}>
+    <slot />
+  </div>
+
+  {caption && <p class="chart-caption">{caption}</p>}
+
+  <details class="chart-data">
+    <summary>Show the data</summary>
+    <div class="table-scroll">
+      <slot name="table" />
+    </div>
+  </details>
+</figure>
+
+<style>
+  .chart-frame {
+    margin: 0 0 var(--space-l);
+  }
+
+  .chart-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .chart-canvas svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .chart-caption {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin: var(--space-2xs) 0 0;
+    max-width: var(--measure);
+  }
+
+  .chart-data {
+    margin-top: var(--space-2xs);
+    font-size: var(--step--1);
+  }
+
+  .chart-data summary {
+    cursor: pointer;
+    color: var(--muted);
+    padding: var(--space-3xs) 0;
+  }
+
+  .chart-data summary:hover {
+    color: var(--text-strong);
+  }
+
+  .chart-data[open] summary {
+    margin-bottom: var(--space-2xs);
+  }
+</style>

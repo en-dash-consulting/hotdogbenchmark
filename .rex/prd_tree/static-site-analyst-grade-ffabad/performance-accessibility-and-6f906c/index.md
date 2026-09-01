@@ -30,7 +30,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Add axe-core accessibility checks over every built page in CI](./add-axe-core-accessibility-fc7369.md) | in_progress |
+| [Add axe-core accessibility checks over every built page in CI](./add-axe-core-accessibility-fc7369.md) | completed |
 | [Add Lighthouse CI budgets, client JavaScript size budget, and layout-shift checks](./add-lighthouse-ci-budgets-9eed27.md) | pending |
 | [Add SEO and social polish: meta tags, generated OpenGraph image, sitemap, robots, and weekly feed](./add-seo-and-social-polish-meta-e51d40.md) | pending |
 | [Perform and document a manual keyboard and screen-reader accessibility pass](./perform-and-document-a-manual-12aeae.md) | pending |

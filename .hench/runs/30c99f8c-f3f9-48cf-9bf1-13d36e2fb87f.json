@@ -1,0 +1,28 @@
+{
+  "id": "30c99f8c-f3f9-48cf-9bf1-13d36e2fb87f",
+  "taskId": "529abef7-8430-4df0-9e05-3af109a9272e",
+  "taskTitle": "Write docs/self-hosting.md for forkers",
+  "startedAt": "2026-09-01T22:21:45.057Z",
+  "finishedAt": "2026-09-01T22:21:45.057Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Deployment chain: cron benchmark, Pages deploy, CI data/build/a11y gates",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

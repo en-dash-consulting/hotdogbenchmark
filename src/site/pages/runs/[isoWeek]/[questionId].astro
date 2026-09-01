@@ -1,0 +1,70 @@
+---
+/**
+ * One question's archived report for one edition.
+ *
+ * Identical to the live report page except that it reads a historical run and
+ * shows the archived-edition banner. Canonical points at itself, so search
+ * engines index the archive as its own document rather than as a duplicate of
+ * the current report.
+ */
+import Base from '../../../layouts/Base.astro'
+import Masthead from '../../../components/report/Masthead.astro'
+import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
+import KpiTiles from '../../../components/report/KpiTiles.astro'
+import VendorProfile from '../../../components/report/VendorProfile.astro'
+import ResultsTable from '../../../components/report/ResultsTable.astro'
+import {
+  getAllRuns,
+  getModelResults,
+  getPreviousRun,
+  getQuestion,
+  getQuestionTextInRun,
+} from '../../../lib/data.ts'
+import { formatEdition } from '../../../lib/format.ts'
+
+export function getStaticPaths() {
+  return getAllRuns().flatMap((run) =>
+    run.questions
+      .filter((asked) => getQuestion(asked.id) !== null)
+      .map((asked) => ({
+        params: { isoWeek: run.isoWeek, questionId: asked.id },
+        props: { run, question: getQuestion(asked.id)! },
+      })),
+  )
+}
+
+const { run, question } = Astro.props
+const results = getModelResults(run, question.id)
+const previous = getPreviousRun(run.isoWeek)
+const previousResults = previous ? getModelResults(previous, question.id) : null
+const askedText = getQuestionTextInRun(run, question.id)
+---
+
+<Base
+  title={`${question.reportTitle} — ${formatEdition(run.isoWeek)}`}
+  description={`Archived ${formatEdition(run.isoWeek)} results for: ${askedText ?? question.text}`}
+>
+  <Masthead question={question} run={run} archived questionText={askedText ?? question.text} />
+  <KpiTiles results={results} previous={previousResults} />
+  <ExecutiveSummary subject={question.subject} results={results} />
+
+  <section aria-labelledby="profiles-heading">
+    <h2 id="profiles-heading">Vendor profiles</h2>
+    <div class="profile-grid">
+      {results.map((result) => <VendorProfile result={result} />)}
+    </div>
+  </section>
+
+  <ResultsTable
+    results={results}
+    caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
+  />
+</Base>
+
+<style>
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: var(--space-s);
+  }
+</style>
