@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0.0",
+  "toolVersion": "0.1.0",
+  "analyzedAt": "2026-09-01T18:33:47.356Z",
+  "targetPath": "/Users/nick/development/endash/hotdogbenchmark",
+  "modules": {
+    "inventory": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.239Z",
+      "completedAt": "2026-09-01T18:33:47.263Z"
+    },
+    "imports": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.263Z",
+      "completedAt": "2026-09-01T18:33:47.282Z"
+    },
+    "classifications": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.282Z",
+      "completedAt": "2026-09-01T18:33:47.299Z"
+    },
+    "zones": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.300Z",
+      "completedAt": "2026-09-01T18:33:47.320Z"
+    },
+    "components": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.321Z",
+      "completedAt": "2026-09-01T18:33:47.339Z"
+    },
+    "callgraph": {
+      "status": "complete",
+      "startedAt": "2026-09-01T18:33:47.339Z",
+      "completedAt": "2026-09-01T18:33:47.356Z"
+    }
+  },
+  "language": "typescript",
+  "languages": [
+    "typescript"
+  ]
+}

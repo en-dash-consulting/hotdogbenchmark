@@ -1,0 +1,12 @@
+{
+  "functions": [],
+  "edges": [],
+  "summary": {
+    "totalFunctions": 0,
+    "totalCalls": 0,
+    "filesWithCalls": 0,
+    "mostCalled": [],
+    "mostCalling": [],
+    "cycleCount": 0
+  }
+}

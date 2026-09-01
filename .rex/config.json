@@ -1,0 +1,6 @@
+{
+  "schema": "rex/v1",
+  "project": "hotdogbenchmark",
+  "adapter": "file",
+  "sourcevision": "auto"
+}
