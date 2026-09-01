@@ -1,0 +1,289 @@
+---
+/**
+ * The layout every page uses.
+ *
+ * Structure is landmark-first: skip link, header/nav, main, footer. Exactly one
+ * h1 per page, supplied by the page rather than by this layout.
+ *
+ * The theme script is inline and pre-hydration on purpose — see the comment on
+ * it below.
+ */
+import '../styles/global.css'
+import { getLatestRun } from '../lib/data.ts'
+import { formatDate, formatEdition } from '../lib/format.ts'
+import { REPO_URL, routes } from '../lib/urls.ts'
+import ThemeToggle from '../components/ThemeToggle.astro'
+
+interface Props {
+  title: string
+  description: string
+  /** Rendered in the <title> as "<title> — Sandwich Classification Benchmark". */
+  bareTitle?: boolean
+}
+
+const { title, description, bareTitle = false } = Astro.props
+
+const SITE_NAME = 'Sandwich Classification Benchmark'
+const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
+const latest = getLatestRun()
+
+const NAV = [
+  { href: routes.home(), label: 'Reports' },
+  { href: routes.history(), label: 'History' },
+  { href: routes.methodology(), label: 'Methodology' },
+  { href: routes.howItWorks(), label: 'How it works' },
+  { href: routes.about(), label: 'About' },
+]
+
+/** Trailing slashes are normalized so `/history` and `/history/` both match. */
+const current = Astro.url.pathname.replace(/\/+$/, '') || '/'
+const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === current
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <link
+      rel="alternate"
+      type="application/json"
+      title="Weekly editions"
+      href={routes.feedJson()}
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Weekly editions"
+      href={routes.feedRss()}
+    />
+
+    {
+      /*
+      Runs before first paint, which is the entire point. Applying a stored
+      theme after hydration produces a flash of the wrong theme on every page
+      load, and there is no way to avoid that from an external script. It is
+      deliberately tiny and wrapped in try/catch because localStorage throws
+      outright in some privacy modes.
+    */
+    }
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem('hdb-theme')
+        if (stored === 'dark' || stored === 'light') {
+          document.documentElement.dataset.theme = stored
+        }
+      } catch {
+        /* No stored preference available; the system preference applies. */
+      }
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="masthead">
+      <div class="container masthead-inner">
+        <a class="wordmark" href={routes.home()}>
+          <span class="wordmark-name">Sandwich Classification Benchmark</span>
+          <span class="wordmark-sub">Independent cross-vendor AI research</span>
+        </a>
+
+        <div class="masthead-controls">
+          <nav aria-label="Primary">
+            <ul class="nav-list">
+              {
+                NAV.map((item) => (
+                  <li>
+                    <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+          <ThemeToggle />
+        </div>
+      </div>
+      <div class="rule-double"></div>
+    </header>
+
+    <main id="main" class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="rule"></div>
+        <div class="footer-grid">
+          <p class="footer-meta">
+            {
+              latest ? (
+                <>
+                  Data as of <strong>{formatEdition(latest.isoWeek)}</strong>, published{' '}
+                  {formatDate(latest.finishedAt)}.
+                  {latest.isMock && <span class="footer-mock"> Sample data.</span>}
+                </>
+              ) : (
+                <>No editions published yet.</>
+              )
+            }
+          </p>
+          <p class="footer-links">
+            <a href={REPO_URL}>Source on GitHub</a>
+            <span aria-hidden="true"> · </span>
+            <a href={routes.methodology()}>Methodology</a>
+            <span aria-hidden="true"> · </span>
+            <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT licence</a>
+          </p>
+        </div>
+        <p class="footer-note">
+          A research programme of no consequence whatsoever, published weekly. The questions are
+          silly on purpose; the measurement is not. See <a href={routes.about()}>About</a>.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .masthead {
+    background: var(--surface);
+  }
+
+  .masthead-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-block: var(--space-m) var(--space-s);
+  }
+
+  .wordmark {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .wordmark-name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
+  }
+
+  .wordmark-sub {
+    display: block;
+    font-size: var(--step--1);
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: var(--space-3xs);
+  }
+
+  .masthead-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    flex-wrap: wrap;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--step--1);
+  }
+
+  .nav-list a {
+    color: var(--muted);
+    text-decoration: none;
+    padding-block: var(--space-3xs);
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav-list a:hover {
+    color: var(--text-strong);
+  }
+
+  /* The current page is marked by weight and a rule, not by colour alone. */
+  .nav-list a[aria-current='page'] {
+    color: var(--text-strong);
+    font-weight: 600;
+    border-bottom-color: var(--accent);
+  }
+
+  main {
+    padding-block: var(--space-xl) var(--space-2xl);
+    min-height: 60vh;
+  }
+
+  .site-footer {
+    background: var(--surface);
+    padding-block: var(--space-l) var(--space-xl);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .footer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .footer-meta,
+  .footer-links {
+    margin: 0;
+  }
+
+  .footer-mock {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .footer-note {
+    margin: var(--space-m) 0 0;
+    max-width: var(--measure);
+    color: var(--faint);
+  }
+
+  /* At 320px the masthead stacks rather than overflowing. */
+  @media (max-width: 40rem) {
+    .masthead-inner {
+      align-items: flex-start;
+    }
+
+    .masthead-controls {
+      width: 100%;
+      justify-content: space-between;
+      gap: var(--space-s);
+    }
+
+    .nav-list {
+      gap: var(--space-s);
+    }
+  }
+</style>

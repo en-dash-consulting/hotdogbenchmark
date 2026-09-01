@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro'
+import { getLatestRun, getQuestions, hasData } from '../lib/data.ts'
+import { formatEdition } from '../lib/format.ts'
+import { routes } from '../lib/urls.ts'
+
+const questions = getQuestions()
+const latest = getLatestRun()
+---
+
+<Base
+  title="Sandwich Classification Benchmark"
+  description="A weekly cross-vendor evaluation of how leading AI models classify contested sandwich cases."
+  bareTitle
+>
+  <h1>Sandwich Classification Benchmark</h1>
+
+  {
+    hasData() && latest ? (
+      <p class="lede">
+        {formatEdition(latest.isoWeek)} edition. {questions.length} research questions evaluated
+        across the leading commercial models.
+      </p>
+    ) : (
+      <p class="lede">No editions have been published yet.</p>
+    )
+  }
+
+  <ul class="report-list">
+    {
+      questions.map((question) => (
+        <li>
+          <a href={routes.report(question.id)}>{question.reportTitle}</a>
+          <p class="muted">{question.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .lede {
+    font-size: var(--step-1);
+    color: var(--muted);
+    max-width: var(--measure);
+  }
+
+  .report-list {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-xl);
+  }
+
+  .report-list li + li {
+    margin-top: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .report-list a {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+  }
+
+  .report-list p {
+    margin: var(--space-3xs) 0 0;
+  }
+</style>

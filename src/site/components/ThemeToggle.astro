@@ -1,0 +1,85 @@
+---
+/**
+ * The theme toggle.
+ *
+ * A real `<button>` with `aria-pressed`, not a styled div and not a checkbox
+ * pretending to be one. It follows the system preference until pressed, then
+ * persists an explicit choice to localStorage.
+ *
+ * This is the only client JavaScript on most pages, and it is a few hundred
+ * bytes. The pre-hydration script in Base.astro applies the stored value before
+ * first paint; this script only handles the press.
+ */
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  id="theme-toggle"
+  aria-pressed="false"
+  title="Switch between light and dark"
+>
+  <span class="theme-toggle-label">Dark mode</span>
+</button>
+
+<script>
+  const STORAGE_KEY = 'hdb-theme'
+  const button = document.getElementById('theme-toggle')
+
+  if (button) {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)')
+
+    /** Whether dark is currently showing, from the explicit choice or the system. */
+    const isDark = () =>
+      document.documentElement.dataset.theme === 'dark' ||
+      (!document.documentElement.dataset.theme && prefersDark.matches)
+
+    const sync = () => {
+      button.setAttribute('aria-pressed', String(isDark()))
+    }
+
+    button.addEventListener('click', () => {
+      const next = isDark() ? 'light' : 'dark'
+      document.documentElement.dataset.theme = next
+      try {
+        localStorage.setItem(STORAGE_KEY, next)
+      } catch {
+        // Storage unavailable (private mode, blocked site data). The toggle
+        // still works for this page; it just will not be remembered.
+      }
+      sync()
+    })
+
+    // Track the system preference while no explicit choice has been made.
+    prefersDark.addEventListener('change', sync)
+    sync()
+  }
+</script>
+
+<style>
+  .theme-toggle {
+    font: inherit;
+    font-size: var(--step--1);
+    color: var(--muted);
+    background: transparent;
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+    padding: var(--space-3xs) var(--space-2xs);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .theme-toggle:hover {
+    color: var(--text-strong);
+    border-color: var(--muted);
+  }
+
+  /* The pressed state is conveyed by the label text as well as the styling. */
+  .theme-toggle[aria-pressed='true'] .theme-toggle-label::after {
+    content: ' on';
+  }
+
+  .theme-toggle[aria-pressed='false'] .theme-toggle-label::after {
+    content: ' off';
+  }
+</style>

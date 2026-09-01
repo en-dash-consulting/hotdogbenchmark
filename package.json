@@ -9,8 +9,8 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "dev": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
-    "build": "echo \"The Astro site is not scaffolded yet. See the site epic.\" && exit 1",
+    "dev": "astro dev",
+    "build": "astro build",
     "bench": "node src/cli.ts",
     "bench:smoke": "node src/cli.ts smoke",
     "bench:record": "node src/cli.ts record",
@@ -22,9 +22,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run lint && npm run typecheck && npm test"
+    "validate": "npm run lint && npm run typecheck && npm test",
+    "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.2.10",
     "zod": "^3.23.8"
   },
   "devDependencies": {

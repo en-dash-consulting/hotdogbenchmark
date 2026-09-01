@@ -5,8 +5,8 @@
  * is the Node-only edge that turns files into validated objects. The runner CLI
  * and the site build both come through here.
  */
-import { readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join, resolve as resolvePath } from 'node:path'
 import {
   enabledQuestions,
   parseQuestionsRegistry,
@@ -20,8 +20,29 @@ import {
   type ModelsRegistry,
 } from '../schema/models.ts'
 
-/** Repository root, resolved from this file rather than from `process.cwd()`. */
-export const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url))
+/**
+ * The repository root, found by walking up from the working directory to the
+ * nearest `package.json`.
+ *
+ * Deliberately *not* derived from `import.meta.url`. The Astro build bundles
+ * this module into `dist/.prerender/chunks/`, where a relative walk from the
+ * module's own location points at `dist/` and every data file appears to be
+ * missing — a failure that only shows up at build time, never in tests.
+ *
+ * Falls back to the working directory when no `package.json` is found, which is
+ * the right answer for someone running the CLI from an unpacked tarball.
+ */
+function findRepoRoot(from: string = process.cwd()): string {
+  let current = resolvePath(from)
+  for (;;) {
+    if (existsSync(join(current, 'package.json'))) return current + '/'
+    const parent = dirname(current)
+    if (parent === current) return resolvePath(from) + '/'
+    current = parent
+  }
+}
+
+export const REPO_ROOT = findRepoRoot()
 
 function readJson(path: string): unknown {
   let raw: string

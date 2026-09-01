@@ -26,6 +26,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Build layout shell: skip link, header navigation, theme toggle, footer, and base metadata](./build-layout-shell-skip-link-b69fd9.md) | pending |
-| [Define analyst-report design tokens, typography, light/dark themes, focus and motion styles](./define-analyst-report-design-24d567.md) | pending |
-| [Scaffold Astro static site with build-time data loader and GitHub Pages base path](./scaffold-astro-static-site-with-dae050.md) | pending |
+| [Build layout shell: skip link, header navigation, theme toggle, footer, and base metadata](./build-layout-shell-skip-link-b69fd9.md) | in_progress |
+| [Define analyst-report design tokens, typography, light/dark themes, focus and motion styles](./define-analyst-report-design-24d567.md) | in_progress |
+| [Scaffold Astro static site with build-time data loader and GitHub Pages base path](./scaffold-astro-static-site-with-dae050.md) | in_progress |

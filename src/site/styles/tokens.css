@@ -1,0 +1,220 @@
+/*
+ * Design tokens for the Sandwich Classification Benchmark.
+ *
+ * The brief: this must read as a serious, expensive analyst publication. The
+ * comedy lives entirely in the words. Nothing in the visual system winks — no
+ * hot dog iconography, no emoji, no playful shapes, no rounded blobs. A reader
+ * shown a screenshot with the words blurred should not be able to tell this
+ * apart from a report that cost five figures.
+ *
+ * Concretely that means: a restrained navy-and-neutral palette, one muted
+ * accent used sparingly, editorial typography with tabular numerals, hairline
+ * rules instead of boxes and shadows, generous whitespace, and near-zero
+ * border radius.
+ *
+ * Every semantic pair below meets WCAG 2.2 AA in both themes — 4.5:1 for body
+ * text, 3:1 for UI boundaries and large text. That is verified by a test over
+ * this file, not by eye.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* --- Palette -----------------------------------------------------------
+   * Deep navy primary, cool neutrals, one muted ochre accent. Named by value
+   * here; semantic roles below are what components actually use.
+   */
+  --navy-900: #0b1a2b;
+  --navy-800: #12283f;
+  --navy-700: #1b3a5a;
+  --navy-600: #2a5480;
+  --navy-500: #3d6d9e;
+
+  --neutral-000: #ffffff;
+  --neutral-050: #f7f8fa;
+  --neutral-100: #eef0f4;
+  --neutral-200: #dfe3ea;
+  --neutral-300: #c3cad6;
+  --neutral-400: #97a1b2;
+  --neutral-500: #646e7c;
+  --neutral-600: #4d5768;
+  --neutral-700: #38404e;
+  --neutral-800: #232936;
+  --neutral-900: #141922;
+
+  --accent-600: #8a6a1f;
+  --accent-500: #a8842e;
+
+  /* --- Semantic roles, light theme --------------------------------------- */
+  --bg: var(--neutral-050);
+  --surface: var(--neutral-000);
+  --surface-sunken: var(--neutral-100);
+  --text: var(--neutral-900);
+  --text-strong: var(--navy-900);
+  --muted: var(--neutral-600);
+  --faint: var(--neutral-500);
+  --rule: var(--neutral-200);
+  --rule-strong: var(--neutral-300);
+  --accent: var(--accent-600);
+  --primary: var(--navy-800);
+  --on-primary: var(--neutral-000);
+  --focus: var(--navy-600);
+
+  /* Verdicts. Always paired with an icon and a word — never colour alone. */
+  --verdict-yes: #1f5f3f;
+  --verdict-yes-bg: #e7f2ec;
+  --verdict-no: #7a2230;
+  --verdict-no-bg: #f7e9eb;
+  --verdict-other: #5a4a1f;
+  --verdict-other-bg: #f5efe1;
+  --error: #7a2230;
+  --error-bg: #f7e9eb;
+
+  /*
+   * Categorical chart palette.
+   *
+   * Six series, chosen to stay distinguishable in both themes and under the
+   * common forms of colour blindness. Charts still never rely on hue alone:
+   * every series carries a direct label or a pattern as well.
+   */
+  --chart-1: #1b3a5a;
+  --chart-2: #8a6a1f;
+  --chart-3: #2f6f6a;
+  --chart-4: #6b3f6e;
+  --chart-5: #8a4a24;
+  --chart-6: #4f6b2f;
+  --chart-grid: var(--neutral-200);
+  --chart-axis: var(--neutral-500);
+
+  /* --- Typography --------------------------------------------------------
+   * A serif display face for headings and an unadorned sans for body text:
+   * the pairing every analyst house uses, because it reads as authored rather
+   * than generated. Both stacks fall back to system faces, so the site is
+   * fully legible before any webfont loads and if none ever does.
+   */
+  --font-display:
+    'Source Serif 4', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman',
+    serif;
+  --font-text:
+    'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Fluid scale. clamp() so a phone and a 27-inch monitor both read well. */
+  --step--1: clamp(0.8125rem, 0.79rem + 0.11vw, 0.875rem);
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
+  --step-1: clamp(1.1875rem, 1.13rem + 0.29vw, 1.375rem);
+  --step-2: clamp(1.4375rem, 1.33rem + 0.53vw, 1.75rem);
+  --step-3: clamp(1.75rem, 1.57rem + 0.9vw, 2.3125rem);
+  --step-4: clamp(2.125rem, 1.84rem + 1.42vw, 3rem);
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --measure: 68ch;
+
+  /* --- Spacing ----------------------------------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* --- Lines and edges ---------------------------------------------------
+   * Hairline rules do the structural work here. Boxes and drop shadows are
+   * what a dashboard uses; rules are what a printed report uses.
+   */
+  --hairline: 1px;
+  --radius: 2px;
+  --radius-none: 0;
+  --shadow-subtle: 0 1px 2px rgb(11 26 43 / 6%);
+
+  --content-width: 76rem;
+  --prose-width: 42rem;
+}
+
+/*
+ * Dark theme.
+ *
+ * Only the semantic roles are redefined; the scales above stay put. The
+ * guarded selector means an explicit light choice always wins over the system
+ * preference.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --bg: #0c1119;
+    --surface: #141a24;
+    --surface-sunken: #0f151d;
+    --text: #e7eaf0;
+    --text-strong: #f3f5f9;
+    --muted: #a7b0c0;
+    --faint: #8b94a6;
+    --rule: #262e3b;
+    --rule-strong: #38414f;
+    --accent: #d6b25f;
+    --primary: #dfe6f2;
+    --on-primary: #0c1119;
+    --focus: #7fa8d8;
+
+    --verdict-yes: #7fc9a3;
+    --verdict-yes-bg: #12241b;
+    --verdict-no: #e79aa6;
+    --verdict-no-bg: #26141a;
+    --verdict-other: #d8c288;
+    --verdict-other-bg: #23200f;
+    --error: #e79aa6;
+    --error-bg: #26141a;
+
+    --chart-1: #8fb4d9;
+    --chart-2: #d6b25f;
+    --chart-3: #74b8b1;
+    --chart-4: #bd9ac2;
+    --chart-5: #d9986e;
+    --chart-6: #a8c98a;
+    --chart-grid: #262e3b;
+    --chart-axis: #8b94a6;
+  }
+}
+
+/* The manual toggle, which must beat the system preference in both directions. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0c1119;
+  --surface: #141a24;
+  --surface-sunken: #0f151d;
+  --text: #e7eaf0;
+  --text-strong: #f3f5f9;
+  --muted: #a7b0c0;
+  --faint: #8b94a6;
+  --rule: #262e3b;
+  --rule-strong: #38414f;
+  --accent: #d6b25f;
+  --primary: #dfe6f2;
+  --on-primary: #0c1119;
+  --focus: #7fa8d8;
+
+  --verdict-yes: #7fc9a3;
+  --verdict-yes-bg: #12241b;
+  --verdict-no: #e79aa6;
+  --verdict-no-bg: #26141a;
+  --verdict-other: #d8c288;
+  --verdict-other-bg: #23200f;
+  --error: #e79aa6;
+  --error-bg: #26141a;
+
+  --chart-1: #8fb4d9;
+  --chart-2: #d6b25f;
+  --chart-3: #74b8b1;
+  --chart-4: #bd9ac2;
+  --chart-5: #d9986e;
+  --chart-6: #a8c98a;
+  --chart-grid: #262e3b;
+  --chart-axis: #8b94a6;
+}

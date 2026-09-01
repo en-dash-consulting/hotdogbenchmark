@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro'
+import { REPO_URL, routes } from '../lib/urls.ts'
+---
+
+<Base
+  title="About"
+  description="What the Sandwich Classification Benchmark is, who publishes it, and why it exists."
+>
+  <div class="prose">
+    <h1>About this research programme</h1>
+
+    <p>
+      The Sandwich Classification Benchmark is an independent, weekly evaluation of how the leading
+      commercial language models classify contested items within the sandwich category. Each Monday
+      at 12:00 UTC, every enabled model is presented with each research question three times.
+      Responses are recorded verbatim, classified, and published without editorial revision.
+    </p>
+
+    <h2>Publication</h2>
+
+    <p>
+      Editions are published on the Monday of each ISO week and are permanently archived. Prior
+      editions are never revised; where a run is repeated within the same week, the later run
+      supersedes the earlier one and the edition number is unchanged. The complete
+      <a href={routes.history()}>archive</a> is available, as is the underlying data.
+    </p>
+
+    <h2>Independence</h2>
+
+    <p>
+      No vendor is consulted before publication, sponsors this research, or reviews it in advance.
+      No vendor has been asked whether it would like to be included. The complete source code, the
+      raw data behind every figure, and the full methodology are
+      <a href={REPO_URL}>public</a>.
+    </p>
+
+    <h2>Corrections</h2>
+
+    <p>
+      Errors of fact are corrected by amending the source data and republishing, with the change
+      recorded in version control. Disagreements with our classification rules — which are published
+      in full on the <a href={routes.methodology()}>methodology</a> page — are welcome as issues.
+    </p>
+
+    <h2>What this actually is</h2>
+
+    <p>
+      This is a teaching project, and the deadpan is the joke. Whether a hot dog is a sandwich is
+      not a serious research question, and nothing here should be mistaken for a real evaluation of
+      model quality.
+    </p>
+
+    <p>
+      Everything <em>around</em> the question is sincere. Building a working cross-provider benchmark
+      means solving a specific set of unglamorous problems: several vendors with several wire formats,
+      token counts that do not mean the same thing across providers, latency that depends on where your
+      runner happens to be, models that answer differently on Tuesday than they did on Monday, and one
+      provider having an outage in the middle of your data collection. This repository solves those problems
+      in the smallest honest way and documents how, so that you can throw away the hot dog and point it
+      at a question you actually care about.
+    </p>
+
+    <p>
+      If you want the serious version: read the
+      <a href={routes.howItWorks()}>how it works</a> page, swap the contents of
+      <code>questions.json</code>, and you have a benchmark.
+    </p>
+  </div>
+</Base>
