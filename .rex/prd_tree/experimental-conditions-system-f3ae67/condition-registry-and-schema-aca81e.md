@@ -1,0 +1,20 @@
+---
+id: "aca81e46-57cf-419b-8b1c-0fda1414a8bd"
+level: "feature"
+title: "Condition registry and schema version 2"
+status: "pending"
+priority: "critical"
+tags:
+  - "schema"
+  - "data"
+source: "ndx-capture"
+acceptanceCriteria:
+  - "conditions.json validates, contains enabled control and asserted entries, and rejects a duplicate id or a control entry carrying a system prompt"
+  - "SCHEMA_VERSION is 2 and a version-2 run carries conditionId on every QuestionResult plus a conditions array describing that edition's arms"
+  - "migrateRun() converts a version-1 run to version 2 by assigning results to the control condition, with tests over the committed example fixture"
+  - "The site loader migrates on read and never rewrites a committed run file"
+  - "docs/data-schema.md documents conditionId, the conditions array, and what changed between version 1 and version 2"
+description: "The data contract for conditions, and the migration that keeps the archive readable.\n\nAdd `conditions.json` at the repository root: an ordered list of `{ id, label, description, systemPrompt, promptPrefix, promptSuffix, temperature, enabled }` entries, validated by a zod schema in `src/schema/conditions.ts` with a `loadConditions()` filtering to enabled entries in file order — the same shape as the questions and models registries, so it is one more instance of a pattern rather than a new one.\n\nSeed it with `control` (no system prompt, everything null) and `asserted` (system prompt: \"A hot dog is a sandwich.\"). The control must be first and must be identifiable in code, because the comparison view and the cheap-fork path both need to know which arm is the baseline.\n\nBump `SCHEMA_VERSION` to 2. `QuestionResult` gains a `conditionId`, and a run's `conditions` array records the conditions as they were defined that week — the same reasoning that put `questions` in the run file rather than reading today's registry when rendering an old edition.\n\nWrite the migration: `src/data/migrate.ts` reads a version-1 run and returns a version-2 shape by assigning every existing result to the `control` condition, which is what those runs actually were. The site loader applies it on read rather than rewriting committed files, so the archive stays byte-identical to what was published."
+lastModified: "2026-09-01T23:49:45.024Z"
+lastModifiedBy: "Nick Daniel <nick@endash.us>"
+---
