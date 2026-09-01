@@ -1,0 +1,28 @@
+{
+  "id": "c89e27c3-25aa-46d7-9b73-c10d25952000",
+  "taskId": "32695d3a-6911-4207-a27c-973b9cd576f2",
+  "taskTitle": "Define ProviderAdapter interface, CompleteResult shape, and adapter registry",
+  "startedAt": "2026-09-01T21:31:48.160Z",
+  "finishedAt": "2026-09-01T21:31:48.160Z",
+  "status": "completed",
+  "turns": 17,
+  "summary": "types.ts (adapter interface, ProviderError taxonomy), registry.ts (registration/lookup/override), fake adapter, dual-locked runtime-agnostic boundary",
+  "tokenUsage": {
+    "input": 34,
+    "output": 27943,
+    "cacheCreationInput": 28625,
+    "cacheReadInput": 4462888
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 34,
+    "output": 27943,
+    "cached": 4491513,
+    "total": 4519490
+  }
+}
