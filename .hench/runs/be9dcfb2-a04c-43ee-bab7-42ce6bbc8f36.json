@@ -1,0 +1,28 @@
+{
+  "id": "be9dcfb2-a04c-43ee-bab7-42ce6bbc8f36",
+  "taskId": "d3873795-d9ff-4915-925d-94585937b7db",
+  "taskTitle": "Capture session state: measured costs, changelog, remaining work",
+  "startedAt": "2026-09-02T01:04:15.839Z",
+  "finishedAt": "2026-09-02T01:04:15.839Z",
+  "status": "completed",
+  "turns": 22,
+  "summary": "Costs measured from the real run; CHANGELOG records what is and is not true; push-to-GitHub task captured",
+  "tokenUsage": {
+    "input": 44,
+    "output": 23126,
+    "cacheCreationInput": 24546,
+    "cacheReadInput": 21427811
+  },
+  "toolCalls": [],
+  "model": "claude-opus-5",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 44,
+    "output": 23126,
+    "cached": 21452357,
+    "total": 21475527
+  }
+}
