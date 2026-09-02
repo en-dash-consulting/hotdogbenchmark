@@ -226,7 +226,7 @@ const Heading = headline ? 'h1' : 'h2'
                     style={`width:${row.totalMs ? Math.max(1, (row.totalMs / slowest) * 100) : 0}%`}
                   />
                   <i
-                    class="bar-ttfb"
+                    class:list={['bar-ttfb', row.thinking && 'reasoning']}
                     data-bar-ttfb
                     style={`width:${row.ttfbMs ? Math.max(0.5, (row.ttfbMs / slowest) * 100) : 0}%`}
                   />
@@ -255,7 +255,8 @@ const Heading = headline ? 'h1' : 'h2'
         <span data-edition>
           Recorded {run.isoWeek.replace(/^(\d+)-W(\d+)$/, 'week $2, $1')}
           {run.isMock && ' from sample fixtures'}. Real durations, verbatim words
-          <span data-speed-note />. Hatched teal is thinking; the rest is answering.
+          <span data-speed-note />. Teal is the wait before the first word, hatched where the
+          model spent it reasoning; the rest is answering.
         </span>
         <a href={routes.report(first.id)} data-report-link>
           Full report →
@@ -445,6 +446,10 @@ const Heading = headline ? 'h1' : 'h2'
         : formatMs(row.totalMs)
       li.querySelector('[data-detail]')!.textContent = row.error ? '' : detailFor(row)
       li.querySelector<HTMLElement>('[data-tag-reasoning]')!.hidden = !row.thinking
+      // The hatch means "this wait was reasoning". A non-reasoning model still
+      // has a wait before its first token, so the segment stays and only the
+      // fill changes.
+      ttfb.classList.toggle('reasoning', Boolean(row.thinking))
     }
 
     /** Ensure the list has one <li> per row in the cell, reusing what exists. */
@@ -1019,7 +1024,14 @@ const Heading = headline ? 'h1' : 'h2'
   }
 
   /* The thinking segment: teal, hatched so it reads as a different kind of time. */
+  /* The wait before the first token. Solid where the model simply took that
+     long to start, hatched where it was reasoning — the texture carries the
+     distinction, so it survives forced colors and a grayscale print. */
   .bar-ttfb {
+    background: var(--accent-fill);
+  }
+
+  .bar-ttfb.reasoning {
     background: repeating-linear-gradient(
       -45deg,
       var(--accent-fill) 0 6px,
