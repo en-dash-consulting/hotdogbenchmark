@@ -1,0 +1,28 @@
+{
+  "id": "aca1dbbc-c766-49d3-be9a-024e6185d5fb",
+  "taskId": "29238703-9b66-44f3-b76f-93e7a7765cce",
+  "taskTitle": "A reports landing page of its own",
+  "startedAt": "2026-09-02T07:36:15-04:00",
+  "finishedAt": "2026-09-02T12:06:18.195Z",
+  "status": "completed",
+  "turns": 51,
+  "summary": "/reports/ issue rack with one card per question, home hand-off block, nav current-section logic, OG card, llms.txt entry, build tests; all gates green",
+  "tokenUsage": {
+    "input": 6978,
+    "output": 83027,
+    "cacheCreationInput": 304390,
+    "cacheReadInput": 8656476
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 6978,
+    "output": 83027,
+    "cached": 8960866,
+    "total": 9050871
+  }
+}
