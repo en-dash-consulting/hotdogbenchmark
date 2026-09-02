@@ -23,9 +23,36 @@ interface Props {
   ogImage?: string
   /** Drop the top padding of main, for a page that opens with a full-bleed band. */
   flush?: boolean
+  /**
+   * Structured data for the page, emitted as one application/ld+json block.
+   * Built in src/site/lib/seo.ts from the same data as the page, so it can
+   * only say what the page says.
+   */
+  jsonLd?: object | null
 }
 
-const { title, description, bareTitle = false, ogImage = 'default', flush = false } = Astro.props
+const {
+  title,
+  description,
+  bareTitle = false,
+  ogImage = 'default',
+  flush = false,
+  jsonLd = null,
+} = Astro.props
+
+/**
+ * JSON inside a script element ends at the first "</script>", whatever the
+ * JSON thinks. Escaping "<" keeps a model name or a question containing one
+ * from closing the block early.
+ */
+const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null
+
+/** The En Dash learning apps: free, no API key, same tab. */
+const LEARNING_APPS = [
+  { href: 'https://endash.us/apps/learn-langgraph', label: 'Learn LangGraph' },
+  { href: 'https://endash.us/apps/learn-langchain', label: 'Learn LangChain' },
+  { href: 'https://endash.us/apps/learn-agentcore', label: 'Learn AgentCore' },
+]
 
 const SITE_NAME = 'HOTDOG BENCHMARK'
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
@@ -97,6 +124,8 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
       title="Weekly editions"
       href={routes.feedRss()}
     />
+
+    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} />}
 
     {
       /*
@@ -194,6 +223,17 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
           published weekly. The questions are silly on purpose; the measurement is not. See <a
             href={routes.about()}>About</a
           >.
+        </p>
+        <p class="footer-apps">
+          More from En Dash, free and no API key:{' '}
+          {
+            LEARNING_APPS.map((app, index) => (
+              <>
+                {index > 0 && <span aria-hidden="true"> · </span>}
+                <a href={app.href}>{app.label}</a>
+              </>
+            ))
+          }
         </p>
       </div>
     </footer>
@@ -331,6 +371,11 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
   .footer-note {
     margin: var(--space-m) 0 0;
     max-width: var(--measure);
+    color: var(--faint);
+  }
+
+  .footer-apps {
+    margin: var(--space-s) 0 0;
     color: var(--faint);
   }
 

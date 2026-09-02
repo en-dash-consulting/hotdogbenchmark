@@ -31,7 +31,8 @@ if (!Number.isFinite(BUDGET_KB) || BUDGET_KB <= 0) {
   console.error(`Invalid --budget-kb value: ${rawBudget}`)
   process.exit(2)
 }
-const DIST = 'dist'
+/** Follows `ASTRO_OUT_DIR` the way the site build does, so a test can point it at its own build. */
+const DIST = process.env.ASTRO_OUT_DIR || 'dist'
 
 if (!existsSync(DIST)) {
   console.error('No dist/ directory. Run `npm run build` first.')
@@ -116,7 +117,11 @@ for (const file of files) {
     // Inline scripts on the run page are excluded on the same basis.
     if (relative(DIST, file).startsWith('run/')) continue
     const html = readFileSync(file, 'utf8')
-    for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    // A JSON-LD block is data in a script element, never executed, so it is
+    // not client JavaScript and does not count.
+    for (const match of html.matchAll(
+      /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g,
+    )) {
       const body = match[1].trim()
       if (body.length === 0) continue
       contributions.push({

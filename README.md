@@ -151,6 +151,7 @@ file that implements it.
 | -------------------------------------------------- | ---------------------------------------------------- |
 | [Tutorial](docs/tutorial/)                         | Build a benchmark like this, in eight steps          |
 | [Self-hosting](docs/self-hosting.md)               | Fork to live site in fifteen minutes                 |
+| [DNS and hosting](docs/launch-dns-and-hosting.md)  | Records, HTTPS, verification, and the traffic plan   |
 | [Fork this](docs/fork-this.md)                     | Fork to live site asking your own question           |
 | [Providers](docs/providers.md)                     | Keys, free tiers, rate limits, real costs            |
 | [Data schema](docs/data-schema.md)                 | Every field, its units, and why it may be null       |

@@ -7,9 +7,17 @@
  */
 import Base from '../layouts/Base.astro'
 import AnswerBoard from '../components/AnswerBoard.astro'
-import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
+import {
+  getAllRuns,
+  getLatestRun,
+  getModelResults,
+  getModels,
+  getQuestions,
+  hasData,
+} from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { questionHeadline } from '../lib/prose.ts'
+import { faqPageJsonLd, homeDescription, homeTitle } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
@@ -17,6 +25,11 @@ import type { Verdict } from '../../schema/run.ts'
 const questions = getQuestions()
 const latest = getLatestRun()
 const editions = getAllRuns().length
+
+/** The query people type, then the promise; the count is the registry's. */
+const title = homeTitle(questions[0] ?? null, getModels().length)
+const description = homeDescription(latest, questions)
+const jsonLd = latest ? faqPageJsonLd(latest, questions) : null
 
 const asked = latest
   ? questions.filter((q) => latest.results.some((cell) => cell.questionId === q.id))
@@ -83,12 +96,7 @@ const QUICKSTART = [
 ].join('\n')
 ---
 
-<Base
-  title="HOTDOG BENCHMARK"
-  description="The largest AI models, one question, every week. Watch them answer in real time, then tell them the answer and see who changes their mind. An En Dash research program."
-  bareTitle
-  flush
->
+<Base title={title} description={description} jsonLd={jsonLd} flush>
   {
     hasData() && latest ? (
       <>

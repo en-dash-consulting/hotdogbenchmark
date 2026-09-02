@@ -26,6 +26,10 @@ sandwich, published as a straight-faced analyst report. A teaching project.`
       `anthropic`, `openai`, `typescript`
 - [ ] **Settings → General → Social preview:** upload `dist/og/default.png`
 - [ ] **Settings → Pages → Source: GitHub Actions**
+- [ ] DNS records at the registrar, the custom domain in **Settings → Pages**, Enforce HTTPS,
+      and the verification commands: see
+      [`launch-dns-and-hosting.md`](launch-dns-and-hosting.md), which also has the page-weight
+      and bandwidth estimate.
 - [ ] Add provider secrets (see [`self-hosting.md`](self-hosting.md))
 - [ ] Confirm the badges render and the live link resolves
 

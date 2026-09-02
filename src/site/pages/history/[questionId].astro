@@ -70,7 +70,7 @@ const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
 
 <Base
   title={`${question.reportTitle}, week by week`}
-  description={`How every model's answer to "${question.text}" has moved across editions.`}
+  description={`"${question.text.replace(/\s*One word answer\.$/, '')}" across ${runs.length === 1 ? 'one edition' : `${runs.length} editions`}, every model. ${changes.length === 0 ? 'No changes of position yet.' : `Latest change: ${changes[0]!.displayName}, ${changes[0]!.from} to ${changes[0]!.to} in ${formatEdition(changes[0]!.toEdition)}.`}`}
 >
   <h1>{question.reportTitle}, week by week</h1>
   {question.tagline && <p class="lede">{question.tagline}</p>}

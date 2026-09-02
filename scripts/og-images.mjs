@@ -1,23 +1,33 @@
 /**
- * Generates an OpenGraph card per report, plus a site-wide default.
+ * Generates one OpenGraph card per page that has something of its own to say.
  *
  * Rendered by screenshotting a small HTML document in Chromium, which is
  * already a dependency for the accessibility checks and the PDF edition.
  * Reaching for satori or resvg here would add a rendering engine whose output
  * differs from the one the rest of the pipeline already uses.
  *
- * The card is styled as a report cover: wordmark, report title, edition, and
- * the consensus figure. No imagery, consistent with everything else.
+ * Cards, all under `<out>/og/`:
+ *
+ *   default.png                       the site: the lead question and the promise
+ *   <questionId>.png                  one report: title, edition, control tally
+ *   <questionId>-<conditionId>.png    one framed report: the system prompt and its tally
+ *   runs/<editionKey>.png             one edition: date and a verdict per question
+ *
+ * The data comes from the run files themselves (`data/runs/*.json`, schema
+ * version 2), not from the manifest, so a card can never be a week behind the
+ * file it describes. The output directory follows `ASTRO_OUT_DIR` the way the
+ * site build does, so a test can render into its own directory.
  *
  * Usage: node scripts/og-images.mjs
  */
-import { readFile, mkdir } from 'node:fs/promises'
+import { mkdir, readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { chromium } from 'playwright'
 
-const OUT = 'dist/og'
+const OUT = join(process.env.ASTRO_OUT_DIR || 'dist', 'og')
+const CONTROL = 'control'
 
-const read = async (path, fallback) => {
+const readJson = async (path, fallback) => {
   try {
     return JSON.parse(await readFile(path, 'utf8'))
   } catch {
@@ -25,103 +35,244 @@ const read = async (path, fallback) => {
   }
 }
 
-const manifest = await read('data/index.json', { runs: [] })
-const questions = (await read('questions.json', { questions: [] })).questions.filter(
+/** Every committed run, newest first. Non-run files in the directory are skipped. */
+async function loadRuns() {
+  let names = []
+  try {
+    names = await readdir('data/runs')
+  } catch {
+    return []
+  }
+  const runs = []
+  for (const name of names.filter((n) => n.endsWith('.json')).sort()) {
+    const run = await readJson(join('data/runs', name), null)
+    if (run && Array.isArray(run.results) && typeof run.isoWeek === 'string') {
+      runs.push(run)
+    }
+  }
+  return runs.sort((a, b) => Date.parse(b.finishedAt) - Date.parse(a.finishedAt))
+}
+
+const runs = await loadRuns()
+const questions = (await readJson('questions.json', { questions: [] })).questions.filter(
   (q) => q.enabled,
 )
-const latest = manifest.runs?.[0]
+const models = (await readJson('models.json', { models: [] })).models.filter((m) => m.enabled)
+const latest = runs[0] ?? null
 
-/** Per-question consensus for the latest edition, read from the run file. */
-let run = null
-if (latest) run = await read(latest.path, null)
+/** Escape text for the card. Model names and prompts are data, not markup. */
+const esc = (text) =>
+  String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 
-function consensusFor(questionId) {
+/** `2026-W36` reads as "Week 36, 2026"; a daily key as its date. */
+function editionLabel(run) {
+  const key = run.editionKey ?? run.isoWeek
+  const week = /^(\d{4})-W(\d{2})$/.exec(key)
+  if (week) return `Week ${Number(week[2])}, ${week[1]}`
+  if (/^\d{4}-\d{2}-\d{2}$/.test(key)) return formatDate(`${key}T00:00:00Z`)
+  return key
+}
+
+function formatDate(iso) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return iso
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(date)
+}
+
+const VERDICT_LABEL = { yes: 'Yes', no: 'No', other: 'Non-committal' }
+
+/** The majority position in one cell of the matrix, as a label and a count. */
+function consensusFor(run, questionId, conditionId = CONTROL) {
   if (!run) return null
-  const result = run.results.find((r) => r.questionId === questionId)
-  if (!result) return null
+  const cell = run.results.find(
+    (r) => r.questionId === questionId && (r.conditionId ?? CONTROL) === conditionId,
+  )
+  if (!cell) return null
   const tally = { yes: 0, no: 0, other: 0 }
   let answering = 0
-  for (const model of result.models) {
-    if (model.status === 'error' || !model.aggregate.verdict) continue
+  for (const model of cell.models) {
+    if (model.status === 'error' || !model.aggregate?.verdict) continue
     tally[model.aggregate.verdict] += 1
     answering += 1
   }
   const entries = Object.entries(tally).sort((a, b) => b[1] - a[1])
   const [top, next] = entries
   if (!top || top[1] === 0) return null
-  if (next && next[1] === top[1])
-    return { label: 'No consensus', detail: `${answering} models evaluated` }
-  const label = top[0] === 'yes' ? 'Affirmative' : top[0] === 'no' ? 'Negative' : 'Non-committal'
-  return { label, detail: `${top[1]} of ${answering} models` }
+  if (next && next[1] === top[1]) {
+    return { label: 'No consensus', detail: `${answering} models evaluated`, verdict: null }
+  }
+  return {
+    label: VERDICT_LABEL[top[0]],
+    detail: `${top[1]} of ${answering} models`,
+    verdict: top[0],
+    top: top[1],
+    answering,
+  }
 }
 
-const editionLabel = latest
-  ? `Week ${Number(latest.isoWeek.slice(6))}, ${latest.isoWeek.slice(0, 4)}`
-  : 'No edition published'
+/** The system prompt actually sent in one cell, or null. */
+function systemPromptFor(run, questionId, conditionId) {
+  const cell = run.results.find(
+    (r) => r.questionId === questionId && (r.conditionId ?? CONTROL) === conditionId,
+  )
+  return cell?.systemPrompt ?? null
+}
 
-/** The card, as a self-contained document. Fonts are system faces only. */
-function card({ title, edition, verdict, detail }) {
+const subjectName = (question) => {
+  const bare = question.subject.replace(/^(an?|the)\s+/i, '')
+  return bare.charAt(0).toUpperCase() + bare.slice(1)
+}
+
+const headline = (question) => question.text.replace(/\s*One word answer\.$/, '')
+
+/**
+ * The card, as a self-contained document. Navy ground, teal rule, the site's
+ * display face when the machine has it and a serif fallback when it does not.
+ */
+function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize = 76 }) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     * { box-sizing: border-box; margin: 0; }
     body {
       width: 1200px; height: 630px; display: flex; flex-direction: column;
-      justify-content: space-between; padding: 64px 72px;
-      background: #f7f8fa; color: #141922;
-      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      justify-content: space-between; padding: 60px 72px;
+      background: linear-gradient(135deg, #000b45 0%, #001769 100%); color: #ffffff;
+      font-family: Montserrat, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    .kicker { font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: #4d5768; }
-    .rule { border-top: 6px solid #0b1a2b; border-bottom: 1px solid #0b1a2b; height: 6px; margin: 20px 0 40px; }
+    .kicker { font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: #7bffea; font-weight: 700; }
+    .rule { height: 4px; background: linear-gradient(90deg, #7bffea 0%, #1fd5c0 100%); margin: 18px 0 36px; }
     h1 {
-      font-family: Georgia, "Times New Roman", serif; font-size: 76px; line-height: 1.06;
-      color: #0b1a2b; letter-spacing: -.02em; max-width: 20ch;
+      font-family: Montserrat, Georgia, "Times New Roman", serif; font-size: ${titleSize}px; line-height: 1.04;
+      letter-spacing: -.02em; max-width: 20ch; font-weight: 800;
     }
+    .quote {
+      margin-top: 28px; padding-left: 24px; border-left: 4px solid #7bffea;
+      font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 34px; color: #d5d9ee;
+      max-width: 28ch;
+    }
+    .lines { margin-top: 28px; display: grid; gap: 10px; }
+    .line { font-size: 30px; color: #d5d9ee; }
+    .line b { color: #ffffff; font-weight: 800; }
     .foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; }
-    .meta { font-size: 26px; color: #4d5768; }
+    .meta { font-size: 26px; color: #d5d9ee; }
     .verdict { text-align: right; }
-    .verdict-label {
-      font-family: Georgia, serif; font-size: 46px; color: #0b1a2b; font-weight: 700;
-    }
-    .verdict-detail { font-size: 24px; color: #4d5768; margin-top: 6px; }
+    .verdict-label { font-size: 46px; color: #7bffea; font-weight: 800; }
+    .verdict-detail { font-size: 24px; color: #d5d9ee; margin-top: 6px; }
   </style></head><body>
     <div>
-      <p class="kicker">Hotdog Benchmark</p>
+      <p class="kicker">${esc(kicker)}</p>
       <div class="rule"></div>
-      <h1>${title}</h1>
+      <h1>${esc(title)}</h1>
+      ${quote ? `<p class="quote">&ldquo;${esc(quote)}&rdquo;</p>` : ''}
+      ${
+        lines?.length
+          ? `<div class="lines">${lines.map((line) => `<p class="line">${line}</p>`).join('')}</div>`
+          : ''
+      }
     </div>
     <div class="foot">
-      <p class="meta">${edition}</p>
-      ${verdict ? `<div class="verdict"><div class="verdict-label">${verdict}</div><div class="verdict-detail">${detail}</div></div>` : ''}
+      <p class="meta">${esc(edition)}</p>
+      ${verdict ? `<div class="verdict"><div class="verdict-label">${esc(verdict)}</div><div class="verdict-detail">${esc(detail)}</div></div>` : ''}
     </div>
   </body></html>`
 }
 
-await mkdir(OUT, { recursive: true })
-
-const browser = await chromium.launch()
-const page = await browser.newPage({ viewport: { width: 1200, height: 630 } })
+const edition = latest ? editionLabel(latest) : 'No edition published'
+const first = questions[0]
 
 const cards = [
   {
     name: 'default',
     html: card({
-      title: 'Independent cross-vendor AI research',
-      edition: editionLabel,
-      verdict: null,
+      kicker: 'Hotdog Benchmark',
+      title: first ? headline(first) : 'Independent cross-vendor AI research',
+      lines: [
+        `<b>${models.length} AI models</b> answer, every week.`,
+        'Then they are told the answer, and some of them believe it.',
+      ],
+      edition,
+      verdict: first ? consensusFor(latest, first.id)?.label : null,
+      detail: first ? consensusFor(latest, first.id)?.detail : '',
     }),
   },
   ...questions.map((question) => {
-    const consensus = consensusFor(question.id)
+    const consensus = consensusFor(latest, question.id)
     return {
       name: question.id,
       html: card({
+        kicker: 'Hotdog Benchmark',
         title: question.reportTitle,
-        edition: editionLabel,
+        quote: headline(question),
+        edition,
         verdict: consensus?.label ?? null,
         detail: consensus?.detail ?? '',
       }),
     }
   }),
 ]
+
+// One card per framed report in the latest edition, showing the prompt that framed it.
+if (latest) {
+  for (const condition of latest.conditions ?? []) {
+    if (condition.id === CONTROL) continue
+    for (const question of questions) {
+      const consensus = consensusFor(latest, question.id, condition.id)
+      if (!consensus) continue
+      cards.push({
+        name: `${question.id}-${condition.id}`,
+        html: card({
+          kicker: `Hotdog Benchmark · ${condition.label} framing`,
+          title: question.reportTitle,
+          quote: systemPromptFor(latest, question.id, condition.id) ?? condition.label,
+          edition,
+          verdict: consensus.label,
+          detail: consensus.detail,
+          titleSize: 64,
+        }),
+      })
+    }
+  }
+}
+
+// One card per edition, with a verdict per question.
+for (const run of runs) {
+  const lines = run.questions.map((asked) => {
+    const question = questions.find((q) => q.id === asked.id)
+    const name = question ? subjectName(question) : asked.id
+    const consensus = consensusFor(run, asked.id)
+    const verdict = consensus
+      ? `<b>${esc(consensus.label)}</b>, ${esc(consensus.detail)}`
+      : 'no answers'
+    return `${esc(name)}: ${verdict}`
+  })
+  const modelCount = new Set(
+    run.results.flatMap((cell) => cell.models.map((m) => `${m.provider}/${m.modelId}`)),
+  ).size
+  cards.push({
+    name: `runs/${run.editionKey ?? run.isoWeek}`,
+    html: card({
+      kicker: 'Hotdog Benchmark · Edition',
+      title: `${editionLabel(run)} edition`,
+      lines,
+      edition: `${formatDate(run.finishedAt)} · ${modelCount} models · ${(run.conditions ?? []).length || 1} framings`,
+      verdict: null,
+      titleSize: 64,
+    }),
+  })
+}
+
+await mkdir(join(OUT, 'runs'), { recursive: true })
+
+const browser = await chromium.launch()
+const page = await browser.newPage({ viewport: { width: 1200, height: 630 } })
 
 for (const { name, html } of cards) {
   await page.setContent(html, { waitUntil: 'load' })
@@ -130,4 +281,4 @@ for (const { name, html } of cards) {
 }
 
 await browser.close()
-console.log(`OpenGraph cards: ${cards.length} rendered.`)
+console.log(`OpenGraph cards: ${cards.length} rendered for ${edition}.`)

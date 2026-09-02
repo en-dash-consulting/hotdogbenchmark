@@ -16,8 +16,10 @@ import {
   getNextRun,
   getPreviousRun,
   getQuestion,
+  getQuestions,
 } from '../../lib/data.ts'
 import { formatEdition } from '../../lib/format.ts'
+import { editionDatasetJsonLd, editionDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -27,11 +29,18 @@ export function getStaticPaths() {
 const { run } = Astro.props
 const previous = getPreviousRun(run.isoWeek)
 const next = getNextRun(run.isoWeek)
+
+const questions = getQuestions()
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
+/** The edition is a dataset: one JSON file, MIT, published on a known date. */
+const jsonLd = editionDatasetJsonLd(run, questions, canonical)
 ---
 
 <Base
   title={`${formatEdition(run.isoWeek)} edition`}
-  description={`Archived Hotdog Benchmark results for ${formatEdition(run.isoWeek)}.`}
+  description={editionDescription(run, questions)}
+  ogImage={`runs/${run.editionKey ?? run.isoWeek}`}
+  jsonLd={jsonLd}
 >
   <nav class="edition-nav" aria-label="Edition">
     {
@@ -89,6 +98,12 @@ const next = getNextRun(run.isoWeek)
     padding-bottom: var(--space-s);
     border-bottom: var(--hairline) solid var(--rule);
     margin-bottom: var(--space-l);
+  }
+
+  .edition-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
   }
 
   .archive-note {

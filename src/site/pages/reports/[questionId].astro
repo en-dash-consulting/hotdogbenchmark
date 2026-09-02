@@ -25,6 +25,7 @@ import {
   getQuestionTextInRun,
 } from '../../lib/data.ts'
 import { formatEdition } from '../../lib/format.ts'
+import { reportDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -48,7 +49,7 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
 <Base
   title={question.reportTitle}
   ogImage={question.id}
-  description={`Cross-vendor evaluation of how leading AI models classify ${question.subject}. ${run ? formatEdition(run.isoWeek) : ''} edition.`}
+  description={reportDescription(run, question)}
 >
   {
     run ? (

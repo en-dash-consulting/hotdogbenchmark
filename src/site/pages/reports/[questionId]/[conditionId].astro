@@ -27,6 +27,7 @@ import {
 } from '../../../lib/data.ts'
 import { treatedConditions } from '../../../lib/sensitivity.ts'
 import { formatEdition } from '../../../lib/format.ts'
+import { framingDescription } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -54,8 +55,8 @@ const previousResults = previous ? getModelResults(previous, question.id, condit
 
 <Base
   title={`${question.reportTitle} — ${condition.label} framing`}
-  ogImage={question.id}
-  description={`How leading AI models classify ${question.subject} when told ${cell.systemPrompt ? `"${cell.systemPrompt}"` : 'nothing'}. ${formatEdition(run.isoWeek)} edition, ${condition.label.toLowerCase()} framing.`}
+  ogImage={`${question.id}-${condition.id}`}
+  description={framingDescription(run, question, condition, cell.systemPrompt)}
 >
   <ConditionNav run={run} questionId={question.id} current={condition.id} />
   <Masthead

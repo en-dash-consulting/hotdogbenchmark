@@ -1,13 +1,24 @@
 ---
+/**
+ * The archive index: every edition, newest first, with what each one found.
+ *
+ * The table is the index; the list under it is the substance, one line per
+ * edition per question, so a reader (or a crawler) gets the verdicts without
+ * opening anything.
+ */
 import Base from '../../layouts/Base.astro'
-import { getAllRuns } from '../../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion } from '../../lib/data.ts'
 import { formatDate, formatEdition } from '../../lib/format.ts'
+import { runsIndexDescription, subjectName, tallyPhrase } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 const runs = getAllRuns()
+
+const modelCount = (run: (typeof runs)[number]) =>
+  new Set(run.results.flatMap((r) => r.models.map((m) => `${m.provider}/${m.modelId}`))).size
 ---
 
-<Base title="Every edition" description="Every published edition of the Hotdog Benchmark.">
+<Base title="Every edition" description={runsIndexDescription(runs)}>
   <h1>Every week, asked again.</h1>
   <p class="muted">Newest first. An edition is never revised after it is published.</p>
 
@@ -15,48 +26,103 @@ const runs = getAllRuns()
     runs.length === 0 ? (
       <p>No editions have been published yet.</p>
     ) : (
-      <div
-        class="table-scroll"
-        tabindex="0"
-        role="region"
-        aria-label="Table, scrolls sideways on narrow screens"
-      >
-        <table>
-          <caption class="visually-hidden">Published editions</caption>
-          <thead>
-            <tr>
-              <th scope="col">Edition</th>
-              <th scope="col">Published</th>
-              <th scope="col" class="numeric">
-                Questions
-              </th>
-              <th scope="col" class="numeric">
-                Models
-              </th>
-              <th scope="col">Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {runs.map((run) => (
+      <>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Table, scrolls sideways on narrow screens"
+        >
+          <table>
+            <caption class="visually-hidden">Published editions</caption>
+            <thead>
               <tr>
-                <th scope="row">
-                  <a href={routes.run(run.isoWeek)}>{formatEdition(run.isoWeek)}</a>
+                <th scope="col">Edition</th>
+                <th scope="col">Published</th>
+                <th scope="col" class="numeric">
+                  Questions
                 </th>
-                <td>{formatDate(run.finishedAt)}</td>
-                <td class="numeric">{run.questions.length}</td>
-                <td class="numeric">
-                  {
-                    new Set(
-                      run.results.flatMap((r) => r.models.map((m) => `${m.provider}/${m.modelId}`)),
-                    ).size
-                  }
-                </td>
-                <td>{run.isMock ? 'Sample data' : ''}</td>
+                <th scope="col" class="numeric">
+                  Models
+                </th>
+                <th scope="col">Notes</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {runs.map((run) => (
+                <tr>
+                  <th scope="row">
+                    <a href={routes.run(run.isoWeek)}>{formatEdition(run.isoWeek)}</a>
+                  </th>
+                  <td>{formatDate(run.finishedAt)}</td>
+                  <td class="numeric">{run.questions.length}</td>
+                  <td class="numeric">{modelCount(run)}</td>
+                  <td>{run.isMock ? 'Sample data' : ''}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <section class="findings" aria-labelledby="findings-heading">
+          <h2 id="findings-heading">What each edition found</h2>
+          <p class="muted">
+            The control tally per question: the question asked plainly, no system prompt. The framed
+            arms and every model's answer are in the edition itself.
+          </p>
+          {runs.map((run) => (
+            <article class="edition">
+              <h3>
+                <a href={routes.run(run.isoWeek)}>{formatEdition(run.isoWeek)}</a>
+              </h3>
+              <p class="edition-meta">
+                Published {formatDate(run.finishedAt)}. {modelCount(run)} models,{' '}
+                {run.conditions.length} framings, {run.questions.length} questions.
+                {run.isMock && <strong> Sample data.</strong>}
+              </p>
+              <ul>
+                {run.questions.map((asked) => {
+                  const question = getQuestion(asked.id)
+                  const results = getModelResults(run, asked.id)
+                  return (
+                    <li>
+                      <a href={routes.runQuestion(run.isoWeek, asked.id)}>
+                        {question ? subjectName(question) : asked.id}
+                      </a>
+                      : {tallyPhrase(results, 'said')}.
+                    </li>
+                  )
+                })}
+              </ul>
+            </article>
+          ))}
+        </section>
+      </>
     )
   }
 </Base>
+
+<style>
+  .findings {
+    margin-top: var(--space-2xl);
+    max-width: var(--measure);
+  }
+
+  .edition {
+    margin-top: var(--space-l);
+  }
+
+  .edition h3 {
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .edition-meta {
+    margin: 0 0 var(--space-xs);
+    color: var(--muted);
+  }
+
+  .edition ul {
+    margin: 0;
+    padding-left: 1.25em;
+  }
+</style>

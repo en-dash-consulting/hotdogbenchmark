@@ -1,15 +1,13 @@
 ---
 import Base from '../../layouts/Base.astro'
-import { getQuestions } from '../../lib/data.ts'
+import { getAllRuns, getQuestions } from '../../lib/data.ts'
+import { historyIndexDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 const questions = getQuestions()
 ---
 
-<Base
-  title="History"
-  description="Do the models change their minds? Verdicts, latency and tokens across every edition."
->
+<Base title="History" description={historyIndexDescription(getAllRuns(), questions)}>
   <h1>Do they change their minds?</h1>
   <p class="lede">Every edition, every question, every model. Pick a question.</p>
 

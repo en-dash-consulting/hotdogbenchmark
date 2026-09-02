@@ -175,12 +175,16 @@ describe('experimental conditions in the built report', () => {
     // one script the section adds, and the results table the one the page
     // adds; both reveal their controls only after they have run.
     if (treated.length === 0) return
-    const baseline = (read('about').match(/<script[^>]*>/g) ?? []).length
+    // A JSON-LD block is data in a script element, not a script; it is not
+    // counted on either side.
+    const scriptCount = (html: string) =>
+      (html.match(/<script(?![^>]*application\/ld\+json)[^>]*>/g) ?? []).length
+    const baseline = scriptCount(read('about'))
     for (const questionId of questionIds) {
       const html = read(`reports/${questionId}`)
       const start = html.indexOf('id="framing-heading"')
       expect(start, `${questionId} has no framing section`).toBeGreaterThan(-1)
-      const scripts = (html.match(/<script[^>]*>/g) ?? []).length
+      const scripts = scriptCount(html)
       expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 2)
     }
   })
