@@ -7,6 +7,7 @@ import {
   hasConditions,
   modelsInRun,
   questionShifts,
+  replayedFromControl,
   treatedConditions,
   verdictShift,
 } from '../../src/site/lib/sensitivity.ts'
@@ -135,6 +136,22 @@ describe('verdictShift', () => {
     expect(verdictShift(model('A', 'no'), model('A', null)).status).toBe('incomparable')
     expect(verdictShift(model('A', null), model('A', 'yes')).status).toBe('incomparable')
     expect(verdictShift(null, model('A', 'yes')).status).toBe('incomparable')
+  })
+})
+
+describe('verdictShift on mock data replayed from the control', () => {
+  it('is incomparable, since the provider was never asked under the framing', () => {
+    const treated = model('A', 'no')
+    for (const sample of treated.samples) sample.raw = { mock: true, replayedFrom: 'control' }
+    expect(replayedFromControl(treated)).toBe(true)
+    expect(verdictShift(model('A', 'no'), treated).status).toBe('incomparable')
+  })
+
+  it('does not fire on a genuine recording', () => {
+    const treated = model('A', 'no')
+    for (const sample of treated.samples) sample.raw = { mock: true }
+    expect(replayedFromControl(treated)).toBe(false)
+    expect(verdictShift(model('A', 'no'), treated).status).toBe('held')
   })
 })
 

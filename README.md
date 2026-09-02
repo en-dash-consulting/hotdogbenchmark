@@ -65,12 +65,15 @@ git clone https://github.com/endash/hotdogbenchmark.git
 cd hotdogbenchmark
 nvm use && npm install
 
-npm run bench -- run --mock     # ask all seven models, from recorded fixtures
-npm run dev                     # build and serve the report site
+npm run bench -- run --mock --out tmp/mock-run.json   # ask all seven models, from recorded fixtures
+npm run dev                                            # serve the report site
 ```
 
 Open <http://localhost:4321>. That is the whole loop, and it takes about two minutes on a fresh
-clone.
+clone. The site renders the committed edition in `data/runs/`, which is real data; the mock run
+proves the pipeline works on your machine without touching it. Mock mode refuses to overwrite a
+real edition — on a fork with no data yet, drop `--out` and the mock run becomes the site's
+first edition, clearly labelled as sample data.
 
 Everything downstream of the network call is real: answer classification, aggregation, cost
 estimation, schema validation, and the site build. Set `BENCH_SEED=1` to make mock timings

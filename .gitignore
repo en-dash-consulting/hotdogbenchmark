@@ -21,3 +21,6 @@ coverage/
 .env.*
 !.env.example
 .lighthouseci/
+
+# Scratch output, e.g. mock runs written with --out
+tmp/

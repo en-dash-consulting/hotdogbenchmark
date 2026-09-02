@@ -7,7 +7,7 @@
  * any of that.
  */
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { planJobs, runBenchmark } from '../runner/run.ts'
@@ -113,6 +113,24 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
   }
 
   const outPath = options.out ?? runPathFor(isoWeekFor(new Date()))
+
+  // Mock data must never replace a real edition. Re-running a week overwrites
+  // it by design, and that is right for a real re-run — but a newcomer
+  // following the quickstart on a clone that already has this week's real
+  // data would otherwise wipe it with fixtures. They can still write the mock
+  // run anywhere else with --out.
+  if (options.mock && options.out === undefined && !options.dryRun) {
+    const existing = readIsMock(resolve(root, outPath))
+    if (existing === false) {
+      console.error(
+        `${outPath} is a real edition (isMock: false), and mock mode will not overwrite real data.\n` +
+          'The site already renders that edition. To inspect a mock run, write it elsewhere:\n' +
+          '  npm run bench -- run --mock --out tmp/mock-run.json',
+      )
+      restoreAdapters?.()
+      return 2
+    }
+  }
 
   if (options.dryRun) {
     printPlan(options, questions, conditions, plan, outPath)
@@ -270,6 +288,21 @@ function printSummary(run: BenchmarkRun): void {
       if (model.aggregate.verdict) tally[model.aggregate.verdict] += 1
     }
     console.log(`  → ${tally.yes} yes, ${tally.no} no, ${tally.other} other\n`)
+  }
+}
+
+/**
+ * Whether an existing run file is mock data. Null when there is no file or it
+ * cannot be read — an unreadable file is not evidence of real data, and the
+ * write will surface whatever is wrong with it anyway.
+ */
+function readIsMock(path: string): boolean | null {
+  if (!existsSync(path)) return null
+  try {
+    const parsed = JSON.parse(readFileSync(path, 'utf8')) as { isMock?: unknown }
+    return typeof parsed.isMock === 'boolean' ? parsed.isMock : null
+  } catch {
+    return null
   }
 }
 

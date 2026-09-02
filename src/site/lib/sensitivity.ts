@@ -34,13 +34,32 @@ export interface VerdictShift {
   status: ShiftStatus
 }
 
+/**
+ * True when a mock result was replayed from the control recording because the
+ * fixture had nothing recorded under this arm.
+ *
+ * Mock mode marks these in each sample's `raw` payload. They must not count
+ * as a held position: the provider was never actually asked under the
+ * framing, so there is nothing to compare. This is the one place the site
+ * looks inside `raw`, and it does so only to avoid inventing a finding.
+ */
+export function replayedFromControl(result: ModelResult | null | undefined): boolean {
+  if (!result || result.samples.length === 0) return false
+  return result.samples.every(
+    (sample) =>
+      typeof sample.raw === 'object' &&
+      sample.raw !== null &&
+      (sample.raw as { replayedFrom?: unknown }).replayedFrom === 'control',
+  )
+}
+
 /** Compare one model's verdict under the control against the same model under another arm. */
 export function verdictShift(
   control: ModelResult | null | undefined,
   treated: ModelResult | null | undefined,
 ): VerdictShift {
   const from = control?.aggregate.verdict ?? null
-  const to = treated?.aggregate.verdict ?? null
+  const to = replayedFromControl(treated) ? null : (treated?.aggregate.verdict ?? null)
   if (from === null || to === null) return { from, to, status: 'incomparable' }
   return { from, to, status: from === to ? 'held' : 'moved' }
 }

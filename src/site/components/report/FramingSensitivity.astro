@@ -25,6 +25,7 @@ import {
   editionSensitivity,
   hasConditions,
   questionShifts,
+  replayedFromControl,
   treatedConditions,
 } from '../../lib/sensitivity.ts'
 import { getQuestionResult } from '../../lib/data.ts'
@@ -52,7 +53,7 @@ const promptFor = (conditionId: string) =>
 
 /** What a model said, and how consistently, in one arm. */
 function said(result: ModelResult | null): { text: string; agreement: string } | null {
-  if (!result || result.samples.length === 0) return null
+  if (!result || result.samples.length === 0 || replayedFromControl(result)) return null
   const majority = result.aggregate.verdict
   const agreeing = result.samples.filter((s) => s.verdict === majority).length
   const first = result.samples.find((s) => s.verdict === majority) ?? result.samples[0]!
@@ -170,7 +171,11 @@ const comparableCount = rows.filter((row) =>
                   </td>
                   {row.cells.map((cell) => (
                     <td class:list={['shift-cell', cell.shift.status]}>
-                      <VerdictBadge verdict={cell.result?.aggregate.verdict ?? null} />
+                      {replayedFromControl(cell.result) ? (
+                        <span class="not-recorded">Not recorded</span>
+                      ) : (
+                        <VerdictBadge verdict={cell.result?.aggregate.verdict ?? null} />
+                      )}
                       {cell.shift.status === 'moved' && <span class="shift-mark">moved</span>}
                     </td>
                   ))}
@@ -256,6 +261,11 @@ const comparableCount = rows.filter((row) =>
                                 )}
                               </p>
                             </>
+                          ) : replayedFromControl(cell.result) ? (
+                            <p class="verbatim-meta muted">
+                              Not recorded under this framing. Sample data replays this provider's
+                              control answer here and does not count it as a position.
+                            </p>
                           ) : (
                             <p class="verbatim-meta muted">No usable response.</p>
                           )}
@@ -418,6 +428,12 @@ const comparableCount = rows.filter((row) =>
 
   .shift-cell {
     white-space: nowrap;
+  }
+
+  .not-recorded {
+    font-size: var(--step--1);
+    font-style: italic;
+    color: var(--muted);
   }
 
   .shift-cell.moved {

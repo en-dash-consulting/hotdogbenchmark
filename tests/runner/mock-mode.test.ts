@@ -8,6 +8,7 @@ import {
   readdirSync,
   rmSync,
   symlinkSync,
+  writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -378,6 +379,28 @@ describe('bench run --mock end to end, with no API keys', () => {
     expect(output).toContain('"A hot dog is a sandwich."')
     expect(output).toContain('Matrix:       3 conditions x 3 questions x 7 models x 2 samples')
     expect(output).toContain('Total calls:  126')
+  })
+
+  it('refuses to overwrite a real edition with mock data, unless --out says where', () => {
+    const cwd = setUp()
+    // Plant a real-looking edition for the current week.
+    runCli(cwd, ['run', '--mock', '--samples', '1'])
+    const [name] = readdirSync(join(cwd, 'data/runs'))
+    const path = join(cwd, 'data/runs', name!)
+    const real = JSON.parse(readFileSync(path, 'utf8'))
+    real.isMock = false
+    const planted = JSON.stringify(real, null, 2) + '\n'
+    writeFileSync(path, planted)
+
+    expect(() => runCli(cwd, ['run', '--mock', '--samples', '1'])).toThrow(
+      /will not overwrite real data/,
+    )
+    expect(readFileSync(path, 'utf8')).toBe(planted)
+
+    // The escape hatch writes somewhere else and leaves the edition alone.
+    runCli(cwd, ['run', '--mock', '--samples', '1', '--out', 'tmp/mock-run.json'])
+    expect(readFileSync(path, 'utf8')).toBe(planted)
+    expect(JSON.parse(readFileSync(join(cwd, 'tmp/mock-run.json'), 'utf8')).isMock).toBe(true)
   })
 
   it('exits 2 on an unknown condition id', () => {
