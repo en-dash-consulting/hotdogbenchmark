@@ -10,16 +10,51 @@ where the public surface is the **data schema**, not the TypeScript API.
 
 ## [Unreleased]
 
+### Done since 0.1.0
+
+- **The first real benchmark run is committed.** `data/runs/2026-W36.json` is
+  real data from five providers: 43 samples, $0.037, `isMock: false`. The site
+  no longer shows the sample-data notice.
+- **Five of seven adapters verified against live APIs** — anthropic, openai,
+  gemini, xai, mistral. Each Verified row in
+  [`docs/usage-normalization.md`](docs/usage-normalization.md) carries the
+  measurement that established it.
+- **Four bugs found by that verification**, none of which a fixture test could
+  have caught. See the commit "First real benchmark run, and the four bugs live
+  verification found":
+  - `DEFAULT_MAX_OUTPUT_TOKENS` was 64, which made reasoning models return
+    empty answers. Now 1024.
+  - The Anthropic adapter hardcoded `reasoningTokens: null` with a comment
+    asserting the field does not exist. It does.
+  - `mistral-large-3-25-12` is a documentation slug the API rejects; the
+    registry now uses `mistral-medium-2604`.
+  - Gemini counts thoughts outside `candidatesTokenCount`, confirmed
+    arithmetically.
+- **`bench:smoke --all`** pings every configured provider in one command.
+- **Cost figures in `docs/providers.md` are now measured** rather than
+  estimated: ~$0.04/week, ~$0.18/month for all seven.
+
 ### Pending before 1.0.0
 
-- Six of the seven provider adapters have not been exercised against a live
-  API; only xAI has. Their fixtures are authored to each vendor's documented
-  wire format rather than captured. See the open task in the PRD.
-- The first real weekly run has not been collected. The site currently renders
-  a run marked `isMock: true`, which it labels as sample data.
-- No screen-reader pass has been done. See
-  [`docs/a11y-checklist.md`](docs/a11y-checklist.md).
-- The proxy has never run against a real En Dash identity provider.
+- **Two adapters still unverified**, both blocked on account state rather than
+  code: DeepSeek's key authenticates but the account has no credit (402
+  Insufficient Balance), and no `TOGETHER_API_KEY` is set. DeepSeek's
+  `prompt_cache_hit_tokens` mapping is the only vendor-specific override in the
+  shared helper and has never run against a real response — treat it as suspect.
+- **The repository has no git remote.** Nothing is pushed. Pages is not enabled,
+  the description/topics/social preview are unset, and the README badges and
+  live link therefore do not resolve. See
+  [`docs/launch-checklist.md`](docs/launch-checklist.md).
+- **The real run was produced locally, not by `benchmark.yml`.** The scheduled
+  workflow has never executed. Running it once via `workflow_dispatch` is what
+  actually proves the automation.
+- **No screen-reader pass.** See
+  [`docs/a11y-checklist.md`](docs/a11y-checklist.md) for the seven specific
+  questions a person needs to answer.
+- **The proxy has never run against a real En Dash identity provider.** All 45
+  of its tests use a mocked IdP.
+- **Do not tag v1.0.0** until the above is resolved — specifically until a
+  workflow-produced run is published on a live site.
 
 ## [0.1.0] — 2026-09-01
 

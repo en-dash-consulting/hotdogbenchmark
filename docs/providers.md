@@ -14,30 +14,53 @@ npm run bench -- run --mock
 
 ## The short version on cost
 
-The benchmark makes **63 API calls a week**: 3 questions × 7 models × 3 samples.
+**Measured, not estimated.** A real run on 2026-09-02 across five providers cost **$0.037** for 43
+samples. Projected to all seven providers at the full 63 calls a week: roughly **$0.04 a week, or
+$0.18 a month.**
 
-The prompts are about fifteen tokens and the expected answers are one word, so the calls are
-about as small as an LLM call can be.
+| Measure                                | Value                                   |
+| -------------------------------------- | --------------------------------------- |
+| Calls per week                         | 63 (3 questions x 7 models x 3 samples) |
+| Measured cost, 5 providers, 43 samples | **$0.037**                              |
+| Projected weekly, all 7                | **≈ $0.04**                             |
+| Projected monthly                      | **≈ $0.18**                             |
 
-| Scenario                                       | Weekly       | Monthly     |
-| ---------------------------------------------- | ------------ | ----------- |
-| All seven models, one-word answers throughout  | **≈ $0.004** | **≈ $0.02** |
-| All seven, with reasoning models thinking hard | **≈ $0.46**  | **≈ $2.01** |
+### Where the money actually goes
 
-Both figures are computed from the per-token rates recorded in `models.json` as of the `asOf`
-date in each entry, using 63 calls a week. The low figure assumes 15 input and 3 output tokens
-per call. The high figure assumes 700 input and 700 output tokens — which is not hypothetical:
-a live call to a reasoning model in this repository recorded 647 prompt tokens and 647 reasoning
-tokens _to answer with the single word "No"_.
+Not where you would guess. Median output tokens per model, from that same run:
 
-**Budget for the high figure.** A reasoning model deciding to think carefully about a hot dog is
-the normal case, not the pathological one. Two dollars a month is still nothing, but the ratio
-between the two columns is the interesting part: **the same benchmark can cost 130× more
-depending on which models are enabled.**
+| Model              | Median output tokens | Share of run cost |
+| ------------------ | -------------------- | ----------------- |
+| Claude Opus 5      | 130                  | ~60%              |
+| GPT-5.6 Sol        | 6                    | ~5%               |
+| Mistral Medium 3.5 | 3                    | ~1%               |
+| Gemini 3.7 Flash   | 1                    | <1%               |
+| Grok 4.6           | 1                    | ~30%              |
 
-Set a spend limit in every console you use. Every one of them offers it.
+**One model accounts for most of the bill, and it is not the one that talks the most.** Two
+separate effects:
 
----
+- **Reasoning tokens are billed but mostly invisible.** Claude answers "No." — two visible tokens
+  — while spending ~130 output tokens, the rest on thinking. Grok answers with a single token
+  while spending ~500 reasoning tokens that are billed _outside_ its completion count.
+- **Price per token varies 10x across this field**, from $1.04/MTok to $25/MTok on output.
+
+An earlier version of this page assumed 3 output tokens per call and quoted a floor of $0.004 a
+week. That floor was never reachable: every reasoning model in this field thinks before answering,
+so the realistic figure is the one measured above. Recompute yours after changing models rather
+than trusting either number.
+
+### The cap matters more than you would expect
+
+`DEFAULT_MAX_OUTPUT_TOKENS` is 1024. It was 64, which was too low — reasoning models spent the
+entire budget thinking and returned _empty answers_. Raising it fixed the data and raised the
+cost; both were the right trade, since an empty answer costs the same as a real one and is worth
+nothing.
+
+If you lower it to save money, check that your models still answer. `npm run bench:smoke -- --all`
+will show you immediately.
+
+Set a spend limit in every console you use.
 
 ## Per-provider setup
 

@@ -140,7 +140,7 @@ describe('docs/providers.md', () => {
   })
 
   it('states a total monthly cost derived from the pricing table', () => {
-    expect(content).toMatch(/Monthly/)
+    expect(content).toMatch(/monthly/i)
     expect(content).toMatch(/\$\d/)
     // The calculation must be reproducible, not just asserted.
     expect(content).toMatch(/inputUsdPerMTok/)

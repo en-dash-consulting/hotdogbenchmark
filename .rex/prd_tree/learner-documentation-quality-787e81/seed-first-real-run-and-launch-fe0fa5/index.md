@@ -25,4 +25,5 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | Title | Status |
 |-------|--------|
 | [Complete the launch checklist and tag v1.0.0](./complete-the-launch-checklist-58a303.md) | blocked |
-| [Seed the first real benchmark run and verify the live site](./seed-the-first-real-benchmark-348e17.md) | blocked |
+| [Publish a workflow-produced run and verify the live site](./publish-a-workflow-produced-run-348e17.md) | blocked |
+| [Push to GitHub and enable the deployment path](./push-to-github-and-enable-the-d38737.md) | pending |
