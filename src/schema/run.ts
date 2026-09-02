@@ -44,6 +44,39 @@ export const isoWeekSchema = z
   .string()
   .regex(/^\d{4}-W(0[1-9]|[1-4]\d|5[0-3])$/, 'isoWeek must look like 2026-W36')
 
+/**
+ * The edition a run belongs to: an ISO week (`2026-W36`) at the default weekly
+ * cadence, or a UTC date (`2026-09-02`) for a fork running daily. A date must
+ * exist on the calendar; the regex alone would accept February 30th.
+ */
+export const editionKeySchema = z
+  .string()
+  .regex(
+    /^\d{4}-(W(0[1-9]|[1-4]\d|5[0-3])|(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/,
+    'editionKey must look like 2026-W36 or 2026-09-02',
+  )
+  .refine(
+    (key) => !isDateShaped(key) || isRealDate(key),
+    'editionKey names a date that does not exist',
+  )
+
+function isDateShaped(key: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(key)
+}
+
+/**
+ * Whether a `YYYY-MM-DD` string is a day on the calendar. `Date.UTC` rolls an
+ * overflow forward (February 30th becomes March 2nd) rather than failing, so
+ * the check is whether the components survive the round trip. Zod runs this
+ * refinement even after the regex above has failed, which is why it must
+ * cope with any string rather than assume the shape.
+ */
+function isRealDate(key: string): boolean {
+  const [year, month, day] = key.split('-').map(Number) as [number, number, number]
+  const date = new Date(Date.UTC(year, month - 1, day))
+  return date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+}
+
 /** A non-negative integer count of tokens. Providers never report negatives. */
 const tokenCount = z.number().int().nonnegative()
 
@@ -402,16 +435,24 @@ export const benchmarkRunV1Schema = z
 export type BenchmarkRunV1 = z.infer<typeof benchmarkRunV1Schema>
 
 /**
- * One weekly edition of the benchmark, in the current shape.
+ * One edition of the benchmark, in the current shape.
  *
- * Written to `data/runs/<isoWeek>.json`. Re-running the same week overwrites
- * the file, so a re-run corrects an edition rather than creating a second one.
+ * Written to `data/runs/<editionKey>.json`. Re-running the same edition
+ * overwrites the file, so a re-run corrects an edition rather than creating a
+ * second one.
  */
 export const benchmarkRunSchema = z
   .object({
     /** The schema generation this file was written under. See {@link SCHEMA_VERSION}. */
     schemaVersion: z.literal(SCHEMA_VERSION),
     ...runBaseFields,
+    /**
+     * The edition this run is, and therefore its filename. Optional because
+     * every file written before cadences existed is a weekly edition keyed by
+     * `isoWeek`, and the archive is never rewritten; readers treat an absent
+     * key as equal to `isoWeek`. The runner always writes it.
+     */
+    editionKey: editionKeySchema.optional(),
     /** The conditions this edition ran, control first, as defined that week. */
     conditions: z.array(runConditionSchema).min(1),
     results: z.array(questionResultSchema),

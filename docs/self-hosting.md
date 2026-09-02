@@ -67,7 +67,8 @@ is what makes it safe to run on PRs from strangers.
 It takes a couple of minutes. When it finishes:
 
 - Open the run and read the **step summary** — the yes/no/other tally and a per-model table.
-- Check that a commit appeared on `main` adding `data/runs/<iso-week>.json`.
+- Check that a commit appeared on `main` adding `data/runs/<iso-week>.json` (or
+  `data/runs/<date>.json` if you chose the daily cadence below).
 - The **Deploy site** workflow should start on its own immediately afterward.
 
 When the deploy finishes, your site is at `https://<your-username>.github.io/<repo-name>/`.
@@ -91,6 +92,29 @@ maintenance window rather than the model.
 > **GitHub disables scheduled workflows in repositories with no activity for 60 days.** It emails
 > you first. A single commit re-enables it. This catches most people who fork a project and come
 > back three months later wondering why the data stopped.
+
+### Running daily instead of weekly
+
+The runner cuts one edition per ISO week by default. If you want a denser record, run it with
+`--cadence day`, or set `BENCH_CADENCE=day` in the workflow's environment, and it writes one
+edition per UTC date instead: `data/runs/2026-09-02.json` rather than `data/runs/2026-W36.json`.
+Re-running on the same day replaces that day's file, exactly as a weekly re-run replaces the
+week's. Weekly and daily editions can coexist in the archive; the site orders them on one
+timeline.
+
+```yaml
+on:
+  schedule:
+    - cron: '0 12 * * *' # every day at 12:00 UTC
+env:
+  BENCH_CADENCE: day
+```
+
+**Count the cost first.** A daily schedule makes seven runs where the weekly one makes one, so at
+the same sample count it costs seven times as much: the "cents per week" figure in
+[`providers.md`](providers.md) becomes cents per day, and every model, question, condition, or
+sample you add multiplies from there. Lower `BENCH_SAMPLES` or `--conditions control` to bring it
+back down, and set the spend caps from step 3 before switching.
 
 ## 6. Choose your own models
 

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import {
   SCHEMA_VERSION,
   benchmarkRunSchema,
+  editionKeySchema,
   isoWeekSchema,
   parseBenchmarkRun,
   sampleSchema,
@@ -220,6 +221,55 @@ describe('isoWeekSchema', () => {
 
   it.each(['2026-W00', '2026-W54', '2026-36', 'W36-2026', '26-W36'])('rejects %s', (value) => {
     expect(isoWeekSchema.safeParse(value).success).toBe(false)
+  })
+})
+
+describe('editionKeySchema', () => {
+  it.each(['2026-W01', '2020-W53', '2026-09-02', '2024-02-29', '2026-12-31'])(
+    'accepts %s',
+    (value) => {
+      expect(editionKeySchema.safeParse(value).success).toBe(true)
+    },
+  )
+
+  it.each([
+    '2026-W00',
+    '2026-W54',
+    '2026-9-2', // not zero-padded, so it would not sort as a string
+    '2026-13-01',
+    '2026-09-32',
+    '2026-02-30', // passes the digit check but is not a day that exists
+    '2025-02-29',
+    '20260902',
+    '2026-09-02T00:00:00Z',
+  ])('rejects %s', (value) => {
+    expect(editionKeySchema.safeParse(value).success).toBe(false)
+  })
+})
+
+describe('editionKey on a run', () => {
+  it('is optional, so every edition written before cadences still validates', () => {
+    const run = minimalRun()
+    expect('editionKey' in run).toBe(false)
+    expect(benchmarkRunSchema.safeParse(run).success).toBe(true)
+  })
+
+  it('accepts a week or a date when present', () => {
+    expect(benchmarkRunSchema.safeParse({ ...minimalRun(), editionKey: '2026-W36' }).success).toBe(
+      true,
+    )
+    expect(
+      benchmarkRunSchema.safeParse({ ...minimalRun(), editionKey: '2026-09-02' }).success,
+    ).toBe(true)
+    expect(benchmarkRunSchema.safeParse({ ...minimalRun(), editionKey: 'latest' }).success).toBe(
+      false,
+    )
+  })
+
+  it('survives migration from version 1 as absent rather than invented', () => {
+    const migrated = parseBenchmarkRun(exampleV1)
+    expect(migrated.editionKey).toBeUndefined()
+    expect(benchmarkRunSchema.safeParse(migrated).success).toBe(true)
   })
 })
 

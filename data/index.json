@@ -3,6 +3,7 @@
   "runs": [
     {
       "isoWeek": "2026-W36",
+      "editionKey": "2026-W36",
       "path": "data/runs/2026-W36.json",
       "runId": "9707a0d5-d9f7-4332-b0d7-0a3fdd7ad825",
       "startedAt": "2026-09-02T02:44:43.013Z",

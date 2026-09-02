@@ -20,7 +20,13 @@ import {
 } from '../schema/run.ts'
 import type { DataManifest, ManifestEntry, QuestionTally } from '../schema/manifest.ts'
 import { CONTROL_CONDITION_ID } from '../schema/conditions.ts'
-import { MANIFEST_PATH, RUNS_DIR, isoWeekFromFilename, newestFirst } from './paths.ts'
+import {
+  MANIFEST_PATH,
+  RUNS_DIR,
+  editionKeyFromFilename,
+  editionKind,
+  newestEditionFirst,
+} from './paths.ts'
 import { REPO_ROOT } from './registries.ts'
 
 export interface RunFile {
@@ -29,8 +35,14 @@ export interface RunFile {
   run: BenchmarkRun
 }
 
-/** Run filenames present under `data/runs`, sorted newest first. */
-export function listRunFilenames(root: string = REPO_ROOT): string[] {
+interface RunListing {
+  name: string
+  /** The edition the filename claims to be. */
+  editionKey: string
+}
+
+/** Run files present under `data/runs`, with their keys, sorted newest first. */
+function listRunEntries(root: string): RunListing[] {
   let entries: string[]
   try {
     entries = readdirSync(join(root, RUNS_DIR))
@@ -39,10 +51,22 @@ export function listRunFilenames(root: string = REPO_ROOT): string[] {
     return []
   }
   return entries
-    .map((name) => ({ name, isoWeek: isoWeekFromFilename(name) }))
-    .filter((entry): entry is { name: string; isoWeek: string } => entry.isoWeek !== null)
-    .sort(newestFirst)
-    .map((entry) => entry.name)
+    .map((name) => ({ name, editionKey: editionKeyFromFilename(name) }))
+    .filter((entry): entry is RunListing => entry.editionKey !== null)
+    .sort(newestEditionFirst)
+}
+
+/** Run filenames present under `data/runs`, sorted newest first. */
+export function listRunFilenames(root: string = REPO_ROOT): string[] {
+  return listRunEntries(root).map((entry) => entry.name)
+}
+
+/**
+ * The edition a run belongs to. Files written before cadences existed carry
+ * no `editionKey`; they are weekly editions, so the week is the key.
+ */
+export function editionKeyOf(run: BenchmarkRun): string {
+  return run.editionKey ?? run.isoWeek
 }
 
 /**
@@ -91,14 +115,27 @@ function readRunFile(root: string, name: string): RunFile {
  */
 export function validateAllRuns(root: string = REPO_ROOT): string[] {
   const problems: string[] = []
-  for (const name of listRunFilenames(root)) {
+  for (const { name, editionKey: expected } of listRunEntries(root)) {
     const path = `${RUNS_DIR}/${name}`
     try {
       const { run } = readRunFile(root, name)
       // The filename is load-bearing: the site finds an edition by its name, so
       // a file whose contents disagree with its name would be unreachable.
-      const expected = isoWeekFromFilename(name)
-      if (run.isoWeek !== expected) {
+      if (run.editionKey !== undefined && run.editionKey !== expected) {
+        problems.push(
+          `${path}\n  /editionKey: file is named ${expected} but its editionKey is ${run.editionKey}`,
+        )
+      }
+      // A file with no editionKey is read as a weekly edition named by its
+      // week, which cannot be right for a file named after a day.
+      if (run.editionKey === undefined && editionKind(expected) === 'day') {
+        problems.push(
+          `${path}\n  /editionKey: file is named ${expected} but records no editionKey; a daily edition must`,
+        )
+      }
+      // A weekly file is checked against isoWeek itself, so a file written
+      // before editionKey existed is held to the same standard as a new one.
+      if (editionKind(expected) === 'week' && run.isoWeek !== expected) {
         problems.push(
           `${path}\n  /isoWeek: file is named ${expected} but its isoWeek is ${run.isoWeek}`,
         )
@@ -150,6 +187,7 @@ function summarize(file: RunFile): ManifestEntry {
   )
   return {
     isoWeek: run.isoWeek,
+    editionKey: editionKeyOf(run),
     path,
     runId: run.runId,
     startedAt: run.startedAt,
@@ -166,7 +204,7 @@ function summarize(file: RunFile): ManifestEntry {
 export function buildManifest(root: string = REPO_ROOT): DataManifest {
   return {
     schemaVersion: SCHEMA_VERSION,
-    runs: loadAllRuns(root).map(summarize).sort(newestFirst),
+    runs: loadAllRuns(root).map(summarize).sort(newestEditionFirst),
   }
 }
 

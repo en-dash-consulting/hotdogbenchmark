@@ -52,11 +52,16 @@ export function formatUsd(value: number | null | undefined): string {
   return `$${value.toFixed(4)}`
 }
 
-/** An ISO week as an edition label: `2026-W36` → `Week 36, 2026`. */
-export function formatEdition(isoWeek: string): string {
-  const match = /^(\d{4})-W(\d{2})$/.exec(isoWeek)
-  if (!match) return isoWeek
-  return `Week ${Number(match[2])}, ${match[1]}`
+/**
+ * An edition key as a label: `2026-W36` → `Week 36, 2026`, and a daily
+ * edition's `2026-09-02` → `September 2, 2026`. Anything else is returned as
+ * it came, so an unexpected key shows up on the page rather than vanishing.
+ */
+export function formatEdition(editionKey: string): string {
+  const week = /^(\d{4})-W(\d{2})$/.exec(editionKey)
+  if (week) return `Week ${Number(week[2])}, ${week[1]}`
+  if (/^\d{4}-\d{2}-\d{2}$/.test(editionKey)) return formatDate(`${editionKey}T00:00:00Z`)
+  return editionKey
 }
 
 /** An ISO timestamp as a readable date in UTC. */

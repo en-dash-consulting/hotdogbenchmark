@@ -10,7 +10,7 @@
  * spurious diff and nobody would notice a real one.
  */
 import { z } from 'zod'
-import { isoWeekSchema, verdictSchema } from './run.ts'
+import { editionKeySchema, isoWeekSchema, verdictSchema } from './run.ts'
 
 /** How one question went in one edition. */
 export const questionTallySchema = z.object({
@@ -27,7 +27,15 @@ export const questionTallySchema = z.object({
 export type QuestionTally = z.infer<typeof questionTallySchema>
 
 export const manifestEntrySchema = z.object({
+  /** The ISO week the run happened in. A daily edition still records its week. */
   isoWeek: isoWeekSchema,
+  /**
+   * The edition this entry is: the week at weekly cadence, the UTC date at
+   * daily cadence. Always present here even though a run file may omit it,
+   * because the manifest is regenerated and the site should not have to
+   * repeat the fallback.
+   */
+  editionKey: editionKeySchema,
   /** Repository-relative path to the run file, e.g. `data/runs/2026-W36.json`. */
   path: z.string().min(1),
   runId: z.string().min(1),

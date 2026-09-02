@@ -1,8 +1,8 @@
 # The run data schema
 
-Every file in `data/runs/` is one weekly edition of the benchmark. This document describes
-what is in one, field by field. The authority is `src/schema/run.ts`; this page explains the
-reasoning that does not fit in a type.
+Every file in `data/runs/` is one edition of the benchmark, weekly by default. This document
+describes what is in one, field by field. The authority is `src/schema/run.ts`; this page
+explains the reasoning that does not fit in a type.
 
 Run `npm run data:validate` to check every committed file against the schema.
 
@@ -58,7 +58,8 @@ lack pricing data, not when the provider withheld it.
 | --------------- | ------------------ | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `schemaVersion` | integer            | —        | no       | Generation of this schema. Currently `2`. Version-1 files are migrated on read.                                                                                                            |
 | `runId`         | string             | —        | no       | Unique per execution. Rendered on the report as its document reference number.                                                                                                             |
-| `isoWeek`       | string             | —        | no       | UTC ISO week, e.g. `2026-W36`. Also the filename.                                                                                                                                          |
+| `isoWeek`       | string             | —        | no       | UTC ISO week the run happened in, e.g. `2026-W36`. The filename too, at weekly cadence.                                                                                                    |
+| `editionKey`    | string             | —        | optional | The edition this run is, and its filename: `2026-W36` at weekly cadence, a UTC date such as `2026-09-02` at daily cadence. See below.                                                      |
 | `startedAt`     | string             | ISO 8601 | no       | When the run began.                                                                                                                                                                        |
 | `finishedAt`    | string             | ISO 8601 | no       | When it ended. Validated to be at or after `startedAt`.                                                                                                                                    |
 | `runnerVersion` | string             | —        | no       | `package.json` version of the runner that wrote the file.                                                                                                                                  |
@@ -67,6 +68,32 @@ lack pricing data, not when the provider withheld it.
 | `questions`     | `Question[]`       | —        | no       | The questions as asked _this week_, so rewording a question later is visible in the archive rather than retroactively applied.                                                             |
 | `conditions`    | `RunCondition[]`   | —        | no       | The conditions run _this week_, control first. Same reasoning as `questions`.                                                                                                              |
 | `results`       | `QuestionResult[]` | —        | no       | One entry per condition × question cell. Every `questionId` must appear in `questions` and every `conditionId` in `conditions`; no cell may appear twice.                                  |
+
+### `editionKey` and cadence
+
+The runner cuts one edition per ISO week by default, and `bench run --cadence day` (or
+`BENCH_CADENCE=day`) cuts one per UTC day instead, for forks that want a denser record. The
+edition is what the filename is named after and what a re-run replaces, so a run has to say which
+one it is:
+
+- At weekly cadence, `editionKey` equals `isoWeek`, and the file is `data/runs/2026-W36.json`.
+- At daily cadence, `editionKey` is the UTC date the run started, `2026-09-02`, and the file is
+  `data/runs/2026-09-02.json`. `isoWeek` is still recorded, so a daily archive can be grouped
+  by week later.
+
+The field is **optional rather than required** because every edition written before cadences
+existed is a weekly one keyed by its week, and the archive is never rewritten. Readers treat an
+absent `editionKey` as equal to `isoWeek`; the generated manifest (`data/index.json`) always
+carries an explicit `editionKey` so the site does not have to repeat that fallback. New files
+always have it, even at weekly cadence, so a file says what it is without a rule to infer it.
+
+`npm run data:validate` checks that the key agrees with the filename: a weekly file whose
+`isoWeek` disagrees with its name is refused, as is a daily file whose `editionKey` disagrees with
+its name or that has none.
+
+Both kinds of edition sort on one timeline, by the first instant each covers: Monday 00:00 UTC
+for a week, midnight UTC for a day. When a day and a week start at the same instant, the week
+comes first.
 
 ## `Question`
 

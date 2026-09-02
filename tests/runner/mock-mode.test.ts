@@ -274,12 +274,14 @@ describe('bench run --mock end to end, with no API keys', () => {
     return root
   }
 
-  function runCli(cwd: string, args: string[]) {
-    // Strip every provider key so the test proves what it claims to.
+  function runCli(cwd: string, args: string[], extraEnv: NodeJS.ProcessEnv = {}) {
+    // Strip every provider key so the test proves what it claims to, and any
+    // cadence the developer's shell happens to set, so the default is tested.
     const env: NodeJS.ProcessEnv = { ...process.env, BENCH_SEED: '1', CI: '1' }
     for (const key of Object.keys(env)) {
-      if (/_API_KEY$/.test(key)) delete env[key]
+      if (/_API_KEY$/.test(key) || key === 'BENCH_CADENCE') delete env[key]
     }
+    Object.assign(env, extraEnv)
     return execFileSync('node', [join(cwd, 'src/cli.ts'), ...args], {
       cwd,
       env,
@@ -453,6 +455,91 @@ describe('bench run --mock end to end, with no API keys', () => {
   it('exits 2 on an unknown condition id', () => {
     const cwd = setUp()
     expect(() => runCli(cwd, ['run', '--mock', '--conditions', 'shouted'])).toThrow()
+  })
+
+  it('writes a daily edition keyed by UTC date with --cadence day', () => {
+    const cwd = setUp()
+    const output = runCli(cwd, ['run', '--mock', '--samples', '1', '--cadence', 'day'])
+    const [name] = readdirSync(join(cwd, 'data/runs'))
+    expect(name).toMatch(/^\d{4}-\d{2}-\d{2}\.json$/)
+    expect(output).toContain(`Wrote data/runs/${name}`)
+
+    const run = JSON.parse(readFileSync(join(cwd, 'data/runs', name!), 'utf8'))
+    const parsed = benchmarkRunSchema.safeParse(run)
+    expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true)
+    expect(run.editionKey).toBe(name!.replace(/\.json$/, ''))
+    // The week is still recorded, so a daily archive can be read by week later.
+    expect(run.isoWeek).toMatch(/^\d{4}-W\d{2}$/)
+
+    const manifest = JSON.parse(readFileSync(join(cwd, 'data/index.json'), 'utf8'))
+    expect(manifest.runs).toHaveLength(1)
+    expect(manifest.runs[0]).toMatchObject({
+      editionKey: run.editionKey,
+      isoWeek: run.isoWeek,
+      path: `data/runs/${name}`,
+    })
+    expect(runCli(cwd, ['data', 'validate'])).toContain('validate against the schema')
+  })
+
+  it('stamps a weekly edition with an explicit editionKey equal to its week', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1'])
+    const [name] = readdirSync(join(cwd, 'data/runs'))
+    const run = JSON.parse(readFileSync(join(cwd, 'data/runs', name!), 'utf8'))
+    expect(run.editionKey).toBe(run.isoWeek)
+    expect(name).toBe(`${run.editionKey}.json`)
+  })
+
+  it('reads the cadence from BENCH_CADENCE when no flag is given', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1'], { BENCH_CADENCE: 'day' })
+    const [name] = readdirSync(join(cwd, 'data/runs'))
+    expect(name).toMatch(/^\d{4}-\d{2}-\d{2}\.json$/)
+  })
+
+  it('supersedes a daily edition under its date, leaving the same week untouched', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1'])
+    runCli(cwd, ['run', '--mock', '--samples', '1', '--cadence', 'day'])
+    const daily = readdirSync(join(cwd, 'data/runs')).find((n) =>
+      /^\d{4}-\d{2}-\d{2}\.json$/.test(n),
+    )!
+    const first = JSON.parse(readFileSync(join(cwd, 'data/runs', daily), 'utf8'))
+
+    const output = runCli(cwd, ['run', '--mock', '--samples', '1', '--cadence', 'day'])
+    expect(output).toContain(
+      `Kept the previous run as data/runs/superseded/${first.editionKey}-${first.runId}.json`,
+    )
+    expect(readdirSync(join(cwd, 'data/runs/superseded'))).toEqual([
+      `${first.editionKey}-${first.runId}.json`,
+    ])
+    // Both editions remain: the week and the day are different files.
+    const editions = readdirSync(join(cwd, 'data/runs')).filter((n) => n.endsWith('.json'))
+    expect(editions).toHaveLength(2)
+    const manifest = JSON.parse(readFileSync(join(cwd, 'data/index.json'), 'utf8'))
+    const keys = manifest.runs.map((entry: { editionKey: string }) => entry.editionKey)
+    // Order is not asserted: on a Monday the day and its week tie on start
+    // time, and the tiebreak is covered by the paths unit tests.
+    expect(keys).toHaveLength(2)
+    expect(keys).toContain(first.editionKey)
+    expect(keys).toContain(first.isoWeek)
+  })
+
+  it('names the cadence in the dry-run plan without writing anything', () => {
+    const cwd = setUp()
+    const output = runCli(cwd, ['run', '--mock', '--dry-run', '--cadence', 'day'])
+    expect(output).toContain('Cadence:      daily editions')
+    expect(output).toMatch(/Output:\s+data\/runs\/\d{4}-\d{2}-\d{2}\.json/)
+    expect(readdirSync(join(cwd, 'data/runs'))).toHaveLength(0)
+  })
+
+  it('exits 2 on a cadence it does not know rather than quietly running weekly', () => {
+    const cwd = setUp()
+    expect(() => runCli(cwd, ['run', '--mock', '--cadence', 'hourly'])).toThrow(/Unknown cadence/)
+    expect(() => runCli(cwd, ['run', '--mock'], { BENCH_CADENCE: 'monthly' })).toThrow(
+      /Unknown cadence/,
+    )
+    expect(readdirSync(join(cwd, 'data/runs'))).toHaveLength(0)
   })
 
   it('exits 2 on an unknown question id rather than silently running everything', () => {

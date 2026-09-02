@@ -18,7 +18,7 @@ import { loadConditions, loadModels, loadQuestions, REPO_ROOT } from '../data/re
 import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../schema/conditions.ts'
 import type { ConditionEntry } from '../schema/conditions.ts'
 import { writeManifest } from '../data/index.ts'
-import { isoWeekFor, runPathFor } from '../data/paths.ts'
+import { RUNS_DIR, editionKeyFor, runPathForKey, type Cadence } from '../data/paths.ts'
 import { credentialsFromEnv } from '../env.ts'
 import { formatCost } from '../runner/cost.ts'
 import type { BenchmarkRun } from '../schema/run.ts'
@@ -40,6 +40,11 @@ export interface RunCommandOptions {
    * without it does not validate.
    */
   conditionIds: string[]
+  /**
+   * Whether this run is a weekly edition (the default) or a daily one. Decides
+   * the edition key, and with it the filename and what a re-run replaces.
+   */
+  cadence: Cadence
   /** Override the output path. */
   out?: string
   root?: string
@@ -112,7 +117,11 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
     return 2
   }
 
-  const outPath = options.out ?? runPathFor(isoWeekFor(new Date()))
+  // The edition is decided now rather than from the run's own start time so the
+  // dry-run plan and the overwrite guard below describe the file that will
+  // actually be written.
+  const editionKey = editionKeyFor(new Date(), options.cadence)
+  const outPath = options.out ?? runPathForKey(editionKey)
 
   // Mock data must never replace a real edition. Re-running a week overwrites
   // it by design, and that is right for a real re-run — but a newcomer
@@ -177,17 +186,23 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
       console.log(`  skip  ${skip.provider} (no key configured)`)
     }
 
+    // The runner is runtime-agnostic and knows nothing about cadences, so the
+    // edition key is stamped here. Spread apart and rebuilt so the key sits
+    // next to isoWeek in the file, where a reader will look for it.
+    const { schemaVersion, runId, isoWeek, ...rest } = outcome.run
+    const run: BenchmarkRun = { schemaVersion, runId, isoWeek, editionKey, ...rest }
+
     const target = resolve(root, outPath)
     mkdirSync(dirname(target), { recursive: true })
-    const superseded = supersede(target, outcome.run.runId)
+    const superseded = supersede(target, run.runId)
     if (superseded) console.log(`Kept the previous run as ${superseded}`)
-    writeFileSync(target, JSON.stringify(outcome.run, null, 2) + '\n')
+    writeFileSync(target, JSON.stringify(run, null, 2) + '\n')
 
     const manifest = writeManifest(root)
 
     console.log(`\nWrote ${outPath}`)
     console.log(`Wrote ${manifest.path} (${manifest.runs} run${manifest.runs === 1 ? '' : 's'})\n`)
-    printSummary(outcome.run)
+    printSummary(run)
 
     // Exit 1 only when nothing at all worked. One provider being down is a
     // result worth publishing, not a failed run.
@@ -248,6 +263,7 @@ function printPlan(
       `${models.length} models x ${options.samples} samples`,
   )
   console.log(`Total calls:  ${plan.jobs.length * options.samples}`)
+  console.log(`Cadence:      ${options.cadence === 'day' ? 'daily' : 'weekly'} editions`)
   console.log(`Output:       ${outPath}`)
 }
 
@@ -296,27 +312,34 @@ function printSummary(run: BenchmarkRun): void {
 /**
  * Move an existing run out of the way before it is overwritten.
  *
- * Re-running a week replaces the *edition*, and that is right: the site shows
- * one file per week. But the replaced run is still data somebody paid for, so
- * it is kept under `superseded/`, named by week and run id, where the site
- * does not read it but nothing has to be recovered from git later. Returns
- * the relative path it went to, or null when there was nothing to move.
+ * Re-running an edition replaces it, and that is right: the site shows one
+ * file per edition. But the replaced run is still data somebody paid for, so
+ * it is kept under `superseded/`, named by edition key and run id, where the
+ * site does not read it but nothing has to be recovered from git later.
+ * Returns the relative path it went to, or null when there was nothing to
+ * move.
  */
 function supersede(target: string, newRunId: string): string | null {
   if (!existsSync(target)) return null
-  let previous: { runId?: unknown; isoWeek?: unknown }
+  let previous: { runId?: unknown; isoWeek?: unknown; editionKey?: unknown }
   try {
     previous = JSON.parse(readFileSync(target, 'utf8')) as typeof previous
   } catch {
     return null
   }
   if (typeof previous.runId !== 'string' || previous.runId === newRunId) return null
-  const week = typeof previous.isoWeek === 'string' ? previous.isoWeek : 'unknown-week'
+  // A file from before cadences existed has only a week, which was its edition.
+  const key =
+    typeof previous.editionKey === 'string'
+      ? previous.editionKey
+      : typeof previous.isoWeek === 'string'
+        ? previous.isoWeek
+        : 'unknown-edition'
   const dir = join(dirname(target), 'superseded')
   mkdirSync(dir, { recursive: true })
-  const destination = join(dir, `${week}-${previous.runId}.json`)
+  const destination = join(dir, `${key}-${previous.runId}.json`)
   renameSync(target, destination)
-  return `${dirname(runPathFor(week))}/superseded/${week}-${previous.runId}.json`
+  return `${RUNS_DIR}/superseded/${key}-${previous.runId}.json`
 }
 
 /**

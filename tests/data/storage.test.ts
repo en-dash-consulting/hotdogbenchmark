@@ -2,7 +2,20 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { isoWeekFor, isoWeekFromFilename, newestFirst, runPathFor } from '../../src/data/paths.ts'
+import {
+  editionKeyFor,
+  editionKeyFromFilename,
+  editionKind,
+  editionStart,
+  isCadence,
+  isoWeekFor,
+  isoWeekFromFilename,
+  newestEditionFirst,
+  newestFirst,
+  runPathFor,
+  runPathForKey,
+  utcDateFor,
+} from '../../src/data/paths.ts'
 import {
   buildManifest,
   listRunFilenames,
@@ -77,6 +90,101 @@ describe('run file paths', () => {
   })
 })
 
+describe('edition keys', () => {
+  const at = (iso: string) => new Date(iso)
+
+  it('are the ISO week at weekly cadence and the UTC date at daily cadence', () => {
+    expect(editionKeyFor(at('2026-09-02T15:00:00Z'), 'week')).toBe('2026-W36')
+    expect(editionKeyFor(at('2026-09-02T15:00:00Z'), 'day')).toBe('2026-09-02')
+  })
+
+  it('take the UTC date, not the local one', () => {
+    // 23:30 UTC on the 2nd is already the 3rd east of Greenwich. One instant,
+    // one edition, regardless of the runner's timezone.
+    expect(utcDateFor(at('2026-09-02T23:30:00Z'))).toBe('2026-09-02')
+    expect(utcDateFor(at('2026-09-03T00:30:00Z'))).toBe('2026-09-03')
+  })
+
+  it('derive the run path from either kind of key', () => {
+    expect(runPathForKey('2026-W36')).toBe('data/runs/2026-W36.json')
+    expect(runPathForKey('2026-09-02')).toBe('data/runs/2026-09-02.json')
+  })
+
+  it('parse both filename shapes and reject everything else', () => {
+    expect(editionKeyFromFilename('2026-W36.json')).toBe('2026-W36')
+    expect(editionKeyFromFilename('2026-09-02.json')).toBe('2026-09-02')
+    expect(editionKeyFromFilename('README.md')).toBeNull()
+    expect(editionKeyFromFilename('2026-09-02.json.bak')).toBeNull()
+    expect(editionKeyFromFilename('2026-09.json')).toBeNull()
+    expect(editionKeyFromFilename('latest.json')).toBeNull()
+    // The weekly parser stays strict: a daily file is not a week.
+    expect(isoWeekFromFilename('2026-09-02.json')).toBeNull()
+  })
+
+  it('know which kind a key is', () => {
+    expect(editionKind('2026-W36')).toBe('week')
+    expect(editionKind('2026-09-02')).toBe('day')
+    expect(editionKind('2026-36')).toBeNull()
+  })
+
+  it('accept exactly the two cadences', () => {
+    expect(isCadence('week')).toBe(true)
+    expect(isCadence('day')).toBe(true)
+    expect(isCadence('weekly')).toBe(false)
+    expect(isCadence('')).toBe(false)
+  })
+
+  it('start at Monday 00:00 UTC for a week and midnight UTC for a day', () => {
+    expect(new Date(editionStart('2026-W36')).toISOString()).toBe('2026-08-31T00:00:00.000Z')
+    expect(new Date(editionStart('2026-09-02')).toISOString()).toBe('2026-09-02T00:00:00.000Z')
+    // Year boundaries, where week 1 can start in the previous calendar year.
+    expect(new Date(editionStart('2026-W01')).toISOString()).toBe('2025-12-29T00:00:00.000Z')
+    expect(new Date(editionStart('2020-W53')).toISOString()).toBe('2020-12-28T00:00:00.000Z')
+    expect(new Date(editionStart('2021-W01')).toISOString()).toBe('2021-01-04T00:00:00.000Z')
+  })
+
+  it('agree with isoWeekFor about which week a Monday opens', () => {
+    for (const key of ['2026-W01', '2026-W36', '2020-W53', '2015-W53', '2027-W01']) {
+      expect(isoWeekFor(new Date(editionStart(key)))).toBe(key)
+    }
+  })
+
+  it('refuse a string that is not a key rather than sorting it somewhere quietly', () => {
+    expect(() => editionStart('latest')).toThrow(/not an edition key/)
+  })
+
+  it('order daily and weekly keys on one timeline, newest first', () => {
+    const keys = [
+      { editionKey: '2026-W35' },
+      { editionKey: '2026-09-05' },
+      { editionKey: '2026-W36' },
+      { editionKey: '2026-08-29' },
+      { editionKey: '2026-09-08' },
+    ]
+    expect(keys.sort(newestEditionFirst).map((k) => k.editionKey)).toEqual([
+      '2026-09-08', // Tuesday of week 37
+      '2026-09-05', // Saturday of week 36
+      '2026-W36', // starts Monday 31 Aug
+      '2026-08-29', // Saturday of week 35
+      '2026-W35',
+    ])
+  })
+
+  it('put the week ahead of the day that opens it', () => {
+    // Monday 31 Aug 2026 and week 36 start at the same instant.
+    const tied = [{ editionKey: '2026-08-31' }, { editionKey: '2026-W36' }]
+    expect(tied.sort(newestEditionFirst).map((k) => k.editionKey)).toEqual([
+      '2026-W36',
+      '2026-08-31',
+    ])
+    const reversed = [{ editionKey: '2026-W36' }, { editionKey: '2026-08-31' }]
+    expect(reversed.sort(newestEditionFirst).map((k) => k.editionKey)).toEqual([
+      '2026-W36',
+      '2026-08-31',
+    ])
+  })
+})
+
 describe('the committed data directory', () => {
   it('validates with no problems', () => {
     expect(validateAllRuns()).toEqual([])
@@ -142,6 +250,58 @@ describe('manifest generation against a temporary data directory', () => {
     expect(listRunFilenames(root)).toEqual(['2026-W36.json', '2026-W35.json', '2026-W34.json'])
   })
 
+  /** A daily edition: keyed by date, still recording the week it fell in. */
+  const writeDailyRun = (date: string) => {
+    const run = structuredClone(example)
+    run.isoWeek = isoWeekFor(new Date(`${date}T12:00:00Z`))
+    run.editionKey = date
+    run.runId = `run-${date}`
+    writeFileSync(join(root, `data/runs/${date}.json`), JSON.stringify(run, null, 2))
+  }
+
+  it('interleaves daily and weekly editions chronologically, newest first', () => {
+    writeRun('2026-W36')
+    writeDailyRun('2026-09-05')
+    writeRun('2026-W35')
+    writeDailyRun('2026-08-29')
+    expect(listRunFilenames(root)).toEqual([
+      '2026-09-05.json',
+      '2026-W36.json',
+      '2026-08-29.json',
+      '2026-W35.json',
+    ])
+    // The loader and the manifest follow the same order as the listing.
+    expect(loadAllRuns(root).map((file) => file.path)).toEqual([
+      'data/runs/2026-09-05.json',
+      'data/runs/2026-W36.json',
+      'data/runs/2026-08-29.json',
+      'data/runs/2026-W35.json',
+    ])
+    expect(buildManifest(root).runs.map((entry) => entry.editionKey)).toEqual([
+      '2026-09-05',
+      '2026-W36',
+      '2026-08-29',
+      '2026-W35',
+    ])
+  })
+
+  it('carries the edition key into the manifest, falling back to the week for older files', () => {
+    writeRun('2026-W36')
+    writeDailyRun('2026-09-05')
+    const manifest = buildManifest(root)
+    expect(dataManifestSchema.safeParse(manifest).success).toBe(true)
+    const daily = manifest.runs.find((entry) => entry.path.endsWith('2026-09-05.json'))
+    expect(daily).toMatchObject({ editionKey: '2026-09-05', isoWeek: '2026-W36' })
+    // The example fixture predates cadences and has no editionKey of its own.
+    const weekly = manifest.runs.find((entry) => entry.path.endsWith('2026-W36.json'))
+    expect(weekly).toMatchObject({ editionKey: '2026-W36', isoWeek: '2026-W36' })
+  })
+
+  it('validates a daily file whose editionKey matches its name', () => {
+    writeDailyRun('2026-09-05')
+    expect(validateAllRuns(root)).toEqual([])
+  })
+
   it('tallies each question by majority verdict, counting a model once', () => {
     writeRun('2026-W36')
     const [entry] = buildManifest(root).runs
@@ -194,6 +354,37 @@ describe('validateAllRuns reports', () => {
     writeFileSync(join(root, 'data/runs/2026-W36.json'), JSON.stringify(run))
     const [problem] = validateAllRuns(root)
     expect(problem).toContain('named 2026-W36 but its isoWeek is 2026-W12')
+  })
+
+  it('a weekly file whose isoWeek disagrees with its name even when editionKey agrees', () => {
+    const run = structuredClone(example)
+    run.isoWeek = '2026-W12'
+    run.editionKey = '2026-W36'
+    writeFileSync(join(root, 'data/runs/2026-W36.json'), JSON.stringify(run))
+    const problems = validateAllRuns(root)
+    expect(problems).toHaveLength(1)
+    expect(problems[0]).toContain('named 2026-W36 but its isoWeek is 2026-W12')
+  })
+
+  it('a daily file whose editionKey disagrees with its name', () => {
+    const run = structuredClone(example)
+    run.editionKey = '2026-09-04'
+    writeFileSync(join(root, 'data/runs/2026-09-05.json'), JSON.stringify(run))
+    const problems = validateAllRuns(root)
+    expect(problems).toHaveLength(1)
+    expect(problems[0]).toContain(
+      '/editionKey: file is named 2026-09-05 but its editionKey is 2026-09-04',
+    )
+  })
+
+  it('a daily file that omits editionKey, since its week cannot name it', () => {
+    // Without the key the site would have nothing to match this file by:
+    // the week it records names a different (weekly) edition.
+    const run = structuredClone(example)
+    writeFileSync(join(root, 'data/runs/2026-09-05.json'), JSON.stringify(run))
+    const problems = validateAllRuns(root)
+    expect(problems).toHaveLength(1)
+    expect(problems[0]).toContain('/editionKey: file is named 2026-09-05 but records no editionKey')
   })
 
   it('a file written by a newer schema than this checkout understands', () => {

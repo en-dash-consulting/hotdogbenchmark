@@ -13,6 +13,7 @@ import { runBenchCommand } from './cli/run-command.ts'
 import { runRecord } from './cli/record.ts'
 import { runInit } from './cli/init.ts'
 import { DEFAULT_CONCURRENCY, DEFAULT_SAMPLES, DEFAULT_TIMEOUT_MS } from './runner/run.ts'
+import { CADENCES, DEFAULT_CADENCE, isCadence, type Cadence } from './data/paths.ts'
 
 const USAGE = `hotdogbenchmark — ask every model whether a hot dog is a sandwich
 
@@ -20,7 +21,7 @@ Usage:
   npm run bench -- <command> [options]
 
 Commands:
-  run                 Run the benchmark and write data/runs/<isoWeek>.json
+  run                 Run the benchmark and write data/runs/<edition>.json
   providers           List providers and whether a key is configured
   data validate       Check every file under data/ against the schema
   data index          Regenerate data/index.json from the committed run files
@@ -41,6 +42,10 @@ Options for \`run\`:
   --questions <ids>   Comma-separated question ids; default is every enabled question
   --conditions <ids>  Comma-separated condition ids; default is every enabled condition.
                       The control is always run, so "--conditions control" is the cheap path
+  --cadence <week|day>
+                      One edition per ISO week (default), written as data/runs/<year>-W<week>.json,
+                      or one per UTC day, written as data/runs/<year>-<month>-<day>.json.
+                      Also read from BENCH_CADENCE. Daily costs 7x weekly at the same sample count
   --out <path>        Override the output file path
 
 Options for \`smoke\` and \`record\`:
@@ -98,6 +103,16 @@ function numberFlag(argv: string[], flag: string, fallback: number): number {
   if (raw === undefined) return fallback
   const value = Number(raw)
   return Number.isFinite(value) && value > 0 ? value : fallback
+}
+
+/**
+ * The edition cadence for `run`: flag beats environment beats the weekly
+ * default. Returns the offending string when it is not a known cadence, so
+ * the caller can refuse it by name rather than silently running weekly.
+ */
+function cadenceOption(argv: string[]): { cadence: Cadence } | { invalid: string } {
+  const raw = flagValue(argv, '--cadence') ?? process.env.BENCH_CADENCE ?? DEFAULT_CADENCE
+  return isCadence(raw) ? { cadence: raw } : { invalid: raw }
 }
 
 /** Read a comma-separated `--flag a,b,c`, or an empty list. */
@@ -176,8 +191,17 @@ export async function main(argv: string[]): Promise<number> {
       printProviders()
       return 0
 
-    case 'run':
+    case 'run': {
+      const cadence = cadenceOption(argv)
+      if ('invalid' in cadence) {
+        console.error(
+          `Unknown cadence: ${JSON.stringify(cadence.invalid)}\n` +
+            `Expected one of: ${CADENCES.join(', ')} (from --cadence or BENCH_CADENCE)`,
+        )
+        return 2
+      }
       return runBenchCommand({
+        cadence: cadence.cadence,
         mock: argv.includes('--mock'),
         dryRun: argv.includes('--dry-run'),
         // Flag beats environment beats built-in default, so the weekly
@@ -194,6 +218,7 @@ export async function main(argv: string[]): Promise<number> {
         conditionIds: listFlag(argv, '--conditions'),
         out: flagValue(argv, '--out'),
       })
+    }
 
     case 'data':
       return runDataCommand(argv[1])
