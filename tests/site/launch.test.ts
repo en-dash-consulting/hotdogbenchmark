@@ -228,7 +228,9 @@ describe('structured data', () => {
       const dataset = blocks(page.html).find((block) => block['@type'] === 'Dataset')
       expect(dataset, `${page.path} has no Dataset`).toBeTruthy()
       const distribution = dataset!['distribution'] as { contentUrl: string }
-      const file = /\/blob\/main\/(data\/runs\/[^/]+\.json)$/.exec(distribution.contentUrl)?.[1]
+      // The raw file on GitHub: the encoding says JSON, so the URL must serve it.
+      expect(distribution.contentUrl).toMatch(/^https:\/\/raw\.githubusercontent\.com\//)
+      const file = /\/main\/(data\/runs\/[^/]+\.json)$/.exec(distribution.contentUrl)?.[1]
       expect(file, `${page.path} contentUrl does not name a run file`).toBeTruthy()
       expect(existsSync(join(ROOT, file!)), `${file} does not exist`).toBe(true)
       expect(dataset!['license']).toBe('https://opensource.org/license/mit')
