@@ -252,8 +252,9 @@ describe('experimental conditions in the built report', () => {
 
   it('renders the comparison complete without JavaScript, and ships only the explorer on top', () => {
     // The comparison is HTML, SVG and <details>. The explorer island is the
-    // one script the section adds, and the results table the one the page
-    // adds; both reveal their controls only after they have run.
+    // one script the section adds; the standings table and the masthead's
+    // copy-link button are the two the page adds. All three reveal their
+    // controls only after they have run.
     if (treated.length === 0) return
     // A JSON-LD block is data in a script element, not a script; it is not
     // counted on either side.
@@ -265,7 +266,7 @@ describe('experimental conditions in the built report', () => {
       const start = html.indexOf('id="framing-heading"')
       expect(start, `${questionId} has no framing section`).toBeGreaterThan(-1)
       const scripts = scriptCount(html)
-      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 2)
+      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 3)
     }
   })
 
@@ -711,6 +712,20 @@ describe('the reports landing page', () => {
     expect(html).toContain('Up next')
     // The home page points at it in one line rather than a third block.
     expect(read('')).toContain('href="/reports/#ask"')
+  })
+
+  it('gives every report a share address as text, with the copy button hidden until scripts run', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      expect(html, `${questionId} lacks the share address`).toMatch(
+        new RegExp(
+          `<a class="share-url[^"]*" href="https?://[^"]+/reports/${questionId}/"[^>]*data-share-url`,
+        ),
+      )
+      expect(html).toMatch(
+        /<button type="button" class="share-copy[^"]*" data-share-copy[^>]*hidden/,
+      )
+    }
   })
 
   it('renders no Up next section while nothing is proposed', () => {

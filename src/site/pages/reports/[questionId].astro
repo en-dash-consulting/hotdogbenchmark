@@ -91,6 +91,7 @@ const framingTile =
           run={run}
           questionText={askedText ?? question.text}
           pdfHref={routes.reportPdf(question.id)}
+          shareUrl={new URL(routes.report(question.id), Astro.site ?? 'http://localhost:4321').href}
         />
 
         {results.length === 0 ? (

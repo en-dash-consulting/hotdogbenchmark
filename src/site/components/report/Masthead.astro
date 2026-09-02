@@ -29,6 +29,8 @@ interface Props {
   systemPrompt?: string | null
   /** The print edition, offered where a research note offers it: at the top. */
   pdfHref?: string | null
+  /** The page's own address, shown as text so it can be copied with scripts off. */
+  shareUrl?: string | null
 }
 
 const {
@@ -39,6 +41,7 @@ const {
   condition = null,
   systemPrompt = null,
   pdfHref = null,
+  shareUrl = null,
 } = Astro.props
 const asked = questionText ?? question.text
 const site = getSite()
@@ -97,13 +100,26 @@ const credit = creditLine(question)
       )
     }
     {
-      pdfHref && (
-        <div class="pdf-download">
-          <dt>Print edition</dt>
+      (shareUrl || pdfHref) && (
+        <div class="share" data-share>
+          <dt>Share</dt>
           <dd>
-            <a href={pdfHref} download>
-              Download the PDF
-            </a>
+            {shareUrl && (
+              <a class="share-url" href={shareUrl} data-share-url>
+                {shareUrl.replace(/^https?:\/\//, '')}
+              </a>
+            )}
+            {shareUrl && (
+              <button type="button" class="share-copy" data-share-copy hidden>
+                Copy link
+              </button>
+            )}
+            {pdfHref && (
+              <a class="share-pdf pdf-download" href={pdfHref} download>
+                PDF
+              </a>
+            )}
+            <span class="visually-hidden" role="status" data-share-status />
           </dd>
         </div>
       )
@@ -151,7 +167,77 @@ const credit = creditLine(question)
   </blockquote>
 </header>
 
+<script>
+  /**
+   * A copy button, only where the clipboard exists. Without it the address is
+   * a link whose text is the address: select it, copy it, paste it.
+   */
+  for (const share of document.querySelectorAll<HTMLElement>('[data-share]')) {
+    const url = share.querySelector<HTMLAnchorElement>('[data-share-url]')
+    const button = share.querySelector<HTMLButtonElement>('[data-share-copy]')
+    const status = share.querySelector<HTMLElement>('[data-share-status]')
+    if (!url || !button || !status || !navigator.clipboard) continue
+    button.hidden = false
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(url.href)
+        button.textContent = 'Copied'
+        status.textContent = 'Link copied to the clipboard.'
+      } catch {
+        status.textContent = 'Could not copy; select the address and copy it.'
+      }
+      window.setTimeout(() => {
+        button.textContent = 'Copy link'
+      }, 2000)
+    })
+  }
+</script>
+
 <style>
+  .share dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  /* Flex items, not inline text, so each is a real target: 28px tall at least. */
+  .share-url,
+  .share-pdf {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+  }
+
+  .share-url {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .share-copy {
+    font: inherit;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    min-height: 1.75rem;
+    padding: 0 var(--space-2xs);
+    border: 2px solid var(--rule-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-strong);
+    cursor: pointer;
+  }
+
+  .share-copy:hover {
+    border-color: var(--text-strong);
+  }
+
+  .share-pdf {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+
   .report-masthead {
     margin-bottom: var(--space-xl);
   }

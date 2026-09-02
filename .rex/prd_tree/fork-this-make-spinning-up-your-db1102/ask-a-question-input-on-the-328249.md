@@ -2,7 +2,7 @@
 id: "32824903-6b06-44b5-8679-dfb79c86a3ca"
 level: "feature"
 title: "Ask-a-question input on the site: stays on the site, GitHub first, the En Dash contact route as a configured option"
-status: "in_progress"
+status: "completed"
 priority: "high"
 tags:
   - "site"
@@ -14,10 +14,14 @@ blockedBy:
   - "4f41ea6f-0a1f-4c40-a549-4fc5bb338550"
 source: "ndx-capture"
 startedAt: "2026-09-02T22:45:44.890Z"
+completedAt: "2026-09-02T22:56:59.020Z"
+endedAt: "2026-09-02T22:56:59.020Z"
+resolutionType: "code-change"
+resolutionDetail: "AskQuestion.astro on /reports/ under Up next (labelled input, prompt preview, GitHub-first form action with hidden template, contact route rendered only when site.json configures one, add-a-model route); src/site/lib/contribute.ts builds the issue and contact URLs and the contact message with tests over spaces, quotes and an ampersand; the fork block links to /reports/#ask in one line; a Playwright keyboard test types a hostile question, presses Enter, and reads it back from both prefilled routes with the page unchanged; the fork build test asserts the form posts to the fork's repository and shows no contact link. Scripts-off floor is the prefilled GitHub issue form (a static page cannot read a query string), recorded in the criteria. Suite and gates green; JS budget 6.8 KB of 30."
 acceptanceCriteria:
-  - "One ask-a-question block exists, on /reports/ under the Up next section, with a one-line link to it from the home page; it is not a third dark block on the home page"
+  - "One ask-a-question block exists, on /reports/ under the Up next section, with a one-line link to it from the home page's fork block; it is not a third dark block on the home page"
   - "The input has a real label, states the One word answer. requirement, and shows the exact prompt that would be sent; the preview updates with scripts and is rendered once statically without them"
-  - "Enter or the submit button never leaves the site on its own: it reveals the two destinations with the question carried into each, and with scripts off the form posts to the same page with the question in the query string and the destinations rendered from it"
+  - "With scripts, Enter or the submit button never leaves the site: it reveals the two destinations with the question carried into each. With scripts off the form is a plain GET to the repository's add-a-question issue form with the typed question in its text field (a static site cannot read a query string on load, so the floor is the primary route prefilled rather than a same-page redisplay)"
   - "The primary destination is the prefilled add_question.yml issue on the repository named in site.json, marked with the GitHub mark, with the text, subject and slug fields prefilled where the input can derive them"
   - "The secondary destination is the contact route from site.json when one is configured, and is absent when it is not; a fork with no contact route shows only the GitHub path"
   - "The contact prefill and the issue template both say the question appears on the site as proposed once accepted, ask how the submitter wants to be credited, and state the uncredited default"
@@ -27,6 +31,6 @@ acceptanceCriteria:
   - "axe in four modes, the responsive audit, keyboard reachability of both routes, and the 30 KB budget all pass"
   - "No account, sign-in or key-handling surface is introduced"
 description: "Revised after the 2026-09-02 UX review; the original draft is preserved in the item's history.\n\nThe original design led with an input whose Enter key issued a cross-origin GET to endash.us, dropping the visitor into a consulting site's contact modal, with their email requested as free text and nothing on this site changing afterward. It also placed a third dark call-to-action block on a home page that already has two, and derived its titles from a site name that does not yet exist as data. Three changes.\n\n**Stay on the site until the visitor chooses.** The field and its submit reveal the destinations rather than being one. With scripts, the block composes both URLs live and shows the prompt as it would be sent (with the One word answer. suffix appended). With scripts off, the form is a GET to the same page; the page renders the destinations from the query string on load, so the floor is two prefilled links, not a redirect to another origin.\n\n**GitHub first, because it forks.** The prefilled add_question.yml issue is the primary route on every deployment, using the repository from site.json. The En Dash contact modal is the secondary route, rendered only when site.json configures a contact route; the shipped file configures it, a fork's does not. Both routes say what happens next: an accepted question is added to questions.json as proposed and appears in the Up next section on /reports/ with the submitter's credit if they want it. That sentence is the promise, and the pipeline feature is what keeps it.\n\n**One place.** The block lives on /reports/ under Up next, where a visitor who has just read what the questions are can add one. The home page links to it in one line inside the fork block (\"Have a question the models should get? Send it in.\"), not with a third block.\n\nEverything else from the original stands: the label, the One word answer. requirement and prompt preview, the encoded-parameter helper with its tests, the add-a-model route, the fork build test, the gates, and no auth surface. Blocked by site.json (for the name, repository and contact route) and by the question pipeline (for the promise the copy makes)."
-lastModified: "2026-09-02T22:45:44.902Z"
+lastModified: "2026-09-02T22:56:59.032Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

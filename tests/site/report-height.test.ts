@@ -12,7 +12,7 @@ import { chromium, type Browser } from 'playwright'
  *
  * The first report was 11,780 px tall at 1280 wide and 27,711 px on a phone,
  * because it listed the same models six times. After the diet it measured
- * 7,884 and 7,380. The budget keeps the diet honest: a component that
+ * 7,884 and 7,380; the share line in the masthead then added a row, 8,049. The budget keeps the diet honest: a component that
  * reintroduces a roster fails here before a reader has to scroll through it.
  * The numbers are for the Week 36 edition's eleven models; an edition with
  * many more will need a proportionate budget, which is a decision, not a
@@ -28,7 +28,7 @@ const MIME: Record<string, string> = {
   '.woff2': 'font/woff2',
 }
 
-const DESKTOP_BUDGET = 8000
+const DESKTOP_BUDGET = 8500
 const PHONE_BUDGET = 10000
 
 const questions = (
