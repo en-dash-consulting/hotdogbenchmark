@@ -38,8 +38,8 @@ Four `AAAA` records, one per IPv6 address:
 
 One `CNAME` record pointing at the organization's Pages host:
 
-| Type  | Name | Value            |
-| ----- | ---- | ---------------- |
+| Type  | Name | Value                        |
+| ----- | ---- | ---------------------------- |
 | CNAME | www  | en-dash-consulting.github.io |
 
 GitHub redirects `www.hotdogbenchmark.lol` to the apex once the custom domain is set, so the

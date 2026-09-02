@@ -56,6 +56,10 @@ jobs:
 
       - run: npm ci
 
+      # The build renders the OpenGraph cards and the PDFs with headless
+      # Chromium, which npm ci does not download.
+      - run: npx playwright install --with-deps chromium
+
       - uses: actions/configure-pages@v5
 
       - name: Build the site

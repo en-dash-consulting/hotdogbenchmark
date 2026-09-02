@@ -127,6 +127,9 @@ jobs:
 
       - run: npm ci
 
+      # OpenGraph cards and PDFs render in headless Chromium.
+      - run: npx playwright install --with-deps chromium
+
       - name: Build
         run: npm run build
 
