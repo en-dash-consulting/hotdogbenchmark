@@ -17,7 +17,7 @@ import {
 } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { questionHeadline } from '../lib/prose.ts'
-import { faqPageJsonLd, homeDescription, homeTitle } from '../lib/seo.ts'
+import { count, faqPageJsonLd, homeDescription, homeTitle } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
@@ -205,31 +205,39 @@ const QUICKSTART = [
 
         <section class="reports" aria-labelledby="reports-heading">
           <div class="minds-head">
-            <p class="eyebrow">The full editions</p>
-            <h2 id="reports-heading">Straight-faced analyst reports, weekly.</h2>
+            <p class="eyebrow">The full reports</p>
+            <h2 id="reports-heading">One straight-faced analyst report per question.</h2>
           </div>
-          <ul class="tiles">
-            {asked.map((q, index) => (
-              <li>
-                <a class="tile" href={routes.report(q.id)}>
-                  <span class="tile-number tabular">0{index + 1}</span>
-                  <span class="tile-title">{q.subject.replace(/^an? /, '')}</span>
-                  <span class="tile-sub">{q.tagline ?? q.reportTitle}</span>
-                  <span class="tile-cta">Read the report →</span>
-                </a>
-              </li>
-            ))}
-            <li>
-              <a class="tile tile-alt" href={routes.methodology()}>
-                <span class="tile-number tabular">—</span>
-                <span class="tile-title">How it is measured</span>
-                <span class="tile-sub">
-                  Latency, tokens, framings, and the scores the reports are built on.
-                </span>
-                <span class="tile-cta">Methodology →</span>
+          <div class="handoff">
+            <ul class="handoff-list">
+              {asked.map((q) => {
+                const verdict = agreement.find((a) => a.question.id === q.id)
+                const top = verdict
+                  ? ((['yes', 'no', 'other'] as const).sort(
+                      (a, b) => verdict.counts[b] - verdict.counts[a],
+                    )[0] ?? null)
+                  : null
+                return (
+                  <li>
+                    <span class="handoff-q">{questionHeadline(q)}</span>
+                    <span class="handoff-v">{top ? GLYPH[top] : '—'}</span>
+                  </li>
+                )
+              })}
+            </ul>
+            <div class="handoff-copy">
+              <p>
+                Leaderboards, the certainty quadrant, every verbatim answer under every framing, and
+                a PDF for each. {formatEdition(latest.isoWeek)} edition.
+              </p>
+              <a class="handoff-cta" href={routes.reports()}>
+                Read the {count(asked.length, 'report')} →
               </a>
-            </li>
-          </ul>
+              <a class="handoff-more" href={routes.methodology()}>
+                How it is measured
+              </a>
+            </div>
+          </div>
           <div class="fork">
             <div class="fork-copy">
               <p class="eyebrow">Open source</p>
@@ -512,70 +520,90 @@ const QUICKSTART = [
     margin-block: var(--space-3xl);
   }
 
-  .tiles {
+  .handoff {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-l);
+    align-items: center;
+    padding: var(--space-l);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #000b45 0%, #001769 100%);
+    color: #ffffff;
+    box-shadow: var(--shadow-sm, var(--shadow-subtle));
+  }
+
+  .handoff-list {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
-    gap: var(--space-s);
-  }
-
-  .tile {
-    display: flex;
-    flex-direction: column;
     gap: var(--space-2xs);
-    height: 100%;
-    padding: var(--space-m);
-    border-radius: var(--radius);
-    background: linear-gradient(135deg, #000b45 0%, #001769 100%);
-    color: #ffffff;
-    text-decoration: none;
-    box-shadow: var(--shadow-sm, var(--shadow-subtle));
-    transition:
-      transform 200ms var(--ease-out),
-      box-shadow 200ms var(--ease-out);
   }
 
-  .tile:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow);
+  .handoff-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-s);
+    padding: var(--space-2xs) 0;
+    border-bottom: 1px solid rgb(255 255 255 / 18%);
   }
 
-  .tile-alt {
-    background: var(--surface);
-    color: var(--text-strong);
-    border: 2px solid var(--rule-strong);
-  }
-
-  .tile-number {
+  .handoff-q {
     font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .handoff-v {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
     font-weight: 800;
     color: var(--accent-fill);
-    font-size: var(--step-0);
   }
 
-  .tile-title {
-    font-family: var(--font-display);
-    font-size: var(--step-3);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    text-transform: capitalize;
-    line-height: 1;
-  }
-
-  .tile-sub {
+  .handoff-copy p {
     font-family: var(--font-text);
-    font-size: var(--step--1);
-    opacity: 0.8;
-    flex: 1;
+    margin: 0 0 var(--space-m);
+    opacity: 0.85;
   }
 
-  .tile-cta {
+  .handoff-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: var(--space-2xs) var(--space-m);
+    border-radius: 999px;
+    background: var(--accent-fill);
+    color: #001769;
     font-family: var(--font-ui);
     font-weight: 700;
-    font-size: var(--step--1);
-    margin-top: var(--space-s);
+    text-decoration: none;
+  }
+
+  .handoff-cta:hover {
+    background: #ffffff;
+  }
+
+  @media (forced-colors: active) {
+    .handoff-cta {
+      border: 2px solid ButtonText;
+      background: ButtonFace !important;
+      color: ButtonText !important;
+      forced-color-adjust: none;
+    }
+  }
+
+  .handoff-more {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin-left: var(--space-m);
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-weight: 700;
   }
 
   .fork {

@@ -219,6 +219,24 @@ const cards = [
   }),
 ]
 
+// The reports landing page: every question with its latest verdict.
+if (latest) {
+  cards.push({
+    name: 'reports',
+    html: card({
+      kicker: 'Hotdog Benchmark · The reports',
+      title: 'The full reports',
+      lines: questions.map((question) => {
+        const consensus = consensusFor(latest, question.id)
+        return `${esc(headline(question))} <b>${consensus ? esc(consensus.label) : 'no answers'}</b>`
+      }),
+      edition,
+      verdict: null,
+      titleSize: 64,
+    }),
+  })
+}
+
 // One card per framed report in the latest edition, showing the prompt that framed it.
 if (latest) {
   for (const condition of latest.conditions ?? []) {

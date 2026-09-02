@@ -67,7 +67,7 @@ const ogImageUrl = new URL(
 const latest = getLatestRun()
 
 const NAV = [
-  { href: routes.home(), label: 'Reports' },
+  { href: routes.reports(), label: 'Reports' },
   { href: routes.history(), label: 'History' },
   // Only present when the deferred feature is switched on at build time.
   ...(RUN_YOUR_OWN_ENABLED ? [{ href: routes.runYourOwn(), label: 'Run your own' }] : []),
@@ -76,9 +76,18 @@ const NAV = [
   { href: routes.about(), label: 'About' },
 ]
 
-/** Trailing slashes are normalized so `/history` and `/history/` both match. */
-const current = Astro.url.pathname.replace(/\/+$/, '') || '/'
-const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === current
+/**
+ * Trailing slashes are normalized so `/history` and `/history/` both match, and
+ * a section stays current on its children: Reports on every report, History
+ * on every question's history. The home page matches only itself.
+ */
+const normalize = (path: string) => path.replace(/\/+$/, '') || '/'
+const current = normalize(Astro.url.pathname)
+const home = normalize(routes.home())
+const isCurrent = (href: string) => {
+  const target = normalize(href)
+  return target === current || (target !== home && current.startsWith(`${target}/`))
+}
 ---
 
 <!doctype html>

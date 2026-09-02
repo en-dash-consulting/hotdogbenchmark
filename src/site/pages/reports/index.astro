@@ -1,0 +1,400 @@
+---
+/**
+ * The reports landing page: the issue rack.
+ *
+ * One card per question, built from the latest edition, that sells the report
+ * before the click: the verdict, who changed their mind, who was surest and
+ * who was fastest, and the ways in. The home page is the hook; this is where
+ * the hook points.
+ */
+import Base from '../../layouts/Base.astro'
+import {
+  getAllRuns,
+  getLatestRun,
+  getModelResults,
+  getModels,
+  getQuestions,
+  hasData,
+} from '../../lib/data.ts'
+import { formatDate, formatDuration, formatEdition } from '../../lib/format.ts'
+import { consensusOf, framingLabel, questionHeadline } from '../../lib/prose.ts'
+import { scoreModels } from '../../lib/scores.ts'
+import {
+  count,
+  flippedNames,
+  nameList,
+  reportsIndexDescription,
+  tallyPhrase,
+} from '../../lib/seo.ts'
+import { questionShifts, treatedConditions } from '../../lib/sensitivity.ts'
+import { routes } from '../../lib/urls.ts'
+import type { Verdict } from '../../../schema/run.ts'
+
+const questions = getQuestions()
+const latest = getLatestRun()
+const editions = getAllRuns().length
+const models = getModels().length
+
+const VERDICT_WORD: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
+
+const cards = questions.map((question, index) => {
+  const results = latest ? getModelResults(latest, question.id) : []
+  const answering = results.filter((r) => r.samples.length > 0)
+  const consensus = consensusOf(results)
+  const scored = scoreModels(results).filter((s) => s.result.samples.length > 0)
+  const bySureness = [...scored].sort((a, b) => b.decisiveness - a.decisiveness)
+  const surest = bySureness[0] ?? null
+  const leastSure = bySureness.length > 1 ? (bySureness.at(-1) ?? null) : null
+  const timed = answering
+    .filter((r) => typeof r.aggregate.totalMs?.median === 'number')
+    .sort((a, b) => a.aggregate.totalMs!.median - b.aggregate.totalMs!.median)
+  const fastest = timed[0] ?? null
+  const slowest = timed.length > 1 ? (timed.at(-1) ?? null) : null
+  const compared = latest
+    ? questionShifts(latest, question.id).filter((row) =>
+        row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+      ).length
+    : 0
+  const flipped = latest ? flippedNames(latest, question.id) : []
+  const framings = latest
+    ? treatedConditions(latest).filter((condition) =>
+        latest.results.some(
+          (cell) => cell.questionId === question.id && cell.conditionId === condition.id,
+        ),
+      )
+    : []
+  return {
+    question,
+    number: String(index + 1).padStart(2, '0'),
+    asked: results.length > 0,
+    consensus,
+    tally: tallyPhrase(results),
+    minds:
+      compared === 0
+        ? null
+        : flipped.length === 0
+          ? `Told the answer, nobody changed their mind.`
+          : `Told the answer, ${nameList(flipped, 3)} changed their ${flipped.length === 1 ? 'mind' : 'minds'}.`,
+    surest,
+    leastSure: leastSure && leastSure !== surest ? leastSure : null,
+    fastest,
+    slowest: slowest && slowest !== fastest ? slowest : null,
+    framings,
+  }
+})
+---
+
+<Base
+  title="The reports"
+  ogImage="reports"
+  description={reportsIndexDescription(latest, questions)}
+>
+  <header class="rack-head">
+    <p class="eyebrow">The reports</p>
+    <h1>One straight-faced report per question.</h1>
+    {
+      latest ? (
+        <p class="lede">
+          {count(questions.length, 'question')}, {models} models,{' '}
+          {treatedConditions(latest).length + 1} framings, {count(editions, 'edition')} so far.
+          Verdicts, latency, tokens, cost, framing sensitivity, and every verbatim answer. Latest:{' '}
+          {formatEdition(latest.isoWeek)}, {formatDate(latest.finishedAt)}.
+        </p>
+      ) : (
+        <p class="lede">
+          No edition has been published yet. The reports appear with the first run.
+        </p>
+      )
+    }
+  </header>
+
+  {
+    hasData() && latest ? (
+      <ol class="rack">
+        {cards.map((card) => (
+          <li class="issue" style={`--issue-index: ${card.number}`}>
+            <p class="issue-number tabular" aria-hidden="true">
+              {card.number}
+            </p>
+            <h2 class="issue-title">
+              <a href={routes.report(card.question.id)}>{questionHeadline(card.question)}</a>
+            </h2>
+            {card.asked ? (
+              <>
+                <p class="issue-verdict">
+                  <span class="verdict-word">
+                    {card.consensus.verdict ? VERDICT_WORD[card.consensus.verdict] : '—'}
+                  </span>
+                  <span class="verdict-tally">{card.tally}.</span>
+                </p>
+                <dl class="issue-facts">
+                  {card.minds && (
+                    <div>
+                      <dt>Minds</dt>
+                      <dd>{card.minds}</dd>
+                    </div>
+                  )}
+                  {card.surest && (
+                    <div>
+                      <dt>Surest</dt>
+                      <dd>
+                        {card.surest.result.displayName}
+                        {card.leastSure && `, least sure ${card.leastSure.result.displayName}`}
+                      </dd>
+                    </div>
+                  )}
+                  {card.fastest && (
+                    <div>
+                      <dt>Clock</dt>
+                      <dd>
+                        {card.fastest.displayName} in{' '}
+                        {formatDuration(card.fastest.aggregate.totalMs?.median)}
+                        {card.slowest &&
+                          `, ${card.slowest.displayName} in ${formatDuration(card.slowest.aggregate.totalMs?.median)}`}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+                <p class="issue-links">
+                  <a class="issue-cta" href={routes.report(card.question.id)}>
+                    Read the report →
+                  </a>
+                  {card.framings.map((condition) => (
+                    <a href={routes.reportCondition(card.question.id, condition.id)}>
+                      {framingLabel(card.question, condition)}
+                    </a>
+                  ))}
+                  <a href={routes.reportPdf(card.question.id)}>PDF</a>
+                  <a href={routes.historyForQuestion(card.question.id)}>Week by week</a>
+                </p>
+              </>
+            ) : (
+              <p class="issue-verdict">
+                <span class="verdict-tally">
+                  Not asked in the {formatEdition(latest.isoWeek)} edition.
+                </span>
+              </p>
+            )}
+          </li>
+        ))}
+      </ol>
+    ) : null
+  }
+
+  <p class="rack-foot">
+    Older editions are in <a href={routes.runs()}>the archive</a>. The scores are defined on{' '}
+    <a href={routes.methodology()}>the methodology page</a>.
+  </p>
+</Base>
+
+<style>
+  .rack-head {
+    max-width: var(--measure);
+    margin-bottom: var(--space-xl);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .rack-head h1 {
+    font-size: var(--step-4);
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin: 0 0 var(--space-s);
+  }
+
+  .lede {
+    font-family: var(--font-text);
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .rack {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .issue {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'number title'
+      'number verdict'
+      'number facts'
+      'number links';
+    column-gap: var(--space-m);
+    row-gap: var(--space-2xs);
+    padding: var(--space-l);
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 2px solid var(--rule-strong);
+    border-left-width: 0.6rem;
+    border-left-color: var(--issue-color, var(--accent-fill));
+  }
+
+  .issue:nth-child(3n + 1) {
+    --issue-color: #00e5b9;
+  }
+
+  .issue:nth-child(3n + 2) {
+    --issue-color: #6c41f0;
+  }
+
+  .issue:nth-child(3n + 3) {
+    --issue-color: #ff5926;
+  }
+
+  .issue-number {
+    grid-area: number;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--muted);
+  }
+
+  .issue-title {
+    grid-area: title;
+    margin: 0;
+    font-size: var(--step-4);
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+
+  .issue-title a {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .issue-title a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--issue-color, var(--accent-fill));
+    text-decoration-thickness: 0.12em;
+  }
+
+  .issue-verdict {
+    grid-area: verdict;
+    margin: var(--space-2xs) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-s);
+  }
+
+  .verdict-word {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 800;
+    color: var(--text-strong);
+  }
+
+  .verdict-tally {
+    font-family: var(--font-text);
+    color: var(--muted);
+  }
+
+  .issue-facts {
+    grid-area: facts;
+    margin: var(--space-xs) 0 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .issue-facts div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-s);
+  }
+
+  .issue-facts dt {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .issue-facts dd {
+    margin: 0;
+    font-family: var(--font-text);
+  }
+
+  .issue-links {
+    grid-area: links;
+    margin: var(--space-s) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+
+  .issue-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+
+  .issue-cta {
+    padding: 0 var(--space-m);
+    border-radius: 999px;
+    background: var(--text-strong);
+    color: var(--surface);
+    text-decoration: none;
+  }
+
+  .issue-cta:hover {
+    background: var(--issue-color, var(--accent-fill));
+    color: #001769;
+  }
+
+  .rack-foot {
+    margin-top: var(--space-xl);
+    color: var(--muted);
+    font-family: var(--font-text);
+  }
+
+  @media (forced-colors: active) {
+    .issue-cta {
+      border: 2px solid ButtonText;
+      background: ButtonFace !important;
+      color: ButtonText !important;
+      forced-color-adjust: none;
+    }
+
+    .issue {
+      border-left-color: CanvasText;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .issue {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'number'
+        'title'
+        'verdict'
+        'facts'
+        'links';
+      padding: var(--space-m);
+    }
+
+    .issue-facts div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+  }
+</style>

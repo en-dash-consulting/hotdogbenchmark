@@ -81,6 +81,9 @@ export const GET: APIRoute = ({ site }) => {
   lines.push(
     `- [Home](${url('')}): the question, the models answering it in replayed real time, and the framing switch.`,
   )
+  lines.push(
+    `- [The reports](${url('reports/')}): one card per question with the latest verdict, who changed their mind, and links to the full report, both framings, and the PDF.`,
+  )
   for (const question of questions) {
     lines.push(
       `- [${question.reportTitle}](${url(`reports/${question.id}/`)}): the full analyst report for ${question.subject}: verdicts, latency, tokens, cost, framing sensitivity, verbatim answers.`,

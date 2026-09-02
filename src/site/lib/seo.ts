@@ -253,6 +253,27 @@ export function archivedQuestionDescription(run: BenchmarkRun, question: Questio
 }
 
 /** The archive index: how many editions there are and which is latest. */
+/** The reports landing page: one verdict per question from the latest edition. */
+export function reportsIndexDescription(
+  run: BenchmarkRun | null,
+  questions: QuestionEntry[],
+): string {
+  if (!run)
+    return clampDescription(
+      `${count(questions.length, 'report')}, one per question. No edition published yet.`,
+    )
+  const verdicts = questions
+    .map((question) => {
+      const consensus = consensusOf(controlResults(run, question.id))
+      if (!consensus.verdict) return null
+      return `${subjectName(question)} ${VERDICT_WORD[consensus.verdict]}`
+    })
+    .filter((v): v is string => v !== null)
+  return clampDescription(
+    `${count(questions.length, 'full report')} from the ${formatEdition(run.isoWeek)} edition: ${verdicts.join(', ')}. Verdicts, latency, cost, and who changed their mind when told the answer.`,
+  )
+}
+
 export function runsIndexDescription(runs: BenchmarkRun[]): string {
   const latest = runs[0]
   if (!latest) return 'Every edition of the benchmark, in full. None published yet.'

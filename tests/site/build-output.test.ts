@@ -86,10 +86,30 @@ describe('every built page', () => {
     }
   })
 
-  it('marks exactly one nav item as the current page, or none', () => {
+  /** The site nav only; sub-navs (framings, history questions) mark their own current item. */
+  const mainNav = (html: string) =>
+    html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
+  it('marks Reports current on the landing page and on every report under it', () => {
+    const under = pages.filter((page) => /^\/reports\//.test(page.path))
+    expect(under.length).toBeGreaterThan(1)
+    for (const page of under) {
+      const current = mainNav(page.html).match(
+        /<a href="([^"]*)" aria-current="page"[^>]*>([^<]*)</,
+      )
+      expect(current?.[2]?.trim(), `${page.path} does not mark Reports current`).toBe('Reports')
+      expect(current?.[1], page.path).toMatch(/\/reports\/$/)
+    }
+    const home = pages.find((page) => page.path === '/index.html' || page.path === '/')!
+    expect(mainNav(home.html), 'home page marks a nav item current').not.toMatch(
+      /aria-current="page"/,
+    )
+  })
+
+  it('marks exactly one site nav item as the current page, or none', () => {
     for (const page of pages) {
-      const count = (page.html.match(/aria-current="page"/g) ?? []).length
-      expect(count, `${page.path} marks ${count} items current`).toBeLessThanOrEqual(1)
+      const count = (mainNav(page.html).match(/aria-current="page"/g) ?? []).length
+      expect(count, `${page.path} marks ${count} nav items current`).toBeLessThanOrEqual(1)
     }
   })
 
@@ -538,5 +558,39 @@ describe('SEO and social metadata', () => {
       expect(body, `unescaped < or > in: ${body}`).not.toMatch(/[<>]/)
       expect(body, `unescaped & in: ${body}`).not.toMatch(/&(?!(amp|lt|gt|quot|apos|#\d+);)/)
     }
+  })
+})
+
+describe('the reports landing page', () => {
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const html = read('reports')
+  const questionIds = (
+    JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
+      questions: Array<{ id: string }>
+    }
+  ).questions.map((q) => q.id)
+
+  it('exists and links every full report, both framed variants, the PDF and the history', () => {
+    for (const questionId of questionIds) {
+      expect(html, `${questionId} full report`).toContain(`href="/reports/${questionId}/"`)
+      expect(html, `${questionId} asserted`).toContain(`href="/reports/${questionId}/asserted/"`)
+      expect(html, `${questionId} denied`).toContain(`href="/reports/${questionId}/denied/"`)
+      expect(html, `${questionId} pdf`).toContain(`href="/reports/${questionId}/report.pdf"`)
+      expect(html, `${questionId} history`).toContain(`href="/history/${questionId}/"`)
+    }
+  })
+
+  it('shows one card per question with a verdict, a tally and a framing fact', () => {
+    expect((html.match(/class="issue"/g) ?? []).length).toBe(questionIds.length)
+    expect((html.match(/class="verdict-word"/g) ?? []).length).toBe(questionIds.length)
+    expect(html).toMatch(/of \d+ models say|all \d+ models say/)
+    expect(html).toMatch(/changed their minds?|nobody changed their mind/)
+    expect(html).toMatch(/Week \d+, \d{4}/)
+  })
+
+  it('is where the home page hands off to', () => {
+    const home = read('')
+    expect(home).toContain('href="/reports/"')
+    expect(home).not.toContain('class="tile"')
   })
 })
