@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "runId": "8a81724e-21bf-4036-8947-c2ba579046f3",
+  "runId": "d2b838b8-0197-4359-9698-b914d33db55b",
   "isoWeek": "2026-W36",
-  "startedAt": "2026-09-01T21:54:38.166Z",
-  "finishedAt": "2026-09-01T21:54:39.265Z",
+  "startedAt": "2026-09-02T00:09:02.827Z",
+  "finishedAt": "2026-09-02T00:10:27.466Z",
   "runnerVersion": "0.1.0",
-  "gitSha": "8a1e2cc1a644dc3cee9ac3452b4d0251e3468038",
-  "isMock": true,
+  "gitSha": "d9606c8ae2b31e02e57cce63170fb28ac69ab988",
+  "isMock": false,
   "questions": [
     {
       "id": "hot-dog",
@@ -32,110 +32,140 @@
           "status": "ok",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 63,
+                "totalTokens": 87,
+                "reasoningTokens": 59,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 300,
-                "totalMs": 834
+                "startedAt": "2026-09-02T00:09:02.827Z",
+                "ttfbMs": 2027.34,
+                "totalMs": 2038.802
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.001695,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 63,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 59
+                }
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 140,
+                "totalTokens": 164,
+                "reasoningTokens": 136,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 300,
-                "totalMs": 834
+                "startedAt": "2026-09-02T00:09:04.867Z",
+                "ttfbMs": 3053.957,
+                "totalMs": 3062.775
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.00362,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 140,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 136
+                }
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 130,
+                "totalTokens": 154,
+                "reasoningTokens": 126,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 300,
-                "totalMs": 834
+                "startedAt": "2026-09-02T00:09:07.930Z",
+                "ttfbMs": 2721.135,
+                "totalMs": 2728.879
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.00337,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 130,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 126
+                }
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 834,
-              "min": 834,
-              "max": 834
+              "median": 2728.879,
+              "min": 2038.802,
+              "max": 3062.775
             },
             "ttfbMs": {
-              "median": 300,
-              "min": 300,
-              "max": 300
+              "median": 2721.135,
+              "min": 2027.34,
+              "max": 3053.957
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 24,
+              "min": 24,
+              "max": 24
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 130,
+              "min": 63,
+              "max": 140
             },
             "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
+              "median": 154,
+              "min": 87,
+              "max": 164
             },
             "tokensPerSecond": {
-              "median": 1.199,
-              "min": 1.199,
-              "max": 1.199
+              "median": 45.7102,
+              "min": 30.9005,
+              "max": 47.6386
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000345
+            "costEstimateUsd": 0.008685
           },
           "error": null
         },
@@ -146,110 +176,131 @@
           "status": "ok",
           "samples": [
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes.",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2729,
-                "totalMs": 2868
+                "startedAt": "2026-09-02T00:09:02.840Z",
+                "ttfbMs": 2252.695,
+                "totalMs": 2542.551
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000188,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
               }
             },
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes.",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2729,
-                "totalMs": 2868
+                "startedAt": "2026-09-02T00:09:05.383Z",
+                "ttfbMs": 2283.785,
+                "totalMs": 2563.315
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000188,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
               }
             },
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes.",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2729,
-                "totalMs": 2868
+                "startedAt": "2026-09-02T00:09:07.947Z",
+                "ttfbMs": 1951.725,
+                "totalMs": 2093.095
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000188,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 2868,
-              "min": 2868,
-              "max": 2868
+              "median": 2542.551,
+              "min": 2093.095,
+              "max": 2563.315
             },
             "ttfbMs": {
-              "median": 2729,
-              "min": 2729,
-              "max": 2729
+              "median": 2252.695,
+              "min": 1951.725,
+              "max": 2283.785
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 17,
+              "min": 17,
+              "max": 17
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 6,
+              "min": 6,
+              "max": 6
             },
             "totalTokens": {
-              "median": 211,
-              "min": 211,
-              "max": 211
+              "median": 23,
+              "min": 23,
+              "max": 23
             },
             "tokensPerSecond": {
-              "median": 0.3487,
-              "min": 0.3487,
-              "max": 0.3487
+              "median": 2.3598,
+              "min": 2.3407,
+              "max": 2.8666
             },
-            "verdict": "no",
+            "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000276
+            "costEstimateUsd": 0.000564
           },
           "error": null
         },
@@ -264,22 +315,30 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
+                "inputTokens": 12,
                 "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "totalTokens": 209,
+                "reasoningTokens": 196,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 502
+                "startedAt": "2026-09-02T00:09:02.841Z",
+                "ttfbMs": 14751.411,
+                "totalMs": 14754.674
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000013,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 209,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 196,
+                "serviceTier": "standard"
               }
             },
             {
@@ -287,83 +346,99 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
+                "inputTokens": 12,
                 "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "totalTokens": 211,
+                "reasoningTokens": 198,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 502
+                "startedAt": "2026-09-02T00:09:17.596Z",
+                "ttfbMs": 3196.4,
+                "totalMs": 3196.892
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000013,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 211,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 198,
+                "serviceTier": "standard"
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "inputTokens": 12,
+                "outputTokens": 2,
+                "totalTokens": 181,
+                "reasoningTokens": 167,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 502
+                "startedAt": "2026-09-02T00:09:20.793Z",
+                "ttfbMs": 9854.465,
+                "totalMs": 9864.473
               },
               "costEstimateUsd": 0.000017,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 2,
+                "totalTokenCount": 181,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 167,
+                "serviceTier": "standard"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 502,
-              "min": 502,
-              "max": 502
+              "median": 9864.473,
+              "min": 3196.892,
+              "max": 14754.674
             },
             "ttfbMs": {
-              "median": 203,
-              "min": 203,
-              "max": 203
+              "median": 9854.465,
+              "min": 3196.4,
+              "max": 14751.411
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 12,
+              "min": 12,
+              "max": 12
             },
             "outputTokens": {
               "median": 1,
               "min": 1,
-              "max": 1
+              "max": 2
             },
             "totalTokens": {
-              "median": 65,
-              "min": 65,
-              "max": 65
+              "median": 209,
+              "min": 181,
+              "max": 211
             },
             "tokensPerSecond": {
-              "median": 1.992,
-              "min": 1.992,
-              "max": 1.992
+              "median": 0.2027,
+              "min": 0.0678,
+              "max": 0.3128
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000051
+            "costEstimateUsd": 0.000043
           },
           "error": null
         },
@@ -380,20 +455,34 @@
               "usage": {
                 "inputTokens": 647,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 1122,
+                "reasoningTokens": 474,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8426,
-                "totalMs": 8435
+                "startedAt": "2026-09-02T00:09:10.042Z",
+                "ttfbMs": 9564.898,
+                "totalMs": 9565.742
               },
               "costEstimateUsd": 0.0013,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1122,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 474,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 31840000
               }
             },
             {
@@ -403,57 +492,85 @@
               "usage": {
                 "inputTokens": 647,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 1015,
+                "reasoningTokens": 367,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8426,
-                "totalMs": 8435
+                "startedAt": "2026-09-02T00:09:19.608Z",
+                "ttfbMs": 7574.842,
+                "totalMs": 7575.555
               },
               "costEstimateUsd": 0.0013,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1015,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 367,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 25420000
               }
             },
             {
-              "text": "No",
-              "verdict": "no",
+              "text": "Yes",
+              "verdict": "yes",
               "followedInstruction": true,
               "usage": {
                 "inputTokens": 647,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 1351,
+                "reasoningTokens": 703,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8426,
-                "totalMs": 8435
+                "startedAt": "2026-09-02T00:09:27.184Z",
+                "ttfbMs": 13129.21,
+                "totalMs": 13144.046
               },
               "costEstimateUsd": 0.0013,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1351,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 703,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 45580000
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 8435,
-              "min": 8435,
-              "max": 8435
+              "median": 9565.742,
+              "min": 7575.555,
+              "max": 13144.046
             },
             "ttfbMs": {
-              "median": 8426,
-              "min": 8426,
-              "max": 8426
+              "median": 9564.898,
+              "min": 7574.842,
+              "max": 13129.21
             },
             "inputTokens": {
               "median": 647,
@@ -466,14 +583,14 @@
               "max": 1
             },
             "totalTokens": {
-              "median": 1295,
-              "min": 1295,
-              "max": 1295
+              "median": 1122,
+              "min": 1015,
+              "max": 1351
             },
             "tokensPerSecond": {
-              "median": 0.1186,
-              "min": 0.1186,
-              "max": 0.1186
+              "median": 0.1045,
+              "min": 0.0761,
+              "max": 0.132
             },
             "verdict": "no",
             "followedInstructionRate": 1,
@@ -483,210 +600,108 @@
         },
         {
           "provider": "mistral",
-          "modelId": "mistral-large-3-25-12",
-          "displayName": "Mistral Large 3",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
           "status": "ok",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 227,
-                "totalMs": 624
+                "startedAt": "2026-09-02T00:09:10.659Z",
+                "ttfbMs": 338.153,
+                "totalMs": 353.559
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 227,
-                "totalMs": 624
+                "startedAt": "2026-09-02T00:09:11.013Z",
+                "ttfbMs": 681.537,
+                "totalMs": 701.857
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 227,
-                "totalMs": 624
+                "startedAt": "2026-09-02T00:09:11.715Z",
+                "ttfbMs": 286.529,
+                "totalMs": 300.402
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 624,
-              "min": 624,
-              "max": 624
+              "median": 353.559,
+              "min": 300.402,
+              "max": 701.857
             },
             "ttfbMs": {
-              "median": 227,
-              "min": 227,
-              "max": 227
+              "median": 338.153,
+              "min": 286.529,
+              "max": 681.537
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
-            },
-            "tokensPerSecond": {
-              "median": 1.6026,
-              "min": 1.6026,
-              "max": 1.6026
-            },
-            "verdict": "no",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000033
-          },
-          "error": null
-        },
-        {
-          "provider": "deepseek",
-          "modelId": "deepseek-v4-pro",
-          "displayName": "DeepSeek V4 Pro",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "Technically, yes.",
-              "verdict": "other",
-              "followedInstruction": false,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 3,
-                "totalTokens": 233,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 568,
-                "totalMs": 1615
-              },
-              "costEstimateUsd": 0.000018,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Technically, yes.",
-              "verdict": "other",
-              "followedInstruction": false,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 3,
-                "totalTokens": 233,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 568,
-                "totalMs": 1615
-              },
-              "costEstimateUsd": 0.000018,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Technically, yes.",
-              "verdict": "other",
-              "followedInstruction": false,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 3,
-                "totalTokens": 233,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 568,
-                "totalMs": 1615
-              },
-              "costEstimateUsd": 0.000018,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
-          "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 1615,
-              "min": 1615,
-              "max": 1615
-            },
-            "ttfbMs": {
-              "median": 568,
-              "min": 568,
-              "max": 568
-            },
-            "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 26,
+              "min": 26,
+              "max": 26
             },
             "outputTokens": {
               "median": 3,
@@ -694,134 +709,45 @@
               "max": 3
             },
             "totalTokens": {
-              "median": 233,
-              "min": 233,
-              "max": 233
+              "median": 29,
+              "min": 29,
+              "max": 29
             },
             "tokensPerSecond": {
-              "median": 1.8576,
-              "min": 1.8576,
-              "max": 1.8576
+              "median": 8.4851,
+              "min": 4.2744,
+              "max": 9.9866
             },
-            "verdict": "other",
-            "followedInstructionRate": 0,
-            "costEstimateUsd": 0.000054
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
           },
           "error": null
         },
         {
-          "provider": "llama-hosted",
-          "modelId": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-          "displayName": "Llama 3.3 70B Instruct",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 110,
-                "totalMs": 312
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 110,
-                "totalMs": 312
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 110,
-                "totalMs": 312
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
           "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 312,
-              "min": 312,
-              "max": 312
-            },
-            "ttfbMs": {
-              "median": 110,
-              "min": 110,
-              "max": 110
-            },
-            "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
-            },
-            "tokensPerSecond": {
-              "median": 3.2051,
-              "min": 3.2051,
-              "max": 3.2051
-            },
-            "verdict": "yes",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00006
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
           },
-          "error": null
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
         }
       ]
     },
@@ -835,110 +761,140 @@
           "status": "ok",
           "samples": [
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 98,
+                "totalTokens": 122,
+                "reasoningTokens": 92,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 307,
-                "totalMs": 855
+                "startedAt": "2026-09-02T00:09:14.059Z",
+                "ttfbMs": 2285.728,
+                "totalMs": 2291.081
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.00257,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 98,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 92
+                }
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 109,
+                "totalTokens": 133,
+                "reasoningTokens": 103,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 307,
-                "totalMs": 855
+                "startedAt": "2026-09-02T00:09:16.350Z",
+                "ttfbMs": 2197.943,
+                "totalMs": 2549.918
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.002845,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 109,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 103
+                }
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 24,
+                "outputTokens": 108,
+                "totalTokens": 132,
+                "reasoningTokens": 102,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 307,
-                "totalMs": 855
+                "startedAt": "2026-09-02T00:09:18.901Z",
+                "ttfbMs": 2136.331,
+                "totalMs": 2387.534
               },
-              "costEstimateUsd": 0.000115,
+              "costEstimateUsd": 0.00282,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 108,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 102
+                }
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 855,
-              "min": 855,
-              "max": 855
+              "median": 2387.534,
+              "min": 2291.081,
+              "max": 2549.918
             },
             "ttfbMs": {
-              "median": 307,
-              "min": 307,
-              "max": 307
+              "median": 2197.943,
+              "min": 2136.331,
+              "max": 2285.728
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 24,
+              "min": 24,
+              "max": 24
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 108,
+              "min": 98,
+              "max": 109
             },
             "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
+              "median": 132,
+              "min": 122,
+              "max": 133
             },
             "tokensPerSecond": {
-              "median": 1.1696,
-              "min": 1.1696,
-              "max": 1.1696
+              "median": 42.7746,
+              "min": 42.7465,
+              "max": 45.235
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000345
+            "costEstimateUsd": 0.008235
           },
           "error": null
         },
@@ -949,110 +905,131 @@
           "status": "ok",
           "samples": [
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2939,
-                "totalMs": 3089
+                "startedAt": "2026-09-02T00:09:21.289Z",
+                "ttfbMs": 1627.922,
+                "totalMs": 1808.884
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000184,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2939,
-                "totalMs": 3089
+                "startedAt": "2026-09-02T00:09:23.098Z",
+                "ttfbMs": 1464.741,
+                "totalMs": 1734.589
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000184,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 211,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 2939,
-                "totalMs": 3089
+                "startedAt": "2026-09-02T00:09:24.832Z",
+                "ttfbMs": 869.537,
+                "totalMs": 1067.841
               },
-              "costEstimateUsd": 0.000092,
+              "costEstimateUsd": 0.000184,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 3089,
-              "min": 3089,
-              "max": 3089
+              "median": 1734.589,
+              "min": 1067.841,
+              "max": 1808.884
             },
             "ttfbMs": {
-              "median": 2939,
-              "min": 2939,
-              "max": 2939
+              "median": 1464.741,
+              "min": 869.537,
+              "max": 1627.922
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 16,
+              "min": 16,
+              "max": 16
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 6,
+              "min": 6,
+              "max": 6
             },
             "totalTokens": {
-              "median": 211,
-              "min": 211,
-              "max": 211
+              "median": 22,
+              "min": 22,
+              "max": 22
             },
             "tokensPerSecond": {
-              "median": 0.3237,
-              "min": 0.3237,
-              "max": 0.3237
+              "median": 3.459,
+              "min": 3.317,
+              "max": 5.6188
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000276
+            "costEstimateUsd": 0.000552
           },
           "error": null
         },
@@ -1067,22 +1044,30 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
+                "inputTokens": 11,
                 "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "totalTokens": 169,
+                "reasoningTokens": 157,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 503
+                "startedAt": "2026-09-02T00:09:30.658Z",
+                "ttfbMs": 8354.513,
+                "totalMs": 8362.122
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000012,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 169,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 157,
+                "serviceTier": "standard"
               }
             },
             {
@@ -1090,22 +1075,30 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
+                "inputTokens": 11,
                 "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "totalTokens": 122,
+                "reasoningTokens": 110,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 503
+                "startedAt": "2026-09-02T00:09:39.020Z",
+                "ttfbMs": 6768.765,
+                "totalMs": 6773.293
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000012,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 122,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 110,
+                "serviceTier": "standard"
               }
             },
             {
@@ -1113,41 +1106,49 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
+                "inputTokens": 11,
                 "outputTokens": 1,
-                "totalTokens": 65,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "totalTokens": 159,
+                "reasoningTokens": 147,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 203,
-                "totalMs": 503
+                "startedAt": "2026-09-02T00:09:45.794Z",
+                "ttfbMs": 4414.031,
+                "totalMs": 4426.046
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000012,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 159,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 147,
+                "serviceTier": "standard"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 503,
-              "min": 503,
-              "max": 503
+              "median": 6773.293,
+              "min": 4426.046,
+              "max": 8362.122
             },
             "ttfbMs": {
-              "median": 203,
-              "min": 203,
-              "max": 203
+              "median": 6768.765,
+              "min": 4414.031,
+              "max": 8354.513
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 11,
+              "min": 11,
+              "max": 11
             },
             "outputTokens": {
               "median": 1,
@@ -1155,18 +1156,18 @@
               "max": 1
             },
             "totalTokens": {
-              "median": 65,
-              "min": 65,
-              "max": 65
+              "median": 159,
+              "min": 122,
+              "max": 169
             },
             "tokensPerSecond": {
-              "median": 1.9881,
-              "min": 1.9881,
-              "max": 1.9881
+              "median": 0.1476,
+              "min": 0.1196,
+              "max": 0.2259
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000051
+            "costEstimateUsd": 0.000036
           },
           "error": null
         },
@@ -1181,22 +1182,36 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
-                "cachedInputTokens": 640
+                "totalTokens": 1028,
+                "reasoningTokens": 381,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8431,
-                "totalMs": 8440
+                "startedAt": "2026-09-02T00:09:40.329Z",
+                "ttfbMs": 7975.862,
+                "totalMs": 7976.448
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1028,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 381,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 35840000
               }
             },
             {
@@ -1204,22 +1219,36 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 1065,
+                "reasoningTokens": 418,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8431,
-                "totalMs": 8440
+                "startedAt": "2026-09-02T00:09:48.305Z",
+                "ttfbMs": 8689.828,
+                "totalMs": 8690.815
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1065,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 418,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 28460000
               }
             },
             {
@@ -1227,41 +1256,55 @@
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 931,
+                "reasoningTokens": 284,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8431,
-                "totalMs": 8440
+                "startedAt": "2026-09-02T00:09:56.996Z",
+                "ttfbMs": 6283.709,
+                "totalMs": 6284.498
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 931,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 284,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 20420000
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 8440,
-              "min": 8440,
-              "max": 8440
+              "median": 7976.448,
+              "min": 6284.498,
+              "max": 8690.815
             },
             "ttfbMs": {
-              "median": 8431,
-              "min": 8431,
-              "max": 8431
+              "median": 7975.862,
+              "min": 6283.709,
+              "max": 8689.828
             },
             "inputTokens": {
-              "median": 647,
-              "min": 647,
-              "max": 647
+              "median": 646,
+              "min": 646,
+              "max": 646
             },
             "outputTokens": {
               "median": 1,
@@ -1269,132 +1312,144 @@
               "max": 1
             },
             "totalTokens": {
-              "median": 1295,
-              "min": 1295,
-              "max": 1295
+              "median": 1028,
+              "min": 931,
+              "max": 1065
             },
             "tokensPerSecond": {
-              "median": 0.1185,
-              "min": 0.1185,
-              "max": 0.1185
+              "median": 0.1254,
+              "min": 0.1151,
+              "max": 0.1591
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.0039
+            "costEstimateUsd": 0.003894
           },
           "error": null
         },
         {
           "provider": "mistral",
-          "modelId": "mistral-large-3-25-12",
-          "displayName": "Mistral Large 3",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
           "status": "ok",
           "samples": [
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 213,
-                "totalMs": 586
+                "startedAt": "2026-09-02T00:09:25.901Z",
+                "ttfbMs": 390.394,
+                "totalMs": 401.157
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 213,
-                "totalMs": 586
+                "startedAt": "2026-09-02T00:09:26.302Z",
+                "ttfbMs": 451.187,
+                "totalMs": 451.822
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "Yes",
+              "text": "Yes.",
               "verdict": "yes",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 213,
-                "totalMs": 586
+                "startedAt": "2026-09-02T00:09:26.754Z",
+                "ttfbMs": 424.083,
+                "totalMs": 424.971
               },
-              "costEstimateUsd": 0.000011,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 586,
-              "min": 586,
-              "max": 586
+              "median": 424.971,
+              "min": 401.157,
+              "max": 451.822
             },
             "ttfbMs": {
-              "median": 213,
-              "min": 213,
-              "max": 213
+              "median": 424.083,
+              "min": 390.394,
+              "max": 451.187
             },
             "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 26,
+              "min": 26,
+              "max": 26
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 3,
+              "min": 3,
+              "max": 3
             },
             "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
+              "median": 29,
+              "min": 29,
+              "max": 29
             },
             "tokensPerSecond": {
-              "median": 1.7065,
-              "min": 1.7065,
-              "max": 1.7065
+              "median": 7.0593,
+              "min": 6.6398,
+              "max": 7.4784
             },
             "verdict": "yes",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000033
+            "costEstimateUsd": 0.000186
           },
           "error": null
         },
@@ -1402,229 +1457,26 @@
           "provider": "deepseek",
           "modelId": "deepseek-v4-pro",
           "displayName": "DeepSeek V4 Pro",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 231,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 502,
-                "totalMs": 1428
-              },
-              "costEstimateUsd": 0.000014,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 231,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 502,
-                "totalMs": 1428
-              },
-              "costEstimateUsd": 0.000014,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 231,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 502,
-                "totalMs": 1428
-              },
-              "costEstimateUsd": 0.000014,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
+          "status": "error",
+          "samples": [],
           "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 1428,
-              "min": 1428,
-              "max": 1428
-            },
-            "ttfbMs": {
-              "median": 502,
-              "min": 502,
-              "max": 502
-            },
-            "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 231,
-              "min": 231,
-              "max": 231
-            },
-            "tokensPerSecond": {
-              "median": 0.7003,
-              "min": 0.7003,
-              "max": 0.7003
-            },
-            "verdict": "yes",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000042
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
           },
-          "error": null
-        },
-        {
-          "provider": "llama-hosted",
-          "modelId": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-          "displayName": "Llama 3.3 70B Instruct",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 131,
-                "totalMs": 371
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 131,
-                "totalMs": 371
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "Yes",
-              "verdict": "yes",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 18,
-                "outputTokens": 1,
-                "totalTokens": 19,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 131,
-                "totalMs": 371
-              },
-              "costEstimateUsd": 0.00002,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
-          "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 371,
-              "min": 371,
-              "max": 371
-            },
-            "ttfbMs": {
-              "median": 131,
-              "min": 131,
-              "max": 131
-            },
-            "inputTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 19,
-              "min": 19,
-              "max": 19
-            },
-            "tokensPerSecond": {
-              "median": 2.6954,
-              "min": 2.6954,
-              "max": 2.6954
-            },
-            "verdict": "yes",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00006
-          },
-          "error": null
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
         }
       ]
     },
@@ -1638,110 +1490,140 @@
           "status": "ok",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 22,
+                "outputTokens": 93,
+                "totalTokens": 115,
+                "reasoningTokens": 89,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 331,
-                "totalMs": 920
+                "startedAt": "2026-09-02T00:09:29.158Z",
+                "ttfbMs": 2384.921,
+                "totalMs": 2385.639
               },
-              "costEstimateUsd": 0.00011,
+              "costEstimateUsd": 0.002435,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 93,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 89
+                }
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 22,
+                "outputTokens": 62,
+                "totalTokens": 84,
+                "reasoningTokens": 58,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 331,
-                "totalMs": 920
+                "startedAt": "2026-09-02T00:09:31.544Z",
+                "ttfbMs": 1961.807,
+                "totalMs": 1976.594
               },
-              "costEstimateUsd": 0.00011,
+              "costEstimateUsd": 0.00166,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 62,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 58
+                }
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": 12
+                "inputTokens": 22,
+                "outputTokens": 47,
+                "totalTokens": 69,
+                "reasoningTokens": 43,
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 331,
-                "totalMs": 920
+                "startedAt": "2026-09-02T00:09:33.521Z",
+                "ttfbMs": 1939.673,
+                "totalMs": 1964.404
               },
-              "costEstimateUsd": 0.00011,
+              "costEstimateUsd": 0.001285,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 47,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 43
+                }
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 920,
-              "min": 920,
-              "max": 920
+              "median": 1976.594,
+              "min": 1964.404,
+              "max": 2385.639
             },
             "ttfbMs": {
-              "median": 331,
-              "min": 331,
-              "max": 331
+              "median": 1961.807,
+              "min": 1939.673,
+              "max": 2384.921
             },
             "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
+              "median": 22,
+              "min": 22,
+              "max": 22
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 62,
+              "min": 47,
+              "max": 93
             },
             "totalTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 84,
+              "min": 69,
+              "max": 115
             },
             "tokensPerSecond": {
-              "median": 1.087,
-              "min": 1.087,
-              "max": 1.087
+              "median": 31.3671,
+              "min": 23.9258,
+              "max": 38.9833
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00033
+            "costEstimateUsd": 0.00538
           },
           "error": null
         },
@@ -1752,110 +1634,131 @@
           "status": "ok",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 210,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 31,
+                "totalTokens": 47,
+                "reasoningTokens": 23,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 3137,
-                "totalMs": 3297
+                "startedAt": "2026-09-02T00:09:35.485Z",
+                "ttfbMs": 1335.298,
+                "totalMs": 1550.121
               },
-              "costEstimateUsd": 0.000088,
+              "costEstimateUsd": 0.000684,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 23
+                },
+                "total_tokens": 47
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 210,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 3137,
-                "totalMs": 3297
+                "startedAt": "2026-09-02T00:09:37.035Z",
+                "ttfbMs": 1004.124,
+                "totalMs": 1176.162
               },
-              "costEstimateUsd": 0.000088,
+              "costEstimateUsd": 0.000184,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 210,
-                "reasoningTokens": 192,
+                "inputTokens": 16,
+                "outputTokens": 21,
+                "totalTokens": 37,
+                "reasoningTokens": 13,
                 "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 3137,
-                "totalMs": 3297
+                "startedAt": "2026-09-02T00:09:38.212Z",
+                "ttfbMs": 863.626,
+                "totalMs": 1007.825
               },
-              "costEstimateUsd": 0.000088,
+              "costEstimateUsd": 0.000484,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 21,
+                "output_tokens_details": {
+                  "reasoning_tokens": 13
+                },
+                "total_tokens": 37
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 3297,
-              "min": 3297,
-              "max": 3297
+              "median": 1176.162,
+              "min": 1007.825,
+              "max": 1550.121
             },
             "ttfbMs": {
-              "median": 3137,
-              "min": 3137,
-              "max": 3137
+              "median": 1004.124,
+              "min": 863.626,
+              "max": 1335.298
             },
             "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
+              "median": 16,
+              "min": 16,
+              "max": 16
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 21,
+              "min": 6,
+              "max": 31
             },
             "totalTokens": {
-              "median": 210,
-              "min": 210,
-              "max": 210
+              "median": 37,
+              "min": 22,
+              "max": 47
             },
             "tokensPerSecond": {
-              "median": 0.3033,
-              "min": 0.3033,
-              "max": 0.3033
+              "median": 19.9984,
+              "min": 5.1013,
+              "max": 20.837
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000264
+            "costEstimateUsd": 0.001352
           },
           "error": null
         },
@@ -1863,115 +1766,82 @@
           "provider": "gemini",
           "modelId": "gemini-3.7-flash",
           "displayName": "Gemini 3.7 Flash",
-          "status": "ok",
+          "status": "partial",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 64,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
+                "inputTokens": 11,
+                "outputTokens": 2,
+                "totalTokens": 229,
+                "reasoningTokens": 216,
+                "cachedInputTokens": null
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 196,
-                "totalMs": 486
+                "startedAt": "2026-09-02T00:09:50.220Z",
+                "ttfbMs": 2001.504,
+                "totalMs": 2001.973
               },
-              "costEstimateUsd": 0.000017,
+              "costEstimateUsd": 0.000016,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 64,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 196,
-                "totalMs": 486
-              },
-              "costEstimateUsd": 0.000017,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 64,
-                "reasoningTokens": 46,
-                "cachedInputTokens": 0
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 196,
-                "totalMs": 486
-              },
-              "costEstimateUsd": 0.000017,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 2,
+                "totalTokenCount": 229,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 216,
+                "serviceTier": "standard"
               }
             }
           ],
           "aggregate": {
-            "sampleCount": 3,
+            "sampleCount": 1,
             "totalMs": {
-              "median": 486,
-              "min": 486,
-              "max": 486
+              "median": 2001.973,
+              "min": 2001.973,
+              "max": 2001.973
             },
             "ttfbMs": {
-              "median": 196,
-              "min": 196,
-              "max": 196
+              "median": 2001.504,
+              "min": 2001.504,
+              "max": 2001.504
             },
             "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
+              "median": 11,
+              "min": 11,
+              "max": 11
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 2,
+              "min": 2,
+              "max": 2
             },
             "totalTokens": {
-              "median": 64,
-              "min": 64,
-              "max": 64
+              "median": 229,
+              "min": 229,
+              "max": 229
             },
             "tokensPerSecond": {
-              "median": 2.0576,
-              "min": 2.0576,
-              "max": 2.0576
+              "median": 0.999,
+              "min": 0.999,
+              "max": 0.999
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000051
+            "costEstimateUsd": 0.000016
           },
-          "error": null
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
         },
         {
           "provider": "xai",
@@ -1980,91 +1850,133 @@
           "status": "ok",
           "samples": [
             {
-              "text": "Depends.",
-              "verdict": "other",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
-                "cachedInputTokens": 640
+                "totalTokens": 1225,
+                "reasoningTokens": 578,
+                "cachedInputTokens": 512
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8346,
-                "totalMs": 8354
+                "startedAt": "2026-09-02T00:10:03.282Z",
+                "ttfbMs": 12404.939,
+                "totalMs": 12450.457
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1225,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 578,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 39980000
               }
             },
             {
-              "text": "Depends.",
-              "verdict": "other",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 916,
+                "reasoningTokens": 269,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8346,
-                "totalMs": 8354
+                "startedAt": "2026-09-02T00:10:15.732Z",
+                "ttfbMs": 6057.796,
+                "totalMs": 6106.229
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 916,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 269,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 19520000
               }
             },
             {
-              "text": "Depends.",
-              "verdict": "other",
+              "text": "No",
+              "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 647,
+                "inputTokens": 646,
                 "outputTokens": 1,
-                "totalTokens": 1295,
-                "reasoningTokens": 647,
+                "totalTokens": 938,
+                "reasoningTokens": 291,
                 "cachedInputTokens": 640
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 8346,
-                "totalMs": 8354
+                "startedAt": "2026-09-02T00:10:21.839Z",
+                "ttfbMs": 5626.54,
+                "totalMs": 5627.078
               },
-              "costEstimateUsd": 0.0013,
+              "costEstimateUsd": 0.001298,
               "raw": {
-                "mock": true,
-                "source": "live",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 938,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 291,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 20840000
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 8354,
-              "min": 8354,
-              "max": 8354
+              "median": 6106.229,
+              "min": 5627.078,
+              "max": 12450.457
             },
             "ttfbMs": {
-              "median": 8346,
-              "min": 8346,
-              "max": 8346
+              "median": 6057.796,
+              "min": 5626.54,
+              "max": 12404.939
             },
             "inputTokens": {
-              "median": 647,
-              "min": 647,
-              "max": 647
+              "median": 646,
+              "min": 646,
+              "max": 646
             },
             "outputTokens": {
               "median": 1,
@@ -2072,132 +1984,144 @@
               "max": 1
             },
             "totalTokens": {
-              "median": 1295,
-              "min": 1295,
-              "max": 1295
+              "median": 938,
+              "min": 916,
+              "max": 1225
             },
             "tokensPerSecond": {
-              "median": 0.1197,
-              "min": 0.1197,
-              "max": 0.1197
+              "median": 0.1638,
+              "min": 0.0803,
+              "max": 0.1777
             },
-            "verdict": "other",
+            "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.0039
+            "costEstimateUsd": 0.003894
           },
           "error": null
         },
         {
           "provider": "mistral",
-          "modelId": "mistral-large-3-25-12",
-          "displayName": "Mistral Large 3",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
           "status": "ok",
           "samples": [
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 260,
-                "totalMs": 716
+                "startedAt": "2026-09-02T00:09:39.220Z",
+                "ttfbMs": 313.368,
+                "totalMs": 333.954
               },
-              "costEstimateUsd": 0.00001,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 260,
-                "totalMs": 716
+                "startedAt": "2026-09-02T00:09:39.554Z",
+                "ttfbMs": 327.547,
+                "totalMs": 342.497
               },
-              "costEstimateUsd": 0.00001,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             },
             {
-              "text": "No",
+              "text": "No.",
               "verdict": "no",
               "followedInstruction": true,
               "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
                 "reasoningTokens": null,
-                "cachedInputTokens": null
+                "cachedInputTokens": 0
               },
               "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 260,
-                "totalMs": 716
+                "startedAt": "2026-09-02T00:09:39.897Z",
+                "ttfbMs": 382.635,
+                "totalMs": 383.093
               },
-              "costEstimateUsd": 0.00001,
+              "costEstimateUsd": 0.000062,
               "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
               }
             }
           ],
           "aggregate": {
             "sampleCount": 3,
             "totalMs": {
-              "median": 716,
-              "min": 716,
-              "max": 716
+              "median": 342.497,
+              "min": 333.954,
+              "max": 383.093
             },
             "ttfbMs": {
-              "median": 260,
-              "min": 260,
-              "max": 260
+              "median": 327.547,
+              "min": 313.368,
+              "max": 382.635
             },
             "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
+              "median": 26,
+              "min": 26,
+              "max": 26
             },
             "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
+              "median": 3,
+              "min": 3,
+              "max": 3
             },
             "totalTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
+              "median": 29,
+              "min": 29,
+              "max": 29
             },
             "tokensPerSecond": {
-              "median": 1.3966,
-              "min": 1.3966,
-              "max": 1.3966
+              "median": 8.7592,
+              "min": 7.831,
+              "max": 8.9833
             },
             "verdict": "no",
             "followedInstructionRate": 1,
-            "costEstimateUsd": 0.00003
+            "costEstimateUsd": 0.000186
           },
           "error": null
         },
@@ -2205,229 +2129,26 @@
           "provider": "deepseek",
           "modelId": "deepseek-v4-pro",
           "displayName": "DeepSeek V4 Pro",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 230,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 499,
-                "totalMs": 1419
-              },
-              "costEstimateUsd": 0.000013,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 230,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 499,
-                "totalMs": 1419
-              },
-              "costEstimateUsd": 0.000013,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 230,
-                "reasoningTokens": 212,
-                "cachedInputTokens": 12
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 499,
-                "totalMs": 1419
-              },
-              "costEstimateUsd": 0.000013,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
+          "status": "error",
+          "samples": [],
           "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 1419,
-              "min": 1419,
-              "max": 1419
-            },
-            "ttfbMs": {
-              "median": 499,
-              "min": 499,
-              "max": 499
-            },
-            "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 230,
-              "min": 230,
-              "max": 230
-            },
-            "tokensPerSecond": {
-              "median": 0.7047,
-              "min": 0.7047,
-              "max": 0.7047
-            },
-            "verdict": "no",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000039
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
           },
-          "error": null
-        },
-        {
-          "provider": "llama-hosted",
-          "modelId": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-          "displayName": "Llama 3.3 70B Instruct",
-          "status": "ok",
-          "samples": [
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 124,
-                "totalMs": 352
-              },
-              "costEstimateUsd": 0.000019,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 124,
-                "totalMs": 352
-              },
-              "costEstimateUsd": 0.000019,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            },
-            {
-              "text": "No",
-              "verdict": "no",
-              "followedInstruction": true,
-              "usage": {
-                "inputTokens": 17,
-                "outputTokens": 1,
-                "totalTokens": 18,
-                "reasoningTokens": null,
-                "cachedInputTokens": null
-              },
-              "timing": {
-                "startedAt": "1970-01-01T00:00:00.000Z",
-                "ttfbMs": 124,
-                "totalMs": 352
-              },
-              "costEstimateUsd": 0.000019,
-              "raw": {
-                "mock": true,
-                "source": "authored",
-                "recordedAt": "2026-09-01"
-              }
-            }
-          ],
-          "aggregate": {
-            "sampleCount": 3,
-            "totalMs": {
-              "median": 352,
-              "min": 352,
-              "max": 352
-            },
-            "ttfbMs": {
-              "median": 124,
-              "min": 124,
-              "max": 124
-            },
-            "inputTokens": {
-              "median": 17,
-              "min": 17,
-              "max": 17
-            },
-            "outputTokens": {
-              "median": 1,
-              "min": 1,
-              "max": 1
-            },
-            "totalTokens": {
-              "median": 18,
-              "min": 18,
-              "max": 18
-            },
-            "tokensPerSecond": {
-              "median": 2.8409,
-              "min": 2.8409,
-              "max": 2.8409
-            },
-            "verdict": "no",
-            "followedInstructionRate": 1,
-            "costEstimateUsd": 0.000057
-          },
-          "error": null
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
         }
       ]
     }

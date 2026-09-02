@@ -47,6 +47,8 @@ interface AnthropicUsage {
   output_tokens?: number
   cache_read_input_tokens?: number
   cache_creation_input_tokens?: number
+  /** Present on models that think. Counted *inside* output_tokens. */
+  output_tokens_details?: { thinking_tokens?: number }
 }
 
 export function createAnthropicAdapter(policy: Partial<RetryPolicy> = {}): ProviderAdapter {
@@ -139,10 +141,12 @@ export function createAnthropicAdapter(policy: Partial<RetryPolicy> = {}): Provi
             // common here, because the same short prompt is sent nine times a
             // week. Surfaced separately rather than folded into inputTokens.
             cachedInputTokens: usage.cache_read_input_tokens ?? null,
-            // Anthropic reports no separate reasoning-token count on this API;
-            // thinking tokens, when a model produces them, are inside
-            // output_tokens. Null means "not reported", never zero.
-            reasoningTokens: null,
+            // Anthropic does report thinking tokens, and they are counted
+            // *inside* output_tokens — a live call returned output_tokens 80
+            // with thinking_tokens 76 for the four-token answer "No.".
+            // Surfaced separately so a reader can see why a one-word answer
+            // cost eighty tokens. Null when the model does not think.
+            reasoningTokens: usage.output_tokens_details?.thinking_tokens ?? null,
           }),
           timing: measurement.finish(),
           raw: usage,

@@ -13,6 +13,7 @@ import { registerAllAdapters } from '../providers/all.ts'
 import { loadModels } from '../data/registries.ts'
 import { credentialsFromEnv, PROVIDER_ENV_VARS, type ProviderId } from '../env.ts'
 import { tokensPerSecond } from '../providers/timing.ts'
+import { DEFAULT_MAX_OUTPUT_TOKENS } from '../runner/run.ts'
 import { ProviderError } from '../providers/types.ts'
 
 const DEFAULT_PROMPT = 'Is a hot dog a sandwich? One word answer.'
@@ -119,7 +120,7 @@ export async function runSmoke(options: SmokeOptions): Promise<number> {
 
   try {
     const result = await adapter.complete(
-      { modelId: model.modelId, prompt, maxOutputTokens: 64 },
+      { modelId: model.modelId, prompt, maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS },
       {
         credentials: { apiKey },
         fetch: globalThis.fetch,

@@ -71,20 +71,20 @@
     },
     {
       "provider": "mistral",
-      "modelId": "mistral-large-3-25-12",
-      "displayName": "Mistral Large 3",
+      "modelId": "mistral-medium-2604",
+      "displayName": "Mistral Medium 3.5",
       "vendor": "Mistral AI",
-      "docsUrl": "https://docs.mistral.ai/inference/pricing",
+      "docsUrl": "https://docs.mistral.ai/api/endpoint/models",
       "pricing": {
-        "inputUsdPerMTok": 0.5,
-        "outputUsdPerMTok": 1.5,
+        "inputUsdPerMTok": 1.5,
+        "outputUsdPerMTok": 7.5,
         "pricingUrl": "https://mistral.ai/pricing/api/",
         "asOf": "2026-09-01"
       },
       "supportsStreaming": true,
       "supportsUsage": true,
       "enabled": true,
-      "notes": "Mistral's flagship is currently cheaper per token than its mid-tier Medium 3.5, which is unusual enough to be worth stating rather than assuming a mistake."
+      "notes": "Model id read from the live GET /v1/models endpoint on 2026-09-01, not from the pricing page: that page lists 'mistral-large-3-25-12', a documentation slug the API rejects with 'Invalid model'. Prefer a provider's own model listing over its prose docs where one exists. Medium rather than Large because Large returns 403 'not available in your subscription tier' on the standard tier \u2014 a benchmark should ask a model its readers can actually reach. Pinned rather than -latest so a run records what it actually asked."
     },
     {
       "provider": "deepseek",

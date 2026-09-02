@@ -52,15 +52,39 @@ efficient for free.
 been made yet — replace it with a real capture via `npm run bench:record -- --provider <id>` and
 change the status.
 
-| Provider                 | Status                  | Input                | Output                 | Total                | Reasoning                                    | Cached input                          | Reasoning inside output?                                                      | Streams (ttfb)? |
-| ------------------------ | ----------------------- | -------------------- | ---------------------- | -------------------- | -------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- | --------------- |
-| Anthropic                | Documented              | `input_tokens`       | `output_tokens`        | derived              | — (not reported)                             | `cache_read_input_tokens`             | n/a — no separate count; thinking tokens are inside `output_tokens`           | Yes             |
-| OpenAI                   | Documented              | `usage.input_tokens` | `usage.output_tokens`  | `usage.total_tokens` | `output_tokens_details.reasoning_tokens`     | `input_tokens_details.cached_tokens`  | **Yes** — also broken out separately                                          | Yes             |
-| Google Gemini            | Documented              | `promptTokenCount`   | `candidatesTokenCount` | `totalTokenCount`    | `thoughtsTokenCount`                         | `cachedContentTokenCount`             | **No** — `totalTokenCount` includes thoughts, `candidatesTokenCount` does not | Yes             |
-| xAI                      | **Verified 2026-09-01** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_tokens_details.cached_tokens` | **No** — see below                                                            | Yes             |
-| Mistral                  | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                           | Yes             |
-| DeepSeek                 | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_cache_hit_tokens`             | **No** — total exceeds prompt + completion                                    | Yes             |
-| Meta Llama (Together AI) | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                           | Yes             |
+| Provider                 | Status                  | Input                | Output                 | Total                | Reasoning                                    | Cached input                          | Reasoning inside output?                                                    | Streams (ttfb)? |
+| ------------------------ | ----------------------- | -------------------- | ---------------------- | -------------------- | -------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------- | --------------- |
+| Anthropic                | **Verified 2026-09-02** | `input_tokens`       | `output_tokens`        | derived              | `output_tokens_details.thinking_tokens`      | `cache_read_input_tokens`             | **Yes** — 42 output of which 38 thinking, for the answer "No."              | Yes             |
+| OpenAI                   | **Verified 2026-09-02** | `usage.input_tokens` | `usage.output_tokens`  | `usage.total_tokens` | `output_tokens_details.reasoning_tokens`     | `input_tokens_details.cached_tokens`  | **Yes** — 17 + 23 = 40, the reported total, and 15 of the 23 were reasoning | Yes             |
+| Google Gemini            | **Verified 2026-09-02** | `promptTokenCount`   | `candidatesTokenCount` | `totalTokenCount`    | `thoughtsTokenCount`                         | `cachedContentTokenCount`             | **No** — 12 + 2 + 310 = 324, the reported total                             | Yes             |
+| xAI                      | **Verified 2026-09-01** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_tokens_details.cached_tokens` | **No** — see below                                                          | Yes             |
+| Mistral                  | **Verified 2026-09-02** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | `prompt_tokens_details.cached_tokens` | n/a                                                                         | Yes             |
+| DeepSeek                 | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_cache_hit_tokens`             | **No** — total exceeds prompt + completion                                  | Yes             |
+| Meta Llama (Together AI) | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                         | Yes             |
+
+### What verifying these live actually changed
+
+Five of the seven rows above were corrected by making real calls. Every one of
+these was invisible to fixture testing, because a fixture only proves the
+adapter parses what the vendor _used to_ send:
+
+- **Anthropic reports thinking tokens.** The adapter had `reasoningTokens: null`
+  with a comment asserting the Messages API has no such field. It does —
+  `output_tokens_details.thinking_tokens`, counted inside `output_tokens`.
+- **Gemini's thoughts sit outside `candidatesTokenCount`**, confirmed
+  arithmetically: 12 + 2 + 310 = 324. The same shape as xAI, the opposite of
+  OpenAI.
+- **A 64-token output cap made reasoning models return nothing at all.** A live
+  Anthropic call came back `stop_reason: max_tokens` with a single thinking
+  block, zero text blocks, and all 64 output tokens counted as thinking. Gemini
+  truncated mid-word to "Categorically,". The cap is now 1024.
+- **`mistral-large-3-25-12` is a documentation slug, not a model id.** The API
+  rejects it as "Invalid model". The live `GET /v1/models` endpoint gives
+  `mistral-large-2512`, which then returns 403 on the standard tier — so the
+  registry uses `mistral-medium-2604`, which a reader can actually reach.
+
+Prefer a provider's own model-listing endpoint over its prose documentation
+wherever one exists.
 
 Each adapter's pull request is expected to keep its own row honest. A stale row here is worse
 than a blank one, because a reader will believe it.

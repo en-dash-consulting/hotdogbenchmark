@@ -95,12 +95,25 @@ describe('the committed data directory', () => {
     expect(dataManifestSchema.safeParse(buildManifest()).success).toBe(true)
   })
 
-  it('ships at least one run so the site can build before real data exists', () => {
+  it('ships at least one run so the site always has something to render', () => {
     const runs = loadAllRuns()
     expect(runs.length).toBeGreaterThan(0)
     const latest = runs[0]!.run
     expect(latest.questions.map((q) => q.id)).toEqual(['hot-dog', 'hamburger', 'taco'])
-    expect(latest.isMock, 'placeholder data must be labelled as such').toBe(true)
+  })
+
+  it('labels any placeholder data as such, and real data as real', () => {
+    // This used to assert isMock === true, which was correct only while the
+    // committed run was the generated sample. What actually matters is that
+    // the flag tells the truth: mock runs get the site's "sample data" notice,
+    // real ones do not.
+    for (const { path, run } of loadAllRuns()) {
+      expect(typeof run.isMock, `${path} has no isMock flag`).toBe('boolean')
+      if (!run.isMock) {
+        // A real run must have come from somewhere reproducible.
+        expect(run.runnerVersion, `${path} has no runner version`).toBeTruthy()
+      }
+    }
   })
 })
 
