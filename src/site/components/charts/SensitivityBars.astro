@@ -118,7 +118,11 @@ const summary =
 
     {
       rows.map((row) => (
-        <a class="mark" href={`#${profileAnchor(row.entry.model)}`}>
+        <a
+          class="mark"
+          href={`#${profileAnchor(row.entry.model)}`}
+          data-vendor={`${row.entry.model.provider}/${row.entry.model.modelId}`}
+        >
           <title>
             {row.entry.model.displayName}:{' '}
             {row.bars
@@ -251,6 +255,18 @@ const summary =
   .mark:focus-visible .model-label {
     outline: 3px solid var(--focus);
     outline-offset: 3px;
+  }
+
+  /* The explorer dims everything but the focused vendor. */
+  .mark.is-dim {
+    opacity: 0.35;
+  }
+
+  .mark.is-focus .model-label {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-fill);
+    text-decoration-thickness: 3px;
   }
 
   .value-label {

@@ -205,14 +205,17 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
           ? `${visible} models shown.`
           : `${visible} of ${allRows.length} models shown.`
 
-      const state = new URLSearchParams()
+      // Merge with the hash rather than replace it: the framing explorer on
+      // the same page keeps its own keys there.
+      const state = new URLSearchParams(location.hash.slice(1))
+      for (const key of ['vendor', 'verdict', 'sort']) state.delete(key)
       if (vendor) state.set('vendor', vendor)
       if (verdict) state.set('verdict', verdict)
       if (sortKey !== 'composite' || sortDirection !== 'desc') {
         state.set('sort', `${sortKey}:${sortDirection}`)
       }
       const hash = state.toString()
-      history.replaceState(null, '', hash ? `#${hash}` : location.pathname)
+      history.replaceState(null, '', hash ? `#${hash}` : location.pathname + location.search)
     }
 
     for (const th of table.querySelectorAll<HTMLElement>('th[data-column]')) {

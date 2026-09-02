@@ -170,22 +170,32 @@ describe('experimental conditions in the built report', () => {
     }
   })
 
-  it('ships the comparison with no client JavaScript of its own', () => {
-    // The comparison is HTML, SVG and a <details> element. The scripts a
-    // report page carries — the theme bootstrap, the theme toggle and the
-    // results table's progressive enhancement — all predate conditions, so
-    // the report page must have exactly as many as a page without one.
+  it('renders the comparison complete without JavaScript, and ships only the explorer on top', () => {
+    // The comparison is HTML, SVG and <details>. The explorer island is the
+    // one script the section adds, and the results table the one the page
+    // adds; both reveal their controls only after they have run.
     if (treated.length === 0) return
     const baseline = (read('about').match(/<script[^>]*>/g) ?? []).length
     for (const questionId of questionIds) {
       const html = read(`reports/${questionId}`)
       const start = html.indexOf('id="framing-heading"')
-      const end = html.indexOf('Sandwich Certainty Quadrant', start)
       expect(start, `${questionId} has no framing section`).toBeGreaterThan(-1)
-      expect(html.slice(start, end)).not.toMatch(/<script/)
       const scripts = (html.match(/<script[^>]*>/g) ?? []).length
-      // The results table enhancement is the one extra script a report has.
-      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 1)
+      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 2)
+    }
+  })
+
+  it('hides the framing explorer controls until its script reveals them', () => {
+    for (const questionId of questionIds) {
+      if (treated.length === 0) continue
+      const html = read(`reports/${questionId}`)
+      expect(html).toMatch(/<div class="explorer[^"]*" data-explorer[^>]*hidden/)
+      // Explorer keys are provider/model; the results table's data-vendor is a
+      // vendor name with no slash, so the slash is what tells them apart.
+      const rows = (html.match(/<tr[^>]*data-vendor="[^"]*\//g) ?? []).length
+      const items = (html.match(/<li[^>]*data-vendor="[^"]*\//g) ?? []).length
+      expect(rows, `${questionId} matrix rows`).toBeGreaterThan(0)
+      expect(items, `${questionId} verbatim items`).toBe(rows)
     }
   })
 

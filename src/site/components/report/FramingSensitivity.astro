@@ -74,7 +74,7 @@ const comparableCount = rows.filter((row) =>
 
 {
   enabled && (
-    <section aria-labelledby="framing-heading" class="framing">
+    <section aria-labelledby="framing-heading" class="framing" data-framing>
       <h2 id="framing-heading">Framing sensitivity</h2>
       <p class="framing-lede">
         We also asked each model with a system prompt that stated the answer as fact, and watched
@@ -114,6 +114,32 @@ const comparableCount = rows.filter((row) =>
       </ul>
 
       <p class="framing-summary">{summary}</p>
+
+      {/* The explorer's controls. Hidden until the script that makes them work has run. */}
+      <div class="explorer" data-explorer hidden>
+        <div class="explorer-group" role="group" aria-label="Show">
+          <span class="explorer-label">Show</span>
+          <button type="button" data-show="all" aria-pressed="true">
+            All
+          </button>
+          <button type="button" data-show="moved" aria-pressed="false">
+            Changed their mind
+          </button>
+          <button type="button" data-show="held" aria-pressed="false">
+            Held firm
+          </button>
+        </div>
+        <div class="explorer-group">
+          <span class="explorer-label">Focus</span>
+          <span class="explorer-focus" data-focus-name>
+            none: pick a vendor in the table
+          </span>
+          <button type="button" data-clear-focus hidden>
+            Clear
+          </button>
+        </div>
+        <p class="explorer-status" role="status" data-explorer-status />
+      </div>
 
       <h3>The framings, as sent</h3>
       <dl class="arms">
@@ -164,8 +190,20 @@ const comparableCount = rows.filter((row) =>
                 .map((c) => c.condition.label.toLowerCase())
               const comparable = row.cells.some((c) => c.shift.status !== 'incomparable')
               return (
-                <tr class:list={[row.movedAnywhere && 'row-moved']}>
-                  <th scope="row">{row.model.displayName}</th>
+                <tr
+                  class:list={[row.movedAnywhere && 'row-moved']}
+                  data-vendor={`${row.model.provider}/${row.model.modelId}`}
+                  data-moved={row.movedAnywhere ? 'true' : 'false'}
+                  data-comparable={comparable ? 'true' : 'false'}
+                >
+                  <th scope="row">
+                    <span
+                      class="vendor-name"
+                      data-focus={`${row.model.provider}/${row.model.modelId}`}
+                    >
+                      {row.model.displayName}
+                    </span>
+                  </th>
                   <td>
                     <VerdictBadge verdict={row.control?.aggregate.verdict ?? null} />
                   </td>
@@ -202,8 +240,14 @@ const comparableCount = rows.filter((row) =>
         {rows.map((row) => {
           const control = said(row.control)
           return (
-            <li>
-              <details class="verbatim">
+            <li
+              data-vendor={`${row.model.provider}/${row.model.modelId}`}
+              data-moved={row.movedAnywhere ? 'true' : 'false'}
+              data-comparable={
+                row.cells.some((c) => c.shift.status !== 'incomparable') ? 'true' : 'false'
+              }
+            >
+              <details class="verbatim" data-verbatim>
                 <summary>
                   <span class="verbatim-name">{row.model.displayName}</span>
                   <span class="verbatim-status">
@@ -290,6 +334,120 @@ const comparableCount = rows.filter((row) =>
     </section>
   )
 }
+
+<script>
+  /**
+   * The framing explorer. Everything below is additive: without it the
+   * section is complete, and the controls it needs are hidden in the markup.
+   *
+   * State lives in the URL hash under `focus` and `show`, merged with whatever
+   * else is there (the results table keeps its own keys), so a view can be
+   * shared.
+   */
+  const root = document.querySelector<HTMLElement>('[data-framing]')
+  const controls = root?.querySelector<HTMLElement>('[data-explorer]')
+
+  if (root && controls) {
+    const status = controls.querySelector<HTMLElement>('[data-explorer-status]')!
+    const focusName = controls.querySelector<HTMLElement>('[data-focus-name]')!
+    const clearButton = controls.querySelector<HTMLButtonElement>('[data-clear-focus]')!
+    const showButtons = Array.from(controls.querySelectorAll<HTMLButtonElement>('[data-show]'))
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('tr[data-vendor], li[data-vendor]'))
+    const marks = Array.from(root.querySelectorAll<HTMLElement>('a.mark[data-vendor]'))
+    const names = Array.from(root.querySelectorAll<HTMLElement>('[data-focus]'))
+
+    let show: 'all' | 'moved' | 'held' = 'all'
+    let focus: string | null = null
+
+    const displayNameOf = (vendor: string) =>
+      names.find((n) => n.dataset.focus === vendor)?.textContent?.trim() ?? vendor
+
+    function apply() {
+      let visible = 0
+      for (const row of rows) {
+        const moved = row.dataset.moved === 'true'
+        const comparable = row.dataset.comparable === 'true'
+        const matches = show === 'all' || (show === 'moved' ? moved : comparable && !moved)
+        row.hidden = !matches
+        if (matches && row.tagName === 'TR') visible += 1
+        const isFocus = focus !== null && row.dataset.vendor === focus
+        row.classList.toggle('is-focus', isFocus)
+        row.classList.toggle('is-dim', focus !== null && !isFocus)
+        if (isFocus) {
+          const details = row.querySelector<HTMLDetailsElement>('[data-verbatim]')
+          if (details) details.open = true
+        }
+      }
+      for (const mark of marks) {
+        const isFocus = focus !== null && mark.dataset.vendor === focus
+        mark.classList.toggle('is-focus', isFocus)
+        mark.classList.toggle('is-dim', focus !== null && !isFocus)
+      }
+      for (const name of names) {
+        name.setAttribute('aria-pressed', String(name.dataset.focus === focus))
+      }
+      for (const button of showButtons) {
+        button.setAttribute('aria-pressed', String(button.dataset.show === show))
+      }
+      focusName.textContent =
+        focus === null ? 'none: pick a vendor in the table' : displayNameOf(focus)
+      clearButton.hidden = focus === null
+      status.textContent =
+        `${visible} of ${rows.filter((r) => r.tagName === 'TR').length} vendors shown` +
+        (focus === null ? '.' : `, focused on ${displayNameOf(focus)}.`)
+
+      const state = new URLSearchParams(location.hash.slice(1))
+      if (show === 'all') state.delete('show')
+      else state.set('show', show)
+      if (focus === null) state.delete('focus')
+      else state.set('focus', focus)
+      const hash = state.toString()
+      history.replaceState(null, '', hash ? `#${hash}` : location.pathname + location.search)
+    }
+
+    for (const name of names) {
+      name.setAttribute('role', 'button')
+      name.tabIndex = 0
+      const toggle = () => {
+        focus = focus === name.dataset.focus ? null : (name.dataset.focus ?? null)
+        apply()
+      }
+      name.addEventListener('click', toggle)
+      name.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          toggle()
+        }
+      })
+    }
+    for (const button of showButtons) {
+      button.addEventListener('click', () => {
+        show = (button.dataset.show as typeof show) ?? 'all'
+        apply()
+      })
+    }
+    clearButton.addEventListener('click', () => {
+      focus = null
+      apply()
+    })
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && focus !== null) {
+        focus = null
+        apply()
+      }
+    })
+
+    // Restore a shared view.
+    const initial = new URLSearchParams(location.hash.slice(1))
+    const initialShow = initial.get('show')
+    if (initialShow === 'moved' || initialShow === 'held') show = initialShow
+    const initialFocus = initial.get('focus')
+    if (initialFocus && names.some((n) => n.dataset.focus === initialFocus)) focus = initialFocus
+
+    controls.hidden = false
+    apply()
+  }
+</script>
 
 <style>
   .framing {
@@ -416,6 +574,98 @@ const comparableCount = rows.filter((row) =>
     margin: 0;
     font-size: var(--step--1);
     color: var(--muted);
+  }
+
+  /* --- Explorer ------------------------------------------------------------ */
+  .explorer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-l);
+    margin: var(--space-m) 0;
+    padding: var(--space-s) var(--space-m);
+    background: var(--surface);
+    border-radius: var(--radius);
+  }
+
+  .explorer-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .explorer-label {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: var(--space-2xs);
+  }
+
+  .explorer button {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    padding: var(--space-3xs) var(--space-s);
+    border: 2px solid var(--rule-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-strong);
+    cursor: pointer;
+  }
+
+  .explorer button[aria-pressed='true'] {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+  }
+
+  .explorer-focus {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .explorer-status {
+    margin: 0;
+    flex-basis: 100%;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .vendor-name[role='button'] {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 0.2em;
+  }
+
+  .vendor-name[role='button']:hover,
+  .vendor-name[role='button'][aria-pressed='true'] {
+    text-decoration-style: solid;
+    text-decoration-color: var(--accent-fill);
+    text-decoration-thickness: 3px;
+  }
+
+  .vendor-name[role='button']:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  tr.is-focus {
+    background: var(--verdict-yes-bg);
+  }
+
+  tr.is-dim,
+  li.is-dim {
+    opacity: 0.45;
+  }
+
+  li.is-focus .verbatim {
+    border-top: 3px solid var(--accent-fill);
   }
 
   .shift-table caption {
