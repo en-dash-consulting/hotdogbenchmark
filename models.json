@@ -219,8 +219,8 @@
       },
       "supportsStreaming": true,
       "supportsUsage": true,
-      "enabled": false,
-      "notes": "Disabled 2026-09-01: the key authenticates but the account has no credit (402 Insufficient Balance). Re-enable after adding credit at platform.deepseek.com and re-recording the fixture. Previously: DeepSeek charges peak and off-peak rates. Peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays; the weekly run is Monday 12:00 UTC, which is off-peak, so the off-peak rate is the one recorded here. The retired deepseek-chat alias now routes to the v4 family."
+      "enabled": true,
+      "notes": "Re-enabled 2026-09-02 after the account was funded; a smoke call returns usage and timing. DeepSeek charges peak and off-peak rates. Peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays; the weekly run is Monday 12:00 UTC, which is off-peak, so the off-peak rate is the one recorded here. The retired deepseek-chat alias now routes to the v4 family."
     },
     {
       "provider": "llama-hosted",

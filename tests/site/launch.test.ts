@@ -257,11 +257,20 @@ describe('the substance is in the HTML', () => {
     }
   })
 
-  it.skipIf(!latest)('names every enabled model on the front page and every report', () => {
+  it.skipIf(!latest)('names every model of the latest edition on the front page and every report', () => {
+    // The registry says who will be asked next; the site reports who was asked
+    // last. A model enabled between editions — a funded account, a new entry —
+    // has nothing to render yet, and demanding its name here would fail the
+    // build for being ready early. What must hold is the other direction:
+    // every model that actually produced data is named.
+    const ran = new Set(latest!.results.flatMap((cell) => cell.models.map((m) => m.displayName)))
+    const expected = models.filter((model) => ran.has(model.displayName))
+    expect(expected.length).toBeGreaterThan(1)
+
     const targets = pages.filter((page) => page.path === '/index.html' || isFullReport(page.path))
     expect(targets.length).toBeGreaterThan(1)
     for (const page of targets) {
-      for (const model of models) {
+      for (const model of expected) {
         expect(
           contains(page.html, model.displayName),
           `${page.path} lacks ${model.displayName}`,
