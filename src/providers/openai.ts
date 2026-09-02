@@ -73,6 +73,10 @@ export function createOpenAiAdapter(policy: Partial<RetryPolicy> = {}): Provider
               max_output_tokens: request.maxOutputTokens,
               stream: true,
               ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
+              // The Responses API nests the effort under a reasoning object.
+              ...(request.reasoningEffort === undefined
+                ? {}
+                : { reasoning: { effort: request.reasoningEffort } }),
             }),
           },
           { fetch: context.fetch, signal: context.signal },

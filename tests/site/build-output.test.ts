@@ -192,7 +192,7 @@ describe('experimental conditions in the built report', () => {
   it('defines the sensitivity measure on the methodology page from the shared constant', () => {
     const html = read('methodology')
     expect(html).toContain('Framing sensitivity')
-    expect(html).toContain('neither robustness nor compliance')
+    expect(html).toMatch(/neither robustness nor compliance/i)
     expect(html).toContain('conditions.json')
   })
 
@@ -366,7 +366,7 @@ describe('the learn pages', () => {
 
   it('methodology states the limitations plainly', () => {
     const html = read('methodology')
-    expect(html).toContain('Limitations of this research')
+    expect(html).toContain('What this does not measure')
     expect(html).toMatch(/questions are silly/i)
     expect(html).toMatch(
       /nothing in this publication measures model\s*<\/strong>?\s*quality|measures model\s+quality/i,

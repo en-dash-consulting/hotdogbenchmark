@@ -312,11 +312,21 @@ describe('bench run --mock end to end, with no API keys', () => {
     expect(manifest.runs[0].isMock).toBe(true)
   })
 
-  it('overwrites the same week rather than accumulating files', () => {
+  it('replaces the same week as the edition, but keeps the previous run under superseded/', () => {
     const cwd = setUp()
     runCli(cwd, ['run', '--mock'])
-    runCli(cwd, ['run', '--mock'])
-    expect(readdirSync(join(cwd, 'data/runs'))).toHaveLength(1)
+    const first = JSON.parse(
+      readFileSync(join(cwd, 'data/runs', readdirSync(join(cwd, 'data/runs'))[0]!), 'utf8'),
+    )
+    const output = runCli(cwd, ['run', '--mock'])
+    expect(output).toContain('Kept the previous run as data/runs/superseded/')
+
+    const entries = readdirSync(join(cwd, 'data/runs'))
+    expect(entries.filter((name) => name.endsWith('.json'))).toHaveLength(1)
+    expect(readdirSync(join(cwd, 'data/runs/superseded'))).toEqual([
+      `${first.isoWeek}-${first.runId}.json`,
+    ])
+    // The site sees one edition; the manifest agrees.
     const manifest = JSON.parse(readFileSync(join(cwd, 'data/index.json'), 'utf8'))
     expect(manifest.runs).toHaveLength(1)
   })

@@ -53,6 +53,13 @@ export const modelEntrySchema = z.object({
    * False means `ttfbMs` will be null for it, which the report shows as
    * "not reported" rather than as a zero or a missing row.
    */
+  /**
+   * How hard a reasoning model should think before answering, when the vendor
+   * lets a caller choose. Omitted means the vendor's default, which is what
+   * every edition before this field existed measured. Ignored by adapters
+   * whose vendor has no such control; `docs/usage-normalization.md` says which.
+   */
+  reasoningEffort: z.enum(['low', 'medium', 'high', 'xhigh']).optional(),
   supportsStreaming: z.boolean(),
   /** Whether the API returns token counts. False means usage fields are best-effort. */
   supportsUsage: z.boolean(),

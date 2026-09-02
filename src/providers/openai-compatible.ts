@@ -113,6 +113,10 @@ export function createOpenAiCompatibleAdapter(options: OpenAiCompatibleOptions):
               // at all — the token counts simply never arrive.
               stream_options: { include_usage: true },
               ...(request.temperature === undefined ? {} : { temperature: request.temperature }),
+              // xAI, DeepSeek and friends take the effort level as a flat field.
+              ...(request.reasoningEffort === undefined
+                ? {}
+                : { reasoning_effort: request.reasoningEffort }),
               ...options.extraBody,
             }),
           },

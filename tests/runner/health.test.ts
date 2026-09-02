@@ -9,6 +9,7 @@ function model(provider: string, status: 'ok' | 'error'): ModelResult {
     provider,
     modelId: `${provider}-1`,
     displayName: provider,
+    reasoningEffort: null,
     status,
     samples: ok
       ? [

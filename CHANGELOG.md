@@ -59,6 +59,18 @@ where the public surface is the **data schema**, not the TypeScript API.
   the answer and watch who flips, and shows an alignment grid and a sway
   chart. Nothing on the site calls a provider.
 
+- **Reasoning effort as a model setting.** `models.json` accepts an optional
+  `reasoningEffort` (low, medium, high, xhigh); xAI and the OpenAI-compatible
+  adapters send `reasoning_effort`, the OpenAI Responses adapter sends
+  `reasoning.effort`, and each model result records what was asked. The front
+  page's answer board now shows thinking as a phase: the bar fills while the
+  model reasons, the token count ticks, and a landed row says how long it
+  reasoned for and on how many tokens.
+- **Superseded runs are kept.** Re-running a week still replaces the edition,
+  but the previous file moves to `data/runs/superseded/<isoWeek>-<runId>.json`
+  instead of being deleted. The two earlier Week 36 runs are recovered there.
+- A fork-me section on the front page.
+
 ### Changed
 
 - Gemini, DeepSeek and Llama via Together are **disabled in `models.json`**

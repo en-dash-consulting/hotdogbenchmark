@@ -116,6 +116,7 @@ describe('renderRun', () => {
               provider: 'anthropic',
               modelId: 'claude-opus-5',
               displayName: 'Claude Opus 5',
+              reasoningEffort: null,
               status: 'ok',
               samples: [
                 {

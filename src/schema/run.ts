@@ -226,6 +226,12 @@ export const modelResultSchema = z
     modelId: z.string().min(1),
     displayName: z.string().min(1),
     status: z.enum(['ok', 'partial', 'error']),
+    /**
+     * The reasoning effort the run asked this model for, or null for the
+     * vendor default. Recorded so an edition says what it asked, not what the
+     * registry says today.
+     */
+    reasoningEffort: z.enum(['low', 'medium', 'high', 'xhigh']).nullable().default(null),
     samples: z.array(sampleSchema),
     aggregate: aggregateSchema,
     /** Present when `status` is `error` or `partial`; describes the failure. */
@@ -287,6 +293,7 @@ export const runConditionSchema = z.object({
   promptPrefix: z.string().nullable().default(null),
   promptSuffix: z.string().nullable().default(null),
   temperature: z.number().nullable().default(null),
+  reasoningEffort: z.enum(['low', 'medium', 'high', 'xhigh']).nullable().default(null),
 })
 export type RunCondition = z.infer<typeof runConditionSchema>
 

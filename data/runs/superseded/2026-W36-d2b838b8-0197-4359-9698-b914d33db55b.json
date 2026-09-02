@@ -1,0 +1,2156 @@
+{
+  "schemaVersion": 1,
+  "runId": "d2b838b8-0197-4359-9698-b914d33db55b",
+  "isoWeek": "2026-W36",
+  "startedAt": "2026-09-02T00:09:02.827Z",
+  "finishedAt": "2026-09-02T00:10:27.466Z",
+  "runnerVersion": "0.1.0",
+  "gitSha": "d9606c8ae2b31e02e57cce63170fb28ac69ab988",
+  "isMock": false,
+  "questions": [
+    {
+      "id": "hot-dog",
+      "text": "Is a hot dog a sandwich? One word answer."
+    },
+    {
+      "id": "hamburger",
+      "text": "Is a hamburger a sandwich? One word answer."
+    },
+    {
+      "id": "taco",
+      "text": "Is a taco a sandwich? One word answer."
+    }
+  ],
+  "results": [
+    {
+      "questionId": "hot-dog",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 63,
+                "totalTokens": 87,
+                "reasoningTokens": 59,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:02.827Z",
+                "ttfbMs": 2027.34,
+                "totalMs": 2038.802
+              },
+              "costEstimateUsd": 0.001695,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 63,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 59
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 140,
+                "totalTokens": 164,
+                "reasoningTokens": 136,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:04.867Z",
+                "ttfbMs": 3053.957,
+                "totalMs": 3062.775
+              },
+              "costEstimateUsd": 0.00362,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 140,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 136
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 130,
+                "totalTokens": 154,
+                "reasoningTokens": 126,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:07.930Z",
+                "ttfbMs": 2721.135,
+                "totalMs": 2728.879
+              },
+              "costEstimateUsd": 0.00337,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 130,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 126
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2728.879,
+              "min": 2038.802,
+              "max": 3062.775
+            },
+            "ttfbMs": {
+              "median": 2721.135,
+              "min": 2027.34,
+              "max": 3053.957
+            },
+            "inputTokens": {
+              "median": 24,
+              "min": 24,
+              "max": 24
+            },
+            "outputTokens": {
+              "median": 130,
+              "min": 63,
+              "max": 140
+            },
+            "totalTokens": {
+              "median": 154,
+              "min": 87,
+              "max": 164
+            },
+            "tokensPerSecond": {
+              "median": 45.7102,
+              "min": 30.9005,
+              "max": 47.6386
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.008685
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:02.840Z",
+                "ttfbMs": 2252.695,
+                "totalMs": 2542.551
+              },
+              "costEstimateUsd": 0.000188,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:05.383Z",
+                "ttfbMs": 2283.785,
+                "totalMs": 2563.315
+              },
+              "costEstimateUsd": 0.000188,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:07.947Z",
+                "ttfbMs": 1951.725,
+                "totalMs": 2093.095
+              },
+              "costEstimateUsd": 0.000188,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2542.551,
+              "min": 2093.095,
+              "max": 2563.315
+            },
+            "ttfbMs": {
+              "median": 2252.695,
+              "min": 1951.725,
+              "max": 2283.785
+            },
+            "inputTokens": {
+              "median": 17,
+              "min": 17,
+              "max": 17
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 23,
+              "min": 23,
+              "max": 23
+            },
+            "tokensPerSecond": {
+              "median": 2.3598,
+              "min": 2.3407,
+              "max": 2.8666
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000564
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 12,
+                "outputTokens": 1,
+                "totalTokens": 209,
+                "reasoningTokens": 196,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:02.841Z",
+                "ttfbMs": 14751.411,
+                "totalMs": 14754.674
+              },
+              "costEstimateUsd": 0.000013,
+              "raw": {
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 209,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 196,
+                "serviceTier": "standard"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 12,
+                "outputTokens": 1,
+                "totalTokens": 211,
+                "reasoningTokens": 198,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:17.596Z",
+                "ttfbMs": 3196.4,
+                "totalMs": 3196.892
+              },
+              "costEstimateUsd": 0.000013,
+              "raw": {
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 211,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 198,
+                "serviceTier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 12,
+                "outputTokens": 2,
+                "totalTokens": 181,
+                "reasoningTokens": 167,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:20.793Z",
+                "ttfbMs": 9854.465,
+                "totalMs": 9864.473
+              },
+              "costEstimateUsd": 0.000017,
+              "raw": {
+                "promptTokenCount": 12,
+                "candidatesTokenCount": 2,
+                "totalTokenCount": 181,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 12
+                  }
+                ],
+                "thoughtsTokenCount": 167,
+                "serviceTier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 9864.473,
+              "min": 3196.892,
+              "max": 14754.674
+            },
+            "ttfbMs": {
+              "median": 9854.465,
+              "min": 3196.4,
+              "max": 14751.411
+            },
+            "inputTokens": {
+              "median": 12,
+              "min": 12,
+              "max": 12
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 2
+            },
+            "totalTokens": {
+              "median": 209,
+              "min": 181,
+              "max": 211
+            },
+            "tokensPerSecond": {
+              "median": 0.2027,
+              "min": 0.0678,
+              "max": 0.3128
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000043
+          },
+          "error": null
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1122,
+                "reasoningTokens": 474,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:10.042Z",
+                "ttfbMs": 9564.898,
+                "totalMs": 9565.742
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1122,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 474,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 31840000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1015,
+                "reasoningTokens": 367,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:19.608Z",
+                "ttfbMs": 7574.842,
+                "totalMs": 7575.555
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1015,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 367,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 25420000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1351,
+                "reasoningTokens": 703,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:27.184Z",
+                "ttfbMs": 13129.21,
+                "totalMs": 13144.046
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1351,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 703,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 45580000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 9565.742,
+              "min": 7575.555,
+              "max": 13144.046
+            },
+            "ttfbMs": {
+              "median": 9564.898,
+              "min": 7574.842,
+              "max": 13129.21
+            },
+            "inputTokens": {
+              "median": 647,
+              "min": 647,
+              "max": 647
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1122,
+              "min": 1015,
+              "max": 1351
+            },
+            "tokensPerSecond": {
+              "median": 0.1045,
+              "min": 0.0761,
+              "max": 0.132
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.0039
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:10.659Z",
+                "ttfbMs": 338.153,
+                "totalMs": 353.559
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:11.013Z",
+                "ttfbMs": 681.537,
+                "totalMs": 701.857
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:11.715Z",
+                "ttfbMs": 286.529,
+                "totalMs": 300.402
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 353.559,
+              "min": 300.402,
+              "max": 701.857
+            },
+            "ttfbMs": {
+              "median": 338.153,
+              "min": 286.529,
+              "max": 681.537
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 8.4851,
+              "min": 4.2744,
+              "max": 9.9866
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hamburger",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 98,
+                "totalTokens": 122,
+                "reasoningTokens": 92,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:14.059Z",
+                "ttfbMs": 2285.728,
+                "totalMs": 2291.081
+              },
+              "costEstimateUsd": 0.00257,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 98,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 92
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 109,
+                "totalTokens": 133,
+                "reasoningTokens": 103,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:16.350Z",
+                "ttfbMs": 2197.943,
+                "totalMs": 2549.918
+              },
+              "costEstimateUsd": 0.002845,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 109,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 103
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 108,
+                "totalTokens": 132,
+                "reasoningTokens": 102,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:18.901Z",
+                "ttfbMs": 2136.331,
+                "totalMs": 2387.534
+              },
+              "costEstimateUsd": 0.00282,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 108,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 102
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2387.534,
+              "min": 2291.081,
+              "max": 2549.918
+            },
+            "ttfbMs": {
+              "median": 2197.943,
+              "min": 2136.331,
+              "max": 2285.728
+            },
+            "inputTokens": {
+              "median": 24,
+              "min": 24,
+              "max": 24
+            },
+            "outputTokens": {
+              "median": 108,
+              "min": 98,
+              "max": 109
+            },
+            "totalTokens": {
+              "median": 132,
+              "min": 122,
+              "max": 133
+            },
+            "tokensPerSecond": {
+              "median": 42.7746,
+              "min": 42.7465,
+              "max": 45.235
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.008235
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:21.289Z",
+                "ttfbMs": 1627.922,
+                "totalMs": 1808.884
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:23.098Z",
+                "ttfbMs": 1464.741,
+                "totalMs": 1734.589
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:24.832Z",
+                "ttfbMs": 869.537,
+                "totalMs": 1067.841
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1734.589,
+              "min": 1067.841,
+              "max": 1808.884
+            },
+            "ttfbMs": {
+              "median": 1464.741,
+              "min": 869.537,
+              "max": 1627.922
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 22,
+              "min": 22,
+              "max": 22
+            },
+            "tokensPerSecond": {
+              "median": 3.459,
+              "min": 3.317,
+              "max": 5.6188
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000552
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 11,
+                "outputTokens": 1,
+                "totalTokens": 169,
+                "reasoningTokens": 157,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:30.658Z",
+                "ttfbMs": 8354.513,
+                "totalMs": 8362.122
+              },
+              "costEstimateUsd": 0.000012,
+              "raw": {
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 169,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 157,
+                "serviceTier": "standard"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 11,
+                "outputTokens": 1,
+                "totalTokens": 122,
+                "reasoningTokens": 110,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:39.020Z",
+                "ttfbMs": 6768.765,
+                "totalMs": 6773.293
+              },
+              "costEstimateUsd": 0.000012,
+              "raw": {
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 122,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 110,
+                "serviceTier": "standard"
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 11,
+                "outputTokens": 1,
+                "totalTokens": 159,
+                "reasoningTokens": 147,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:45.794Z",
+                "ttfbMs": 4414.031,
+                "totalMs": 4426.046
+              },
+              "costEstimateUsd": 0.000012,
+              "raw": {
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 159,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 147,
+                "serviceTier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 6773.293,
+              "min": 4426.046,
+              "max": 8362.122
+            },
+            "ttfbMs": {
+              "median": 6768.765,
+              "min": 4414.031,
+              "max": 8354.513
+            },
+            "inputTokens": {
+              "median": 11,
+              "min": 11,
+              "max": 11
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 159,
+              "min": 122,
+              "max": 169
+            },
+            "tokensPerSecond": {
+              "median": 0.1476,
+              "min": 0.1196,
+              "max": 0.2259
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000036
+          },
+          "error": null
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1028,
+                "reasoningTokens": 381,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:40.329Z",
+                "ttfbMs": 7975.862,
+                "totalMs": 7976.448
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1028,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 381,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 35840000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1065,
+                "reasoningTokens": 418,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:48.305Z",
+                "ttfbMs": 8689.828,
+                "totalMs": 8690.815
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1065,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 418,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 28460000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 931,
+                "reasoningTokens": 284,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:56.996Z",
+                "ttfbMs": 6283.709,
+                "totalMs": 6284.498
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 931,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 284,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 20420000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 7976.448,
+              "min": 6284.498,
+              "max": 8690.815
+            },
+            "ttfbMs": {
+              "median": 7975.862,
+              "min": 6283.709,
+              "max": 8689.828
+            },
+            "inputTokens": {
+              "median": 646,
+              "min": 646,
+              "max": 646
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1028,
+              "min": 931,
+              "max": 1065
+            },
+            "tokensPerSecond": {
+              "median": 0.1254,
+              "min": 0.1151,
+              "max": 0.1591
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003894
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:25.901Z",
+                "ttfbMs": 390.394,
+                "totalMs": 401.157
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:26.302Z",
+                "ttfbMs": 451.187,
+                "totalMs": 451.822
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:26.754Z",
+                "ttfbMs": 424.083,
+                "totalMs": 424.971
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 424.971,
+              "min": 401.157,
+              "max": 451.822
+            },
+            "ttfbMs": {
+              "median": 424.083,
+              "min": 390.394,
+              "max": 451.187
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 7.0593,
+              "min": 6.6398,
+              "max": 7.4784
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "taco",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 93,
+                "totalTokens": 115,
+                "reasoningTokens": 89,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:29.158Z",
+                "ttfbMs": 2384.921,
+                "totalMs": 2385.639
+              },
+              "costEstimateUsd": 0.002435,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 93,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 89
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 62,
+                "totalTokens": 84,
+                "reasoningTokens": 58,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:31.544Z",
+                "ttfbMs": 1961.807,
+                "totalMs": 1976.594
+              },
+              "costEstimateUsd": 0.00166,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 62,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 58
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 47,
+                "totalTokens": 69,
+                "reasoningTokens": 43,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:33.521Z",
+                "ttfbMs": 1939.673,
+                "totalMs": 1964.404
+              },
+              "costEstimateUsd": 0.001285,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 47,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 43
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1976.594,
+              "min": 1964.404,
+              "max": 2385.639
+            },
+            "ttfbMs": {
+              "median": 1961.807,
+              "min": 1939.673,
+              "max": 2384.921
+            },
+            "inputTokens": {
+              "median": 22,
+              "min": 22,
+              "max": 22
+            },
+            "outputTokens": {
+              "median": 62,
+              "min": 47,
+              "max": 93
+            },
+            "totalTokens": {
+              "median": 84,
+              "min": 69,
+              "max": 115
+            },
+            "tokensPerSecond": {
+              "median": 31.3671,
+              "min": 23.9258,
+              "max": 38.9833
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.00538
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 31,
+                "totalTokens": 47,
+                "reasoningTokens": 23,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:35.485Z",
+                "ttfbMs": 1335.298,
+                "totalMs": 1550.121
+              },
+              "costEstimateUsd": 0.000684,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 31,
+                "output_tokens_details": {
+                  "reasoning_tokens": 23
+                },
+                "total_tokens": 47
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:37.035Z",
+                "ttfbMs": 1004.124,
+                "totalMs": 1176.162
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 21,
+                "totalTokens": 37,
+                "reasoningTokens": 13,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:38.212Z",
+                "ttfbMs": 863.626,
+                "totalMs": 1007.825
+              },
+              "costEstimateUsd": 0.000484,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 21,
+                "output_tokens_details": {
+                  "reasoning_tokens": 13
+                },
+                "total_tokens": 37
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1176.162,
+              "min": 1007.825,
+              "max": 1550.121
+            },
+            "ttfbMs": {
+              "median": 1004.124,
+              "min": 863.626,
+              "max": 1335.298
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 21,
+              "min": 6,
+              "max": 31
+            },
+            "totalTokens": {
+              "median": 37,
+              "min": 22,
+              "max": 47
+            },
+            "tokensPerSecond": {
+              "median": 19.9984,
+              "min": 5.1013,
+              "max": 20.837
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.001352
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "partial",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 11,
+                "outputTokens": 2,
+                "totalTokens": 229,
+                "reasoningTokens": 216,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:50.220Z",
+                "ttfbMs": 2001.504,
+                "totalMs": 2001.973
+              },
+              "costEstimateUsd": 0.000016,
+              "raw": {
+                "promptTokenCount": 11,
+                "candidatesTokenCount": 2,
+                "totalTokenCount": 229,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 11
+                  }
+                ],
+                "thoughtsTokenCount": 216,
+                "serviceTier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 1,
+            "totalMs": {
+              "median": 2001.973,
+              "min": 2001.973,
+              "max": 2001.973
+            },
+            "ttfbMs": {
+              "median": 2001.504,
+              "min": 2001.504,
+              "max": 2001.504
+            },
+            "inputTokens": {
+              "median": 11,
+              "min": 11,
+              "max": 11
+            },
+            "outputTokens": {
+              "median": 2,
+              "min": 2,
+              "max": 2
+            },
+            "totalTokens": {
+              "median": 229,
+              "min": 229,
+              "max": 229
+            },
+            "tokensPerSecond": {
+              "median": 0.999,
+              "min": 0.999,
+              "max": 0.999
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000016
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1225,
+                "reasoningTokens": 578,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:10:03.282Z",
+                "ttfbMs": 12404.939,
+                "totalMs": 12450.457
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1225,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 578,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 39980000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 916,
+                "reasoningTokens": 269,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:10:15.732Z",
+                "ttfbMs": 6057.796,
+                "totalMs": 6106.229
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 916,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 269,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 19520000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 938,
+                "reasoningTokens": 291,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:10:21.839Z",
+                "ttfbMs": 5626.54,
+                "totalMs": 5627.078
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 938,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 291,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 20840000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 6106.229,
+              "min": 5627.078,
+              "max": 12450.457
+            },
+            "ttfbMs": {
+              "median": 6057.796,
+              "min": 5626.54,
+              "max": 12404.939
+            },
+            "inputTokens": {
+              "median": 646,
+              "min": 646,
+              "max": 646
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 938,
+              "min": 916,
+              "max": 1225
+            },
+            "tokensPerSecond": {
+              "median": 0.1638,
+              "min": 0.0803,
+              "max": 0.1777
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003894
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:39.220Z",
+                "ttfbMs": 313.368,
+                "totalMs": 333.954
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:39.554Z",
+                "ttfbMs": 327.547,
+                "totalMs": 342.497
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T00:09:39.897Z",
+                "ttfbMs": 382.635,
+                "totalMs": 383.093
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 342.497,
+              "min": 333.954,
+              "max": 383.093
+            },
+            "ttfbMs": {
+              "median": 327.547,
+              "min": 313.368,
+              "max": 382.635
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 8.7592,
+              "min": 7.831,
+              "max": 8.9833
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -21,9 +21,11 @@ interface Props {
   bareTitle?: boolean
   /** Name of a card under /og/, without the extension. Defaults to the site card. */
   ogImage?: string
+  /** Drop the top padding of main, for a page that opens with a full-bleed band. */
+  flush?: boolean
 }
 
-const { title, description, bareTitle = false, ogImage = 'default' } = Astro.props
+const { title, description, bareTitle = false, ogImage = 'default', flush = false } = Astro.props
 
 const SITE_NAME = 'HOTDOG BENCHMARK'
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
@@ -156,7 +158,7 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
       <div class="brand-line"></div>
     </header>
 
-    <main id="main" class="container">
+    <main id="main" class:list={['container', flush && 'flush']}>
       <slot />
     </main>
 
@@ -298,6 +300,10 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     min-height: 60vh;
   }
 
+  main.flush {
+    padding-top: 0;
+  }
+
   .site-footer {
     background: var(--surface);
     padding-block: var(--space-l) var(--space-xl);
@@ -328,20 +334,46 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     color: var(--faint);
   }
 
-  /* At 320px the masthead stacks rather than overflowing. */
-  @media (max-width: 40rem) {
+  /*
+   * Narrow screens: the mark and the toggle share the top row, and the nav
+   * becomes one scrolling row of pills underneath. No JavaScript, no
+   * hamburger, nothing hidden.
+   */
+  @media (max-width: 52rem) {
     .masthead-inner {
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      row-gap: var(--space-xs);
     }
 
     .masthead-controls {
-      width: 100%;
-      justify-content: space-between;
-      gap: var(--space-s);
+      display: contents;
+    }
+
+    .masthead-controls .theme-toggle {
+      grid-row: 1;
+      grid-column: 2;
+      justify-self: end;
+    }
+
+    .masthead-controls nav {
+      grid-row: 2;
+      grid-column: 1 / -1;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: calc(-1 * var(--space-m));
+      padding-inline: var(--space-m);
+    }
+
+    .masthead-controls nav::-webkit-scrollbar {
+      display: none;
     }
 
     .nav-list {
-      gap: var(--space-s);
+      flex-wrap: nowrap;
+      width: max-content;
+      padding-bottom: 2px;
     }
   }
 </style>

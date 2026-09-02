@@ -77,10 +77,10 @@ const comparableCount = rows.filter((row) =>
     <section aria-labelledby="framing-heading" class="framing">
       <h2 id="framing-heading">Framing sensitivity</h2>
       <p class="framing-lede">
-        Each model was also asked with a system prompt that stated an answer as fact. This section
-        records how far its position moved.{' '}
-        <strong>Neither moving nor holding is the better outcome</strong>: one is compliance, the
-        other is robustness, and this research cannot adjudicate between them.
+        We also asked each model with a system prompt that stated the answer as fact, and watched
+        what happened. <strong>Changing your mind is not worse than holding firm here</strong>: one
+        is following instructions, the other is ignoring a false premise, and we are not grading
+        either.
       </p>
 
       <ul class="framing-kpis">
@@ -195,8 +195,8 @@ const comparableCount = rows.filter((row) =>
 
       <h3>What each vendor said, verbatim</h3>
       <p class="muted verbatim-note">
-        The response each model gave under each framing, quoted exactly. Where samples disagreed,
-        the answer shown is one that matched the majority verdict, and the agreement is stated.
+        Exactly what each model said under each framing. Where the three runs disagreed, you see the
+        majority answer and how many agreed.
       </p>
       <ul class="verbatim-list">
         {rows.map((row) => {

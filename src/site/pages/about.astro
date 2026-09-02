@@ -8,72 +8,59 @@ import { REPO_URL, routes } from '../lib/urls.ts'
   description="What the Hotdog Benchmark is, who publishes it, and why it exists."
 >
   <div class="prose">
-    <h1>About this research program</h1>
+    <h1>About</h1>
 
     <p>
-      The Hotdog Benchmark is an independent, weekly evaluation of how the leading commercial
-      language models classify contested items within the sandwich category. Each Monday at 12:00
-      UTC, every enabled model is presented with each research question three times. Responses are
-      recorded verbatim, classified, and published without editorial revision.
+      Every Monday we ask the biggest AI models whether a hot dog is a sandwich. Also a hamburger,
+      also a taco. One word. Three times each, under three framings: asked plainly, told it is a
+      sandwich, told it is not. Then we publish exactly what they said, how long they took, and what
+      it cost.
     </p>
 
-    <h2>Publication</h2>
+    <h2>Why</h2>
 
     <p>
-      Editions are published on the Monday of each ISO week and are permanently archived. Prior
-      editions are never revised; where a run is repeated within the same week, the later run
-      supersedes the earlier one and the edition number is unchanged. The complete
-      <a href={routes.history()}>archive</a> is available, as is the underlying data.
+      The question is a joke. The plumbing is not. A real cross-provider benchmark has to deal with
+      a different API per vendor, token counts that mean different things, latency that depends on
+      where you run it, models that answer differently on Tuesday, and someone being down mid-run.
+      This repo handles all of that in the smallest honest way and shows its work, so you can drop
+      the hot dog and put your own question in its place.
     </p>
 
-    <h2>Independence</h2>
-
     <p>
-      No vendor is consulted before publication, sponsors this research, or reviews it in advance.
-      No vendor has been asked whether it would like to be included. The complete source code, the
-      raw data behind every figure, and the full methodology are
-      <a href={REPO_URL}>public</a>.
+      The interesting number is not the answer. It is how much the answer moves when you tell the
+      model what to think. That is a real property of a model, and it generalizes to every
+      evaluation you would actually build.
     </p>
 
-    <h2>How it was built</h2>
+    <h2>How it is run</h2>
 
     <p>
-      This project was planned and built with <a href="https://n-dx.dev">n-dx</a>, En Dash's
-      AI-powered development toolkit: it analyzed the codebase, kept the requirements in a living
-      PRD, and drove the implementation task by task. The design, the questions, and the opinions
-      are ours.
+      One run per week, filed by ISO week and kept forever. Re-running a week replaces that week's
+      edition and keeps the old one under <code>superseded/</code>. No vendor is asked, sponsors
+      this, or sees it first. The code, the raw data, and the methodology are all
+      <a href={REPO_URL}>on GitHub</a>.
+    </p>
+
+    <h2>Who</h2>
+
+    <p>
+      An <a href="https://endash.us">En Dash Consulting</a> project, planned and built with
+      <a href="https://n-dx.dev">n-dx</a>, our AI-powered development toolkit. The questions, the
+      design, and the opinions are ours.
     </p>
 
     <h2>Corrections</h2>
 
     <p>
-      Errors of fact are corrected by amending the source data and republishing, with the change
-      recorded in version control. Disagreements with our classification rules — which are published
-      in full on the <a href={routes.methodology()}>methodology</a> page — are welcome as issues.
-    </p>
-
-    <h2>What this actually is</h2>
-
-    <p>
-      This is a teaching project, and the deadpan is the joke. Whether a hot dog is a sandwich is
-      not a serious research question, and nothing here should be mistaken for a real evaluation of
-      model quality.
+      Wrong data gets fixed at the source and republished, with the change in version control. If
+      you think our <a href={routes.methodology()}>classification rules</a> are wrong, open an issue;
+      that is a real argument and we want it.
     </p>
 
     <p>
-      Everything <em>around</em> the question is sincere. Building a working cross-provider benchmark
-      means solving a specific set of unglamorous problems: several vendors with several wire formats,
-      token counts that do not mean the same thing across providers, latency that depends on where your
-      runner happens to be, models that answer differently on Tuesday than they did on Monday, and one
-      provider having an outage in the middle of your data collection. This repository solves those problems
-      in the smallest honest way and documents how, so that you can throw away the hot dog and point it
-      at a question you actually care about.
-    </p>
-
-    <p>
-      If you want the serious version: read the
-      <a href={routes.howItWorks()}>how it works</a> page, swap the contents of
-      <code>questions.json</code>, and you have a benchmark.
+      Nothing here measures model quality. There is no right answer, and a model that says
+      <q>No</q> is not better or worse than one that says <q>Yes</q>.
     </p>
   </div>
 </Base>

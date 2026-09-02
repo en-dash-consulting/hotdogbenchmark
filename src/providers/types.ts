@@ -58,6 +58,16 @@ export interface CompleteRequest {
    */
   systemPrompt?: string
   /**
+   * Reasoning effort, for vendors that let a caller choose.
+   *
+   * xAI and the OpenAI-compatible dialect take `reasoning_effort`; the OpenAI
+   * Responses API takes `reasoning.effort`. Anthropic and Gemini budget
+   * thinking in tokens rather than effort levels and ignore this field for
+   * now. As with `systemPrompt`, an undefined value must leave the request
+   * body byte-identical to a request without the field.
+   */
+  reasoningEffort?: 'low' | 'medium' | 'high' | 'xhigh'
+  /**
    * Upper bound on generated tokens.
    *
    * Set low here on purpose: the question asks for one word, and a cap makes a

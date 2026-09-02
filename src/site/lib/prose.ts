@@ -93,7 +93,7 @@ export function executiveSummary({ subject, results }: SummaryInput): string {
   const answering = results.filter((result) => result.samples.length > 0)
 
   if (answering.length === 0) {
-    return `No model returned a usable response during this reporting period. The classification of ${subject} remains undetermined pending restoration of provider availability.`
+    return `No model returned a usable response this week, so nobody knows what ${subject} is. Check back next edition.`
   }
 
   const consensus = consensusOf(results)
@@ -102,21 +102,19 @@ export function executiveSummary({ subject, results }: SummaryInput): string {
 
   if (consensus.unanimous && consensus.verdict) {
     sentences.push(
-      `The field is unanimous: all ${consensus.total} evaluated models returned a ${VERDICT_NOUN[consensus.verdict]} classification for ${subject}.`,
+      `The field is unanimous: all ${consensus.total} models gave ${subject} a ${VERDICT_NOUN[consensus.verdict]} answer.`,
     )
   } else if (consensus.verdict) {
     const dissenting = consensus.dissenters.map((result) => result.displayName)
     sentences.push(
-      `A ${VERDICT_NOUN[consensus.verdict]} classification of ${subject} commands majority support this period, held by ${consensus.count} of ${consensus.total} evaluated models (${percent(consensus.share)}).`,
+      `A ${VERDICT_NOUN[consensus.verdict]} answer on ${subject} has majority support this week: ${consensus.count} of ${consensus.total} models (${percent(consensus.share)}).`,
     )
     if (dissenting.length > 0) {
-      sentences.push(
-        `${list(dissenting)} ${dissenting.length === 1 ? 'departs' : 'depart'} from the majority position.`,
-      )
+      sentences.push(`${list(dissenting)} ${dissenting.length === 1 ? 'disagrees' : 'disagree'}.`)
     }
   } else {
     sentences.push(
-      `The field remains divided on the classification of ${subject}, with no position commanding a plurality across the ${consensus.total} evaluated models.`,
+      `The ${consensus.total} models are split on ${subject}, with no answer in the lead.`,
     )
   }
 
@@ -129,17 +127,15 @@ export function executiveSummary({ subject, results }: SummaryInput): string {
 
   if (fastest?.aggregate.totalMs) {
     sentences.push(
-      `${fastest.displayName} returned the fastest median response at ${latencyPhrase(fastest.aggregate.totalMs.median)}.`,
+      `${fastest.displayName} was quickest, at a median ${latencyPhrase(fastest.aggregate.totalMs.median)}.`,
     )
   }
   if (compliance !== null && compliance < 1) {
-    sentences.push(
-      `Instruction compliance across the field stands at ${percent(compliance)}, indicating continued variance in adherence to the single-word response constraint.`,
-    )
+    sentences.push(`${percent(compliance)} of answers were actually one word, as asked.`)
   }
   if (errored.length > 0) {
     sentences.push(
-      `${list(errored.map((result) => result.displayName))} ${errored.length === 1 ? 'was' : 'were'} unavailable during data collection and ${errored.length === 1 ? 'is' : 'are'} excluded from the above.`,
+      `${list(errored.map((result) => result.displayName))} ${errored.length === 1 ? 'was' : 'were'} unavailable and ${errored.length === 1 ? 'is' : 'are'} left out of the above.`,
     )
   }
 
@@ -174,7 +170,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
     return [
       {
         label: 'Data collection',
-        text: `No provider returned a usable response for ${subject} during this reporting period. No findings can be drawn.`,
+        text: `No provider returned a usable response for ${subject} this week. Nothing to report.`,
       },
     ]
   }
@@ -185,17 +181,17 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   if (consensus.unanimous && consensus.verdict) {
     findings.push({
       label: 'Consensus',
-      text: `The field is unanimous in its ${VERDICT_NOUN[consensus.verdict]} classification of ${subject}, a level of agreement rarely observed in this category.`,
+      text: `Everyone agrees: ${subject} gets a ${VERDICT_NOUN[consensus.verdict]} from every model, unanimous. That does not happen often.`,
     })
   } else if (consensus.verdict) {
     findings.push({
       label: 'Consensus',
-      text: `A ${VERDICT_NOUN[consensus.verdict]} classification holds ${percent(consensus.share)} support (${consensus.count} of ${consensus.total} models).`,
+      text: `${percent(consensus.share)} of models (${consensus.count} of ${consensus.total}) say ${VERDICT_NOUN[consensus.verdict]}.`,
     })
   } else {
     findings.push({
       label: 'No consensus',
-      text: `The field is split, with no classification of ${subject} commanding a plurality. Buyers should not treat this category as settled.`,
+      text: `Split decision on ${subject}. No answer is in the lead, so do not call it settled.`,
     })
   }
 
@@ -203,7 +199,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   if (dissent.length > 0 && consensus.verdict) {
     findings.push({
       label: 'Dissent',
-      text: `${list(dissent.map((r) => r.displayName))} ${dissent.length === 1 ? 'maintains a' : 'maintain'} position${dissent.length === 1 ? '' : 's'} contrary to the majority.`,
+      text: `${list(dissent.map((r) => r.displayName))} went the other way.`,
     })
   }
 
@@ -217,7 +213,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
     const multiple = slowest.aggregate.totalMs!.median / fastest.aggregate.totalMs!.median
     findings.push({
       label: 'Response latency',
-      text: `${fastest.displayName} leads on median response time at ${latencyPhrase(fastest.aggregate.totalMs!.median)}; ${slowest.displayName} trails at ${latencyPhrase(slowest.aggregate.totalMs!.median)}, a ${multiple.toFixed(1)}× spread across the field.`,
+      text: `${fastest.displayName} answered in a median ${latencyPhrase(fastest.aggregate.totalMs!.median)}; ${slowest.displayName} took ${latencyPhrase(slowest.aggregate.totalMs!.median)}. That is a ${multiple.toFixed(1)}× spread, mostly thinking time.`,
     })
   }
 
@@ -229,7 +225,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
     if (verbose.aggregate.outputTokens!.median > 1) {
       findings.push({
         label: 'Response length',
-        text: `${verbose.displayName} produced the most verbose output at a median of ${Math.round(verbose.aggregate.outputTokens!.median)} tokens, against a single-word instruction.`,
+        text: `${verbose.displayName} used the most output tokens, a median of ${Math.round(verbose.aggregate.outputTokens!.median)}, for a question that asked for one word.`,
       })
     }
   }
@@ -240,12 +236,12 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   if (nonCompliant.length > 0) {
     findings.push({
       label: 'Instruction compliance',
-      text: `${list(nonCompliant.map((r) => r.displayName))} did not consistently observe the single-word constraint. Compliance is reported separately from classification throughout this report, as the two measure different capabilities.`,
+      text: `${list(nonCompliant.map((r) => r.displayName))} did not always keep it to one word. Following the instruction and picking an answer are scored separately; they are different skills.`,
     })
   } else {
     findings.push({
       label: 'Instruction compliance',
-      text: 'All evaluated models observed the single-word response constraint without exception.',
+      text: 'Every model kept it to one word. Nice.',
     })
   }
 
@@ -253,7 +249,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   if (errored.length > 0) {
     findings.push({
       label: 'Provider availability',
-      text: `${list(errored.map((r) => r.displayName))} returned no usable data this period. Availability is reported rather than suppressed; excluding unavailable providers would bias the longitudinal record.`,
+      text: `${list(errored.map((r) => r.displayName))} returned nothing usable this week. It stays in the table, because quietly dropping a down provider would flatter the ones that were up.`,
     })
   }
 
@@ -262,7 +258,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   if (leader && scored.length >= 2) {
     findings.push({
       label: 'Composite standing',
-      text: `${leader.result.displayName} holds the leading composite position at ${leader.composite.toFixed(2)}, on the blend of decisiveness and efficiency defined in the methodology.`,
+      text: `${leader.result.displayName} tops the composite score at ${leader.composite.toFixed(2)}, a made-up blend of decisiveness and efficiency that the methodology page spells out.`,
     })
   }
 
@@ -273,7 +269,7 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
 /** A one-line analyst verdict for a vendor scorecard. */
 export function vendorVerdictLine(result: ModelResult, peers: ModelResult[]): string {
   if (result.status === 'error') {
-    return 'Unavailable during data collection; no assessment can be offered for this period.'
+    return 'Unavailable this week, so nothing to say.'
   }
 
   const scored = scoreModels(peers).find(
@@ -283,15 +279,15 @@ export function vendorVerdictLine(result: ModelResult, peers: ModelResult[]): st
   const efficient = (scored?.efficiency ?? 0) >= 0.6
 
   if (decisive && efficient) {
-    return 'Commits to a position and returns it promptly. Suitable for buyers prioritizing both conviction and throughput.'
+    return 'Picks an answer and returns it promptly. Conviction and speed.'
   }
   if (decisive) {
-    return 'Commits to a clear position, though response times trail the field. Conviction over speed.'
+    return 'Picks a clear answer but takes its time. Conviction over speed.'
   }
   if (efficient) {
-    return 'Fast and economical, but declines to commit to a firm classification. Throughput over conviction.'
+    return 'Fast and cheap, but will not commit to an answer. Speed over conviction.'
   }
-  return 'Neither decisive nor notably efficient this period. Buyers should monitor subsequent editions before drawing conclusions.'
+  return 'Neither decisive nor especially quick this week. Give it another edition.'
 }
 
 /** How a verdict is written as a position: "a negative position". */
@@ -322,14 +318,14 @@ export function framingSummary(run: BenchmarkRun, questionId: string, subject: s
       .filter(({ cell }) => cell.shift.status !== 'incomparable')
     if (cells.length === 0) {
       sentences.push(
-        `Under the ${arm.label.toLowerCase()} framing no model could be compared against its control position.`,
+        `Under the ${arm.label.toLowerCase()} framing there was nothing to compare against the control.`,
       )
       continue
     }
     const moved = cells.filter(({ cell }) => cell.shift.status === 'moved')
     if (moved.length === 0) {
       sentences.push(
-        `Under the ${arm.label.toLowerCase()} framing, all ${cells.length} comparable models retained their control position on ${subject}.`,
+        `Told ${arm.id === 'asserted' ? 'it is' : 'it is not'} a sandwich, all ${cells.length} models stuck with their original answer on ${subject}.`,
       )
       continue
     }
@@ -338,7 +334,7 @@ export function framingSummary(run: BenchmarkRun, questionId: string, subject: s
         `${row.model.displayName} (${VERDICT_POSITION[cell.shift.from!]} to ${VERDICT_POSITION[cell.shift.to!]})`,
     )
     sentences.push(
-      `Under the ${arm.label.toLowerCase()} framing, ${moved.length} of ${cells.length} comparable models revised their classification of ${subject}: ${list(described)}.`,
+      `Told ${arm.id === 'asserted' ? 'it is' : 'it is not'} a sandwich, ${moved.length} of ${cells.length} models changed their answer on ${subject}: ${list(described)}.`,
     )
   }
 
@@ -348,13 +344,11 @@ export function framingSummary(run: BenchmarkRun, questionId: string, subject: s
   const held = comparable.filter((row) => !row.movedAnywhere)
   if (comparable.length > 0) {
     if (held.length === comparable.length) {
-      sentences.push('No evaluated model changed its position under any framing.')
+      sentences.push('Nobody budged under either framing.')
     } else if (held.length > 0) {
-      sentences.push(
-        `${list(held.map((row) => row.model.displayName))} ${held.length === 1 ? 'held its' : 'held their'} position under every framing.`,
-      )
+      sentences.push(`${list(held.map((row) => row.model.displayName))} did not budge.`)
     } else {
-      sentences.push('Every comparable model changed its position under at least one framing.')
+      sentences.push('Every model changed its answer at least once when told what to think.')
     }
   }
 

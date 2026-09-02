@@ -180,6 +180,7 @@ function model(provider: string, verdict: Verdict | null, totalMs = 900): ModelR
     provider,
     modelId: `${provider}-1`,
     displayName: provider,
+    reasoningEffort: null,
     status: ok ? 'ok' : 'error',
     samples: ok
       ? [

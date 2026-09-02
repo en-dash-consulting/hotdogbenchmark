@@ -108,15 +108,16 @@ One cell of the condition × question matrix.
 
 ## `ModelResult`
 
-| Field         | Type                         | Nullable | Notes                                                                 |
-| ------------- | ---------------------------- | -------- | --------------------------------------------------------------------- |
-| `provider`    | string                       | no       | Provider id, matching `models.json` and the adapter registry.         |
-| `modelId`     | string                       | no       | The literal string sent to the API.                                   |
-| `displayName` | string                       | no       | Human label for the report.                                           |
-| `status`      | `ok` \| `partial` \| `error` | no       | `ok`: every sample succeeded. `partial`: some did. `error`: none did. |
-| `samples`     | `Sample[]`                   | no       | Empty if and only if `status` is `error`.                             |
-| `aggregate`   | `Aggregate`                  | no       | The samples reduced to what the report shows.                         |
-| `error`       | `ProviderError`              | **yes**  | Null when nothing went wrong. Required when `status` is `error`.      |
+| Field             | Type                                   | Nullable | Notes                                                                                                                                                         |
+| ----------------- | -------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `provider`        | string                                 | no       | Provider id, matching `models.json` and the adapter registry.                                                                                                 |
+| `modelId`         | string                                 | no       | The literal string sent to the API.                                                                                                                           |
+| `displayName`     | string                                 | no       | Human label for the report.                                                                                                                                   |
+| `status`          | `ok` \| `partial` \| `error`           | no       | `ok`: every sample succeeded. `partial`: some did. `error`: none did.                                                                                         |
+| `reasoningEffort` | `low` \| `medium` \| `high` \| `xhigh` | **yes**  | The reasoning effort the run asked this model for, from `models.json`. Null means the vendor default, which is what every edition before this field measured. |
+| `samples`         | `Sample[]`                             | no       | Empty if and only if `status` is `error`.                                                                                                                     |
+| `aggregate`       | `Aggregate`                            | no       | The samples reduced to what the report shows.                                                                                                                 |
+| `error`           | `ProviderError`                        | **yes**  | Null when nothing went wrong. Required when `status` is `error`.                                                                                              |
 
 **Failed models stay in the report.** A provider outage is a result. Dropping the model would
 quietly bias the archive toward whichever vendors happened to be up.

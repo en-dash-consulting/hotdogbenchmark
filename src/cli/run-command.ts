@@ -7,7 +7,7 @@
  * any of that.
  */
 import { execFileSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { planJobs, runBenchmark } from '../runner/run.ts'
@@ -179,6 +179,8 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
 
     const target = resolve(root, outPath)
     mkdirSync(dirname(target), { recursive: true })
+    const superseded = supersede(target, outcome.run.runId)
+    if (superseded) console.log(`Kept the previous run as ${superseded}`)
     writeFileSync(target, JSON.stringify(outcome.run, null, 2) + '\n')
 
     const manifest = writeManifest(root)
@@ -289,6 +291,32 @@ function printSummary(run: BenchmarkRun): void {
     }
     console.log(`  → ${tally.yes} yes, ${tally.no} no, ${tally.other} other\n`)
   }
+}
+
+/**
+ * Move an existing run out of the way before it is overwritten.
+ *
+ * Re-running a week replaces the *edition*, and that is right: the site shows
+ * one file per week. But the replaced run is still data somebody paid for, so
+ * it is kept under `superseded/`, named by week and run id, where the site
+ * does not read it but nothing has to be recovered from git later. Returns
+ * the relative path it went to, or null when there was nothing to move.
+ */
+function supersede(target: string, newRunId: string): string | null {
+  if (!existsSync(target)) return null
+  let previous: { runId?: unknown; isoWeek?: unknown }
+  try {
+    previous = JSON.parse(readFileSync(target, 'utf8')) as typeof previous
+  } catch {
+    return null
+  }
+  if (typeof previous.runId !== 'string' || previous.runId === newRunId) return null
+  const week = typeof previous.isoWeek === 'string' ? previous.isoWeek : 'unknown-week'
+  const dir = join(dirname(target), 'superseded')
+  mkdirSync(dir, { recursive: true })
+  const destination = join(dir, `${week}-${previous.runId}.json`)
+  renameSync(target, destination)
+  return `${dirname(runPathFor(week))}/superseded/${week}-${previous.runId}.json`
 }
 
 /**

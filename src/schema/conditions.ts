@@ -67,6 +67,12 @@ export const conditionEntrySchema = z.object({
   promptSuffix: z.string().min(1).nullable().default(null),
   /** Sampling temperature to request, or null to leave the vendor default. */
   temperature: z.number().min(0).max(2).nullable().default(null),
+  /**
+   * Reasoning effort to request, or null to leave each model's own setting.
+   * Lets an arm ask "does thinking less change the answer?" as a data change;
+   * only vendors with an effort control honor it.
+   */
+  reasoningEffort: z.enum(['low', 'medium', 'high', 'xhigh']).nullable().default(null),
   /** Disabled conditions stay in the file but are not run. */
   enabled: z.boolean(),
   /** Editorial note, rendered nowhere. */
@@ -86,6 +92,7 @@ export const CONTROL_CONDITION: ConditionEntry = {
   promptPrefix: null,
   promptSuffix: null,
   temperature: null,
+  reasoningEffort: null,
   enabled: true,
 }
 
@@ -95,7 +102,8 @@ export function isPlainCondition(condition: ConditionEntry): boolean {
     condition.systemPrompt === null &&
     condition.promptPrefix === null &&
     condition.promptSuffix === null &&
-    condition.temperature === null
+    condition.temperature === null &&
+    condition.reasoningEffort === null
   )
 }
 

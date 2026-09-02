@@ -10,7 +10,7 @@ import AnswerBoard from '../components/AnswerBoard.astro'
 import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
-import { routes } from '../lib/urls.ts'
+import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
 
 const questions = getQuestions()
@@ -78,6 +78,7 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
   title="HOTDOG BENCHMARK"
   description="The largest AI models, one question, every week. Watch them answer in real time, then tell them the answer and see who changes their mind. An En Dash research program."
   bareTitle
+  flush
 >
   {
     hasData() && latest ? (
@@ -206,6 +207,33 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
               </a>
             </li>
           </ul>
+          <div class="fork">
+            <div class="fork-copy">
+              <p class="eyebrow">Open source</p>
+              <h2 id="fork-heading">Point it at your own question.</h2>
+              <p>
+                One repo, MIT-licensed: adapters for every provider, the framings, the site. Clone
+                it, swap the question, add whatever keys you have, and you get the same cross-model,
+                cross-framing analysis for cents. Pull requests welcome.
+              </p>
+              <p class="fork-links">
+                <a href={REPO_URL}>GitHub</a>
+                <span aria-hidden="true"> · </span>
+                <a href={sourceUrl('docs/self-hosting.md')}>Self-hosting</a>
+                <span aria-hidden="true"> · </span>
+                <a href={routes.addAModel()}>Add a model</a>
+                <span aria-hidden="true"> · </span>
+                <a href={sourceUrl('CONTRIBUTING.md')}>Contributing</a>
+              </p>
+            </div>
+            <pre class="fork-code" aria-label="Quickstart commands" tabindex="0">
+              <code>
+                git clone {REPO_URL}.git cd hotdogbenchmark && npm install npm run bench -- run
+                --mock --out tmp/mock-run.json npm run dev
+              </code>
+            </pre>
+          </div>
+
           <p class="edition-line">
             {formatEdition(latest.isoWeek)} · published {formatDate(latest.finishedAt)} ·{' '}
             <a href={routes.history()}>history</a> ·{' '}
@@ -515,6 +543,51 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
     font-weight: 700;
     font-size: var(--step--1);
     margin-top: var(--space-s);
+  }
+
+  .fork {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+    gap: var(--space-l);
+    align-items: center;
+    margin-top: var(--space-2xl);
+    padding: var(--space-xl);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #000b45 0%, #120c3f 100%);
+    color: #ffffff;
+  }
+
+  .fork .eyebrow {
+    color: var(--accent-fill);
+  }
+
+  .fork h2 {
+    color: #ffffff;
+    font-size: var(--step-3);
+    margin: 0 0 var(--space-s);
+  }
+
+  .fork-copy p {
+    color: #d5d9ee;
+    max-width: 48ch;
+  }
+
+  .fork-links a {
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-weight: 700;
+  }
+
+  .fork-code {
+    margin: 0;
+    padding: var(--space-m);
+    background: rgb(0 0 0 / 35%);
+    border: 1px solid rgb(123 255 234 / 35%);
+    border-radius: var(--radius-sm);
+    color: #7bffea;
+    font-size: var(--step--1);
+    line-height: 1.7;
+    overflow-x: auto;
   }
 
   .edition-line {

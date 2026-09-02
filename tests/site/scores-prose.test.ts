@@ -52,6 +52,7 @@ function result(
     provider: name.toLowerCase(),
     modelId: `${name.toLowerCase()}-1`,
     displayName: name,
+    reasoningEffort: null,
     status: 'ok',
     samples,
     aggregate: {
@@ -75,6 +76,7 @@ function errored(name: string): ModelResult {
     provider: name.toLowerCase(),
     modelId: `${name.toLowerCase()}-1`,
     displayName: name,
+    reasoningEffort: null,
     status: 'error',
     samples: [],
     aggregate: {
@@ -276,7 +278,7 @@ describe('executiveSummary', () => {
       subject,
       results: [result('A', ['yes']), result('B', ['no'])],
     })
-    expect(text).toContain('divided')
+    expect(text).toContain('split')
   })
 
   it('handles every model having failed', () => {

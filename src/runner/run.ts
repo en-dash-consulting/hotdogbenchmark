@@ -156,6 +156,7 @@ export function toRunCondition(condition: ConditionEntry): RunCondition {
     promptPrefix: condition.promptPrefix,
     promptSuffix: condition.promptSuffix,
     temperature: condition.temperature,
+    reasoningEffort: condition.reasoningEffort,
   }
 }
 
@@ -290,6 +291,12 @@ async function runJob(job: Job, context: JobContext): Promise<ModelResult> {
     modelId: model.modelId,
     displayName: model.displayName,
   }
+  const recorded = {
+    provider: model.provider,
+    modelId: model.modelId,
+    displayName: model.displayName,
+    reasoningEffort: model.reasoningEffort ?? null,
+  }
 
   context.onProgress?.({ type: 'job-start', ...base })
 
@@ -326,7 +333,7 @@ async function runJob(job: Job, context: JobContext): Promise<ModelResult> {
       error: lastError?.message ?? 'no samples collected',
     })
     return {
-      ...base,
+      ...recorded,
       status: 'error',
       samples: [],
       aggregate: emptyAggregate(),
@@ -342,7 +349,7 @@ async function runJob(job: Job, context: JobContext): Promise<ModelResult> {
   context.onProgress?.({ type: 'job-done', ...base })
 
   return {
-    ...base,
+    ...recorded,
     status: collected.length === context.samples ? 'ok' : 'partial',
     samples: collected,
     aggregate: aggregateSamples(collected),
@@ -378,6 +385,8 @@ async function takeSample(job: Job, context: JobContext): Promise<Sample> {
   // one of these is absent and the request is exactly what it always was.
   const systemPrompt = renderSystemPrompt(condition, question)
   const temperature = condition.temperature ?? context.temperature
+  // An arm's effort beats the model's own setting, which beats the vendor default.
+  const reasoningEffort = condition.reasoningEffort ?? model.reasoningEffort
 
   try {
     const completion = await adapter.complete(
@@ -387,6 +396,7 @@ async function takeSample(job: Job, context: JobContext): Promise<Sample> {
         maxOutputTokens: context.maxOutputTokens,
         ...(systemPrompt === null ? {} : { systemPrompt }),
         ...(temperature === undefined ? {} : { temperature }),
+        ...(reasoningEffort == null ? {} : { reasoningEffort }),
       },
       adapterContext,
     )

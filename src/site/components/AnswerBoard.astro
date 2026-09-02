@@ -5,7 +5,7 @@
  * Every sample in a run carries the time its call took and the time to its
  * first token, so a week's data can be replayed. With JavaScript, each row
  * starts thinking, its clock runs, and its word lands at the moment it
- * actually did — scaled by the speed control — then the tally fills in.
+ * actually did, compressed so the slowest lands in a few seconds, then the tally fills in.
  * Then the framing switch: tell the models the answer, and watch which ones
  * flip.
  *
@@ -118,6 +118,17 @@ const initialTally = (['yes', 'no', 'other'] as const)
   .filter((v) => initialCounts[v] > 0)
   .map((v) => [v, initialCounts[v]] as const)
 
+/** The line under a landed row: how long it thought, or that it did not. */
+function detailFor(row: Row): string {
+  const agreement = row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''
+  if (row.thinking && row.ttfbMs !== null && row.totalMs !== null) {
+    const share = Math.round((row.ttfbMs / row.totalMs) * 100)
+    return `Reasoned for ${formatMs(row.ttfbMs)} (${share}% of the call) on ${row.thinking} tokens, then answered${agreement ? ` · ${agreement}` : ''}`
+  }
+  if (row.thinking) return `${row.thinking} reasoning tokens${agreement ? ` · ${agreement}` : ''}`
+  return `No reasoning, answered straight away${agreement ? ` · ${agreement}` : ''}`
+}
+
 const Heading = headline ? 'h1' : 'h2'
 ---
 
@@ -139,7 +150,7 @@ const Heading = headline ? 'h1' : 'h2'
           ))}
         </nav>
 
-        <p class="kicker">Every week, the largest AI models are asked one question</p>
+        <p class="kicker">Every week, the largest AI models are asked the question:</p>
         <Heading id="board-question" class="question">
           <span data-question-text>{first.text.replace(/ One word answer\.$/, '')}</span>
         </Heading>
@@ -168,9 +179,6 @@ const Heading = headline ? 'h1' : 'h2'
           <button type="button" class="replay" data-replay>
             Replay the week
           </button>
-          <button type="button" class="speed" data-speed aria-pressed="false">
-            Real time
-          </button>
         </div>
       </div>
 
@@ -188,6 +196,9 @@ const Heading = headline ? 'h1' : 'h2'
             <div class="answer" data-answer>
               <span class="word" data-word>
                 {row.error ? 'no answer' : (row.text ?? '—')}
+              </span>
+              <span class="tag-reasoning" data-tag-reasoning hidden={!row.thinking}>
+                reasoning
               </span>
               <span class="stamp" data-stamp aria-hidden="true" />
               <span class="thinking" data-thinking aria-hidden="true">
@@ -213,11 +224,7 @@ const Heading = headline ? 'h1' : 'h2'
                 {row.error ? row.error.replace('_', ' ') : formatMs(row.totalMs)}
               </span>
               <span class="detail" data-detail>
-                {row.error
-                  ? ''
-                  : `${row.thinking ? `${row.thinking} thinking tokens · ` : ''}${
-                      row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''
-                    }`}
+                {row.error ? '' : detailFor(row)}
               </span>
             </div>
           </li>
@@ -235,7 +242,8 @@ const Heading = headline ? 'h1' : 'h2'
       <p class="board-foot">
         <span data-edition>
           Recorded {run.isoWeek.replace(/^(\d+)-W(\d+)$/, 'week $2, $1')}
-          {run.isMock && ' from sample fixtures'}. Bars are real durations; words are verbatim.
+          {run.isMock && ' from sample fixtures'}. Real durations, verbatim words
+          <span data-speed-note />. Hatched teal is thinking; the rest is answering.
         </span>
         <a href={routes.report(first.id)} data-report-link>
           Full report →
@@ -292,11 +300,10 @@ const Heading = headline ? 'h1' : 'h2'
     const systemWrap = q('[data-system]')!
     const systemText = q('[data-system-text]')!
     const reportLink = q<HTMLAnchorElement>('[data-report-link]')!
-    const speedButton = q<HTMLButtonElement>('[data-speed]')!
+    const speedNote = q('[data-speed-note]')!
 
     let questionId = data.questions[0]!.id
     let conditionId = data.conditions[0]!.id
-    let realTime = false
     let timers: number[] = []
     let generation = 0
 
@@ -308,8 +315,21 @@ const Heading = headline ? 'h1' : 'h2'
 
     const WORD = { yes: 'said yes', no: 'said no', other: 'hedged' } as const
 
-    /** The replay speed: real time, or compressed so the slowest lands in ~4 s. */
-    const factor = () => (realTime ? 1 : Math.max(1, data.slowest / 4000))
+    /** The replay speed: compressed so the slowest answer lands in about four seconds. */
+    const factor = () => Math.max(1, data.slowest / 4000)
+    speedNote.textContent = factor() > 1.05 ? `, replayed at ${factor().toFixed(1)}× speed` : ''
+
+    /** The line under a landed row: how long it thought, or that it did not. */
+    function detailFor(row: Row): string {
+      const agreement = row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''
+      if (row.thinking && row.ttfbMs !== null && row.totalMs !== null) {
+        const share = Math.round((row.ttfbMs / row.totalMs) * 100)
+        return `Reasoned for ${formatMs(row.ttfbMs)} (${share}% of the call) on ${row.thinking} tokens, then answered${agreement ? ` · ${agreement}` : ''}`
+      }
+      if (row.thinking)
+        return `${row.thinking} reasoning tokens${agreement ? ` · ${agreement}` : ''}`
+      return `No reasoning, answered straight away${agreement ? ` · ${agreement}` : ''}`
+    }
 
     function clearTimers() {
       for (const t of timers) window.clearTimeout(t)
@@ -352,9 +372,8 @@ const Heading = headline ? 'h1' : 'h2'
       li.querySelector('[data-ms]')!.textContent = row.error
         ? row.error.replace('_', ' ')
         : formatMs(row.totalMs)
-      li.querySelector('[data-detail]')!.textContent = row.error
-        ? ''
-        : `${row.thinking ? `${row.thinking} thinking tokens · ` : ''}${row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''}`
+      li.querySelector('[data-detail]')!.textContent = row.error ? '' : detailFor(row)
+      li.querySelector<HTMLElement>('[data-tag-reasoning]')!.hidden = !row.thinking
     }
 
     /** Ensure the list has one <li> per row in the cell, reusing what exists. */
@@ -401,12 +420,29 @@ const Heading = headline ? 'h1' : 'h2'
         li.classList.remove('landed', 'first-token', 'flip')
         li.classList.add('thinking')
         const ms = li.querySelector<HTMLElement>('[data-ms]')!
+        const detail = li.querySelector<HTMLElement>('[data-detail]')!
+        const ttfbBar = li.querySelector<HTMLElement>('[data-bar-ttfb]')!
         const started = performance.now()
         const speed = factor()
+        // The thinking segment grows in scaled time up to the moment the first
+        // answer token actually arrived, and the token count ticks with it.
+        ttfbBar.style.transition = 'none'
+        ttfbBar.style.width = '0'
+        void ttfbBar.offsetWidth
+        if (row.ttfbMs !== null) {
+          ttfbBar.style.transition = `width ${row.ttfbMs / speed}ms linear`
+          ttfbBar.style.width = `${Math.max(0.5, (row.ttfbMs / data.slowest) * 100)}%`
+        }
         const tick = () => {
           if (generation !== mine || !li.classList.contains('thinking')) return
           const elapsed = (performance.now() - started) * speed
           ms.textContent = formatMs(Math.min(elapsed, row.totalMs!))
+          if (row.thinking && row.ttfbMs) {
+            const tokens = Math.min(row.thinking, Math.round((elapsed / row.ttfbMs) * row.thinking))
+            detail.textContent = `thinking… ${tokens} tokens`
+          } else {
+            detail.textContent = 'waiting…'
+          }
           requestAnimationFrame(tick)
         }
         requestAnimationFrame(tick)
@@ -423,6 +459,8 @@ const Heading = headline ? 'h1' : 'h2'
             li.classList.remove('thinking')
             li.classList.add('landed')
             ms.textContent = formatMs(row.totalMs)
+            detail.textContent = detailFor(row)
+            ttfbBar.style.transition = ''
           }, row.totalMs / speed),
         )
       })
@@ -516,11 +554,6 @@ const Heading = headline ? 'h1' : 'h2'
       setFraming(data.conditions[0]!.id)
       replay()
     })
-    speedButton.addEventListener('click', () => {
-      realTime = !realTime
-      speedButton.setAttribute('aria-pressed', String(realTime))
-      speedButton.textContent = realTime ? 'Real time: on' : 'Real time'
-    })
 
     // Reveal the controls only once they can work.
     q('[data-controls]')!.hidden = false
@@ -613,8 +646,7 @@ const Heading = headline ? 'h1' : 'h2'
 
   .subjects button,
   .framing,
-  .replay,
-  .speed {
+  .replay {
     font: inherit;
     font-family: var(--font-ui);
     font-weight: 700;
@@ -634,14 +666,12 @@ const Heading = headline ? 'h1' : 'h2'
 
   .subjects button:hover,
   .framing:hover,
-  .replay:hover,
-  .speed:hover {
+  .replay:hover {
     transform: translateY(-1px);
   }
 
   .subjects button[aria-pressed='true'],
-  .framing[aria-pressed='true'],
-  .speed[aria-pressed='true'] {
+  .framing[aria-pressed='true'] {
     background: var(--text-strong);
     color: var(--bg);
   }
@@ -673,8 +703,7 @@ const Heading = headline ? 'h1' : 'h2'
     gap: var(--space-2xs);
   }
 
-  .replay,
-  .speed {
+  .replay {
     border-style: dashed;
     font-weight: 600;
   }
@@ -877,13 +906,17 @@ const Heading = headline ? 'h1' : 'h2'
     opacity: 0.25;
   }
 
+  /* The thinking segment: teal, hatched so it reads as a different kind of time. */
   .bar-ttfb {
-    background: var(--accent-fill);
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--accent-fill) 0 6px,
+      rgb(0 11 69 / 25%) 6px 8px
+    );
   }
 
-  .row.thinking .bar i {
-    transform-origin: left;
-    animation: grow 1s linear infinite;
+  .row.thinking .bar-total {
+    display: none;
   }
 
   .ms {
@@ -903,7 +936,26 @@ const Heading = headline ? 'h1' : 'h2'
   }
 
   .row.thinking .detail {
-    visibility: hidden;
+    color: var(--accent);
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+
+  .tag-reasoning {
+    margin-left: var(--space-2xs);
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #001769;
+    background: var(--accent-fill);
+    padding: 0.2em 0.5em;
+    border-radius: 999px;
+  }
+
+  .row.thinking .tag-reasoning {
+    display: none;
   }
 
   /* Tally. */

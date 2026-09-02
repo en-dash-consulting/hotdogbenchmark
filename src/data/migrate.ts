@@ -29,6 +29,7 @@ export const MIGRATED_CONTROL_CONDITION: RunCondition = {
   promptPrefix: null,
   promptSuffix: null,
   temperature: null,
+  reasoningEffort: null,
 }
 
 /**

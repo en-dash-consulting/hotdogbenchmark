@@ -1,0 +1,5682 @@
+{
+  "schemaVersion": 2,
+  "runId": "3ea45a76-f348-4b00-b873-32e85704347e",
+  "isoWeek": "2026-W36",
+  "startedAt": "2026-09-02T01:39:11.538Z",
+  "finishedAt": "2026-09-02T01:43:47.347Z",
+  "runnerVersion": "0.1.0",
+  "gitSha": "1b33f07ee089c0de37ee2b5749953277af68abc3",
+  "isMock": false,
+  "questions": [
+    {
+      "id": "hot-dog",
+      "text": "Is a hot dog a sandwich? One word answer."
+    },
+    {
+      "id": "hamburger",
+      "text": "Is a hamburger a sandwich? One word answer."
+    },
+    {
+      "id": "taco",
+      "text": "Is a taco a sandwich? One word answer."
+    }
+  ],
+  "conditions": [
+    {
+      "id": "control",
+      "label": "Control",
+      "description": "The question exactly as written, with no system prompt. The baseline every other arm is measured against, and what every edition before schema version 2 asked.",
+      "systemPrompt": null,
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null
+    },
+    {
+      "id": "asserted",
+      "label": "Asserted",
+      "description": "A system prompt states the affirmative answer as fact before the question is asked: \"A hot dog is a sandwich.\"",
+      "systemPrompt": "{subject} is a sandwich.",
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null
+    },
+    {
+      "id": "denied",
+      "label": "Denied",
+      "description": "A system prompt states the negative answer as fact before the question is asked: \"A hot dog is not a sandwich.\"",
+      "systemPrompt": "{subject} is not a sandwich.",
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null
+    }
+  ],
+  "results": [
+    {
+      "questionId": "hot-dog",
+      "conditionId": "control",
+      "prompt": "Is a hot dog a sandwich? One word answer.",
+      "systemPrompt": null,
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 104,
+                "totalTokens": 128,
+                "reasoningTokens": 100,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:11.539Z",
+                "ttfbMs": 2817.014,
+                "totalMs": 2831.956
+              },
+              "costEstimateUsd": 0.00272,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 104,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 100
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 151,
+                "totalTokens": 175,
+                "reasoningTokens": 147,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:14.372Z",
+                "ttfbMs": 3735.933,
+                "totalMs": 3746.837
+              },
+              "costEstimateUsd": 0.003895,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 151,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 147
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 104,
+                "totalTokens": 128,
+                "reasoningTokens": 100,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:18.119Z",
+                "ttfbMs": 2904.278,
+                "totalMs": 2910.464
+              },
+              "costEstimateUsd": 0.00272,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 104,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 100
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2910.464,
+              "min": 2831.956,
+              "max": 3746.837
+            },
+            "ttfbMs": {
+              "median": 2904.278,
+              "min": 2817.014,
+              "max": 3735.933
+            },
+            "inputTokens": {
+              "median": 24,
+              "min": 24,
+              "max": 24
+            },
+            "outputTokens": {
+              "median": 104,
+              "min": 104,
+              "max": 151
+            },
+            "totalTokens": {
+              "median": 128,
+              "min": 128,
+              "max": 175
+            },
+            "tokensPerSecond": {
+              "median": 36.7237,
+              "min": 35.7331,
+              "max": 40.3007
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.009335
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 23,
+                "totalTokens": 40,
+                "reasoningTokens": 15,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:11.550Z",
+                "ttfbMs": 2049.063,
+                "totalMs": 2465.355
+              },
+              "costEstimateUsd": 0.000528,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 23,
+                "output_tokens_details": {
+                  "reasoning_tokens": 15
+                },
+                "total_tokens": 40
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 25,
+                "totalTokens": 42,
+                "reasoningTokens": 17,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:14.017Z",
+                "ttfbMs": 1298.423,
+                "totalMs": 1499.05
+              },
+              "costEstimateUsd": 0.000568,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 25,
+                "output_tokens_details": {
+                  "reasoning_tokens": 17
+                },
+                "total_tokens": 42
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 17,
+                "outputTokens": 6,
+                "totalTokens": 23,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:15.516Z",
+                "ttfbMs": 524.46,
+                "totalMs": 708.497
+              },
+              "costEstimateUsd": 0.000188,
+              "raw": {
+                "input_tokens": 17,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 23
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1499.05,
+              "min": 708.497,
+              "max": 2465.355
+            },
+            "ttfbMs": {
+              "median": 1298.423,
+              "min": 524.46,
+              "max": 2049.063
+            },
+            "inputTokens": {
+              "median": 17,
+              "min": 17,
+              "max": 17
+            },
+            "outputTokens": {
+              "median": 23,
+              "min": 6,
+              "max": 25
+            },
+            "totalTokens": {
+              "median": 40,
+              "min": 23,
+              "max": 42
+            },
+            "tokensPerSecond": {
+              "median": 9.3293,
+              "min": 8.4686,
+              "max": 16.6772
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.001284
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1038,
+                "reasoningTokens": 390,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:16.227Z",
+                "ttfbMs": 8875.108,
+                "totalMs": 8971.028
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1038,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 390,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 26800000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1207,
+                "reasoningTokens": 559,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:25.198Z",
+                "ttfbMs": 11553.813,
+                "totalMs": 11554.74
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1207,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 559,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 36940000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 647,
+                "outputTokens": 1,
+                "totalTokens": 1031,
+                "reasoningTokens": 383,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:36.753Z",
+                "ttfbMs": 8574.759,
+                "totalMs": 8630.323
+              },
+              "costEstimateUsd": 0.0013,
+              "raw": {
+                "prompt_tokens": 647,
+                "completion_tokens": 1,
+                "total_tokens": 1031,
+                "prompt_tokens_details": {
+                  "text_tokens": 647,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 383,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 26380000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 8971.028,
+              "min": 8630.323,
+              "max": 11554.74
+            },
+            "ttfbMs": {
+              "median": 8875.108,
+              "min": 8574.759,
+              "max": 11553.813
+            },
+            "inputTokens": {
+              "median": 647,
+              "min": 647,
+              "max": 647
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1038,
+              "min": 1031,
+              "max": 1207
+            },
+            "tokensPerSecond": {
+              "median": 0.1115,
+              "min": 0.0865,
+              "max": 0.1159
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.0039
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:21.030Z",
+                "ttfbMs": 360.213,
+                "totalMs": 371.81
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:21.403Z",
+                "ttfbMs": 394.984,
+                "totalMs": 395.588
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:21.799Z",
+                "ttfbMs": 315.128,
+                "totalMs": 332.179
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 371.81,
+              "min": 332.179,
+              "max": 395.588
+            },
+            "ttfbMs": {
+              "median": 360.213,
+              "min": 315.128,
+              "max": 394.984
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 8.0686,
+              "min": 7.5836,
+              "max": 9.0313
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "control",
+      "prompt": "Is a hamburger a sandwich? One word answer.",
+      "systemPrompt": null,
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 109,
+                "totalTokens": 133,
+                "reasoningTokens": 103,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:23.817Z",
+                "ttfbMs": 2198.711,
+                "totalMs": 2210.445
+              },
+              "costEstimateUsd": 0.002845,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 109,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 103
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 86,
+                "totalTokens": 110,
+                "reasoningTokens": 80,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:26.027Z",
+                "ttfbMs": 2367.479,
+                "totalMs": 2380.397
+              },
+              "costEstimateUsd": 0.00227,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 86,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 80
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 24,
+                "outputTokens": 111,
+                "totalTokens": 135,
+                "reasoningTokens": 105,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:28.408Z",
+                "ttfbMs": 2735.75,
+                "totalMs": 2736.63
+              },
+              "costEstimateUsd": 0.002895,
+              "raw": {
+                "input_tokens": 24,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 111,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 105
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2380.397,
+              "min": 2210.445,
+              "max": 2736.63
+            },
+            "ttfbMs": {
+              "median": 2367.479,
+              "min": 2198.711,
+              "max": 2735.75
+            },
+            "inputTokens": {
+              "median": 24,
+              "min": 24,
+              "max": 24
+            },
+            "outputTokens": {
+              "median": 109,
+              "min": 86,
+              "max": 111
+            },
+            "totalTokens": {
+              "median": 133,
+              "min": 110,
+              "max": 135
+            },
+            "tokensPerSecond": {
+              "median": 40.5608,
+              "min": 36.1284,
+              "max": 49.3113
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.00801
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:24.130Z",
+                "ttfbMs": 1428.208,
+                "totalMs": 1666.041
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:25.796Z",
+                "ttfbMs": 743.26,
+                "totalMs": 1711.888
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:27.508Z",
+                "ttfbMs": 1974.527,
+                "totalMs": 2218.705
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1711.888,
+              "min": 1666.041,
+              "max": 2218.705
+            },
+            "ttfbMs": {
+              "median": 1428.208,
+              "min": 743.26,
+              "max": 1974.527
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 22,
+              "min": 22,
+              "max": 22
+            },
+            "tokensPerSecond": {
+              "median": 3.5049,
+              "min": 2.7043,
+              "max": 3.6014
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000552
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1036,
+                "reasoningTokens": 389,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:45.384Z",
+                "ttfbMs": 7803.932,
+                "totalMs": 7843.879
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1036,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 389,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 26720000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 989,
+                "reasoningTokens": 342,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:53.228Z",
+                "ttfbMs": 6290.716,
+                "totalMs": 6291.011
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 989,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 342,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 23900000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1080,
+                "reasoningTokens": 433,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:59.519Z",
+                "ttfbMs": 8795.69,
+                "totalMs": 8841.812
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1080,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 433,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 29360000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 7843.879,
+              "min": 6291.011,
+              "max": 8841.812
+            },
+            "ttfbMs": {
+              "median": 7803.932,
+              "min": 6290.716,
+              "max": 8795.69
+            },
+            "inputTokens": {
+              "median": 646,
+              "min": 646,
+              "max": 646
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1036,
+              "min": 989,
+              "max": 1080
+            },
+            "tokensPerSecond": {
+              "median": 0.1275,
+              "min": 0.1131,
+              "max": 0.159
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003894
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:31.145Z",
+                "ttfbMs": 327.484,
+                "totalMs": 347.396
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:31.493Z",
+                "ttfbMs": 325.175,
+                "totalMs": 337.1
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:31.830Z",
+                "ttfbMs": 387.56,
+                "totalMs": 388.052
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 347.396,
+              "min": 337.1,
+              "max": 388.052
+            },
+            "ttfbMs": {
+              "median": 327.484,
+              "min": 325.175,
+              "max": 387.56
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 8.6357,
+              "min": 7.7309,
+              "max": 8.8994
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "control",
+      "prompt": "Is a taco a sandwich? One word answer.",
+      "systemPrompt": null,
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 85,
+                "totalTokens": 107,
+                "reasoningTokens": 81,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:34.216Z",
+                "ttfbMs": 2453.858,
+                "totalMs": 2467.779
+              },
+              "costEstimateUsd": 0.002235,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 85,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 81
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 56,
+                "totalTokens": 78,
+                "reasoningTokens": 52,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:36.684Z",
+                "ttfbMs": 1811.868,
+                "totalMs": 1820.993
+              },
+              "costEstimateUsd": 0.00151,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 56,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 52
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 22,
+                "outputTokens": 96,
+                "totalTokens": 118,
+                "reasoningTokens": 92,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:38.505Z",
+                "ttfbMs": 2337.697,
+                "totalMs": 2355.242
+              },
+              "costEstimateUsd": 0.00251,
+              "raw": {
+                "input_tokens": 22,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 96,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 92
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2355.242,
+              "min": 1820.993,
+              "max": 2467.779
+            },
+            "ttfbMs": {
+              "median": 2337.697,
+              "min": 1811.868,
+              "max": 2453.858
+            },
+            "inputTokens": {
+              "median": 22,
+              "min": 22,
+              "max": 22
+            },
+            "outputTokens": {
+              "median": 85,
+              "min": 56,
+              "max": 96
+            },
+            "totalTokens": {
+              "median": 107,
+              "min": 78,
+              "max": 118
+            },
+            "tokensPerSecond": {
+              "median": 34.4439,
+              "min": 30.7525,
+              "max": 40.7601
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.006255
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 22,
+                "totalTokens": 38,
+                "reasoningTokens": 14,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:40.861Z",
+                "ttfbMs": 2129.644,
+                "totalMs": 2446.848
+              },
+              "costEstimateUsd": 0.000504,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 22,
+                "output_tokens_details": {
+                  "reasoning_tokens": 14
+                },
+                "total_tokens": 38
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:43.308Z",
+                "ttfbMs": 809.919,
+                "totalMs": 1067.034
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 16,
+                "outputTokens": 6,
+                "totalTokens": 22,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:44.375Z",
+                "ttfbMs": 636.326,
+                "totalMs": 865.529
+              },
+              "costEstimateUsd": 0.000184,
+              "raw": {
+                "input_tokens": 16,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 22
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1067.034,
+              "min": 865.529,
+              "max": 2446.848
+            },
+            "ttfbMs": {
+              "median": 809.919,
+              "min": 636.326,
+              "max": 2129.644
+            },
+            "inputTokens": {
+              "median": 16,
+              "min": 16,
+              "max": 16
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 22
+            },
+            "totalTokens": {
+              "median": 22,
+              "min": 22,
+              "max": 38
+            },
+            "tokensPerSecond": {
+              "median": 6.9322,
+              "min": 5.6231,
+              "max": 8.9912
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000872
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1243,
+                "reasoningTokens": 596,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:08.361Z",
+                "ttfbMs": 11874.228,
+                "totalMs": 11905.779
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1243,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 596,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 41060000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 919,
+                "reasoningTokens": 272,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:20.267Z",
+                "ttfbMs": 5927.643,
+                "totalMs": 5969.534
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 919,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 272,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 19700000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 646,
+                "outputTokens": 1,
+                "totalTokens": 1241,
+                "reasoningTokens": 594,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:26.236Z",
+                "ttfbMs": 11830.038,
+                "totalMs": 11868.361
+              },
+              "costEstimateUsd": 0.001298,
+              "raw": {
+                "prompt_tokens": 646,
+                "completion_tokens": 1,
+                "total_tokens": 1241,
+                "prompt_tokens_details": {
+                  "text_tokens": 646,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 594,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 39020000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 11868.361,
+              "min": 5969.534,
+              "max": 11905.779
+            },
+            "ttfbMs": {
+              "median": 11830.038,
+              "min": 5927.643,
+              "max": 11874.228
+            },
+            "inputTokens": {
+              "median": 646,
+              "min": 646,
+              "max": 646
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1241,
+              "min": 919,
+              "max": 1243
+            },
+            "tokensPerSecond": {
+              "median": 0.0843,
+              "min": 0.084,
+              "max": 0.1675
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003894
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:45.241Z",
+                "ttfbMs": 316.43,
+                "totalMs": 334.18
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:45.575Z",
+                "ttfbMs": 367.833,
+                "totalMs": 375.309
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 3,
+                "totalTokens": 29,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:45.951Z",
+                "ttfbMs": 267.414,
+                "totalMs": 287.907
+              },
+              "costEstimateUsd": 0.000062,
+              "raw": {
+                "prompt_tokens": 26,
+                "total_tokens": 29,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 334.18,
+              "min": 287.907,
+              "max": 375.309
+            },
+            "ttfbMs": {
+              "median": 316.43,
+              "min": 267.414,
+              "max": 367.833
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "tokensPerSecond": {
+              "median": 8.9772,
+              "min": 7.9934,
+              "max": 10.42
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000186
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "asserted",
+      "prompt": "Is a hot dog a sandwich? One word answer.",
+      "systemPrompt": "A hot dog is a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 213,
+                "totalTokens": 250,
+                "reasoningTokens": 209,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:48.280Z",
+                "ttfbMs": 4042.21,
+                "totalMs": 4061.885
+              },
+              "costEstimateUsd": 0.00551,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 213,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 209
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 370,
+                "totalTokens": 407,
+                "reasoningTokens": 366,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:52.342Z",
+                "ttfbMs": 5353.605,
+                "totalMs": 5403.837
+              },
+              "costEstimateUsd": 0.009435,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 370,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 366
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 519,
+                "totalTokens": 556,
+                "reasoningTokens": 515,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:57.746Z",
+                "ttfbMs": 8182.938,
+                "totalMs": 8183.808
+              },
+              "costEstimateUsd": 0.01316,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 519,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 515
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 5403.837,
+              "min": 4061.885,
+              "max": 8183.808
+            },
+            "ttfbMs": {
+              "median": 5353.605,
+              "min": 4042.21,
+              "max": 8182.938
+            },
+            "inputTokens": {
+              "median": 37,
+              "min": 37,
+              "max": 37
+            },
+            "outputTokens": {
+              "median": 370,
+              "min": 213,
+              "max": 519
+            },
+            "totalTokens": {
+              "median": 407,
+              "min": 250,
+              "max": 556
+            },
+            "tokensPerSecond": {
+              "median": 63.4179,
+              "min": 52.4387,
+              "max": 68.4699
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.028105
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 28,
+                "outputTokens": 6,
+                "totalTokens": 34,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:54.852Z",
+                "ttfbMs": 1694.826,
+                "totalMs": 2162.975
+              },
+              "costEstimateUsd": 0.000232,
+              "raw": {
+                "input_tokens": 28,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 34
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 28,
+                "outputTokens": 6,
+                "totalTokens": 34,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:57.015Z",
+                "ttfbMs": 2174.288,
+                "totalMs": 2509.437
+              },
+              "costEstimateUsd": 0.000232,
+              "raw": {
+                "input_tokens": 28,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 34
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 28,
+                "outputTokens": 6,
+                "totalTokens": 34,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:39:59.524Z",
+                "ttfbMs": 1322.982,
+                "totalMs": 1621.319
+              },
+              "costEstimateUsd": 0.000232,
+              "raw": {
+                "input_tokens": 28,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 34
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2162.975,
+              "min": 1621.319,
+              "max": 2509.437
+            },
+            "ttfbMs": {
+              "median": 1694.826,
+              "min": 1322.982,
+              "max": 2174.288
+            },
+            "inputTokens": {
+              "median": 28,
+              "min": 28,
+              "max": 28
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 34,
+              "min": 34,
+              "max": 34
+            },
+            "tokensPerSecond": {
+              "median": 2.774,
+              "min": 2.391,
+              "max": 3.7007
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000696
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 657,
+                "outputTokens": 1,
+                "totalTokens": 1086,
+                "reasoningTokens": 428,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:38.105Z",
+                "ttfbMs": 8993.4,
+                "totalMs": 8994.956
+              },
+              "costEstimateUsd": 0.00132,
+              "raw": {
+                "prompt_tokens": 657,
+                "completion_tokens": 1,
+                "total_tokens": 1086,
+                "prompt_tokens_details": {
+                  "text_tokens": 657,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 428,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 31200000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 657,
+                "outputTokens": 1,
+                "totalTokens": 1122,
+                "reasoningTokens": 464,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:47.100Z",
+                "ttfbMs": 9341.138,
+                "totalMs": 9409.643
+              },
+              "costEstimateUsd": 0.00132,
+              "raw": {
+                "prompt_tokens": 657,
+                "completion_tokens": 1,
+                "total_tokens": 1122,
+                "prompt_tokens_details": {
+                  "text_tokens": 657,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 464,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 31440000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 657,
+                "outputTokens": 1,
+                "totalTokens": 1392,
+                "reasoningTokens": 734,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:56.510Z",
+                "ttfbMs": 14574.171,
+                "totalMs": 14618.785
+              },
+              "costEstimateUsd": 0.00132,
+              "raw": {
+                "prompt_tokens": 657,
+                "completion_tokens": 1,
+                "total_tokens": 1392,
+                "prompt_tokens_details": {
+                  "text_tokens": 657,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 734,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 47640000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 9409.643,
+              "min": 8994.956,
+              "max": 14618.785
+            },
+            "ttfbMs": {
+              "median": 9341.138,
+              "min": 8993.4,
+              "max": 14574.171
+            },
+            "inputTokens": {
+              "median": 657,
+              "min": 657,
+              "max": 657
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1122,
+              "min": 1086,
+              "max": 1392
+            },
+            "tokensPerSecond": {
+              "median": 0.1063,
+              "min": 0.0684,
+              "max": 0.1112
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.00396
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:05.930Z",
+                "ttfbMs": 451.305,
+                "totalMs": 468.822
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:06.399Z",
+                "ttfbMs": 383.834,
+                "totalMs": 406.835
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:06.806Z",
+                "ttfbMs": 293.037,
+                "totalMs": 310.989
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 406.835,
+              "min": 310.989,
+              "max": 468.822
+            },
+            "ttfbMs": {
+              "median": 383.834,
+              "min": 293.037,
+              "max": 451.305
+            },
+            "inputTokens": {
+              "median": 35,
+              "min": 35,
+              "max": 35
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 38,
+              "min": 38,
+              "max": 38
+            },
+            "tokensPerSecond": {
+              "median": 7.374,
+              "min": 6.399,
+              "max": 9.6466
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000225
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "asserted",
+      "prompt": "Is a hamburger a sandwich? One word answer.",
+      "systemPrompt": "A hamburger is a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 151,
+                "totalTokens": 188,
+                "reasoningTokens": 145,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:09.126Z",
+                "ttfbMs": 2888.353,
+                "totalMs": 2895.996
+              },
+              "costEstimateUsd": 0.00396,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 151,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 145
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 168,
+                "totalTokens": 205,
+                "reasoningTokens": 162,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:12.022Z",
+                "ttfbMs": 3217.306,
+                "totalMs": 3228.378
+              },
+              "costEstimateUsd": 0.004385,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 168,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 162
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 37,
+                "outputTokens": 207,
+                "totalTokens": 244,
+                "reasoningTokens": 201,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:15.250Z",
+                "ttfbMs": 3370.149,
+                "totalMs": 3385.383
+              },
+              "costEstimateUsd": 0.00536,
+              "raw": {
+                "input_tokens": 37,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 207,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 201
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 3228.378,
+              "min": 2895.996,
+              "max": 3385.383
+            },
+            "ttfbMs": {
+              "median": 3217.306,
+              "min": 2888.353,
+              "max": 3370.149
+            },
+            "inputTokens": {
+              "median": 37,
+              "min": 37,
+              "max": 37
+            },
+            "outputTokens": {
+              "median": 168,
+              "min": 151,
+              "max": 207
+            },
+            "totalTokens": {
+              "median": 205,
+              "min": 188,
+              "max": 244
+            },
+            "tokensPerSecond": {
+              "median": 52.141,
+              "min": 52.0385,
+              "max": 61.1452
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.013705
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 6,
+                "totalTokens": 32,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:13.826Z",
+                "ttfbMs": 895.851,
+                "totalMs": 1196.809
+              },
+              "costEstimateUsd": 0.000224,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 32
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 6,
+                "totalTokens": 32,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:15.023Z",
+                "ttfbMs": 1243.148,
+                "totalMs": 1565.026
+              },
+              "costEstimateUsd": 0.000224,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 32
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 6,
+                "totalTokens": 32,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:16.588Z",
+                "ttfbMs": 611.741,
+                "totalMs": 816.705
+              },
+              "costEstimateUsd": 0.000224,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 32
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1196.809,
+              "min": 816.705,
+              "max": 1565.026
+            },
+            "ttfbMs": {
+              "median": 895.851,
+              "min": 611.741,
+              "max": 1243.148
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 32,
+              "min": 32,
+              "max": 32
+            },
+            "tokensPerSecond": {
+              "median": 5.0133,
+              "min": 3.8338,
+              "max": 7.3466
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000672
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 968,
+                "reasoningTokens": 312,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:11.130Z",
+                "ttfbMs": 6886.143,
+                "totalMs": 6933.721
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 968,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 312,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 24200000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 1123,
+                "reasoningTokens": 467,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:18.063Z",
+                "ttfbMs": 9835.901,
+                "totalMs": 9836.186
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 1123,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 467,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 33500000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 920,
+                "reasoningTokens": 264,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:27.900Z",
+                "ttfbMs": 5889.36,
+                "totalMs": 5890.107
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 920,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 264,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 19400000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 6933.721,
+              "min": 5890.107,
+              "max": 9836.186
+            },
+            "ttfbMs": {
+              "median": 6886.143,
+              "min": 5889.36,
+              "max": 9835.901
+            },
+            "inputTokens": {
+              "median": 655,
+              "min": 655,
+              "max": 655
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 968,
+              "min": 920,
+              "max": 1123
+            },
+            "tokensPerSecond": {
+              "median": 0.1442,
+              "min": 0.1017,
+              "max": 0.1698
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003948
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:18.636Z",
+                "ttfbMs": 383.882,
+                "totalMs": 398.136
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:19.034Z",
+                "ttfbMs": 313.273,
+                "totalMs": 330.456
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:19.365Z",
+                "ttfbMs": 269.359,
+                "totalMs": 306.652
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 330.456,
+              "min": 306.652,
+              "max": 398.136
+            },
+            "ttfbMs": {
+              "median": 313.273,
+              "min": 269.359,
+              "max": 383.882
+            },
+            "inputTokens": {
+              "median": 35,
+              "min": 35,
+              "max": 35
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 38,
+              "min": 38,
+              "max": 38
+            },
+            "tokensPerSecond": {
+              "median": 9.0784,
+              "min": 7.5351,
+              "max": 9.7831
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000225
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "asserted",
+      "prompt": "Is a taco a sandwich? One word answer.",
+      "systemPrompt": "A taco is a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 33,
+                "outputTokens": 497,
+                "totalTokens": 530,
+                "reasoningTokens": 493,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:21.641Z",
+                "ttfbMs": 8442.794,
+                "totalMs": 8471.682
+              },
+              "costEstimateUsd": 0.01259,
+              "raw": {
+                "input_tokens": 33,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 497,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 493
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 33,
+                "outputTokens": 199,
+                "totalTokens": 232,
+                "reasoningTokens": 193,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:30.113Z",
+                "ttfbMs": 3679.27,
+                "totalMs": 3696.55
+              },
+              "costEstimateUsd": 0.00514,
+              "raw": {
+                "input_tokens": 33,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 199,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 193
+                }
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 33,
+                "outputTokens": 255,
+                "totalTokens": 288,
+                "reasoningTokens": 249,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:33.810Z",
+                "ttfbMs": 4493.081,
+                "totalMs": 4507.902
+              },
+              "costEstimateUsd": 0.00654,
+              "raw": {
+                "input_tokens": 33,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 255,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 249
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 4507.902,
+              "min": 3696.55,
+              "max": 8471.682
+            },
+            "ttfbMs": {
+              "median": 4493.081,
+              "min": 3679.27,
+              "max": 8442.794
+            },
+            "inputTokens": {
+              "median": 33,
+              "min": 33,
+              "max": 33
+            },
+            "outputTokens": {
+              "median": 255,
+              "min": 199,
+              "max": 497
+            },
+            "totalTokens": {
+              "median": 288,
+              "min": 232,
+              "max": 530
+            },
+            "tokensPerSecond": {
+              "median": 56.5673,
+              "min": 53.834,
+              "max": 58.666
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.02427
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 23,
+                "totalTokens": 49,
+                "reasoningTokens": 15,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:29.159Z",
+                "ttfbMs": 952.894,
+                "totalMs": 1238.43
+              },
+              "costEstimateUsd": 0.000564,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 23,
+                "output_tokens_details": {
+                  "reasoning_tokens": 15
+                },
+                "total_tokens": 49
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 21,
+                "totalTokens": 47,
+                "reasoningTokens": 13,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:30.398Z",
+                "ttfbMs": 1031.649,
+                "totalMs": 1254.808
+              },
+              "costEstimateUsd": 0.000524,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 21,
+                "output_tokens_details": {
+                  "reasoning_tokens": 13
+                },
+                "total_tokens": 47
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 26,
+                "outputTokens": 24,
+                "totalTokens": 50,
+                "reasoningTokens": 16,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:31.653Z",
+                "ttfbMs": 1022.52,
+                "totalMs": 1230.627
+              },
+              "costEstimateUsd": 0.000584,
+              "raw": {
+                "input_tokens": 26,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 24,
+                "output_tokens_details": {
+                  "reasoning_tokens": 16
+                },
+                "total_tokens": 50
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1238.43,
+              "min": 1230.627,
+              "max": 1254.808
+            },
+            "ttfbMs": {
+              "median": 1022.52,
+              "min": 952.894,
+              "max": 1031.649
+            },
+            "inputTokens": {
+              "median": 26,
+              "min": 26,
+              "max": 26
+            },
+            "outputTokens": {
+              "median": 23,
+              "min": 21,
+              "max": 24
+            },
+            "totalTokens": {
+              "median": 49,
+              "min": 47,
+              "max": 50
+            },
+            "tokensPerSecond": {
+              "median": 18.5719,
+              "min": 16.7356,
+              "max": 19.5023
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.001672
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 1194,
+                "reasoningTokens": 538,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:33.790Z",
+                "ttfbMs": 10029.104,
+                "totalMs": 10029.785
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 1194,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 538,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 35840000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 1279,
+                "reasoningTokens": 623,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:43.820Z",
+                "ttfbMs": 13376.063,
+                "totalMs": 13423.816
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 1279,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 623,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 40940000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 655,
+                "outputTokens": 1,
+                "totalTokens": 1213,
+                "reasoningTokens": 557,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:57.244Z",
+                "ttfbMs": 11049.241,
+                "totalMs": 11094.899
+              },
+              "costEstimateUsd": 0.001316,
+              "raw": {
+                "prompt_tokens": 655,
+                "completion_tokens": 1,
+                "total_tokens": 1213,
+                "prompt_tokens_details": {
+                  "text_tokens": 655,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 557,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 46580000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 11094.899,
+              "min": 10029.785,
+              "max": 13423.816
+            },
+            "ttfbMs": {
+              "median": 11049.241,
+              "min": 10029.104,
+              "max": 13376.063
+            },
+            "inputTokens": {
+              "median": 655,
+              "min": 655,
+              "max": 655
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1213,
+              "min": 1194,
+              "max": 1279
+            },
+            "tokensPerSecond": {
+              "median": 0.0901,
+              "min": 0.0745,
+              "max": 0.0997
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003948
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:38.318Z",
+                "ttfbMs": 314.023,
+                "totalMs": 327.463
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:38.645Z",
+                "ttfbMs": 318.733,
+                "totalMs": 417.818
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 35,
+                "outputTokens": 3,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:39.064Z",
+                "ttfbMs": 277.591,
+                "totalMs": 295.245
+              },
+              "costEstimateUsd": 0.000075,
+              "raw": {
+                "prompt_tokens": 35,
+                "total_tokens": 38,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 327.463,
+              "min": 295.245,
+              "max": 417.818
+            },
+            "ttfbMs": {
+              "median": 314.023,
+              "min": 277.591,
+              "max": 318.733
+            },
+            "inputTokens": {
+              "median": 35,
+              "min": 35,
+              "max": 35
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 38,
+              "min": 38,
+              "max": 38
+            },
+            "tokensPerSecond": {
+              "median": 9.1613,
+              "min": 7.1802,
+              "max": 10.1611
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000225
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "denied",
+      "prompt": "Is a hot dog a sandwich? One word answer.",
+      "systemPrompt": "A hot dog is not a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 116,
+                "totalTokens": 154,
+                "reasoningTokens": 112,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:41.316Z",
+                "ttfbMs": 2548.276,
+                "totalMs": 2571.532
+              },
+              "costEstimateUsd": 0.00309,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 116,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 112
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 88,
+                "totalTokens": 126,
+                "reasoningTokens": 84,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:43.888Z",
+                "ttfbMs": 2140.533,
+                "totalMs": 2181.425
+              },
+              "costEstimateUsd": 0.00239,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 88,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 84
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 96,
+                "totalTokens": 134,
+                "reasoningTokens": 92,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:46.069Z",
+                "ttfbMs": 2217.197,
+                "totalMs": 2230.116
+              },
+              "costEstimateUsd": 0.00259,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 96,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 92
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 2230.116,
+              "min": 2181.425,
+              "max": 2571.532
+            },
+            "ttfbMs": {
+              "median": 2217.197,
+              "min": 2140.533,
+              "max": 2548.276
+            },
+            "inputTokens": {
+              "median": 38,
+              "min": 38,
+              "max": 38
+            },
+            "outputTokens": {
+              "median": 96,
+              "min": 88,
+              "max": 116
+            },
+            "totalTokens": {
+              "median": 134,
+              "min": 126,
+              "max": 154
+            },
+            "tokensPerSecond": {
+              "median": 43.0471,
+              "min": 40.3406,
+              "max": 45.1093
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.00807
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 29,
+                "outputTokens": 6,
+                "totalTokens": 35,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:44.850Z",
+                "ttfbMs": 824.932,
+                "totalMs": 996.767
+              },
+              "costEstimateUsd": 0.000236,
+              "raw": {
+                "input_tokens": 29,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 35
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 29,
+                "outputTokens": 6,
+                "totalTokens": 35,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:45.847Z",
+                "ttfbMs": 797.638,
+                "totalMs": 1126.617
+              },
+              "costEstimateUsd": 0.000236,
+              "raw": {
+                "input_tokens": 29,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 35
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 29,
+                "outputTokens": 23,
+                "totalTokens": 52,
+                "reasoningTokens": 15,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:46.974Z",
+                "ttfbMs": 1441.773,
+                "totalMs": 1667.72
+              },
+              "costEstimateUsd": 0.000576,
+              "raw": {
+                "input_tokens": 29,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 23,
+                "output_tokens_details": {
+                  "reasoning_tokens": 15
+                },
+                "total_tokens": 52
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1126.617,
+              "min": 996.767,
+              "max": 1667.72
+            },
+            "ttfbMs": {
+              "median": 824.932,
+              "min": 797.638,
+              "max": 1441.773
+            },
+            "inputTokens": {
+              "median": 29,
+              "min": 29,
+              "max": 29
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 23
+            },
+            "totalTokens": {
+              "median": 35,
+              "min": 35,
+              "max": 52
+            },
+            "tokensPerSecond": {
+              "median": 6.0195,
+              "min": 5.3257,
+              "max": 13.7913
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.001048
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "partial",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 20,
+                "outputTokens": 1,
+                "totalTokens": 152,
+                "reasoningTokens": 131,
+                "cachedInputTokens": null
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:52.694Z",
+                "ttfbMs": 1930.841,
+                "totalMs": 1941.65
+              },
+              "costEstimateUsd": 0.000019,
+              "raw": {
+                "promptTokenCount": 20,
+                "candidatesTokenCount": 1,
+                "totalTokenCount": 152,
+                "promptTokensDetails": [
+                  {
+                    "modality": "TEXT",
+                    "tokenCount": 20
+                  }
+                ],
+                "thoughtsTokenCount": 131,
+                "serviceTier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 1,
+            "totalMs": {
+              "median": 1941.65,
+              "min": 1941.65,
+              "max": 1941.65
+            },
+            "ttfbMs": {
+              "median": 1930.841,
+              "min": 1930.841,
+              "max": 1930.841
+            },
+            "inputTokens": {
+              "median": 20,
+              "min": 20,
+              "max": 20
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 152,
+              "min": 152,
+              "max": 152
+            },
+            "tokensPerSecond": {
+              "median": 0.515,
+              "min": 0.515,
+              "max": 0.515
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000019
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 658,
+                "outputTokens": 1,
+                "totalTokens": 1157,
+                "reasoningTokens": 498,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:42:08.340Z",
+                "ttfbMs": 9639.661,
+                "totalMs": 9639.914
+              },
+              "costEstimateUsd": 0.001322,
+              "raw": {
+                "prompt_tokens": 658,
+                "completion_tokens": 1,
+                "total_tokens": 1157,
+                "prompt_tokens_details": {
+                  "text_tokens": 658,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 498,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 33500000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 658,
+                "outputTokens": 1,
+                "totalTokens": 1451,
+                "reasoningTokens": 792,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:42:17.980Z",
+                "ttfbMs": 14739.677,
+                "totalMs": 14780.232
+              },
+              "costEstimateUsd": 0.001322,
+              "raw": {
+                "prompt_tokens": 658,
+                "completion_tokens": 1,
+                "total_tokens": 1451,
+                "prompt_tokens_details": {
+                  "text_tokens": 658,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 792,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 51140000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 658,
+                "outputTokens": 1,
+                "totalTokens": 1258,
+                "reasoningTokens": 599,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:42:32.761Z",
+                "ttfbMs": 11213.492,
+                "totalMs": 11229.484
+              },
+              "costEstimateUsd": 0.001322,
+              "raw": {
+                "prompt_tokens": 658,
+                "completion_tokens": 1,
+                "total_tokens": 1258,
+                "prompt_tokens_details": {
+                  "text_tokens": 658,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 599,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 39560000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 11229.484,
+              "min": 9639.914,
+              "max": 14780.232
+            },
+            "ttfbMs": {
+              "median": 11213.492,
+              "min": 9639.661,
+              "max": 14739.677
+            },
+            "inputTokens": {
+              "median": 658,
+              "min": 658,
+              "max": 658
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1258,
+              "min": 1157,
+              "max": 1451
+            },
+            "tokensPerSecond": {
+              "median": 0.0891,
+              "min": 0.0677,
+              "max": 0.1037
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003966
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:48.642Z",
+                "ttfbMs": 306.335,
+                "totalMs": 323.576
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:48.965Z",
+                "ttfbMs": 415.163,
+                "totalMs": 431.501
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:49.397Z",
+                "ttfbMs": 319.193,
+                "totalMs": 333.139
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 333.139,
+              "min": 323.576,
+              "max": 431.501
+            },
+            "ttfbMs": {
+              "median": 319.193,
+              "min": 306.335,
+              "max": 415.163
+            },
+            "inputTokens": {
+              "median": 36,
+              "min": 36,
+              "max": 36
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 39,
+              "min": 39,
+              "max": 39
+            },
+            "tokensPerSecond": {
+              "median": 9.0053,
+              "min": 6.9525,
+              "max": 9.2714
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000231
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "denied",
+      "prompt": "Is a hamburger a sandwich? One word answer.",
+      "systemPrompt": "A hamburger is not a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes.",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 233,
+                "totalTokens": 271,
+                "reasoningTokens": 227,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:51.710Z",
+                "ttfbMs": 6637.226,
+                "totalMs": 6648.46
+              },
+              "costEstimateUsd": 0.006015,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 233,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 227
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 343,
+                "totalTokens": 381,
+                "reasoningTokens": 339,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:58.358Z",
+                "ttfbMs": 6878.453,
+                "totalMs": 6904.695
+              },
+              "costEstimateUsd": 0.008765,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 343,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 339
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 38,
+                "outputTokens": 259,
+                "totalTokens": 297,
+                "reasoningTokens": 255,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:05.263Z",
+                "ttfbMs": 4775.623,
+                "totalMs": 4787.756
+              },
+              "costEstimateUsd": 0.006665,
+              "raw": {
+                "input_tokens": 38,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 259,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 255
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 6648.46,
+              "min": 4787.756,
+              "max": 6904.695
+            },
+            "ttfbMs": {
+              "median": 6637.226,
+              "min": 4775.623,
+              "max": 6878.453
+            },
+            "inputTokens": {
+              "median": 38,
+              "min": 38,
+              "max": 38
+            },
+            "outputTokens": {
+              "median": 259,
+              "min": 233,
+              "max": 343
+            },
+            "totalTokens": {
+              "median": 297,
+              "min": 271,
+              "max": 381
+            },
+            "tokensPerSecond": {
+              "median": 49.6763,
+              "min": 35.0457,
+              "max": 54.0963
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.021445
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 24,
+                "totalTokens": 51,
+                "reasoningTokens": 16,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:58.308Z",
+                "ttfbMs": 923.577,
+                "totalMs": 1274.83
+              },
+              "costEstimateUsd": 0.000588,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 24,
+                "output_tokens_details": {
+                  "reasoning_tokens": 16
+                },
+                "total_tokens": 51
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 20,
+                "totalTokens": 47,
+                "reasoningTokens": 12,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:40:59.583Z",
+                "ttfbMs": 1694.03,
+                "totalMs": 1936.322
+              },
+              "costEstimateUsd": 0.000508,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 20,
+                "output_tokens_details": {
+                  "reasoning_tokens": 12
+                },
+                "total_tokens": 47
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 24,
+                "totalTokens": 51,
+                "reasoningTokens": 16,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:01.520Z",
+                "ttfbMs": 984.392,
+                "totalMs": 1148.319
+              },
+              "costEstimateUsd": 0.000588,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 24,
+                "output_tokens_details": {
+                  "reasoning_tokens": 16
+                },
+                "total_tokens": 51
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 1274.83,
+              "min": 1148.319,
+              "max": 1936.322
+            },
+            "ttfbMs": {
+              "median": 984.392,
+              "min": 923.577,
+              "max": 1694.03
+            },
+            "inputTokens": {
+              "median": 27,
+              "min": 27,
+              "max": 27
+            },
+            "outputTokens": {
+              "median": 24,
+              "min": 20,
+              "max": 24
+            },
+            "totalTokens": {
+              "median": 51,
+              "min": 47,
+              "max": 51
+            },
+            "tokensPerSecond": {
+              "median": 18.826,
+              "min": 10.3289,
+              "max": 20.9001
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.001684
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1182,
+                "reasoningTokens": 525,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:42:43.990Z",
+                "ttfbMs": 10512.104,
+                "totalMs": 10568.387
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1182,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 525,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 35080000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1157,
+                "reasoningTokens": 500,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:42:54.559Z",
+                "ttfbMs": 9421.33,
+                "totalMs": 9473.342
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1157,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 500,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 33580000
+              }
+            },
+            {
+              "text": "Yes",
+              "verdict": "yes",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1238,
+                "reasoningTokens": 581,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:43:04.032Z",
+                "ttfbMs": 11126.453,
+                "totalMs": 11167.576
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1238,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 581,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 40360000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 10568.387,
+              "min": 9473.342,
+              "max": 11167.576
+            },
+            "ttfbMs": {
+              "median": 10512.104,
+              "min": 9421.33,
+              "max": 11126.453
+            },
+            "inputTokens": {
+              "median": 656,
+              "min": 656,
+              "max": 656
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1182,
+              "min": 1157,
+              "max": 1238
+            },
+            "tokensPerSecond": {
+              "median": 0.0946,
+              "min": 0.0895,
+              "max": 0.1056
+            },
+            "verdict": "yes",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003954
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 2,
+                "totalTokens": 38,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:10.051Z",
+                "ttfbMs": 357.288,
+                "totalMs": 377.69
+              },
+              "costEstimateUsd": 0.000069,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 38,
+                "completion_tokens": 2,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:10.429Z",
+                "ttfbMs": 334.14,
+                "totalMs": 349.313
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:10.778Z",
+                "ttfbMs": 269.686,
+                "totalMs": 288.615
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 349.313,
+              "min": 288.615,
+              "max": 377.69
+            },
+            "ttfbMs": {
+              "median": 334.14,
+              "min": 269.686,
+              "max": 357.288
+            },
+            "inputTokens": {
+              "median": 36,
+              "min": 36,
+              "max": 36
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 2,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 39,
+              "min": 38,
+              "max": 39
+            },
+            "tokensPerSecond": {
+              "median": 8.5883,
+              "min": 5.2953,
+              "max": 10.3945
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000223
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "denied",
+      "prompt": "Is a taco a sandwich? One word answer.",
+      "systemPrompt": "A taco is not a sandwich.",
+      "models": [
+        {
+          "provider": "anthropic",
+          "modelId": "claude-opus-5",
+          "displayName": "Claude Opus 5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 34,
+                "outputTokens": 111,
+                "totalTokens": 145,
+                "reasoningTokens": 107,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:13.048Z",
+                "ttfbMs": 2777.884,
+                "totalMs": 2791.818
+              },
+              "costEstimateUsd": 0.002945,
+              "raw": {
+                "input_tokens": 34,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 111,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 107
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 34,
+                "outputTokens": 154,
+                "totalTokens": 188,
+                "reasoningTokens": 150,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:15.840Z",
+                "ttfbMs": 3023.78,
+                "totalMs": 3048.883
+              },
+              "costEstimateUsd": 0.00402,
+              "raw": {
+                "input_tokens": 34,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 154,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 150
+                }
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 34,
+                "outputTokens": 181,
+                "totalTokens": 215,
+                "reasoningTokens": 177,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:18.889Z",
+                "ttfbMs": 3774.298,
+                "totalMs": 3785.502
+              },
+              "costEstimateUsd": 0.004695,
+              "raw": {
+                "input_tokens": 34,
+                "cache_creation_input_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation": {
+                  "ephemeral_5m_input_tokens": 0,
+                  "ephemeral_1h_input_tokens": 0
+                },
+                "output_tokens": 181,
+                "service_tier": "standard",
+                "inference_geo": "global",
+                "output_tokens_details": {
+                  "thinking_tokens": 177
+                }
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 3048.883,
+              "min": 2791.818,
+              "max": 3785.502
+            },
+            "ttfbMs": {
+              "median": 3023.78,
+              "min": 2777.884,
+              "max": 3774.298
+            },
+            "inputTokens": {
+              "median": 34,
+              "min": 34,
+              "max": 34
+            },
+            "outputTokens": {
+              "median": 154,
+              "min": 111,
+              "max": 181
+            },
+            "totalTokens": {
+              "median": 188,
+              "min": 145,
+              "max": 215
+            },
+            "tokensPerSecond": {
+              "median": 47.814,
+              "min": 39.759,
+              "max": 50.5103
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.01166
+          },
+          "error": null
+        },
+        {
+          "provider": "openai",
+          "modelId": "gpt-5.6-sol",
+          "displayName": "GPT-5.6 Sol",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 6,
+                "totalTokens": 33,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:14.901Z",
+                "ttfbMs": 774.168,
+                "totalMs": 976.7
+              },
+              "costEstimateUsd": 0.000228,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 33
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 6,
+                "totalTokens": 33,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:15.877Z",
+                "ttfbMs": 1420.358,
+                "totalMs": 1624.981
+              },
+              "costEstimateUsd": 0.000228,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 33
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 27,
+                "outputTokens": 6,
+                "totalTokens": 33,
+                "reasoningTokens": 0,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:17.502Z",
+                "ttfbMs": 678.227,
+                "totalMs": 972.764
+              },
+              "costEstimateUsd": 0.000228,
+              "raw": {
+                "input_tokens": 27,
+                "input_tokens_details": {
+                  "cache_write_tokens": 0,
+                  "cached_tokens": 0
+                },
+                "output_tokens": 6,
+                "output_tokens_details": {
+                  "reasoning_tokens": 0
+                },
+                "total_tokens": 33
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 976.7,
+              "min": 972.764,
+              "max": 1624.981
+            },
+            "ttfbMs": {
+              "median": 774.168,
+              "min": 678.227,
+              "max": 1420.358
+            },
+            "inputTokens": {
+              "median": 27,
+              "min": 27,
+              "max": 27
+            },
+            "outputTokens": {
+              "median": 6,
+              "min": 6,
+              "max": 6
+            },
+            "totalTokens": {
+              "median": 33,
+              "min": 33,
+              "max": 33
+            },
+            "tokensPerSecond": {
+              "median": 6.1431,
+              "min": 3.6924,
+              "max": 6.168
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000684
+          },
+          "error": null
+        },
+        {
+          "provider": "gemini",
+          "modelId": "gemini-3.7-flash",
+          "displayName": "Gemini 3.7 Flash",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "rate_limit",
+            "message": "429 Too Many Requests from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:streamGenerateContent: You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. * Quota exceeded for metric: generativelanguage.googleapis.…",
+            "retryable": true,
+            "providerStatus": 429
+          }
+        },
+        {
+          "provider": "xai",
+          "modelId": "grok-4.6",
+          "displayName": "Grok 4.6",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1206,
+                "reasoningTokens": 549,
+                "cachedInputTokens": 512
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:43:15.200Z",
+                "ttfbMs": 11415.887,
+                "totalMs": 11416.129
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1206,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 512
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 549,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 38440000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1120,
+                "reasoningTokens": 463,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:43:26.616Z",
+                "ttfbMs": 9228.701,
+                "totalMs": 9228.875
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1120,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 463,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 31360000
+              }
+            },
+            {
+              "text": "No",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 656,
+                "outputTokens": 1,
+                "totalTokens": 1261,
+                "reasoningTokens": 604,
+                "cachedInputTokens": 640
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:43:35.845Z",
+                "ttfbMs": 11501.492,
+                "totalMs": 11501.702
+              },
+              "costEstimateUsd": 0.001318,
+              "raw": {
+                "prompt_tokens": 656,
+                "completion_tokens": 1,
+                "total_tokens": 1261,
+                "prompt_tokens_details": {
+                  "text_tokens": 656,
+                  "audio_tokens": 0,
+                  "image_tokens": 0,
+                  "cached_tokens": 640
+                },
+                "completion_tokens_details": {
+                  "reasoning_tokens": 604,
+                  "audio_tokens": 0,
+                  "accepted_prediction_tokens": 0,
+                  "rejected_prediction_tokens": 0
+                },
+                "num_sources_used": 0,
+                "cost_in_usd_ticks": 39820000
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 11416.129,
+              "min": 9228.875,
+              "max": 11501.702
+            },
+            "ttfbMs": {
+              "median": 11415.887,
+              "min": 9228.701,
+              "max": 11501.492
+            },
+            "inputTokens": {
+              "median": 656,
+              "min": 656,
+              "max": 656
+            },
+            "outputTokens": {
+              "median": 1,
+              "min": 1,
+              "max": 1
+            },
+            "totalTokens": {
+              "median": 1206,
+              "min": 1120,
+              "max": 1261
+            },
+            "tokensPerSecond": {
+              "median": 0.0876,
+              "min": 0.0869,
+              "max": 0.1084
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.003954
+          },
+          "error": null
+        },
+        {
+          "provider": "mistral",
+          "modelId": "mistral-medium-2604",
+          "displayName": "Mistral Medium 3.5",
+          "status": "ok",
+          "samples": [
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:22.675Z",
+                "ttfbMs": 322.653,
+                "totalMs": 347.343
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:23.023Z",
+                "ttfbMs": 298.022,
+                "totalMs": 318.642
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            },
+            {
+              "text": "No.",
+              "verdict": "no",
+              "followedInstruction": true,
+              "usage": {
+                "inputTokens": 36,
+                "outputTokens": 3,
+                "totalTokens": 39,
+                "reasoningTokens": null,
+                "cachedInputTokens": 0
+              },
+              "timing": {
+                "startedAt": "2026-09-02T01:41:23.341Z",
+                "ttfbMs": 281.034,
+                "totalMs": 295.986
+              },
+              "costEstimateUsd": 0.000077,
+              "raw": {
+                "prompt_tokens": 36,
+                "total_tokens": 39,
+                "completion_tokens": 3,
+                "prompt_tokens_details": {
+                  "cached_tokens": 0
+                },
+                "service_tier": "standard"
+              }
+            }
+          ],
+          "aggregate": {
+            "sampleCount": 3,
+            "totalMs": {
+              "median": 318.642,
+              "min": 295.986,
+              "max": 347.343
+            },
+            "ttfbMs": {
+              "median": 298.022,
+              "min": 281.034,
+              "max": 322.653
+            },
+            "inputTokens": {
+              "median": 36,
+              "min": 36,
+              "max": 36
+            },
+            "outputTokens": {
+              "median": 3,
+              "min": 3,
+              "max": 3
+            },
+            "totalTokens": {
+              "median": 39,
+              "min": 39,
+              "max": 39
+            },
+            "tokensPerSecond": {
+              "median": 9.415,
+              "min": 8.637,
+              "max": 10.1356
+            },
+            "verdict": "no",
+            "followedInstructionRate": 1,
+            "costEstimateUsd": 0.000231
+          },
+          "error": null
+        },
+        {
+          "provider": "deepseek",
+          "modelId": "deepseek-v4-pro",
+          "displayName": "DeepSeek V4 Pro",
+          "status": "error",
+          "samples": [],
+          "aggregate": {
+            "sampleCount": 0,
+            "totalMs": null,
+            "ttfbMs": null,
+            "inputTokens": null,
+            "outputTokens": null,
+            "totalTokens": null,
+            "tokensPerSecond": null,
+            "verdict": null,
+            "followedInstructionRate": null,
+            "costEstimateUsd": null
+          },
+          "error": {
+            "category": "bad_response",
+            "message": "402 Payment Required from https://api.deepseek.com/v1/chat/completions: Insufficient Balance",
+            "retryable": false,
+            "providerStatus": 402
+          }
+        }
+      ]
+    }
+  ]
+}

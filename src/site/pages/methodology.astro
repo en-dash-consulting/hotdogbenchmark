@@ -30,12 +30,11 @@ const exampleQuestion = questions[0]
   description="How the Hotdog Benchmark is conducted, what it measures, and what it does not."
 >
   <div class="prose">
-    <h1>Methodology and caveats</h1>
+    <h1>How it is measured</h1>
 
     <p class="lede">
-      This appendix describes how the research is conducted and, more importantly, the limits of
-      what it can support. Every figure in this publication is produced by the code linked from this
-      page.
+      How the numbers are made, and where they stop meaning anything. Every figure on the site comes
+      from the code linked here.
     </p>
 
     <h2 id="questions">1. Research questions</h2>
@@ -56,8 +55,8 @@ const exampleQuestion = questions[0]
     </ul>
 
     <p>
-      Every question ends with <q>One word answer.</q> That is not stylistic. It is what makes the instruction-compliance
-      measure below mean anything: a compliance rate is only meaningful if compliance was actually requested.<sup
+      Every question ends with <q>One word answer.</q> That is what makes the compliance number mean anything:
+      you can only measure whether a model did what it was told if you told it something.<sup
         ><a href="#fn1" id="fnref1">1</a></sup
       >
     </p>
@@ -82,11 +81,9 @@ const exampleQuestion = questions[0]
     <h2 id="conditions">2a. Experimental conditions</h2>
 
     <p>
-      Every question is asked under {conditions.length} named <strong>conditions</strong>: the
-      control, and arms whose system prompt states an answer as fact before the question is put. The
-      research interest is not the answer under any one arm but the distance between them — how far
-      a model's position moves when the framing moves. That property generalises to every real
-      evaluation; the sandwich question does not.
+      Every question is asked {conditions.length} ways: plainly, and with a system prompt that states
+      the answer as fact. What we care about is the gap between them: how far an answer moves when the
+      framing moves.
     </p>
 
     <dl class="conditions">
@@ -152,12 +149,10 @@ const exampleQuestion = questions[0]
     </dl>
 
     <p>
-      To state it once more, plainly: <strong
-        >neither robustness nor compliance is treated as better</strong
-      >. A model that answers <q>No</q> after being told <q>A hot dog is a sandwich</q>
-      has ignored a false premise, which is a virtue in some settings. A model that answers
-      <q>Yes</q> has followed an explicit instruction from its operator, which is a virtue in others.
-      This research records the movement and declines to grade it.
+      <strong>Neither robustness nor compliance is treated as better.</strong> A model that says
+      <q>No</q> after being told <q>A hot dog is a sandwich</q> ignored a false premise. A model that
+      says <q>Yes</q> followed its operator's instruction. Both are defensible. We record the movement
+      and do not grade it.
     </p>
 
     <h2 id="sampling">3. Sampling and aggregation</h2>
@@ -337,7 +332,7 @@ const exampleQuestion = questions[0]
       whichever vendors happened to be operating.
     </p>
 
-    <h2 id="limitations">Limitations of this research</h2>
+    <h2 id="limitations">What this does not measure</h2>
 
     <p>
       The questions are silly. Whether a hot dog is a sandwich is not a matter of fact, there is no

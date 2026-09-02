@@ -49,6 +49,12 @@ conditions existed. The control cannot be disabled — every other arm is measur
 The `{subject}` in each template is rendered per question, so the taco question is told about
 tacos, not hot dogs. The exact string sent is recorded on every cell of the run file.
 
+A condition can also set `reasoningEffort` (`low`, `medium`, `high`, `xhigh`), so a "think less"
+arm is a data change: add an entry with no system prompt and `"reasoningEffort": "low"`, and every
+model whose vendor exposes an effort control (xAI, OpenAI, and the OpenAI-compatible dialect) is
+asked again at that effort. It is not enabled by default because it is another full arm of
+calls; the cost multiplies the same way the system-prompt arms do.
+
 ### Where the money actually goes
 
 Not where you would guess. Median output tokens per model, from that same run:

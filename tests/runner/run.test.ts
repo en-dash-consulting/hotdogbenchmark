@@ -378,6 +378,7 @@ describe('runBenchmark with experimental conditions', () => {
       promptPrefix: null,
       promptSuffix: null,
       temperature: null,
+      reasoningEffort: null,
     })
   })
 
@@ -421,6 +422,25 @@ describe('runBenchmark with experimental conditions', () => {
     expect(control?.systemPrompt).toBeNull()
     expect(asserted?.prompt).toBe('Is a hot-dog a sandwich? One word answer.')
     expect(asserted?.systemPrompt).toBe('A hot-dog is a sandwich.')
+  })
+
+  it("passes a model's reasoning effort to the adapter and records it on the result", async () => {
+    const adapter = makeFakeAdapter({ id: 'alpha' })
+    const outcome = await runBenchmark(
+      baseOptions(
+        { alpha: adapter },
+        { models: [{ ...model('alpha'), reasoningEffort: 'low' }], samples: 1 },
+      ),
+    )
+    expect(adapter.calls[0]?.reasoningEffort).toBe('low')
+    expect(outcome.run.results[0]?.models[0]?.reasoningEffort).toBe('low')
+  })
+
+  it('records null effort, and sends none, for a model that leaves the vendor default', async () => {
+    const adapter = makeFakeAdapter({ id: 'alpha' })
+    const outcome = await runBenchmark(baseOptions({ alpha: adapter }, { samples: 1 }))
+    expect(adapter.calls[0]).not.toHaveProperty('reasoningEffort')
+    expect(outcome.run.results[0]?.models[0]?.reasoningEffort).toBeNull()
   })
 
   it("lets a condition's temperature override the run-level one", async () => {

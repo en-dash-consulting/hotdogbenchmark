@@ -337,6 +337,56 @@ describe.each(CASES)('the $id adapter and the system prompt', (testCase) => {
   })
 })
 
+/** Where each vendor expects a reasoning-effort level, or null when it has no such control. */
+const REASONING_FIELD: Record<string, ((body: Record<string, unknown>) => unknown) | null> = {
+  anthropic: null,
+  openai: (body) => (body.reasoning as { effort?: string } | undefined)?.effort,
+  gemini: null,
+  xai: (body) => body.reasoning_effort,
+  mistral: (body) => body.reasoning_effort,
+  deepseek: (body) => body.reasoning_effort,
+  'llama-hosted': (body) => body.reasoning_effort,
+}
+
+describe.each(CASES)('the $id adapter and reasoning effort', (testCase) => {
+  const success = () => sseResponse(wireFixture(`${testCase.dir}/success.sse`))
+  const locate = REASONING_FIELD[testCase.id]
+
+  it(
+    locate ? "lands it in this vendor's own field" : 'ignores it, having no such control',
+    async () => {
+      const fetch = fetchReturning(success)
+      await testCase.adapter.complete(
+        { modelId: testCase.modelId, prompt: PROMPT, maxOutputTokens: 16, reasoningEffort: 'low' },
+        wireContext(fetch),
+      )
+      const body = sentBody(fetch.calls)
+      if (locate) expect(locate(body)).toBe('low')
+      else expect(JSON.stringify(body)).not.toMatch(/reasoning|effort/i)
+    },
+  )
+
+  it('sends a byte-identical body when no effort is set', async () => {
+    const before = fetchReturning(success)
+    await testCase.adapter.complete(
+      { modelId: testCase.modelId, prompt: PROMPT, maxOutputTokens: 16 },
+      wireContext(before),
+    )
+    const after = fetchReturning(success)
+    await testCase.adapter.complete(
+      {
+        modelId: testCase.modelId,
+        prompt: PROMPT,
+        maxOutputTokens: 16,
+        reasoningEffort: undefined,
+      },
+      wireContext(after),
+    )
+    expect(String(after.calls[0]?.init.body)).toBe(String(before.calls[0]?.init.body))
+    expect(String(before.calls[0]?.init.body)).not.toMatch(/reasoning_effort|"effort"/)
+  })
+})
+
 describe('adapters that cannot interpret a 200', () => {
   it.each(
     CASES.filter((c) => c.dir !== 'gemini').map((c) => ({

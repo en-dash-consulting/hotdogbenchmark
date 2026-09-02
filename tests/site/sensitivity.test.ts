@@ -19,6 +19,7 @@ function model(name: string, verdict: Verdict | null): ModelResult {
     provider: name.toLowerCase(),
     modelId: `${name.toLowerCase()}-1`,
     displayName: name,
+    reasoningEffort: null,
     status: ok ? 'ok' : 'error',
     samples: ok
       ? [
@@ -64,6 +65,7 @@ const CONTROL: RunCondition = {
   promptPrefix: null,
   promptSuffix: null,
   temperature: null,
+  reasoningEffort: null,
 }
 const ASSERTED: RunCondition = {
   ...CONTROL,
