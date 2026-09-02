@@ -39,7 +39,7 @@ nvm use && npm install
 npm run bench -- run --mock --out tmp/mock-run.json   # the pipeline, offline, no keys
 npm run dev                                            # the site at http://localhost:4321
 npm run build                                          # dist/ with OG cards and PDFs
-npm run validate                                       # lint, typecheck, tests (tests build the site)
+npm run validate                                       # format, lint, typecheck, tests (tests build the site)
 npm run test:a11y && npm run test:responsive && npm run test:audit   # the gates, against dist/
 npm run bench:smoke -- --all                           # one live call per configured provider
 ```

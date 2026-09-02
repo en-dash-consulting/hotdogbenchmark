@@ -76,8 +76,8 @@ const contested = exampleQuestion
     </ul>
 
     <p>
-      Every question ends with <q>One word answer.</q> That is what makes the one-word compliance number mean anything:
-      you can only measure whether a model did what it was told if you told it something.<sup
+      Every question ends with <q>One word answer.</q> That is what makes the one-word compliance number
+      mean anything: you can only measure whether a model did what it was told if you told it something.<sup
         ><a href="#fn1" id="fnref1">1</a></sup
       >
     </p>
@@ -290,15 +290,17 @@ const contested = exampleQuestion
     </p>
 
     <p>
-      <strong>This counts one thing and only one thing: answer length.</strong> Every question ends
-      with <q>One word answer.</q>, and the rate is the share of samples whose answer normalized to
+      <strong>This counts one thing and only one thing: answer length.</strong> Every question ends with{
+        ' '
+      }
+      <q>One word answer.</q>, and the rate is the share of samples whose answer normalized to
       exactly one word. It is a format measure. It says nothing about whether the model agreed with
       anything it was told.
     </p>
 
     <p>
-      In particular it is <strong>not</strong> a measure of whether a model accepted the premise in
-      the framing's system prompt. A model told {
+      In particular it is <strong>not</strong> a measure of whether a model accepted the premise in the
+      framing's system prompt. A model told {
         exampleAssertion ? <q>{exampleAssertion}</q> : 'the answer as fact'
       }{' '}
       that then answers <q>No</q> has ignored its operator and still scores 100% here, because{' '}
@@ -378,15 +380,15 @@ const contested = exampleQuestion
     <h2 id="authorship">11. Who writes this report</h2>
 
     <p>
-      <strong>No language model writes any of it.</strong> The executive summary, the key findings,
-      the vendor profiles, the headlines and every number on this site are produced at build time by
-      pure functions in{' '}
+      <strong>No language model writes any of it.</strong> The executive summary, the key findings, the
+      vendor profiles, the headlines and every number on this site are produced at build time by pure
+      functions in{' '}
       <a href={sourceUrl('src/site/lib/prose.ts')}><code>src/site/lib/prose.ts</code></a>,{' '}
       <a href={sourceUrl('src/site/lib/scores.ts')}><code>src/site/lib/scores.ts</code></a> and{' '}
-      <a href={sourceUrl('src/site/lib/sensitivity.ts')}><code>src/site/lib/sensitivity.ts</code></a>,
-      reading the committed edition. The same edition always renders the same words, and a sentence
-      only appears when the data supports it — a quiet week gets fewer findings rather than padded
-      ones.
+      <a href={sourceUrl('src/site/lib/sensitivity.ts')}><code>src/site/lib/sensitivity.ts</code></a
+      >, reading the committed edition. The same edition always renders the same words, and a
+      sentence only appears when the data supports it — a quiet week gets fewer findings rather than
+      padded ones.
     </p>
 
     <p>
@@ -396,8 +398,8 @@ const contested = exampleQuestion
 
     <p>
       This is a deliberate constraint rather than an implementation detail. An analyst note written
-      by a model would be an unreproducible claim about a reproducible measurement, and the published
-      site would then depend on a provider at build time — which it never does.
+      by a model would be an unreproducible claim about a reproducible measurement, and the
+      published site would then depend on a provider at build time — which it never does.
     </p>
 
     <h2 id="limitations">What this does not measure</h2>

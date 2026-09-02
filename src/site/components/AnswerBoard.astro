@@ -255,8 +255,8 @@ const Heading = headline ? 'h1' : 'h2'
         <span data-edition>
           Recorded {run.isoWeek.replace(/^(\d+)-W(\d+)$/, 'week $2, $1')}
           {run.isMock && ' from sample fixtures'}. Real durations, verbatim words
-          <span data-speed-note />. Teal is the wait before the first word, hatched where the
-          model spent it reasoning; the rest is answering.
+          <span data-speed-note />. Teal is the wait before the first word, hatched where the model
+          spent it reasoning; the rest is answering.
         </span>
         <a href={routes.report(first.id)} data-report-link>
           Full report →
