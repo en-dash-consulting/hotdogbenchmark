@@ -25,6 +25,10 @@ on:
         description: 'Comma-separated model ids (blank = all enabled)'
         required: false
         default: ''
+      conditions:
+        description: 'Comma-separated condition ids (blank = all enabled; "control" = the cheap path)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -71,6 +75,9 @@ jobs:
           ARGS=""
           if [ -n "${{ github.event.inputs.models }}" ]; then
             ARGS="--models ${{ github.event.inputs.models }}"
+          fi
+          if [ -n "${{ github.event.inputs.conditions }}" ]; then
+            ARGS="$ARGS --conditions ${{ github.event.inputs.conditions }}"
           fi
           npm run bench -- run $ARGS 2>&1 | tee /tmp/bench-output.txt
 

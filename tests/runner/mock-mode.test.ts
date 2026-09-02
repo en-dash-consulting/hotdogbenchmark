@@ -131,6 +131,48 @@ describe('createMockAdapter', () => {
     expect(a.timing.totalMs).not.toBe(b.timing.totalMs)
   })
 
+  it('replays a recording made under the same system prompt when there is one', async () => {
+    const custom = new Map(fixtures)
+    custom.set('anthropic', {
+      provider: 'anthropic',
+      modelId: 'm',
+      source: 'live',
+      recordedAt: '2026-09-01',
+      responses: [
+        { ...fixtures.get('anthropic')!.responses[0]!, systemPrompt: null, text: 'No' },
+        {
+          ...fixtures.get('anthropic')!.responses[0]!,
+          conditionId: 'asserted',
+          systemPrompt: 'A hot dog is a sandwich.',
+          text: 'Yes',
+        },
+      ],
+    })
+    const mock = createMockAdapter('anthropic', { fixtures: custom, speed: 0 })
+
+    const control = await mock.complete(REQUEST, fakeContext())
+    expect(control.text).toBe('No')
+    expect(control.raw).not.toHaveProperty('replayedFrom')
+
+    const asserted = await mock.complete(
+      { ...REQUEST, systemPrompt: 'A hot dog is a sandwich.' },
+      fakeContext(),
+    )
+    expect(asserted.text).toBe('Yes')
+    expect(asserted.raw).not.toHaveProperty('replayedFrom')
+  })
+
+  it('falls back to the control recording for an unrecorded system prompt, and says so', async () => {
+    // A fixture captured before conditions existed still runs under every
+    // arm; it just cannot show sensitivity, and the result admits that.
+    const result = await adapter().complete(
+      { ...REQUEST, systemPrompt: 'A hot dog is a sandwich.' },
+      fakeContext(),
+    )
+    expect(result.text).toBe('No')
+    expect(result.raw).toMatchObject({ mock: true, replayedFrom: 'control' })
+  })
+
   it('preserves the null-versus-zero distinction from the recording', async () => {
     // Mistral reports no reasoning tokens at all; OpenAI reports some.
     const mistral = await createMockAdapter('mistral', { fixtures, speed: 0 }).complete(
@@ -165,6 +207,7 @@ describe('bench run --mock end to end, with no API keys', () => {
       'tests/fixtures/responses',
       'questions.json',
       'models.json',
+      'conditions.json',
       'package.json',
     ]) {
       const target = join(root, entry)
@@ -266,6 +309,58 @@ describe('bench run --mock end to end, with no API keys', () => {
     )
     expect(run.questions).toHaveLength(1)
     expect(run.results[0].models[0].samples).toHaveLength(1)
+  })
+
+  it('runs every enabled condition by default and tags each cell', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1'])
+    const run = JSON.parse(
+      readFileSync(join(cwd, 'data/runs', readdirSync(join(cwd, 'data/runs'))[0]!), 'utf8'),
+    )
+    const conditions = JSON.parse(readFileSync(join(ROOT, 'conditions.json'), 'utf8')) as {
+      conditions: Array<{ id: string; enabled: boolean }>
+    }
+    const enabled = conditions.conditions.filter((c) => c.enabled).map((c) => c.id)
+    expect(run.conditions.map((c: { id: string }) => c.id)).toEqual(enabled)
+    expect(run.results).toHaveLength(enabled.length * 3)
+    const asserted = run.results.find(
+      (r: { conditionId: string; questionId: string }) =>
+        r.conditionId === 'asserted' && r.questionId === 'taco',
+    )
+    expect(asserted.systemPrompt).toBe('A taco is a sandwich.')
+  })
+
+  it('restricts the run with --conditions while always keeping the control', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1', '--conditions', 'asserted'])
+    const run = JSON.parse(
+      readFileSync(join(cwd, 'data/runs', readdirSync(join(cwd, 'data/runs'))[0]!), 'utf8'),
+    )
+    expect(run.conditions.map((c: { id: string }) => c.id)).toEqual(['control', 'asserted'])
+  })
+
+  it('lets a fork run the control alone', () => {
+    const cwd = setUp()
+    runCli(cwd, ['run', '--mock', '--samples', '1', '--conditions', 'control'])
+    const run = JSON.parse(
+      readFileSync(join(cwd, 'data/runs', readdirSync(join(cwd, 'data/runs'))[0]!), 'utf8'),
+    )
+    expect(run.conditions.map((c: { id: string }) => c.id)).toEqual(['control'])
+    expect(run.results).toHaveLength(3)
+  })
+
+  it('prints the full matrix and the total call count in dry-run mode', () => {
+    const cwd = setUp()
+    const output = runCli(cwd, ['run', '--mock', '--dry-run', '--samples', '2'])
+    expect(output).toContain('Conditions:   3')
+    expect(output).toContain('"A hot dog is a sandwich."')
+    expect(output).toContain('Matrix:       3 conditions x 3 questions x 7 models x 2 samples')
+    expect(output).toContain('Total calls:  126')
+  })
+
+  it('exits 2 on an unknown condition id', () => {
+    const cwd = setUp()
+    expect(() => runCli(cwd, ['run', '--mock', '--conditions', 'shouted'])).toThrow()
   })
 
   it('exits 2 on an unknown question id rather than silently running everything', () => {

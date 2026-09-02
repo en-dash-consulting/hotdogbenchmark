@@ -27,10 +27,21 @@ import { overrideAllAdapters } from './registry.ts'
 import { ProviderError } from './types.ts'
 import type { AdapterContext, CompleteRequest, CompleteResult, ProviderAdapter } from './types.ts'
 
-/** One recorded answer for one question. */
+/** One recorded answer for one question under one condition. */
 export interface MockResponse {
   /** The question id this answer belongs to. */
   questionId: string
+  /**
+   * The condition it was recorded under. Informational; matching uses the
+   * rendered `systemPrompt` below, which is what the adapter actually sees.
+   */
+  conditionId?: string
+  /**
+   * The system prompt this answer was recorded under, or null for none.
+   * Absent on fixtures recorded before conditions existed, which means the
+   * same as null.
+   */
+  systemPrompt?: string | null
   /** What the model said. */
   text: string
   usage: {
@@ -106,14 +117,15 @@ export function createMockAdapter(providerId: string, options: MockOptions): Pro
         )
       }
 
-      const response = matchResponse(fixture, request.prompt)
-      if (!response) {
+      const match = matchResponse(fixture, request.prompt, request.systemPrompt)
+      if (!match) {
         throw new ProviderError(
           'bad_response',
           `No recorded response for this prompt in the ${providerId} fixture. ` +
-            `Recorded questions: ${fixture.responses.map((r) => r.questionId).join(', ')}`,
+            `Recorded questions: ${[...new Set(fixture.responses.map((r) => r.questionId))].join(', ')}`,
         )
       }
+      const { response, exact } = match
 
       // Vary the recorded timing a little so charts are not perfectly flat.
       // Seeded from the provider, question and seed together, so the same
@@ -149,27 +161,51 @@ export function createMockAdapter(providerId: string, options: MockOptions): Pro
           ttfbMs,
           totalMs,
         },
-        raw: { mock: true, source: fixture.source, recordedAt: fixture.recordedAt },
+        raw: {
+          mock: true,
+          source: fixture.source,
+          recordedAt: fixture.recordedAt,
+          // Honest about a gap: a non-control arm replayed from the control
+          // recording says so, rather than passing off one answer as another.
+          ...(exact ? {} : { replayedFrom: 'control' }),
+        },
       }
     },
   }
 }
 
 /**
- * Find the recorded response for a prompt.
+ * Find the recorded response for a prompt and system prompt.
  *
  * The prompt is the question text, so the question id is recovered by matching
  * against the recorded subject rather than by passing the id through the
  * adapter interface — which would exist only for the mock's benefit and would
- * be a leak in the abstraction.
+ * be a leak in the abstraction. The condition is recovered the same way, from
+ * the system prompt the adapter was actually given.
+ *
+ * A recording under exactly this system prompt wins. Failing that, the control
+ * recording (no system prompt) is replayed and the result says so, so a
+ * fixture captured before conditions existed still runs — it just cannot show
+ * any sensitivity for that provider.
  */
-function matchResponse(fixture: MockFixture, prompt: string): MockResponse | undefined {
+function matchResponse(
+  fixture: MockFixture,
+  prompt: string,
+  systemPrompt: string | undefined,
+): { response: MockResponse; exact: boolean } | undefined {
   const normalized = prompt.toLowerCase()
-  return fixture.responses.find((response) => {
+  const candidates = fixture.responses.filter((response) => {
     // "hot-dog" appears in the prompt as "hot dog".
     const subject = response.questionId.replace(/-/g, ' ')
     return normalized.includes(subject)
   })
+  const wanted = systemPrompt ?? null
+
+  const exact = candidates.find((response) => (response.systemPrompt ?? null) === wanted)
+  if (exact) return { response: exact, exact: true }
+
+  const control = candidates.find((response) => (response.systemPrompt ?? null) === null)
+  return control ? { response: control, exact: false } : undefined
 }
 
 /** Stable string hash, so seeding does not depend on iteration order. */

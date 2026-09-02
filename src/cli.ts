@@ -36,6 +36,8 @@ Options for \`run\`:
   --timeout <ms>      Per-request timeout (default 60000)
   --models <ids>      Comma-separated model ids; default is every enabled model
   --questions <ids>   Comma-separated question ids; default is every enabled question
+  --conditions <ids>  Comma-separated condition ids; default is every enabled condition.
+                      The control is always run, so "--conditions control" is the cheap path
   --out <path>        Override the output file path
 
 Options for \`smoke\`:
@@ -161,6 +163,7 @@ export async function main(argv: string[]): Promise<number> {
         timeoutMs: numberFlag(argv, '--timeout', envNumber('BENCH_TIMEOUT_MS', DEFAULT_TIMEOUT_MS)),
         modelIds: listFlag(argv, '--models'),
         questionIds: listFlag(argv, '--questions'),
+        conditionIds: listFlag(argv, '--conditions'),
         out: flagValue(argv, '--out'),
       })
 

@@ -14,7 +14,9 @@ import { planJobs, runBenchmark } from '../runner/run.ts'
 import { getAdapter } from '../providers/registry.ts'
 import { registerAllAdapters } from '../providers/all.ts'
 import { installMockAdapters } from './mock-fixtures.ts'
-import { loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
+import { loadConditions, loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
+import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../schema/conditions.ts'
+import type { ConditionEntry } from '../schema/conditions.ts'
 import { writeManifest } from '../data/index.ts'
 import { isoWeekFor, runPathFor } from '../data/paths.ts'
 import { credentialsFromEnv } from '../env.ts'
@@ -32,6 +34,12 @@ export interface RunCommandOptions {
   modelIds: string[]
   /** Comma-separated question ids to restrict to. Empty means all enabled. */
   questionIds: string[]
+  /**
+   * Condition ids to run. Empty means every enabled condition. The control is
+   * always included: every other arm is measured against it, and a run file
+   * without it does not validate.
+   */
+  conditionIds: string[]
   /** Override the output path. */
   out?: string
   root?: string
@@ -43,6 +51,7 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
 
   let questions = loadQuestions(root)
   let models = loadModels(root)
+  let conditions = loadConditions(root)
 
   if (options.questionIds.length > 0) {
     const wanted = new Set(options.questionIds)
@@ -55,6 +64,19 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
       return 2
     }
     questions = questions.filter((q) => wanted.has(q.id))
+  }
+
+  if (options.conditionIds.length > 0) {
+    const wanted = new Set([CONTROL_CONDITION_ID, ...options.conditionIds])
+    const unknown = options.conditionIds.filter((id) => !conditions.some((c) => c.id === id))
+    if (unknown.length > 0) {
+      console.error(
+        `Unknown condition id(s): ${unknown.join(', ')}\n` +
+          `Enabled conditions: ${conditions.map((c) => c.id).join(', ')}`,
+      )
+      return 2
+    }
+    conditions = conditions.filter((c) => wanted.has(c.id))
   }
 
   if (options.modelIds.length > 0) {
@@ -80,7 +102,7 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
   let restoreAdapters: (() => void) | undefined
   if (options.mock) restoreAdapters = installMockAdapters(root)
 
-  const plan = planJobs(questions, models, credentials)
+  const plan = planJobs(questions, models, credentials, conditions)
 
   if (plan.jobs.length === 0) {
     console.error(
@@ -93,16 +115,18 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
   const outPath = options.out ?? runPathFor(isoWeekFor(new Date()))
 
   if (options.dryRun) {
-    printPlan(options, questions, plan, outPath)
+    printPlan(options, questions, conditions, plan, outPath)
     restoreAdapters?.()
     return 0
   }
 
+  const modelCount = plan.jobs.length / questions.length / conditions.length
   console.log(
     `Running ${plan.jobs.length} job${plan.jobs.length === 1 ? '' : 's'} ` +
-      `(${questions.length} question${questions.length === 1 ? '' : 's'} x ` +
-      `${plan.jobs.length / questions.length} model${plan.jobs.length / questions.length === 1 ? '' : 's'}) ` +
-      `at ${options.samples} sample${options.samples === 1 ? '' : 's'} each` +
+      `(${plural(conditions.length, 'condition')} x ` +
+      `${plural(questions.length, 'question')} x ` +
+      `${plural(modelCount, 'model')}) ` +
+      `at ${plural(options.samples, 'sample')} each` +
       `${options.mock ? ', in mock mode' : ''}.\n`,
   )
 
@@ -110,6 +134,7 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
     const outcome = await runBenchmark({
       questions,
       models,
+      conditions,
       credentials,
       getAdapter,
       fetch: globalThis.fetch,
@@ -121,10 +146,11 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
       gitSha: currentGitSha(root),
       isMock: options.mock,
       onProgress: (event) => {
+        const cell = `${event.conditionId}/${event.questionId}`.padEnd(22)
         if (event.type === 'job-done') {
-          console.log(`  ok    ${event.questionId.padEnd(12)} ${event.displayName}`)
+          console.log(`  ok    ${cell} ${event.displayName}`)
         } else if (event.type === 'job-error') {
-          console.log(`  error ${event.questionId.padEnd(12)} ${event.displayName}: ${event.error}`)
+          console.log(`  error ${cell} ${event.displayName}: ${event.error}`)
         }
       },
     })
@@ -155,15 +181,30 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
   }
 }
 
+function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count === 1 ? '' : 's'}`
+}
+
 function printPlan(
   options: RunCommandOptions,
   questions: QuestionEntry[],
+  conditions: ConditionEntry[],
   plan: ReturnType<typeof planJobs>,
   outPath: string,
 ): void {
   const models = [...new Set(plan.jobs.map((job) => job.model.modelId))]
   console.log('Dry run — no provider will be called.\n')
-  console.log(`Questions:    ${questions.length}`)
+  console.log(`Conditions:   ${conditions.length}`)
+  for (const condition of conditions) {
+    // Rendered against the first question so the reader sees an actual
+    // system prompt rather than a template with a placeholder in it.
+    const example = questions[0] ? renderSystemPrompt(condition, questions[0]) : null
+    console.log(
+      `  ${condition.id.padEnd(12)} ${example === null ? '(no system prompt)' : JSON.stringify(example)}` +
+        `${condition.temperature === null ? '' : `  temperature ${condition.temperature}`}`,
+    )
+  }
+  console.log(`\nQuestions:    ${questions.length}`)
   for (const question of questions) {
     console.log(`  ${question.id}: ${question.text}`)
   }
@@ -178,9 +219,14 @@ function printPlan(
       console.log(`  ${model.provider.padEnd(14)} ${model.modelId}`)
     }
   }
-  console.log(`\nSamples:      ${options.samples} per model per question`)
+  console.log(`\nSamples:      ${options.samples} per model per question per condition`)
   console.log(`Concurrency:  ${options.concurrency} (never more than one per provider)`)
   console.log(`Timeout:      ${options.timeoutMs} ms per request`)
+  // The number that matters once conditions multiply it.
+  console.log(
+    `Matrix:       ${conditions.length} conditions x ${questions.length} questions x ` +
+      `${models.length} models x ${options.samples} samples`,
+  )
   console.log(`Total calls:  ${plan.jobs.length * options.samples}`)
   console.log(`Output:       ${outPath}`)
 }

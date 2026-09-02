@@ -18,16 +18,31 @@ if (!latest) {
 console.log(`## Benchmark run — ${latest.isoWeek}`)
 console.log('')
 console.log(
-  `Run ID \`${latest.runId}\` · ${latest.questions.length} questions · started ${latest.startedAt}`,
+  `Run ID \`${latest.runId}\` · ${latest.questions.length} questions · ` +
+    `${latest.conditions.length} condition${latest.conditions.length === 1 ? '' : 's'} · started ${latest.startedAt}`,
 )
 if (latest.isMock) console.log('\n> **Mock run.** Replayed from recorded fixtures.')
 console.log('')
 
-for (const result of latest.results) {
-  const question = latest.questions.find((q) => q.id === result.questionId)
+for (const condition of latest.conditions) {
+  const cells = latest.results.filter((result) => result.conditionId === condition.id)
+  if (latest.conditions.length > 1) {
+    console.log(`## Condition: ${condition.label}`)
+    console.log('')
+    console.log(`_${condition.description}_`)
+    console.log('')
+  }
+
+  for (const result of cells) {
+    printCell(result)
+  }
+}
+
+function printCell(result) {
   console.log(`### ${result.questionId}`)
   console.log('')
-  console.log(`> ${question?.text ?? ''}`)
+  console.log(`> ${result.prompt}`)
+  if (result.systemPrompt) console.log(`>\n> System prompt: _${result.systemPrompt}_`)
   console.log('')
 
   const tally = { yes: 0, no: 0, other: 0 }

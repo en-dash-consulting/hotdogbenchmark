@@ -1,8 +1,10 @@
 /**
  * `bench:record` — capture a fresh fixture from live calls.
  *
- * Asks one provider every enabled question once, and writes the answers to
- * `tests/fixtures/responses/<provider>.json` for mock mode to replay.
+ * Asks one provider every enabled question once under every enabled
+ * condition, and writes the answers to `tests/fixtures/responses/<provider>.json`
+ * for mock mode to replay — so a mock run shows real, recorded framing
+ * sensitivity rather than the same answer under every arm.
  *
  * ## Redaction
  *
@@ -22,8 +24,10 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { getAdapter } from '../providers/registry.ts'
 import { registerAllAdapters } from '../providers/all.ts'
-import { loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
+import { loadConditions, loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
 import { credentialsFromEnv, PROVIDER_ENV_VARS, type ProviderId } from '../env.ts'
+import { renderPrompt, renderSystemPrompt } from '../schema/conditions.ts'
+import { DEFAULT_MAX_OUTPUT_TOKENS } from '../runner/run.ts'
 import { fixturePathFor } from './mock-fixtures.ts'
 import type { MockFixture, MockResponse } from '../providers/mock.ts'
 
@@ -58,42 +62,61 @@ export async function runRecord(options: RecordOptions): Promise<number> {
   }
 
   const questions = loadQuestions(root)
+  const conditions = loadConditions(root)
   const adapter = getAdapter(options.provider)
   const responses: MockResponse[] = []
 
-  console.log(`Recording ${questions.length} response(s) from ${model.displayName}…\n`)
+  console.log(
+    `Recording ${questions.length * conditions.length} response(s) from ${model.displayName} ` +
+      `(${questions.length} questions x ${conditions.length} conditions)…\n`,
+  )
 
-  for (const question of questions) {
-    const controller = new AbortController()
-    try {
-      const result = await adapter.complete(
-        { modelId: model.modelId, prompt: question.text, maxOutputTokens: 64 },
-        { credentials: { apiKey }, fetch: globalThis.fetch, signal: controller.signal },
-      )
-      // Copy named fields only. The vendor's raw payload is deliberately
-      // dropped rather than filtered.
-      responses.push({
-        questionId: question.id,
-        text: result.text,
-        usage: {
-          inputTokens: result.usage.inputTokens,
-          outputTokens: result.usage.outputTokens,
-          totalTokens: result.usage.totalTokens,
-          reasoningTokens: result.usage.reasoningTokens,
-          cachedInputTokens: result.usage.cachedInputTokens,
-        },
-        approxTotalMs: Math.round(result.timing.totalMs),
-        approxTtfbMs: result.timing.ttfbMs === null ? null : Math.round(result.timing.ttfbMs),
-      })
-      console.log(
-        `  ${question.id.padEnd(12)} ${JSON.stringify(result.text.slice(0, 40))} ` +
-          `(${Math.round(result.timing.totalMs)}ms)`,
-      )
-    } catch (error) {
-      console.error(
-        `  ${question.id.padEnd(12)} failed: ${error instanceof Error ? error.message : String(error)}`,
-      )
-      return 1
+  for (const condition of conditions) {
+    for (const question of questions) {
+      const controller = new AbortController()
+      const systemPrompt = renderSystemPrompt(condition, question)
+      const temperature = condition.temperature
+      try {
+        const result = await adapter.complete(
+          {
+            modelId: model.modelId,
+            prompt: renderPrompt(condition, question),
+            // The runner's cap, not a smaller one: a reasoning model given
+            // too little room returns nothing, and a fixture of nothing
+            // would teach mock mode the wrong lesson.
+            maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS,
+            ...(systemPrompt === null ? {} : { systemPrompt }),
+            ...(temperature === null ? {} : { temperature }),
+          },
+          { credentials: { apiKey }, fetch: globalThis.fetch, signal: controller.signal },
+        )
+        // Copy named fields only. The vendor's raw payload is deliberately
+        // dropped rather than filtered.
+        responses.push({
+          questionId: question.id,
+          conditionId: condition.id,
+          systemPrompt,
+          text: result.text,
+          usage: {
+            inputTokens: result.usage.inputTokens,
+            outputTokens: result.usage.outputTokens,
+            totalTokens: result.usage.totalTokens,
+            reasoningTokens: result.usage.reasoningTokens,
+            cachedInputTokens: result.usage.cachedInputTokens,
+          },
+          approxTotalMs: Math.round(result.timing.totalMs),
+          approxTtfbMs: result.timing.ttfbMs === null ? null : Math.round(result.timing.ttfbMs),
+        })
+        console.log(
+          `  ${`${condition.id}/${question.id}`.padEnd(22)} ${JSON.stringify(result.text.slice(0, 40))} ` +
+            `(${Math.round(result.timing.totalMs)}ms)`,
+        )
+      } catch (error) {
+        console.error(
+          `  ${`${condition.id}/${question.id}`.padEnd(22)} failed: ${error instanceof Error ? error.message : String(error)}`,
+        )
+        return 1
+      }
     }
   }
 
