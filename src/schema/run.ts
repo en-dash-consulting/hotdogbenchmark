@@ -19,6 +19,8 @@
  * be null, lives in `docs/data-schema.md`.
  */
 import { z } from 'zod'
+import { CONTROL_CONDITION_ID } from './conditions.ts'
+import { migrateRun } from '../data/migrate.ts'
 
 /**
  * Current schema version. Increment on any breaking change to the shapes below.
@@ -26,8 +28,16 @@ import { z } from 'zod'
  * Breaking means: an existing committed run file would stop validating. Adding
  * an optional field is not breaking; making a field required, removing one, or
  * narrowing a type is.
+ *
+ * ## History
+ *
+ * - **1** — the original shape: questions × models.
+ * - **2** — experimental conditions. Every result carries a `conditionId`, the
+ *   run records the `conditions` it ran, and each result records the exact
+ *   `prompt` and `systemPrompt` sent. Version-1 files are migrated on read by
+ *   assigning everything to the control condition, which is what they were.
  */
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 
 /** An ISO week label in UTC, e.g. `2026-W36`. One benchmark edition per week. */
 export const isoWeekSchema = z
@@ -258,15 +268,134 @@ export const questionSchema = z.object({
 })
 export type Question = z.infer<typeof questionSchema>
 
-/** Every model's results for one question. */
+/**
+ * One condition, as it was defined the week the run happened.
+ *
+ * Recorded in the run rather than read from today's registry when rendering,
+ * for the same reason `questions` is: a condition reworded later must not
+ * retroactively change what an old edition claims to have asked.
+ */
+export const runConditionSchema = z.object({
+  id: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'condition id must be a lowercase slug'),
+  label: z.string().min(1),
+  description: z.string().min(1),
+  /** The template, before `{subject}` substitution. The rendered text is on each result. */
+  systemPrompt: z.string().nullable().default(null),
+  promptPrefix: z.string().nullable().default(null),
+  promptSuffix: z.string().nullable().default(null),
+  temperature: z.number().nullable().default(null),
+})
+export type RunCondition = z.infer<typeof runConditionSchema>
+
+/**
+ * Every model's results for one question under one condition — one cell of
+ * the condition × question matrix.
+ *
+ * `prompt` and `systemPrompt` are the exact strings sent, after template
+ * substitution. They are stored per cell rather than reconstructed from the
+ * condition definition so that the archive records what was asked, not what
+ * the current rendering code would produce.
+ */
 export const questionResultSchema = z.object({
   questionId: z.string().min(1),
+  conditionId: z.string().min(1),
+  /** The user message actually sent. */
+  prompt: z.string().min(1),
+  /** The system prompt actually sent, or null when the arm has none. */
+  systemPrompt: z.string().nullable().default(null),
   models: z.array(modelResultSchema),
 })
 export type QuestionResult = z.infer<typeof questionResultSchema>
 
+/** The version-1 cell: a question and its models, with no notion of a condition. */
+export const questionResultV1Schema = z.object({
+  questionId: z.string().min(1),
+  models: z.array(modelResultSchema),
+})
+export type QuestionResultV1 = z.infer<typeof questionResultV1Schema>
+
 /**
- * One weekly edition of the benchmark.
+ * The fields every generation of the run file shares.
+ *
+ * Kept as a plain object so the version-1 and version-2 schemas below are
+ * built from one definition rather than two copies that drift.
+ */
+const runBaseFields = {
+  /** Unique id for this execution. Also the report's "document reference number". */
+  runId: z.string().min(1),
+  isoWeek: isoWeekSchema,
+  startedAt: isoTimestamp,
+  finishedAt: isoTimestamp,
+  /** `package.json` version of the runner that produced this file. */
+  runnerVersion: z.string().min(1),
+  /** Commit the runner was built from, so a result can be traced to code. */
+  gitSha: z.string().nullable().default(null),
+  /**
+   * True when the run replayed recorded fixtures instead of calling providers.
+   * The site labels mock runs, because publishing simulated data unlabelled
+   * would undermine the only thing this project is actually serious about.
+   */
+  isMock: z.boolean(),
+  questions: z.array(questionSchema).min(1),
+}
+
+/** Checks shared by both generations: unique questions, results that reference them, sane clock. */
+function refineRunBase(
+  run: {
+    questions: Question[]
+    results: Array<{ questionId: string }>
+    startedAt: string
+    finishedAt: string
+  },
+  ctx: z.RefinementCtx,
+): void {
+  const questionIds = new Set(run.questions.map((q) => q.id))
+  if (questionIds.size !== run.questions.length) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['questions'],
+      message: 'question ids must be unique within a run',
+    })
+  }
+  run.results.forEach((result, index) => {
+    if (!questionIds.has(result.questionId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['results', index, 'questionId'],
+        message: `results reference question "${result.questionId}", which is not in questions`,
+      })
+    }
+  })
+  if (Date.parse(run.finishedAt) < Date.parse(run.startedAt)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['finishedAt'],
+      message: 'finishedAt is before startedAt',
+    })
+  }
+}
+
+/**
+ * A run file as written under schema version 1.
+ *
+ * Still understood, never written. `parseBenchmarkRun` migrates one of these
+ * to the current shape on read, so the committed archive is never rewritten
+ * and a version-1 edition renders exactly as it did the week it was published.
+ */
+export const benchmarkRunV1Schema = z
+  .object({
+    schemaVersion: z.literal(1),
+    ...runBaseFields,
+    results: z.array(questionResultV1Schema),
+  })
+  .superRefine(refineRunBase)
+export type BenchmarkRunV1 = z.infer<typeof benchmarkRunV1Schema>
+
+/**
+ * One weekly edition of the benchmark, in the current shape.
  *
  * Written to `data/runs/<isoWeek>.json`. Re-running the same week overwrites
  * the file, so a re-run corrects an edition rather than creating a second one.
@@ -274,65 +403,95 @@ export type QuestionResult = z.infer<typeof questionResultSchema>
 export const benchmarkRunSchema = z
   .object({
     /** The schema generation this file was written under. See {@link SCHEMA_VERSION}. */
-    schemaVersion: z.number().int().positive(),
-    /** Unique id for this execution. Also the report's "document reference number". */
-    runId: z.string().min(1),
-    isoWeek: isoWeekSchema,
-    startedAt: isoTimestamp,
-    finishedAt: isoTimestamp,
-    /** `package.json` version of the runner that produced this file. */
-    runnerVersion: z.string().min(1),
-    /** Commit the runner was built from, so a result can be traced to code. */
-    gitSha: z.string().nullable().default(null),
-    /**
-     * True when the run replayed recorded fixtures instead of calling providers.
-     * The site labels mock runs, because publishing simulated data unlabelled
-     * would undermine the only thing this project is actually serious about.
-     */
-    isMock: z.boolean(),
-    questions: z.array(questionSchema).min(1),
+    schemaVersion: z.literal(SCHEMA_VERSION),
+    ...runBaseFields,
+    /** The conditions this edition ran, control first, as defined that week. */
+    conditions: z.array(runConditionSchema).min(1),
     results: z.array(questionResultSchema),
   })
   .superRefine((run, ctx) => {
-    const questionIds = new Set(run.questions.map((q) => q.id))
-    if (questionIds.size !== run.questions.length) {
+    refineRunBase(run, ctx)
+
+    const conditionIds = new Set(run.conditions.map((c) => c.id))
+    if (conditionIds.size !== run.conditions.length) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['questions'],
-        message: 'question ids must be unique within a run',
+        path: ['conditions'],
+        message: 'condition ids must be unique within a run',
       })
     }
+    if (run.conditions[0]?.id !== CONTROL_CONDITION_ID) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['conditions', 0, 'id'],
+        message: `the first condition must be "${CONTROL_CONDITION_ID}"`,
+      })
+    }
+
+    const cells = new Set<string>()
     run.results.forEach((result, index) => {
-      if (!questionIds.has(result.questionId)) {
+      if (!conditionIds.has(result.conditionId)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ['results', index, 'questionId'],
-          message: `results reference question "${result.questionId}", which is not in questions`,
+          path: ['results', index, 'conditionId'],
+          message: `results reference condition "${result.conditionId}", which is not in conditions`,
         })
       }
+      const cell = `${result.conditionId} ${result.questionId}`
+      if (cells.has(cell)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['results', index],
+          message: `question "${result.questionId}" appears twice under condition "${result.conditionId}"`,
+        })
+      }
+      cells.add(cell)
     })
-    if (Date.parse(run.finishedAt) < Date.parse(run.startedAt)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['finishedAt'],
-        message: 'finishedAt is before startedAt',
-      })
-    }
   })
 export type BenchmarkRun = z.infer<typeof benchmarkRunSchema>
 
 /**
- * Parse a run file, throwing a readable error that names the offending path.
+ * Parse a run file of any supported generation into the current shape.
+ *
+ * A version-1 file is validated against the version-1 schema and migrated;
+ * a current file is validated as-is. Either way the caller gets a
+ * {@link BenchmarkRun}, and the file on disk is untouched — migration happens
+ * on read, never by rewriting history.
  *
  * `label` is normally the file path, so a validation failure in CI tells the
  * contributor which of thirty committed files is wrong.
  */
 export function parseBenchmarkRun(input: unknown, label = 'benchmark run'): BenchmarkRun {
+  const version = schemaVersionOf(input)
+
+  if (version === 1) {
+    const result = benchmarkRunV1Schema.safeParse(input)
+    if (!result.success) {
+      throw new Error(
+        `${label} is not a valid benchmark run (schema version 1):\n${formatZodError(result.error)}`,
+      )
+    }
+    return migrateRun(result.data)
+  }
+
+  if (version !== null && version > SCHEMA_VERSION) {
+    throw new Error(
+      `${label} was written by a newer runner (schema version ${version} > ${SCHEMA_VERSION}); update your checkout`,
+    )
+  }
+
   const result = benchmarkRunSchema.safeParse(input)
   if (!result.success) {
     throw new Error(`${label} is not a valid benchmark run:\n${formatZodError(result.error)}`)
   }
   return result.data
+}
+
+/** The declared schema version of an unvalidated run, or null when it has none. */
+export function schemaVersionOf(input: unknown): number | null {
+  if (typeof input !== 'object' || input === null) return null
+  const version = (input as { schemaVersion?: unknown }).schemaVersion
+  return typeof version === 'number' && Number.isInteger(version) ? version : null
 }
 
 /** Render a zod error as one `path: message` line per issue, sorted for stable output. */

@@ -15,6 +15,8 @@ import { isoWeekSchema, verdictSchema } from './run.ts'
 /** How one question went in one edition. */
 export const questionTallySchema = z.object({
   questionId: z.string().min(1),
+  /** The condition these counts describe. The manifest tallies the control arm only. */
+  conditionId: z.string().min(1),
   /** Models that produced at least one sample. */
   okCount: z.number().int().nonnegative(),
   /** Models that produced none. */
@@ -34,6 +36,8 @@ export const manifestEntrySchema = z.object({
   isMock: z.boolean(),
   /** Question ids asked in this edition, in the order the run recorded them. */
   questionIds: z.array(z.string().min(1)),
+  /** Condition ids run in this edition, control first. A migrated version-1 run has only the control. */
+  conditionIds: z.array(z.string().min(1)),
   /** Distinct models evaluated, counted once even when they answered several questions. */
   modelCount: z.number().int().nonnegative(),
   questions: z.array(questionTallySchema),

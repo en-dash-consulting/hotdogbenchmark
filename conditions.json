@@ -1,0 +1,38 @@
+{
+  "$schema": "./src/schema/conditions.ts",
+  "conditions": [
+    {
+      "id": "control",
+      "label": "Control",
+      "description": "The question exactly as written, with no system prompt. The baseline every other arm is measured against, and what every edition before schema version 2 asked.",
+      "systemPrompt": null,
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null,
+      "enabled": true,
+      "notes": "Must be first, must stay plain, cannot be disabled. A fork that wants the cheap path disables everything else."
+    },
+    {
+      "id": "asserted",
+      "label": "Asserted",
+      "description": "A system prompt states the affirmative answer as fact before the question is asked: \"A hot dog is a sandwich.\"",
+      "systemPrompt": "{subject} is a sandwich.",
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null,
+      "enabled": true,
+      "notes": "The motivating case. A model that says No in the control and Yes here has told us something neither answer says alone."
+    },
+    {
+      "id": "denied",
+      "label": "Denied",
+      "description": "A system prompt states the negative answer as fact before the question is asked: \"A hot dog is not a sandwich.\"",
+      "systemPrompt": "{subject} is not a sandwich.",
+      "promptPrefix": null,
+      "promptSuffix": null,
+      "temperature": null,
+      "enabled": true,
+      "notes": "The mirror of the asserted arm, so suggestibility is measured in both directions rather than only toward Yes."
+    }
+  ]
+}

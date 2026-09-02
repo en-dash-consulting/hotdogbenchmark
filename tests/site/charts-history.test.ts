@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MIGRATED_CONTROL_CONDITION } from '../../src/data/migrate.ts'
 import {
   bandCentres,
   bandWidth,
@@ -216,7 +217,7 @@ function model(provider: string, verdict: Verdict | null, totalMs = 900): ModelR
 
 function run(isoWeek: string, models: ModelResult[]): BenchmarkRun {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     runId: `run-${isoWeek}`,
     isoWeek,
     startedAt: '2026-09-01T12:00:00.000Z',
@@ -225,7 +226,16 @@ function run(isoWeek: string, models: ModelResult[]): BenchmarkRun {
     gitSha: null,
     isMock: false,
     questions: [{ id: 'hot-dog', text: 'Is a hot dog a sandwich? One word answer.' }],
-    results: [{ questionId: 'hot-dog', models }],
+    conditions: [MIGRATED_CONTROL_CONDITION],
+    results: [
+      {
+        questionId: 'hot-dog',
+        conditionId: 'control',
+        prompt: 'Is a hot dog a sandwich? One word answer.',
+        systemPrompt: null,
+        models,
+      },
+    ],
   }
 }
 

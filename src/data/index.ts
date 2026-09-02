@@ -19,6 +19,7 @@ import {
   type Verdict,
 } from '../schema/run.ts'
 import type { DataManifest, ManifestEntry, QuestionTally } from '../schema/manifest.ts'
+import { CONTROL_CONDITION_ID } from '../schema/conditions.ts'
 import { MANIFEST_PATH, RUNS_DIR, isoWeekFromFilename, newestFirst } from './paths.ts'
 import { REPO_ROOT } from './registries.ts'
 
@@ -56,7 +57,10 @@ export function loadAllRuns(root: string = REPO_ROOT): RunFile[] {
 }
 
 /**
- * Read one run file into a validated run.
+ * Read one run file into a validated run in the current schema shape.
+ *
+ * Older files are migrated in memory by `parseBenchmarkRun`; nothing here
+ * writes, so the committed archive stays exactly as published.
  *
  * Every failure mode here names the file. A message like "unexpected token" is
  * useless when thirty run files are committed and one of them is wrong.
@@ -111,9 +115,15 @@ export function validateAllRuns(root: string = REPO_ROOT): string[] {
   return problems
 }
 
-/** Tally one question's results across models: how many answered, and what they said. */
+/**
+ * Tally one question's results across models: how many answered, and what
+ * they said. Counts the control arm only, so the headline numbers describe the
+ * question asked plainly rather than a blend of every framing.
+ */
 function tallyQuestion(run: BenchmarkRun, questionId: string): QuestionTally {
-  const result = run.results.find((r) => r.questionId === questionId)
+  const result = run.results.find(
+    (r) => r.questionId === questionId && r.conditionId === CONTROL_CONDITION_ID,
+  )
   const verdicts: Record<Verdict, number> = { yes: 0, no: 0, other: 0 }
   let okCount = 0
   let errorCount = 0
@@ -129,7 +139,7 @@ function tallyQuestion(run: BenchmarkRun, questionId: string): QuestionTally {
     if (model.aggregate.verdict) verdicts[model.aggregate.verdict] += 1
   }
 
-  return { questionId, okCount, errorCount, verdicts }
+  return { questionId, conditionId: CONTROL_CONDITION_ID, okCount, errorCount, verdicts }
 }
 
 function summarize(file: RunFile): ManifestEntry {
@@ -146,6 +156,7 @@ function summarize(file: RunFile): ManifestEntry {
     finishedAt: run.finishedAt,
     isMock: run.isMock,
     questionIds: run.questions.map((q) => q.id),
+    conditionIds: run.conditions.map((c) => c.id),
     modelCount: models.size,
     questions: run.questions.map((q) => tallyQuestion(run, q.id)),
   }

@@ -149,9 +149,11 @@ describe('manifest generation against a temporary data directory', () => {
     expect(entry?.questionIds).toEqual(['hot-dog', 'hamburger', 'taco'])
     const hotDog = entry?.questions.find((q) => q.questionId === 'hot-dog')
     // The fixture has three answering models and one that errored on every question.
+    expect(hotDog?.conditionId).toBe('control')
     expect(hotDog?.okCount).toBe(3)
     expect(hotDog?.errorCount).toBe(1)
     expect(hotDog?.verdicts).toEqual({ yes: 1, no: 2, other: 0 })
+    expect(entry?.conditionIds).toEqual(['control'])
   })
 
   it('regenerates byte-identically from unchanged inputs', () => {

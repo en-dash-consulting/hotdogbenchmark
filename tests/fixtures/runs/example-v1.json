@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "runId": "example-0000-0000-0000",
   "isoWeek": "2026-W36",
   "startedAt": "2026-09-01T12:00:00.000Z",
@@ -21,23 +21,9 @@
       "text": "Is a taco a sandwich? One word answer."
     }
   ],
-  "conditions": [
-    {
-      "id": "control",
-      "label": "Control",
-      "description": "The question exactly as written, with no system prompt.",
-      "systemPrompt": null,
-      "promptPrefix": null,
-      "promptSuffix": null,
-      "temperature": null
-    }
-  ],
   "results": [
     {
       "questionId": "hot-dog",
-      "conditionId": "control",
-      "prompt": "Is a hot dog a sandwich? One word answer.",
-      "systemPrompt": null,
       "models": [
         {
           "provider": "anthropic",
@@ -388,9 +374,6 @@
     },
     {
       "questionId": "hamburger",
-      "conditionId": "control",
-      "prompt": "Is a hamburger a sandwich? One word answer.",
-      "systemPrompt": null,
       "models": [
         {
           "provider": "anthropic",
@@ -741,9 +724,6 @@
     },
     {
       "questionId": "taco",
-      "conditionId": "control",
-      "prompt": "Is a taco a sandwich? One word answer.",
-      "systemPrompt": null,
       "models": [
         {
           "provider": "anthropic",

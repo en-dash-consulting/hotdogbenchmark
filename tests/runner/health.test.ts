@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MIGRATED_CONTROL_CONDITION } from '../../src/data/migrate.ts'
 import { assessProviderHealth, degradedProviders } from '../../src/runner/health.ts'
 import type { BenchmarkRun, ModelResult } from '../../src/schema/run.ts'
 
@@ -48,7 +49,7 @@ function model(provider: string, status: 'ok' | 'error'): ModelResult {
 /** A run with one question and the given per-provider statuses. */
 function run(isoWeek: string, statuses: Record<string, 'ok' | 'error'>): BenchmarkRun {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     runId: `run-${isoWeek}`,
     isoWeek,
     startedAt: '2026-09-01T12:00:00.000Z',
@@ -57,9 +58,13 @@ function run(isoWeek: string, statuses: Record<string, 'ok' | 'error'>): Benchma
     gitSha: null,
     isMock: false,
     questions: [{ id: 'hot-dog', text: 'Is a hot dog a sandwich? One word answer.' }],
+    conditions: [MIGRATED_CONTROL_CONDITION],
     results: [
       {
         questionId: 'hot-dog',
+        conditionId: 'control',
+        prompt: 'Is a hot dog a sandwich? One word answer.',
+        systemPrompt: null,
         models: Object.entries(statuses).map(([provider, status]) => model(provider, status)),
       },
     ],

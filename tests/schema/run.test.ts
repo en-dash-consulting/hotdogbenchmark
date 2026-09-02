@@ -12,6 +12,9 @@ import {
 const example = JSON.parse(
   readFileSync(new URL('../fixtures/runs/example.json', import.meta.url), 'utf8'),
 )
+const exampleV1 = JSON.parse(
+  readFileSync(new URL('../fixtures/runs/example-v1.json', import.meta.url), 'utf8'),
+)
 
 /** A structurally minimal run: one question, one model, one sample. */
 function minimalRun(): Record<string, unknown> {
@@ -25,9 +28,18 @@ function minimalRun(): Record<string, unknown> {
     gitSha: null,
     isMock: true,
     questions: [{ id: 'hot-dog', text: 'Is a hot dog a sandwich? One word answer.' }],
+    conditions: [
+      {
+        id: 'control',
+        label: 'Control',
+        description: 'The question exactly as written, with no system prompt.',
+      },
+    ],
     results: [
       {
         questionId: 'hot-dog',
+        conditionId: 'control',
+        prompt: 'Is a hot dog a sandwich? One word answer.',
         models: [
           {
             provider: 'anthropic',
@@ -64,6 +76,17 @@ function minimalRun(): Record<string, unknown> {
 describe('the committed example fixture', () => {
   it('validates', () => {
     expect(() => parseBenchmarkRun(example, 'tests/fixtures/runs/example.json')).not.toThrow()
+  })
+
+  it('is written under the current schema version', () => {
+    expect(example.schemaVersion).toBe(SCHEMA_VERSION)
+  })
+
+  it('has a frozen version-1 sibling that still parses, by migration', () => {
+    expect(exampleV1.schemaVersion).toBe(1)
+    const run = parseBenchmarkRun(exampleV1, 'tests/fixtures/runs/example-v1.json')
+    expect(run.schemaVersion).toBe(SCHEMA_VERSION)
+    expect(run.conditions.map((c) => c.id)).toEqual(['control'])
   })
 
   it('covers three questions and includes a failed model', () => {
@@ -155,6 +178,37 @@ describe('benchmarkRunSchema rejects', () => {
     const run = minimalRun() as any
     run.questions[0].id = 'Hot Dog'
     run.results[0].questionId = 'Hot Dog'
+    expect(benchmarkRunSchema.safeParse(run).success).toBe(false)
+  })
+
+  it('a result referencing a conditionId that is not in conditions', () => {
+    const run = minimalRun() as any
+    run.results[0].conditionId = 'shouted'
+    const result = benchmarkRunSchema.safeParse(run)
+    expect(result.success).toBe(false)
+    expect(JSON.stringify(result.error?.issues)).toContain('shouted')
+  })
+
+  it('a run whose first condition is not the control', () => {
+    const run = minimalRun() as any
+    run.conditions[0].id = 'asserted'
+    run.results[0].conditionId = 'asserted'
+    const result = benchmarkRunSchema.safeParse(run)
+    expect(result.success).toBe(false)
+    expect(JSON.stringify(result.error?.issues)).toContain('first condition must be')
+  })
+
+  it('the same question appearing twice under one condition', () => {
+    const run = minimalRun() as any
+    run.results.push(structuredClone(run.results[0]))
+    const result = benchmarkRunSchema.safeParse(run)
+    expect(result.success).toBe(false)
+    expect(JSON.stringify(result.error?.issues)).toContain('appears twice')
+  })
+
+  it('a result with no recorded prompt', () => {
+    const run = minimalRun() as any
+    delete run.results[0].prompt
     expect(benchmarkRunSchema.safeParse(run).success).toBe(false)
   })
 })

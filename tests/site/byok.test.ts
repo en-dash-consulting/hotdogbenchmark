@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MIGRATED_CONTROL_CONDITION } from '../../src/data/migrate.ts'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -94,7 +95,7 @@ describe('the run app', () => {
 describe('renderRun', () => {
   function run(text: string, verdict: 'yes' | 'no' | 'other' = 'no'): BenchmarkRun {
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       runId: 'browser-1',
       isoWeek: '2026-W36',
       startedAt: '2026-09-01T12:00:00.000Z',
@@ -103,9 +104,13 @@ describe('renderRun', () => {
       gitSha: null,
       isMock: false,
       questions: [{ id: 'custom', text: 'Is a burrito a sandwich? One word answer.' }],
+      conditions: [MIGRATED_CONTROL_CONDITION],
       results: [
         {
           questionId: 'custom',
+          conditionId: 'control',
+          prompt: 'Is a burrito a sandwich? One word answer.',
+          systemPrompt: null,
           models: [
             {
               provider: 'anthropic',

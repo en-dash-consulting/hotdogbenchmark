@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "runs": [
     {
       "isoWeek": "2026-W36",
@@ -13,10 +13,14 @@
         "hamburger",
         "taco"
       ],
+      "conditionIds": [
+        "control"
+      ],
       "modelCount": 6,
       "questions": [
         {
           "questionId": "hot-dog",
+          "conditionId": "control",
           "okCount": 5,
           "errorCount": 1,
           "verdicts": {
@@ -27,6 +31,7 @@
         },
         {
           "questionId": "hamburger",
+          "conditionId": "control",
           "okCount": 5,
           "errorCount": 1,
           "verdicts": {
@@ -37,6 +42,7 @@
         },
         {
           "questionId": "taco",
+          "conditionId": "control",
           "okCount": 5,
           "errorCount": 1,
           "verdicts": {

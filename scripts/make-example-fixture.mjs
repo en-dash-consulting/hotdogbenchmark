@@ -1,6 +1,10 @@
 // Generates tests/fixtures/runs/example.json — the canonical "a valid run looks
 // like this" file. Regenerate with `node scripts/make-example-fixture.mjs` after
 // a schema change; the output is committed so tests do not depend on this script.
+//
+// tests/fixtures/runs/example-v1.json is a frozen version-1 file used by the
+// migration tests. It is not generated and must never be regenerated: its
+// whole value is that it is exactly what a version-1 runner wrote.
 import { writeFileSync } from 'node:fs'
 
 const QUESTIONS = [
@@ -37,8 +41,23 @@ const verdictOf = (text) => {
 const SAMPLES = 3
 const start = Date.UTC(2026, 8, 1, 12, 0, 0)
 
+const CONDITIONS = [
+  {
+    id: 'control',
+    label: 'Control',
+    description: 'The question exactly as written, with no system prompt.',
+    systemPrompt: null,
+    promptPrefix: null,
+    promptSuffix: null,
+    temperature: null,
+  },
+]
+
 const results = QUESTIONS.map((question, qi) => ({
   questionId: question.id,
+  conditionId: 'control',
+  prompt: question.text,
+  systemPrompt: null,
   models: MODELS.map(([provider, modelId, displayName, answers, baseMs, outTok, streams]) => {
     if (answers === null) {
       return {
@@ -123,7 +142,7 @@ const results = QUESTIONS.map((question, qi) => ({
 }))
 
 const run = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   runId: 'example-0000-0000-0000',
   isoWeek: '2026-W36',
   startedAt: new Date(start).toISOString(),
@@ -132,6 +151,7 @@ const run = {
   gitSha: null,
   isMock: true,
   questions: QUESTIONS,
+  conditions: CONDITIONS,
   results,
 }
 

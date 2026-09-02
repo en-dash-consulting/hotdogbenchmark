@@ -16,6 +16,9 @@ const RUNTIME_AGNOSTIC = [
   // Pure path/week arithmetic that the runner needs. The rest of src/data does
   // real filesystem work and is deliberately not in this list.
   'src/data/paths.ts',
+  // The in-memory migration of older run files. The schema module calls it,
+  // and the schema has to run in a browser, so this does too.
+  'src/data/migrate.ts',
 ]
 
 export default tseslint.config(
