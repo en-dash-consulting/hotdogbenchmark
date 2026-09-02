@@ -11,7 +11,7 @@
 import '../styles/global.css'
 import { getLatestRun } from '../lib/data.ts'
 import { formatDate, formatEdition } from '../lib/format.ts'
-import { REPO_URL, RUN_YOUR_OWN_ENABLED, routes } from '../lib/urls.ts'
+import { REPO_URL, RUN_YOUR_OWN_ENABLED, href, routes } from '../lib/urls.ts'
 import ThemeToggle from '../components/ThemeToggle.astro'
 
 interface Props {
@@ -123,10 +123,17 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     <header class="masthead">
       <div class="container masthead-inner">
         <a class="wordmark" href={routes.home()}>
-          <span class="brand" aria-label="En Dash">
-            <span class="brand-en">en</span><span class="brand-dash">DASH</span>
+          <img
+            class="brand-mark"
+            src={href('brand/endash-square.svg')}
+            alt="En Dash"
+            width="44"
+            height="44"
+          />
+          <span class="wordmark-name">
+            <span class="wordmark-line">Sandwich Classification</span>
+            <span class="wordmark-line">Benchmark</span>
           </span>
-          <span class="wordmark-name">Sandwich Classification Benchmark</span>
         </a>
 
         <div class="masthead-controls">
@@ -191,57 +198,54 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
 
 <style>
   .masthead {
-    background: var(--surface);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   .masthead-inner {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: var(--space-s);
-    padding-block: var(--space-m) var(--space-s);
+    gap: var(--space-s) var(--space-l);
+    padding-block: var(--space-s);
   }
 
   .wordmark {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-s);
     text-decoration: none;
     color: inherit;
   }
 
-  /* The En Dash mark: "en" carrying the dash, "DASH" in italic. */
-  .brand {
-    font-family: var(--font-text);
-    font-weight: 900;
-    font-size: var(--step-2);
-    letter-spacing: -0.02em;
-    color: var(--text-strong);
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .brand-en {
-    border-bottom: 4px solid var(--accent-fill);
-    padding-bottom: 0.05em;
-  }
-
-  .brand-dash {
-    font-style: italic;
+  .brand-mark {
+    display: block;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
   }
 
   .wordmark-name {
+    display: flex;
+    flex-direction: column;
     font-family: var(--font-display);
     font-size: var(--step--1);
-    font-weight: 700;
-    letter-spacing: 0.06em;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--text-strong);
+  }
+
+  .wordmark-line:last-child {
+    color: var(--accent);
   }
 
   .brand-line {
-    height: 4px;
+    height: 3px;
     background: linear-gradient(90deg, var(--accent-fill) 0%, #7bffea 100%);
   }
 
@@ -255,33 +259,36 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
   .nav-list {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-m);
+    gap: var(--space-3xs);
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: var(--step--1);
   }
 
   .nav-list a {
-    color: var(--muted);
+    display: inline-block;
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-strong);
     text-decoration: none;
-    padding-block: var(--space-3xs);
-    border-bottom: 2px solid transparent;
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: 999px;
+    transition:
+      background 150ms var(--ease-out),
+      color 150ms var(--ease-out);
   }
 
   .nav-list a:hover {
-    color: var(--text-strong);
+    background: var(--surface-sunken);
   }
 
-  /* The current page is marked by weight and a rule, not by colour alone. */
+  /* The current page is a filled pill, not a colour change alone. */
   .nav-list a[aria-current='page'] {
-    color: var(--text-strong);
-    font-weight: 700;
-    border-bottom-color: var(--accent-fill);
-  }
-
-  .nav-list {
-    font-weight: 600;
+    background: var(--primary);
+    color: var(--on-primary);
   }
 
   main {

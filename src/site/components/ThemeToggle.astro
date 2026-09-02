@@ -19,7 +19,7 @@
   aria-pressed="false"
   title="Switch between light and dark"
 >
-  <span class="theme-toggle-label">Dark mode</span>
+  <span class="theme-toggle-label">Dark</span>
 </button>
 
 <script>
@@ -57,29 +57,52 @@
 </script>
 
 <style>
+  /* A compact pill that reads as a switch: a dot that fills when dark is on. */
   .theme-toggle {
-    font: inherit;
-    font-size: var(--step--1);
-    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-strong);
     background: transparent;
-    border: var(--hairline) solid var(--rule-strong);
-    border-radius: var(--radius);
-    padding: var(--space-3xs) var(--space-2xs);
+    border: 2px solid var(--rule-strong);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem 0.35rem 0.5rem;
     cursor: pointer;
-    white-space: nowrap;
+    transition:
+      border-color 150ms var(--ease-out),
+      background 150ms var(--ease-out);
+  }
+
+  .theme-toggle::before {
+    content: '';
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    border: 2px solid var(--text-strong);
+    background: transparent;
+    transition: background 150ms var(--ease-out);
   }
 
   .theme-toggle:hover {
-    color: var(--text-strong);
-    border-color: var(--muted);
+    border-color: var(--text-strong);
   }
 
-  /* The pressed state is conveyed by the label text as well as the styling. */
-  .theme-toggle[aria-pressed='true'] .theme-toggle-label::after {
-    content: ' on';
+  .theme-toggle[aria-pressed='true'] {
+    border-color: var(--accent-fill);
   }
 
-  .theme-toggle[aria-pressed='false'] .theme-toggle-label::after {
-    content: ' off';
+  .theme-toggle[aria-pressed='true']::before {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
 </style>
