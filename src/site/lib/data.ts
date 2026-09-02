@@ -18,7 +18,7 @@ import {
   loadSiteRegistry,
   REPO_ROOT,
 } from '../../data/registries.ts'
-import { enabledQuestions } from '../../schema/questions.ts'
+import { enabledQuestions, proposedQuestions } from '../../schema/questions.ts'
 import { enabledModels } from '../../schema/models.ts'
 import { CONTROL_CONDITION_ID, enabledConditions } from '../../schema/conditions.ts'
 import type { ConditionEntry } from '../../schema/conditions.ts'
@@ -80,6 +80,11 @@ export function getSite(): SiteRegistry {
 /** The questions currently asked, in registry order. The hot dog leads. */
 export function getQuestions(): QuestionEntry[] {
   return enabledQuestions(questionsRegistry)
+}
+
+/** Questions accepted but not yet asked, in registry order: what is up next. */
+export function getProposedQuestions(): QuestionEntry[] {
+  return proposedQuestions(questionsRegistry)
 }
 
 /** One question's registry entry, or null. */

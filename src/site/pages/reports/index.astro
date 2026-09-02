@@ -13,9 +13,11 @@ import {
   getLatestRun,
   getModelResults,
   getModels,
+  getProposedQuestions,
   getQuestions,
   hasData,
 } from '../../lib/data.ts'
+import { creditLine } from '../../../schema/questions.ts'
 import { formatDate, formatDuration, formatEdition } from '../../lib/format.ts'
 import { consensusOf, framingLabel, questionHeadline } from '../../lib/prose.ts'
 import { scoreModels } from '../../lib/scores.ts'
@@ -32,6 +34,7 @@ import { routes } from '../../lib/urls.ts'
 import type { Verdict } from '../../../schema/run.ts'
 
 const questions = getQuestions()
+const proposed = getProposedQuestions()
 const latest = getLatestRun()
 const editions = getAllRuns().length
 const models = getModels().length
@@ -198,6 +201,42 @@ const cards = questions.map((question, index) => {
         ))}
       </ol>
     ) : null
+  }
+
+  {
+    proposed.length > 0 && (
+      <section class="up-next" aria-labelledby="up-next-heading">
+        <p class="eyebrow">Up next</p>
+        <h2 id="up-next-heading">Accepted, not yet asked.</h2>
+        <p class="lede">
+          {proposed.length === 1
+            ? 'One question has been accepted and joins the next edition it is switched on for.'
+            : `${proposed.length} questions have been accepted and join the next edition they are switched on for.`}
+        </p>
+        <ul class="up-next-list">
+          {proposed.map((question) => (
+            <li class="up-next-card">
+              <p class="up-next-question">{questionHeadline(question)}</p>
+              {question.tagline && <p class="up-next-tagline">{question.tagline}</p>}
+              {creditLine(question) && (
+                <p class="up-next-credit">
+                  {question.contributor?.url ? (
+                    <>
+                      Sent in by{' '}
+                      <a href={question.contributor.url} rel="nofollow noopener">
+                        {question.contributor.name}
+                      </a>
+                    </>
+                  ) : (
+                    creditLine(question)
+                  )}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
   }
 
   <p class="rack-foot">
@@ -419,5 +458,55 @@ const cards = questions.map((question, index) => {
       grid-template-columns: minmax(0, 1fr);
       gap: 0;
     }
+  }
+  .up-next {
+    margin-top: var(--space-2xl);
+  }
+
+  .up-next h2 {
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .up-next .lede {
+    max-width: var(--measure);
+    margin-bottom: var(--space-m);
+  }
+
+  .up-next-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-s);
+  }
+
+  .up-next-card {
+    padding: var(--space-m);
+    background: var(--surface);
+    border-top: 3px solid var(--rule-strong);
+  }
+
+  .up-next-question {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
+  }
+
+  .up-next-tagline {
+    margin: var(--space-2xs) 0 0;
+    font-family: var(--font-text);
+    color: var(--muted);
+  }
+
+  .up-next-credit {
+    margin: var(--space-s) 0 0;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--text-strong);
   }
 </style>

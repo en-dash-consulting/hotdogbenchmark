@@ -27,6 +27,7 @@ import {
 } from '../../lib/seo.ts'
 import { questionShifts, treatedConditions } from '../../lib/sensitivity.ts'
 import { routes } from '../../lib/urls.ts'
+import { formatCost, questionCost, runCost } from '../../lib/cost.ts'
 import type { Verdict } from '../../../schema/run.ts'
 
 export function getStaticPaths() {
@@ -60,6 +61,7 @@ const entries = questions.map((question) => {
   const flipped = flippedNames(run, question.id)
   return {
     question,
+    cost: questionCost(run, question.id),
     verdict: consensus.verdict ? VERDICT_WORD[consensus.verdict] : null,
     tally: tallyPhrase(results, 'said'),
     minds:
@@ -108,7 +110,8 @@ const entries = questions.map((question) => {
   <p class="archive-note">
     Published {formatDate(run.finishedAt)}: {count(models, 'model')},{' '}
     {count(treatedConditions(run).length + 1, 'framing')}, {count(questions.length, 'question')},
-    every answer recorded and never revised.{' '}
+    every answer recorded and never revised. Estimated cost of the edition:{' '}
+    <strong>{formatCost(runCost(run))}</strong>.{' '}
     {
       isLatest ? (
         <>
@@ -138,6 +141,12 @@ const entries = questions.map((question) => {
             <span class="verdict-tally">{entry.tally}.</span>
           </p>
           {entry.minds && <p class="minds">{entry.minds}</p>}
+          <p class="cost">
+            {entry.cost === null
+              ? 'No cost estimate recorded'
+              : `Cost to ask: ${formatCost(entry.cost)}`}
+            {entry.question.cadence === 'monthly' && ' · asked monthly'}
+          </p>
           <p class="links">
             <a href={routes.runQuestion(run.isoWeek, entry.question.id)}>Archived report</a>
             <a href={routes.historyForQuestion(entry.question.id)}>Week by week</a>
@@ -219,8 +228,15 @@ const entries = questions.map((question) => {
     color: var(--muted);
   }
 
-  .minds {
+  .minds,
+  .cost {
     margin: var(--space-2xs) 0 0;
+  }
+
+  .cost {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    color: var(--muted);
   }
 
   .links {

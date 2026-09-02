@@ -691,6 +691,11 @@ describe('the reports landing page', () => {
     expect(html).toMatch(/Week \d+, \d{4}/)
   })
 
+  it('renders no Up next section while nothing is proposed', () => {
+    const html = read('reports')
+    expect(html).not.toContain('id="up-next-heading"')
+  })
+
   it('is where the home page hands off to', () => {
     const home = read('')
     expect(home).toContain('href="/reports/"')

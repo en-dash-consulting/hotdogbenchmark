@@ -13,6 +13,7 @@
 import { documentReference, formatDate, formatEdition } from '../../lib/format.ts'
 import { getSite } from '../../lib/data.ts'
 import { preparedBy } from '../../../schema/site.ts'
+import { creditLine } from '../../../schema/questions.ts'
 import type { BenchmarkRun, RunCondition } from '../../../schema/run.ts'
 import type { QuestionEntry } from '../../../schema/questions.ts'
 
@@ -41,6 +42,7 @@ const {
 } = Astro.props
 const asked = questionText ?? question.text
 const site = getSite()
+const credit = creditLine(question)
 ---
 
 <header class="report-masthead">
@@ -60,6 +62,25 @@ const site = getSite()
       <dt>Prepared by</dt>
       <dd>{preparedBy(site)}</dd>
     </div>
+    {
+      credit && (
+        <div>
+          <dt>Question</dt>
+          <dd>
+            {question.contributor?.url ? (
+              <>
+                Sent in by{' '}
+                <a href={question.contributor.url} rel="nofollow noopener">
+                  {question.contributor.name}
+                </a>
+              </>
+            ) : (
+              credit
+            )}
+          </dd>
+        </div>
+      )
+    }
     <div>
       <dt>Document</dt>
       <dd class="tabular">

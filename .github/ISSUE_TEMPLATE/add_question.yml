@@ -1,5 +1,5 @@
 name: Add a question
-description: Propose a question for the models to answer every week.
+description: Propose a question for the models to answer in every edition.
 labels: ['add-question']
 body:
   - type: markdown
@@ -11,7 +11,11 @@ body:
         [CONTRIBUTING.md](../../blob/main/CONTRIBUTING.md#adding-a-question).
 
         A new question does not have to be about sandwiches, but the shipped framings in
-        `conditions.json` are. If yours has a different shape, say so in the last field.
+        `conditions.json` are. If yours has a different shape, say so in the "why" field.
+
+        What happens next: an accepted question is added to `questions.json` as `proposed`
+        and appears on the site under "Up next" with your credit, if you want one, before it
+        is switched live and asked in an edition.
 
   - type: input
     id: text
@@ -74,3 +78,35 @@ body:
         earn its place.
     validations:
       required: true
+
+  - type: input
+    id: credit-name
+    attributes:
+      label: How should you be credited?
+      description: >
+        The name shown as "Sent in by …" on the question's report and in "Up next". Leave it
+        blank to use your GitHub handle. If you would rather not be named, tick the box below.
+      placeholder: Ada Lovelace
+    validations:
+      required: false
+
+  - type: input
+    id: credit-url
+    attributes:
+      label: A link for the credit (optional)
+      description: Your site or profile, linked from your name.
+      placeholder: https://example.com
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: credit-opt-out
+    attributes:
+      label: Credit
+      description: >
+        Nothing is shown unless you say so here or above. Silence is not consent to be named.
+      options:
+        - label: Do not credit me. Leave the question uncredited.
+          required: false
+        - label: Credit me as above.
+          required: false

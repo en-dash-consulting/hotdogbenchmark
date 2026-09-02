@@ -219,12 +219,14 @@ const cards = [
   },
   ...questions.map((question) => {
     const consensus = consensusFor(latest, question.id)
+    const credited = question.contributor?.credit ? question.contributor.name : null
     return {
       name: question.id,
       html: card({
         kicker: KICKER,
         title: question.reportTitle,
         quote: headline(question),
+        lines: credited ? [`Sent in by ${esc(credited)}`] : undefined,
         edition,
         verdict: consensus?.label ?? null,
         detail: consensus?.detail ?? '',

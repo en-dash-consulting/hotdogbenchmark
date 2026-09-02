@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   ONE_WORD_SUFFIX,
+  creditLine,
+  dueQuestions,
   enabledQuestions,
+  isDue,
+  proposedQuestions,
   questionsRegistrySchema,
 } from '../../src/schema/questions.ts'
 import { enabledModels, findModel, modelsRegistrySchema } from '../../src/schema/models.ts'
@@ -257,5 +261,58 @@ describe('defaultSiteRegistry', () => {
     expect(site.contact).toBeNull()
     expect(site.more).toBeNull()
     expect(site.credits).toEqual([])
+  })
+})
+
+describe('the question lifecycle', () => {
+  const base = {
+    id: 'burrito',
+    subject: 'a burrito',
+    text: 'Is a burrito a sandwich? One word answer.',
+    reportTitle: 'The Burrito Question',
+    enabled: true,
+  }
+
+  it('defaults every existing entry to live, every edition, uncredited', () => {
+    const parsed = questionsRegistrySchema.parse({ questions: [base] })
+    expect(parsed.questions[0]!.status).toBe('live')
+    expect(parsed.questions[0]!.cadence).toBe('every')
+    expect(parsed.questions[0]!.contributor).toBeUndefined()
+  })
+
+  it('keeps a proposed question out of the asked set and in the up-next set', () => {
+    const registry = questionsRegistrySchema.parse({
+      questions: [base, { ...base, id: 'taco', status: 'proposed' }],
+    })
+    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(['burrito'])
+    expect(proposedQuestions(registry).map((q) => q.id)).toEqual(['taco'])
+  })
+
+  it('asks a monthly question only in the first edition of the month', () => {
+    const monthly = { cadence: 'monthly' as const }
+    expect(isDue(monthly, new Date('2026-09-07T12:00:00Z'))).toBe(true)
+    expect(isDue(monthly, new Date('2026-09-14T12:00:00Z'))).toBe(false)
+    expect(isDue({ cadence: 'every' }, new Date('2026-09-14T12:00:00Z'))).toBe(true)
+    const registry = questionsRegistrySchema.parse({
+      questions: [base, { ...base, id: 'taco', cadence: 'monthly' }],
+    })
+    expect(dueQuestions(registry, new Date('2026-09-14T12:00:00Z')).map((q) => q.id)).toEqual([
+      'burrito',
+    ])
+    expect(dueQuestions(registry, new Date('2026-09-07T12:00:00Z')).map((q) => q.id)).toEqual([
+      'burrito',
+      'taco',
+    ])
+  })
+
+  it('credits a contributor only when they said yes', () => {
+    expect(creditLine({ contributor: { name: 'Ada', credit: true } })).toBe('Sent in by Ada')
+    expect(creditLine({ contributor: { name: 'Ada', credit: false } })).toBeNull()
+    expect(creditLine({})).toBeNull()
+  })
+
+  it('ships no proposed question and every shipped question on the weekly cadence', () => {
+    expect(proposedQuestions(questionsRegistry)).toEqual([])
+    for (const question of questionsRegistry.questions) expect(question.cadence).toBe('every')
   })
 })

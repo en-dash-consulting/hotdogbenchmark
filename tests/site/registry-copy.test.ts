@@ -52,6 +52,18 @@ const QUESTIONS = {
       tagline: 'Folded, not stacked. The tortilla has opinions.',
       enabled: true,
     },
+    {
+      id: 'quesadilla',
+      subject: 'a quesadilla',
+      claim: 'is a wrap',
+      denial: 'is not a wrap',
+      text: 'Is a quesadilla a wrap? One word answer.',
+      reportTitle: 'The Quesadilla Question',
+      tagline: 'Folded once. Sent in.',
+      enabled: true,
+      status: 'proposed',
+      contributor: { name: '<b>Eve</b> & co', url: 'https://eve.example', credit: true },
+    },
   ],
 }
 
@@ -312,6 +324,18 @@ describe('a fork that asks whether a burrito is a wrap', () => {
         expect(hit, `${name} carries the upstream brand ${pattern}: …${context}…`).toBeNull()
       }
     }
+  })
+
+  it('shows a proposed question under Up next with its credit escaped, and asks it nowhere', () => {
+    const reports = pages.find((p) => p.path === '/reports/index.html')!.html
+    expect(reports).toContain('Up next')
+    expect(reports).toContain('Is a quesadilla a wrap?')
+    expect(reports).toContain('Sent in by')
+    expect(reports).toContain('&lt;b&gt;Eve&lt;/b&gt; &amp; co')
+    expect(reports).not.toContain('<b>Eve</b>')
+    expect(pages.some((p) => p.path === '/reports/quesadilla/index.html')).toBe(false)
+    const home = pages.find((p) => p.path === '/index.html')!.html
+    expect(home).not.toContain('quesadilla')
   })
 
   it('describes the feeds from the registry', () => {

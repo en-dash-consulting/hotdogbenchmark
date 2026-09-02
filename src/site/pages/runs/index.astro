@@ -13,6 +13,7 @@ import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../../li
 import { formatDate, formatEdition } from '../../lib/format.ts'
 import { runsIndexDescription, subjectName, tallyPhrase } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
+import { formatCost, runCost } from '../../lib/cost.ts'
 
 const runs = getAllRuns()
 const questions = getQuestions()
@@ -23,7 +24,10 @@ const modelCount = (run: (typeof runs)[number]) =>
 
 <Base title="Editions" description={runsIndexDescription(runs)}>
   <h1>Every week, asked again.</h1>
-  <p class="muted">Newest first. An edition is never revised after it is published.</p>
+  <p class="muted">
+    Newest first. An edition is never revised after it is published. The cost is the sum of every
+    call's estimate from the dated price table, so the bill for asking is a number, not a guess.
+  </p>
 
   {
     runs.length === 0 ? (
@@ -48,6 +52,9 @@ const modelCount = (run: (typeof runs)[number]) =>
                 <th scope="col" class="numeric">
                   Models
                 </th>
+                <th scope="col" class="numeric">
+                  Est. cost
+                </th>
                 <th scope="col">Notes</th>
               </tr>
             </thead>
@@ -60,6 +67,7 @@ const modelCount = (run: (typeof runs)[number]) =>
                   <td>{formatDate(run.finishedAt)}</td>
                   <td class="numeric">{run.questions.length}</td>
                   <td class="numeric">{modelCount(run)}</td>
+                  <td class="numeric">{formatCost(runCost(run))}</td>
                   <td>{run.isMock ? 'Sample data' : ''}</td>
                 </tr>
               ))}

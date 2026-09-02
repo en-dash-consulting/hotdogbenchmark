@@ -91,6 +91,16 @@ describe('add-a-question template', () => {
     const text = form.body.find((e: { id?: string }) => e.id === 'text')
     expect(text.attributes.description).toContain('One word answer.')
   })
+
+  it('asks how to credit the submitter, offers an opt-out, and says what happens next', () => {
+    for (const field of ['credit-name', 'credit-url', 'credit-opt-out']) {
+      expect(ids, `missing field: ${field}`).toContain(field)
+    }
+    const intro = form.body.find((e: { type: string }) => e.type === 'markdown')
+    expect(intro.attributes.value).toMatch(/proposed/)
+    expect(intro.attributes.value).toMatch(/Up next/)
+    expect(form.description).not.toMatch(/every week/)
+  })
 })
 
 describe('pull request template', () => {

@@ -12,8 +12,16 @@ import { SCORE_DEFINITIONS } from '../lib/scores.ts'
 import { SENSITIVITY_DEFINITION } from '../lib/sensitivity.ts'
 import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
 import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../../schema/conditions.ts'
-import { getConditionsRegistry, getModels, getQuestions, getSite } from '../lib/data.ts'
+import {
+  getConditionsRegistry,
+  getLatestRun,
+  getModels,
+  getQuestions,
+  getSite,
+} from '../lib/data.ts'
 import { questionHeadline } from '../lib/prose.ts'
+import { formatCost, runCost } from '../lib/cost.ts'
+import { formatEdition } from '../lib/format.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
 const questions = getQuestions()
@@ -24,6 +32,8 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
 const callsPerWeek = conditions.length * questions.length * models.length * DEFAULT_SAMPLES
 const controlOnlyCalls = questions.length * models.length * DEFAULT_SAMPLES
 const exampleQuestion = questions[0]
+const latest = getLatestRun()
+const latestCost = latest ? runCost(latest) : null
 
 /**
  * The first arm that states an answer, rendered for the first question:
@@ -147,9 +157,19 @@ const contested = exampleQuestion
       <strong>This multiplies the cost of collection.</strong>{' '}
       {conditions.length} conditions ×{' '}
       {questions.length} questions × {models.length} models × {DEFAULT_SAMPLES} samples is{' '}
-      {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone. Every arm other
-      than the control can be disabled in the registry, so a fork that does not want the extra spend is
-      not made to incur it.
+      {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone.{' '}
+      {
+        latest && latestCost !== null && (
+          <>
+            The {formatEdition(latest.isoWeek)} edition cost an estimated{' '}
+            <strong>{formatCost(latestCost)}</strong>, and each edition's figure is on its page
+            under <a href={routes.runs()}>Editions</a>.{' '}
+          </>
+        )
+      }
+      Every question runs in every edition; a question can be put on a monthly cadence in the registry
+      if the bill ever says so, and every arm other than the control can be disabled, so a fork that does
+      not want the extra spend is not made to incur it.
     </p>
 
     <h3 id="sensitivity">Framing sensitivity</h3>
