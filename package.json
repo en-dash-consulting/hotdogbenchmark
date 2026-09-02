@@ -23,6 +23,7 @@
     "test:watch": "vitest",
     "test:a11y": "node scripts/a11y.mjs",
     "test:audit": "node scripts/a11y-audit.mjs",
+    "test:responsive": "node scripts/responsive.mjs dist --out .responsive",
     "test:budget": "node scripts/js-budget.mjs",
     "test:lighthouse": "lhci autorun",
     "lint": "eslint .",

@@ -77,7 +77,12 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     <p class="status" role="status" data-status></p>
   </div>
 
-  <div class="table-scroll">
+  <div
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Table, scrolls sideways on narrow screens"
+  >
     <table>
       <caption>{caption}</caption>
       <thead>

@@ -52,7 +52,16 @@ npm run typecheck  # tsc --noEmit
 npm run data:validate   # every file under data/ against the schema
 ```
 
-All four run in CI on every pull request. There is no separate formatting step to remember —
+The site has its own gates, run against a built `dist/`:
+
+```sh
+npm run build              # build the site first
+npm run test:a11y          # axe on every page: light, dark, forced colors, reduced motion
+npm run test:responsive    # reflow, pointer targets, focus visibility, text spacing, at seven widths
+npm run test:budget        # client JavaScript under 30 KB gzipped
+```
+
+All of these run in CI on every pull request. There is no separate formatting step to remember —
 `npm run format` rewrites, `npm run format:check` verifies.
 
 ## Adding a question

@@ -49,7 +49,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
       </li>
       <li>
         <p>Check it against the live API:</p>
-        <pre><code>npm run bench:smoke -- --provider &lt;id&gt;</code></pre>
+        <pre tabindex="0"><code>npm run bench:smoke -- --provider &lt;id&gt;</code></pre>
         <p>
           That makes exactly one call and prints the text, the token usage and the timing. It costs
           a fraction of a cent.
@@ -102,7 +102,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
       </li>
       <li>
         <p>Record fixtures, so the adapter is testable without a key:</p>
-        <pre><code>npm run bench:record -- --provider &lt;id&gt;</code></pre>
+        <pre tabindex="0"><code>npm run bench:record -- --provider &lt;id&gt;</code></pre>
       </li>
       <li>
         <p>

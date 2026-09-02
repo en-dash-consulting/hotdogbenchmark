@@ -302,3 +302,108 @@ svg {
     outline: 3px solid Highlight;
   }
 }
+
+/*
+ * Forced colors (Windows High Contrast).
+ *
+ * The user agent replaces every color the stylesheet sets, so anything that
+ * carries meaning by background fill alone disappears. These rules give those
+ * things a border in the system colors, and let the SVG chart fills through
+ * where a pattern or label already distinguishes them.
+ */
+@media (forced-colors: active) {
+  .verdict-badge,
+  .word,
+  .dot,
+  .chip,
+  .tally-segment,
+  .tag-reasoning,
+  .stamp,
+  .framing,
+  .subjects button,
+  .replay,
+  .explorer button,
+  .question-switch a,
+  .nav-list a,
+  .tile,
+  .kpi,
+  .card {
+    border: 2px solid CanvasText;
+  }
+
+  /*
+   * Pills and toggles: system color pairs, forced, so a pressed control is a
+   * Highlight block with HighlightText on it whatever the theme tried to do.
+   * !important is deliberate here: component rules are more specific, and
+   * the whole point of this block is to beat them.
+   */
+  .nav-list a,
+  .framing,
+  .subjects button,
+  .replay,
+  .explorer button,
+  .question-switch a,
+  .theme-toggle,
+  .condition-nav a,
+  .tile,
+  .tag-reasoning,
+  .dot,
+  .word,
+  .chip,
+  .stamp,
+  .verdict-badge,
+  .system {
+    forced-color-adjust: none;
+    background: Canvas !important;
+    color: CanvasText !important;
+    border: 2px solid CanvasText !important;
+  }
+
+  a[aria-current='page'],
+  a[aria-pressed='true'],
+  button[aria-pressed='true'] {
+    forced-color-adjust: none;
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
+  }
+
+  .bar,
+  .range,
+  .sway-bar,
+  .tally {
+    border: 1px solid CanvasText;
+  }
+
+  .bar i,
+  .range-bar,
+  .range-median,
+  .sway-bar i {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .bar-ttfb {
+    background: Highlight;
+  }
+
+  svg rect,
+  svg circle,
+  svg path {
+    forced-color-adjust: auto;
+  }
+
+  :focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/*
+ * Focus, everywhere. One ring, thick enough to see on any ground the site
+ * uses, and never removed without a replacement.
+ */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

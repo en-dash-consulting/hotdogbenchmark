@@ -170,7 +170,9 @@ const summary =
       {
         bars.map((bar) => (
           <tr>
-            <th scope="row">{formatEdition(bar.isoWeek)}</th>
+            <th scope="row">
+              <a href={routes.run(bar.isoWeek)}>{formatEdition(bar.isoWeek)}</a>
+            </th>
             {bar.segments.map((segment) => (
               <td class="numeric">{segment.count}</td>
             ))}

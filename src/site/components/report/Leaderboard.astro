@@ -25,7 +25,12 @@ const ranked = rankWithDeltas(results, previous)
 <section aria-labelledby="leaderboard-heading" class="leaderboard">
   <h2 id="leaderboard-heading">Vendor standings</h2>
 
-  <div class="table-scroll">
+  <div
+    class="table-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Table, scrolls sideways on narrow screens"
+  >
     <table>
       <caption>{caption}</caption>
       <thead>

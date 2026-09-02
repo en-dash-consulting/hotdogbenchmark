@@ -15,7 +15,12 @@ const runs = getAllRuns()
     runs.length === 0 ? (
       <p>No editions have been published yet.</p>
     ) : (
-      <div class="table-scroll">
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Table, scrolls sideways on narrow screens"
+      >
         <table>
           <caption class="visually-hidden">Published editions</caption>
           <thead>

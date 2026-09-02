@@ -134,6 +134,15 @@ const summary =
               .join(', ')}
             . Jump to its profile.
           </title>
+          {/* The whole row is the target, not just the label or a possibly empty bar. */}
+          <rect
+            class="mark-hit"
+            x={0}
+            y={row.y - ROW_GAP / 2}
+            width={WIDTH}
+            height={groupHeight + ROW_GAP}
+            fill="transparent"
+          />
           <text
             x={LABEL_WIDTH - 10}
             y={round(row.y + groupHeight / 2 + 4)}
@@ -194,7 +203,9 @@ const summary =
       {
         entries.map((entry) => (
           <tr>
-            <th scope="row">{entry.model.displayName}</th>
+            <th scope="row">
+              <a href={`#${profileAnchor(entry.model)}`}>{entry.model.displayName}</a>
+            </th>
             {entry.byCondition.map(({ score }) => (
               <td class="numeric">
                 {score.score === null
@@ -246,8 +257,8 @@ const summary =
     font-weight: 700;
   }
 
-  .mark:hover rect,
-  .mark:focus-visible rect {
+  .mark:hover rect:not(.mark-hit),
+  .mark:focus-visible rect:not(.mark-hit) {
     stroke: var(--text-strong);
     stroke-width: 2;
   }

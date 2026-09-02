@@ -24,3 +24,6 @@ coverage/
 
 # Scratch output, e.g. mock runs written with --out
 tmp/
+
+# Screenshots written by npm run test:responsive
+.responsive/

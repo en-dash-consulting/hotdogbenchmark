@@ -24,6 +24,7 @@ export function href(path = ''): string {
 export const routes = {
   home: () => href(),
   about: () => href('about/'),
+  accessibility: () => href('accessibility/'),
   methodology: () => href('methodology/'),
   howItWorks: () => href('how-it-works/'),
   addAModel: () => href('add-a-model/'),

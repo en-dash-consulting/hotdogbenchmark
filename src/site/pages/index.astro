@@ -9,6 +9,7 @@ import Base from '../layouts/Base.astro'
 import AnswerBoard from '../components/AnswerBoard.astro'
 import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
+import { questionHeadline } from '../lib/prose.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
@@ -99,7 +100,12 @@ const QUICKSTART = [
             <h2 id="minds-heading">They do not agree with each other.</h2>
           </div>
 
-          <div class="grid-wrap table-scroll">
+          <div
+            class="grid-wrap table-scroll"
+            tabindex="0"
+            role="region"
+            aria-label="Table, scrolls sideways on narrow screens"
+          >
             <table class="align-grid">
               <caption class="visually-hidden">
                 Each model's majority answer to each question, {formatEdition(latest.isoWeek)}
@@ -255,7 +261,7 @@ const QUICKSTART = [
       </>
     ) : (
       <section class="empty">
-        <h1>Is a hot dog a sandwich?</h1>
+        <h1>{questions[0] ? questionHeadline(questions[0]) : 'Nothing asked yet.'}</h1>
         <p>
           No editions have been published yet. Run <code>npm run bench -- run --mock</code>.
         </p>

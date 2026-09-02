@@ -44,7 +44,12 @@ const { title, summary, caption } = Astro.props
 
   <details class="chart-data">
     <summary>Show the data</summary>
-    <div class="table-scroll">
+    <div
+      class="table-scroll"
+      tabindex="0"
+      role="region"
+      aria-label="Table, scrolls sideways on narrow screens"
+    >
       <slot name="table" />
     </div>
   </details>

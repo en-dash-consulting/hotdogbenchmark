@@ -340,11 +340,26 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
    * hamburger, nothing hidden.
    */
   @media (max-width: 52rem) {
+    /* Two rows of header is too much to pin on a phone; it scrolls away. */
+    .masthead {
+      position: static;
+    }
+
     .masthead-inner {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       row-gap: var(--space-xs);
+      min-width: 0;
+    }
+
+    .wordmark,
+    .wordmark-name {
+      min-width: 0;
+    }
+
+    .wordmark-line {
+      overflow-wrap: anywhere;
     }
 
     .masthead-controls {

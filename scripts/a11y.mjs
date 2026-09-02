@@ -1,12 +1,13 @@
 /**
- * Runs axe-core over every built page, in both themes.
+ * Runs axe-core over every built page, in four viewing modes.
  *
  * Serves `dist/` from a local static server, walks every HTML file, and fails
- * on any violation with the page, rule id, impact and CSS selector — enough to
+ * on any violation with the page, rule id, impact and CSS selector, enough to
  * fix it without re-running anything.
  *
- * Both themes are checked because a contrast failure that only exists in dark
- * mode is a real failure that a single-theme pass would never see.
+ * Light, dark, forced colors and reduced motion are all checked because a
+ * failure that only exists in one of them is a real failure that a
+ * single-mode pass would never see.
  *
  * Usage: node scripts/a11y.mjs [--url-list] [dist-dir]
  */
@@ -78,10 +79,34 @@ const browser = await chromium.launch()
 let violationCount = 0
 let checks = 0
 
+/**
+ * Four ways a real reader sees the site, at a phone width and a desktop one.
+ *
+ * Light and dark are the themes. Forced colors is Windows High Contrast, which
+ * replaces every color the stylesheet sets and shows whether structure
+ * survives on borders alone. Reduced motion is the state most users of
+ * animation-triggered vestibular disorders browse in, and the one the answer
+ * board renders statically in.
+ */
+const MODES = [
+  { name: 'light', width: 1280, context: { colorScheme: 'light' } },
+  { name: 'dark', width: 1280, context: { colorScheme: 'dark' } },
+  { name: 'forced-colors', width: 1280, context: { colorScheme: 'dark', forcedColors: 'active' } },
+  {
+    name: 'reduced-motion',
+    width: 375,
+    context: { colorScheme: 'light', reducedMotion: 'reduce' },
+  },
+]
+
 try {
-  for (const theme of ['light', 'dark']) {
-    const context = await browser.newContext({ colorScheme: theme })
+  for (const mode of MODES) {
+    const context = await browser.newContext({
+      ...mode.context,
+      viewport: { width: mode.width, height: Math.round(mode.width * 0.75) },
+    })
     const page = await context.newPage()
+    const theme = `${mode.name} @${mode.width}`
 
     for (const file of pages) {
       const route =
@@ -122,5 +147,5 @@ if (violationCount > 0) {
 }
 
 console.log(
-  `No accessibility violations. ${checks} page checks (${pages.length} pages × 2 themes).`,
+  `No accessibility violations. ${checks} page checks (${pages.length} pages × ${MODES.length} modes).`,
 )

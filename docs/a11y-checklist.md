@@ -10,30 +10,37 @@ sat down with a screen reader" is not much of a checklist.
 
 ## Status summary
 
-| Area                                             | Verified by                                                         | Status              |
-| ------------------------------------------------ | ------------------------------------------------------------------- | ------------------- |
-| WCAG rule violations                             | `npm run test:a11y` (axe-core, both themes, every page)             | ✅ Automated, in CI |
-| Color contrast                                   | `tests/site/contrast.test.ts` (computed ratios over the token file) | ✅ Automated, in CI |
-| Keyboard reachability and focus visibility       | `npm run test:audit`                                                | ✅ Automated        |
-| Heading outline                                  | `npm run test:audit`                                                | ✅ Automated        |
-| 320 px reflow and 200% zoom                      | `npm run test:audit`                                                | ✅ Automated        |
-| Forced-colors mode                               | `npm run test:audit`                                                | ✅ Automated        |
-| Structural markup (landmarks, one h1, skip link) | `tests/site/build-output.test.ts`                                   | ✅ Automated, in CI |
-| **Screen-reader pass**                           | A person, with a screen reader                                      | ⚠️ **Not yet done** |
+| Area                                             | Verified by                                                                         | Status              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------- |
+| WCAG rule violations                             | `npm run test:a11y` (axe-core; light, dark, forced colors, reduced motion)          | ✅ Automated, in CI |
+| Color contrast                                   | `tests/site/contrast.test.ts` (computed ratios over the token file)                 | ✅ Automated, in CI |
+| Reflow at 320 to 1920 px and 400% zoom           | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Pointer target size (2.5.8)                      | `npm run test:responsive` (24 px everywhere, 44 px for primary controls on a phone) | ✅ Automated, in CI |
+| Focus not obscured by the sticky header (2.4.11) | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Text spacing (1.4.12)                            | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Keyboard reachability and focus visibility       | `npm run test:audit`                                                                | ✅ Automated        |
+| Heading outline                                  | `npm run test:audit`                                                                | ✅ Automated        |
+| Structural markup (landmarks, one h1, skip link) | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
+| Chart marks link to evidence, with tooltips      | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
+| **Screen-reader pass**                           | A person, with VoiceOver and NVDA                                                   | ⚠️ **Not yet done** |
+| **Voice control and touch pass**                 | A person, with Voice Control and a phone                                            | ⚠️ **Not yet done** |
+
+The site states this publicly at `/accessibility/`.
 
 ---
 
 ## What was verified automatically
 
-Last run: **2026-09-01**, against a 17-page build.
+Last run: **2026-09-02**, against a 24-page build.
 Tooling: axe-core 4.x via `@axe-core/playwright`, Chromium via Playwright 1.62.
 
 ### axe-core — zero violations
 
-`npm run test:a11y` serves `dist/` and runs axe over **every** built page in **both** light and
-dark color schemes, with tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`.
+`npm run test:a11y` serves `dist/` and runs axe over **every** built page in four modes: light
+and dark at 1280 px, Windows High Contrast (forced colors) at 1280 px, and reduced motion at
+375 px, with tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`.
 
-Result: **0 violations across 34 page checks** (17 pages × 2 themes).
+Result: **0 violations across 96 page checks** (24 pages × 4 modes).
 
 The checker itself was verified by injecting an `<img>` with no alt text into the built output and
 confirming it failed with the page, theme, rule id and CSS selector. A checker that has never
@@ -70,6 +77,15 @@ demanded more width than the container had on a small phone. All auto-fill grids
 
 ---
 
+### Reflow, targets, focus, spacing: `npm run test:responsive`
+
+`scripts/responsive.mjs` loads every page at 320, 375, 414, 768, 1024, 1280 and 1920 CSS pixels
+and fails on horizontal overflow, on any interactive element under 24 by 24 CSS pixels (44 for
+the nav, the theme toggle, the question tabs, the framing buttons and the replay button at phone
+widths), on a focused element overlapping the sticky masthead after tabbing through the page, and
+on clipped or overflowing text once WCAG 1.4.12's spacing is applied. It writes a screenshot per
+page and width to `.responsive/`, which CI keeps as an artifact.
+
 ## What still needs a person
 
 **A screen-reader pass has not been done.** No automated tool can answer these, and this document
@@ -89,6 +105,11 @@ will not pretend otherwise:
       get where they expect?
 - [ ] **The `<details>` chart-data disclosures.** Are they discoverable, and is the relationship
       between a chart and its table clear when the chart itself is skipped?
+- [ ] **The answer board.** Does the replay's live region announce landings at a sensible rate,
+      or flood the reader? Do the question tabs and framing buttons read as tabs and a radio group?
+      Is the "changed their mind" tally announced after a framing switch?
+- [ ] **The framing explorer.** Is a vendor name in the position table discoverable as a button,
+      and does focusing it announce what changed on the page?
 - [ ] **Link purpose in context.** "Full archived report →" appears several times on the archive
       index. Is it clear which edition each refers to when read out of context?
 

@@ -138,7 +138,7 @@ export function renderRun(run: BenchmarkRun, subject: string): string {
 
     <section>
       <h3>Standings</h3>
-      <div class="table-scroll">
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Table, scrolls sideways on narrow screens">
         <table>
           <caption>Vendor standings — unofficial run</caption>
           <thead>

@@ -137,6 +137,8 @@ const summary =
             efficiency {point.entry.efficiency.toFixed(2)}, composite{' '}
             {point.entry.composite.toFixed(2)}. Jump to its profile.
           </title>
+          {/* A 24px hit area, invisible, so the dot is a real pointer target. */}
+          <circle class="mark-hit" cx={point.x} cy={point.y} r="12" fill="transparent" />
           <circle class="mark-dot" cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
           <text
             x={point.anchor === 'end' ? point.x - 8 : point.x + 8}
@@ -174,7 +176,9 @@ const summary =
       {
         plotted.map((entry) => (
           <tr>
-            <th scope="row">{entry.result.displayName}</th>
+            <th scope="row">
+              <a href={`#${profileAnchor(entry.result)}`}>{entry.result.displayName}</a>
+            </th>
             <td class="numeric">{entry.decisiveness.toFixed(2)}</td>
             <td class="numeric">{entry.efficiency.toFixed(2)}</td>
             <td class="numeric">{entry.composite.toFixed(2)}</td>

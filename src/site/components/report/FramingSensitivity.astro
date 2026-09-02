@@ -44,7 +44,7 @@ const { run, question } = Astro.props
 const enabled = hasConditions(run)
 const arms = enabled ? treatedConditions(run) : []
 const rows = enabled ? questionShifts(run, question.id) : []
-const summary = enabled ? framingSummary(run, question.id, question.subject) : ''
+const summary = enabled ? framingSummary(run, question.id, question) : ''
 const edition = enabled ? editionSensitivity(run) : []
 
 /** The system prompt as actually sent for this question under an arm. */
@@ -167,7 +167,12 @@ const comparableCount = rows.filter((row) =>
       </dl>
 
       <h3>Position by framing</h3>
-      <div class="table-scroll">
+      <div
+        class="table-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Table, scrolls sideways on narrow screens"
+      >
         <table class="shift-table">
           <caption>
             Each model's majority verdict on {question.subject} under the control and under each
@@ -545,6 +550,9 @@ const comparableCount = rows.filter((row) =>
   }
 
   .arm-link {
+    display: inline-block;
+    min-height: 1.5rem;
+    line-height: 1.5rem;
     font-family: var(--font-text);
     font-weight: 400;
     font-size: var(--step--1);
