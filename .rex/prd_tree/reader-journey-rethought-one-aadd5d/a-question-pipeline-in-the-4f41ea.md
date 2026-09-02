@@ -2,7 +2,7 @@
 id: "4f41ea6f-0a1f-4c40-a549-4fc5bb338550"
 level: "feature"
 title: "A question pipeline in the registry: proposed, scheduled, live, with credit, rendered as \"Up next\""
-status: "in_progress"
+status: "completed"
 priority: "high"
 tags:
   - "site"
@@ -12,6 +12,10 @@ tags:
   - "forkability"
 source: "UX review 2026-09-02"
 startedAt: "2026-09-02T22:21:17.025Z"
+completedAt: "2026-09-02T22:33:07.334Z"
+endedAt: "2026-09-02T22:33:07.334Z"
+resolutionType: "code-change"
+resolutionDetail: "questionEntrySchema gains status (proposed/live/retired, default live), contributor (name, url, credit) and cadence (every/monthly, default every) with proposedQuestions, dueQuestions, isDue and creditLine helpers and unit tests; the runner asks the due questions and prints what is resting; /reports/ renders Up next for proposed questions with escaped credit; the masthead and OG card carry the credit; src/site/lib/cost.ts sums sample estimates and the Editions page (column), edition page (total and per question) and methodology (latest figure) show it; add_question.yml, the PR template and CONTRIBUTING describe the states, the credit default and the opt-out; the fork build test adds a proposed question with a hostile contributor name and asserts it is shown under Up next, escaped, and asked nowhere. Week 36 cost: $0.22, hot dog $0.09. Suite and gates green."
 acceptanceCriteria:
   - "questionEntrySchema gains status, contributor and cadence as additive optional fields; every committed questions.json validates unchanged and no run-file migration is needed"
   - "The runner asks every live question by default; a monthly cadence is honored with unit tests for due and not-due editions, and no shipped question uses it"
@@ -21,6 +25,6 @@ acceptanceCriteria:
   - "The issue form, pull request template and CONTRIBUTING describe the credit default, the opt-out and the states"
   - "The fork build test passes over a scratch registry that includes a proposed question with a contributor"
 description: "The contribution features as drafted end when the visitor submits: a contact message or an issue goes somewhere, and the site shows nothing until, weeks later, a question appears in an edition. The ask-a-question item's own note mentioned \"canon and gallery cadences,\" a product decision that appeared nowhere else in the PRD.\n\n**Decision (maintainer, 2026-09-02): every question runs in every edition.** The cost of each run is shown on the site, and a per-question cadence exists as a configuration escape hatch, off by default, for the day the bill says otherwise.\n\n**Make the state visible.**\n\n*Registry.* `questionEntrySchema` gains `status: 'proposed' | 'live' | 'retired'` (default `live`, so every existing file validates), an optional `contributor` (name, optional URL, `credit: boolean`), and an optional `cadence: 'every' | 'monthly'` (default `every`). `enabled` stays as the runner switch; the runner asks `live` questions whose cadence is due, which with the default is all of them. A `proposed` question is one whose pull request merged and which the maintainer has accepted but not yet switched live.\n\n*Site.* The /reports/ rack gains an \"Up next\" section under the live reports: each proposed question as a small card with the question, the contributor's credit when they asked for it. The report page of a question that has run carries the byline (\"Sent in by …\") in the masthead meta, and its OG card carries the credit; the `<title>` does not, since the launch epic's title rule is the query people type. Nothing renders for questions with no contributor or with credit declined.\n\n*Cost per run.* Every edition's total estimated cost (the sum of every sample's estimate) is shown on the Editions page as a column and on the edition page as a line, with the per-question split, so the maintainer can see what each question costs and decide about cadence with a number in front of them. The methodology page's cost paragraph states the per-edition figure for the current registry.\n\n*Cadence.* A `monthly` question runs in the first edition of a month; the edition page says which cadence a question is on, so a gap in its history reads as a schedule, not a failure. Not enabled for any shipped question.\n\n*Process.* The add-a-question issue form and the pull request template ask for the credit line and the opt-out, state the default (uncredited when nothing is said), and say that an accepted question appears on the site as proposed first. CONTRIBUTING's question section describes the states.\n\nThis item absorbs the storage half of the pending \"Credit the people who send questions\" feature; that item keeps the share affordance and the collection copy and is blocked by this one."
-lastModified: "2026-09-02T22:21:17.037Z"
+lastModified: "2026-09-02T22:33:07.344Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

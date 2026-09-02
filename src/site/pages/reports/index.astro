@@ -15,9 +15,11 @@ import {
   getModels,
   getProposedQuestions,
   getQuestions,
+  getSite,
   hasData,
 } from '../../lib/data.ts'
 import { creditLine } from '../../../schema/questions.ts'
+import { nextEdition, nextEditionLine } from '../../lib/next-edition.ts'
 import { formatDate, formatDuration, formatEdition } from '../../lib/format.ts'
 import { consensusOf, framingLabel, questionHeadline } from '../../lib/prose.ts'
 import { scoreModels } from '../../lib/scores.ts'
@@ -36,6 +38,9 @@ import type { Verdict } from '../../../schema/run.ts'
 const questions = getQuestions()
 const proposed = getProposedQuestions()
 const latest = getLatestRun()
+const upcoming = nextEditionLine(
+  nextEdition(latest?.finishedAt ?? null, getSite().schedule, new Date()),
+)
 const editions = getAllRuns().length
 const models = getModels().length
 
@@ -119,7 +124,15 @@ const cards = questions.map((question, index) => {
           {count(questions.length, 'question')}, {models} models,{' '}
           {treatedConditions(latest).length + 1} framings, {count(editions, 'edition')} so far.
           Verdicts, latency, tokens, cost, framing sensitivity, and every verbatim answer. Latest:{' '}
-          {formatEdition(latest.isoWeek)}, {formatDate(latest.finishedAt)}.
+          {formatEdition(latest.isoWeek)}, {formatDate(latest.finishedAt)}. {upcoming} Subscribe by{' '}
+          <a href={routes.feedRss()} type="application/rss+xml">
+            RSS
+          </a>{' '}
+          or{' '}
+          <a href={routes.feedJson()} type="application/json">
+            JSON feed
+          </a>
+          .
         </p>
       ) : (
         <p class="lede">

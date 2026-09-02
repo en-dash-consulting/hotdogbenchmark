@@ -765,6 +765,21 @@ describe('navigation after the consolidation', () => {
     }
   })
 
+  it('says on every page when the next edition lands and how to subscribe', () => {
+    for (const page of pages) {
+      if (page.path === '/404.html') continue
+      expect(page.html, `${page.path} lacks the next-edition line`).toMatch(
+        /Next edition: [A-Z][a-z]+day, [A-Z][a-z]+ \d+\.|was due [A-Z][a-z]+day, [A-Z][a-z]+ \d+ and is running late/,
+      )
+      expect(page.html, `${page.path} lacks the RSS link`).toMatch(
+        /<a href="[^"]*feed\.xml" type="application\/rss\+xml" rel="alternate"[^>]*>/,
+      )
+      expect(page.html, `${page.path} lacks the JSON feed link`).toMatch(
+        /<a href="[^"]*feed\.json" type="application\/json" rel="alternate"[^>]*>/,
+      )
+    }
+  })
+
   it('has exactly one dark call-to-action block on the home page', () => {
     const home = read('')
     expect(home).not.toContain('class="handoff"')

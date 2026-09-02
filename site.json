@@ -23,6 +23,7 @@
       { "label": "Learn AgentCore", "href": "https://endash.us/apps/learn-agentcore" }
     ]
   },
+  "schedule": { "weekday": 1, "hourUtc": 12 },
   "contact": {
     "url": "https://endash.us/",
     "params": { "showContact": "true", "contactSource": "hotdogbenchmark-lol" },

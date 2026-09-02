@@ -66,6 +66,14 @@ export const siteRegistrySchema = z.object({
     .default(null),
   /** Where "ask a question" can also go, or null for the GitHub route alone. */
   contact: contactRouteSchema.nullable().default(null),
+  /**
+   * When the weekly workflow runs, so the site can say when the next edition
+   * lands: weekday 0 (Sunday) to 6, and the hour in UTC. A test keeps it in
+   * step with the workflow's cron.
+   */
+  schedule: z
+    .object({ weekday: z.number().int().min(0).max(6), hourUtc: z.number().int().min(0).max(23) })
+    .default({ weekday: 1, hourUtc: 12 }),
 })
 export type SiteRegistry = z.infer<typeof siteRegistrySchema>
 

@@ -11,6 +11,7 @@
 import '../styles/global.css'
 import { getLatestRun, getSite } from '../lib/data.ts'
 import { siteNameCaps } from '../../schema/site.ts'
+import { nextEdition, nextEditionLine } from '../lib/next-edition.ts'
 import { formatDate, formatEdition } from '../lib/format.ts'
 import { REPO_URL, RUN_YOUR_OWN_ENABLED, href, routes } from '../lib/urls.ts'
 import ThemeToggle from '../components/ThemeToggle.astro'
@@ -63,6 +64,7 @@ const ogImageUrl = new URL(
   Astro.site ?? 'http://localhost:4321',
 ).href
 const latest = getLatestRun()
+const upcoming = nextEditionLine(nextEdition(latest?.finishedAt ?? null, site.schedule, new Date()))
 
 /**
  * Google Analytics, only when a measurement ID is supplied at build time
@@ -271,7 +273,7 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
               latest ? (
                 <>
                   Data as of <strong>{formatEdition(latest.isoWeek)}</strong>, published{' '}
-                  {formatDate(latest.finishedAt)}.
+                  {formatDate(latest.finishedAt)}. {upcoming}
                   {latest.isMock && <span class="footer-mock"> Sample data.</span>}
                 </>
               ) : (
@@ -285,6 +287,10 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
             <a href={routes.methodology()}>Methodology</a>
             <span aria-hidden="true"> · </span>
             <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
+            <span aria-hidden="true"> · </span>
+            <a href={routes.feedRss()} type="application/rss+xml" rel="alternate"> RSS </a>
+            <span aria-hidden="true"> · </span>
+            <a href={routes.feedJson()} type="application/json" rel="alternate"> JSON feed </a>
             {
               site.credits.map((credit) => (
                 <>

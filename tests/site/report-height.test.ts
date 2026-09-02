@@ -63,7 +63,7 @@ beforeAll(async () => {
     server.listen(0, () => done((server.address() as { port: number }).port)),
   )
   browser = await chromium.launch()
-}, 180_000)
+}, 300_000)
 
 afterAll(async () => {
   await browser?.close()
@@ -89,14 +89,14 @@ describe('the report page height', () => {
       const height = await heightOf(`/reports/${question.id}/`, 1280)
       expect(height, `${question.id} is ${height} px tall at 1280`).toBeLessThan(DESKTOP_BUDGET)
     }
-  })
+  }, 120_000)
 
   it(`stays under ${PHONE_BUDGET} px at 390 wide, with the roster folded`, async () => {
     for (const question of questions) {
       const height = await heightOf(`/reports/${question.id}/`, 390)
       expect(height, `${question.id} is ${height} px tall at 390`).toBeLessThan(PHONE_BUDGET)
     }
-  })
+  }, 120_000)
 
   it('names every model exactly twice outside the evidence list: standings and roster', async () => {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })

@@ -117,3 +117,21 @@ describe('the pull-request workflow', () => {
     expect(ci!.raw).toContain('--mock')
   })
 })
+
+describe('the schedule in site.json', () => {
+  it("matches the weekly workflow's cron, so the site's next-edition line is true", () => {
+    const site = JSON.parse(readFileSync(new URL('../site.json', import.meta.url), 'utf8')) as {
+      schedule: { weekday: number; hourUtc: number }
+    }
+    const workflow = readFileSync(
+      new URL('../.github/workflows/benchmark.yml', import.meta.url),
+      'utf8',
+    )
+    const cron = /cron:\s*'([^']+)'/.exec(workflow)?.[1]
+    expect(cron).toBeTruthy()
+    const [minute, hour, , , weekday] = cron!.split(/\s+/)
+    expect(minute).toBe('0')
+    expect(Number(hour)).toBe(site.schedule.hourUtc)
+    expect(Number(weekday)).toBe(site.schedule.weekday)
+  })
+})
