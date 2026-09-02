@@ -58,7 +58,7 @@ function profile(result: ModelResult): string {
     ['Time to first token', formatDuration(aggregate.ttfbMs?.median)],
     ['Cost estimate', formatUsd(aggregate.costEstimateUsd)],
     ['Samples', formatInteger(aggregate.sampleCount)],
-    ['Instruction compliance', formatPercent(aggregate.followedInstructionRate)],
+    ['One-word compliance', formatPercent(aggregate.followedInstructionRate)],
   ]
 
   return `

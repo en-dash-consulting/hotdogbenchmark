@@ -17,6 +17,7 @@ import Scorecard from '../../components/report/Scorecard.astro'
 import ConditionNav from '../../components/report/ConditionNav.astro'
 import FramingSensitivity from '../../components/report/FramingSensitivity.astro'
 import { CONTROL_CONDITION_ID } from '../../../schema/conditions.ts'
+import { framingColumnAcross, questionFieldShift } from '../../lib/sensitivity.ts'
 import {
   getLatestRun,
   getModelResults,
@@ -44,6 +45,19 @@ const results = run ? getModelResults(run, question.id) : []
 const previous = run ? getPreviousRun(run.isoWeek) : null
 const previousResults = previous ? getModelResults(previous, question.id) : null
 const askedText = run ? getQuestionTextInRun(run, question.id) : null
+// What the system prompts did, surfaced in the KPI row and the table rather
+// than only in the framing section further down the page.
+const framingColumn = run ? framingColumnAcross(run, question.id) : null
+const fieldShift = run ? questionFieldShift(run, question.id) : null
+const framingTile =
+  fieldShift && fieldShift.comparable > 0
+    ? {
+        held: fieldShift.held,
+        comparable: fieldShift.comparable,
+        label: 'Held under framing',
+        sub: 'kept their answer when told otherwise',
+      }
+    : null
 ---
 
 <Base
@@ -69,7 +83,7 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
           </p>
         ) : (
           <>
-            <KpiTiles results={results} previous={previousResults} />
+            <KpiTiles results={results} previous={previousResults} framing={framingTile} />
             <ExecutiveSummary subject={question.subject} results={results} />
 
             <FramingSensitivity run={run} question={question} />
@@ -105,6 +119,7 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
             <ResultsTable
               results={results}
               caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
+              framing={framingColumn}
             />
 
             <p class="pdf-download">

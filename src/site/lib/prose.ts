@@ -320,12 +320,12 @@ export function keyFindings({ subject, results }: SummaryInput): Finding[] {
   )
   if (nonCompliant.length > 0) {
     findings.push({
-      label: 'Instruction compliance',
+      label: 'One-word compliance',
       text: `${list(nonCompliant.map((r) => r.displayName))} did not always keep it to one word. Following the instruction and picking an answer are scored separately; they are different skills.`,
     })
   } else {
     findings.push({
-      label: 'Instruction compliance',
+      label: 'One-word compliance',
       text: 'Every model kept it to one word. Nice.',
     })
   }
@@ -422,16 +422,27 @@ export function framingSummary(
     const moved = cells.filter(({ cell }) => cell.shift.status === 'moved')
     if (moved.length === 0) {
       sentences.push(
-        `${opening}, all ${cells.length} models stuck with their original answer${closing}.`,
+        cells.length === 1
+          ? `${opening}, the only comparable model stuck with its original answer${closing}.`
+          : `${opening}, all ${cells.length} models stuck with their original answer${closing}.`,
       )
       continue
     }
-    const described = moved.map(
-      ({ row, cell }) =>
-        `${row.model.displayName} (${VERDICT_POSITION[cell.shift.from!]} to ${VERDICT_POSITION[cell.shift.to!]})`,
-    )
+    // Where they landed, not who they were. Naming seven models inline made a
+    // paragraph nobody read; the position matrix directly below this says who,
+    // per arm, and says it in a table, which is the right shape for a list.
+    const byDestination = new Map<Verdict, number>()
+    for (const { cell } of moved) {
+      const to = cell.shift.to!
+      byDestination.set(to, (byDestination.get(to) ?? 0) + 1)
+    }
+    const destinations = [...byDestination.entries()].sort((a, b) => b[1] - a[1])
+    const direction =
+      destinations.length === 1
+        ? `, all of them to ${VERDICT_POSITION[destinations[0]![0]]}`
+        : `: ${list(destinations.map(([verdict, count]) => `${count} to ${VERDICT_POSITION[verdict]}`))}`
     sentences.push(
-      `${opening}, ${moved.length} of ${cells.length} models changed their answer${closing}: ${list(described)}.`,
+      `${opening}, ${moved.length} of ${cells.length} models changed their answer${closing}${direction}.`,
     )
   }
 

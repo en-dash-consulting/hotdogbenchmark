@@ -108,6 +108,17 @@ export interface ModelKey {
 
 const keyOf = (model: { provider: string; modelId: string }) => `${model.provider}/${model.modelId}`
 
+/**
+ * The stable identifier for a model within a run.
+ *
+ * Exported so a page can build a lookup keyed the same way this module keys
+ * its own comparisons — a page that invented its own key would silently miss
+ * a model whose display name changed between arms.
+ */
+export function modelKey(model: { provider: string; modelId: string }): string {
+  return keyOf(model)
+}
+
 /** True when an edition ran more than the control, so there is something to compare. */
 export function hasConditions(run: BenchmarkRun): boolean {
   return run.conditions.length > 1
@@ -178,6 +189,142 @@ export function questionShifts(run: BenchmarkRun, questionId: string): QuestionS
         movedAnywhere: cells.some((cell) => cell.shift.status === 'moved'),
       }
     })
+}
+
+/**
+ * How a model's position under a framing reads in a table cell.
+ *
+ * The report's compliance column measures answer *length* and nothing else, so
+ * a model can score 100% there while flatly ignoring the premise it was handed.
+ * This is the other half: what the system prompt actually did to the answer.
+ *
+ * `moved` is what the column sorts on, so a reader can bring the models that
+ * changed their mind to the top without reading every cell.
+ */
+export interface FramingShift {
+  /** The cell text. Always non-empty; `—` when there is nothing to compare. */
+  label: string
+  /** Arms this model's majority verdict changed under. */
+  moved: number
+  /** Arms that had a verdict under both this arm and the control. */
+  comparable: number
+}
+
+/** Verdicts as they are written in a table cell. */
+const VERDICT_WORD: Record<Verdict, string> = {
+  yes: 'Yes',
+  no: 'No',
+  other: 'no answer',
+}
+
+const NOTHING_TO_COMPARE: FramingShift = { label: '—', moved: 0, comparable: 0 }
+
+/**
+ * One model under one non-control arm, compared against the control.
+ *
+ * Reads as a position rather than a score — "Held No" and "Moved to Yes" say
+ * what happened without implying which is better, which is the same line the
+ * rest of this module walks.
+ */
+export function framingShiftUnder(shift: VerdictShift): FramingShift {
+  if (shift.status === 'incomparable') return NOTHING_TO_COMPARE
+  if (shift.status === 'held') {
+    return { label: `Held ${VERDICT_WORD[shift.from!]}`, moved: 0, comparable: 1 }
+  }
+  return { label: `Moved to ${VERDICT_WORD[shift.to!]}`, moved: 1, comparable: 1 }
+}
+
+/**
+ * One model across every non-control arm of one question, for the canonical
+ * report, where no single arm is the subject of the page.
+ *
+ * Names the arms it moved under rather than giving a bare count: "Moved:
+ * Asserted" tells the reader which way the model was pushed, and with two or
+ * three arms the name is no longer than the count would be.
+ */
+export function framingShiftAcross(row: QuestionShiftRow): FramingShift {
+  const comparable = row.cells.filter((cell) => cell.shift.status !== 'incomparable')
+  if (comparable.length === 0) return NOTHING_TO_COMPARE
+
+  const moved = comparable.filter((cell) => cell.shift.status === 'moved')
+  if (moved.length === 0) return { label: 'Held', moved: 0, comparable: comparable.length }
+
+  // Kept to one short line: this is a table cell beside nine other columns, and
+  // a label that wraps to three lines makes every row in the table tall.
+  const which =
+    moved.length === comparable.length && comparable.length > 1
+      ? 'all'
+      : moved.map((cell) => cell.condition.label).join(', ')
+  return {
+    label: comparable.length === 1 ? 'Moved' : `Moved: ${which}`,
+    moved: moved.length,
+    comparable: comparable.length,
+  }
+}
+
+export interface QuestionFieldShift {
+  /** Models with at least one comparable arm on this question. */
+  comparable: number
+  /** Of those, models that changed position under at least one arm. */
+  moved: number
+  /** Of those, models that held every position. */
+  held: number
+}
+
+/**
+ * The headline for one question: how much of the field moved when told the
+ * answer. {@link fieldSensitivity} is the same idea pooled over every question;
+ * this one is what a single report page can honestly claim.
+ */
+export function questionFieldShift(run: BenchmarkRun, questionId: string): QuestionFieldShift {
+  const rows = questionShifts(run, questionId).filter((row) =>
+    row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+  )
+  const moved = rows.filter((row) => row.movedAnywhere).length
+  return { comparable: rows.length, moved, held: rows.length - moved }
+}
+
+export interface FramingColumn {
+  /** Column header, and the stacked-table row label at narrow widths. */
+  label: string
+  /** Keyed by {@link modelKey}. */
+  cells: Record<string, FramingShift>
+}
+
+/**
+ * The framing column for the canonical report, where every arm is in scope.
+ *
+ * Null when the edition ran only the control — a fork that disabled the other
+ * arms gets no column rather than a column of dashes.
+ */
+export function framingColumnAcross(run: BenchmarkRun, questionId: string): FramingColumn | null {
+  if (!hasConditions(run)) return null
+  const cells: Record<string, FramingShift> = {}
+  for (const row of questionShifts(run, questionId)) {
+    cells[keyOf(row.model)] = framingShiftAcross(row)
+  }
+  return { label: 'Framing shift', cells }
+}
+
+/**
+ * The framing column for one arm's own page: that arm against the control.
+ *
+ * Null for the control itself, which has no system prompt and therefore
+ * nothing to have moved from.
+ */
+export function framingColumnUnder(
+  run: BenchmarkRun,
+  questionId: string,
+  conditionId: string,
+): FramingColumn | null {
+  if (conditionId === CONTROL_CONDITION_ID) return null
+  const cells: Record<string, FramingShift> = {}
+  for (const model of modelsInRun(run)) {
+    const control = resultIn(run, questionId, CONTROL_CONDITION_ID, model)
+    const treated = resultIn(run, questionId, conditionId, model)
+    cells[keyOf(model)] = framingShiftUnder(verdictShift(control, treated))
+  }
+  return { label: 'vs. control', cells }
 }
 
 export interface ModelSensitivity {

@@ -16,14 +16,26 @@ import { formatDuration, formatInteger, formatPercent, formatUsd } from '../../l
 import { scoreModels } from '../../lib/scores.ts'
 import { getModelEntry } from '../../lib/data.ts'
 import { routes } from '../../lib/urls.ts'
+import { modelKey } from '../../lib/sensitivity.ts'
+import type { FramingShift } from '../../lib/sensitivity.ts'
 import type { ModelResult } from '../../../schema/run.ts'
 
 interface Props {
   results: ModelResult[]
   caption: string
+  /**
+   * The framing column, when the edition ran more than the control.
+   *
+   * Passed in rather than derived here because its meaning depends on the
+   * page: the canonical report compares each model against every arm, and an
+   * arm's own page compares that arm against the control. The column is
+   * omitted entirely when there is nothing to compare, which is what a
+   * control-only edition or a fork with one condition produces.
+   */
+  framing?: { label: string; cells: Record<string, FramingShift> } | null
 }
 
-const { results, caption } = Astro.props
+const { results, caption, framing = null } = Astro.props
 
 // Default order is composite score descending — a defensible order that does
 // not depend on JavaScript having run.
@@ -40,14 +52,21 @@ const COLUMNS = [
   { key: 'model', label: 'Model', type: 'text' },
   { key: 'vendor', label: 'Vendor', type: 'text' },
   { key: 'verdict', label: 'Verdict', type: 'text' },
+  // Sorts on the number of arms the model moved under, not on the cell text,
+  // so one click brings every model that changed its mind to the top.
+  ...(framing ? ([{ key: 'framing', label: framing.label, type: 'number' }] as const) : []),
   { key: 'decisiveness', label: 'Decisiveness', type: 'number' },
   { key: 'efficiency', label: 'Efficiency', type: 'number' },
   { key: 'latency', label: 'Median latency', type: 'number' },
   { key: 'tokens', label: 'Output tokens', type: 'number' },
-  { key: 'compliance', label: 'Compliance', type: 'number' },
+  { key: 'oneWord', label: 'One word', type: 'number' },
   { key: 'cost', label: 'Cost est.', type: 'number' },
   { key: 'composite', label: 'Composite', type: 'number' },
 ] as const
+
+/** This model's framing cell, or a placeholder when the column is not shown. */
+const shiftFor = (result: ModelResult): FramingShift =>
+  framing?.cells[modelKey(result)] ?? { label: '—', moved: 0, comparable: 0 }
 
 const providers = [...new Set(rows.map((row) => row.vendor))].sort()
 ---
@@ -111,7 +130,8 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
                 data-efficiency={row.efficiency}
                 data-latency={a.totalMs?.median ?? ''}
                 data-tokens={a.outputTokens?.median ?? ''}
-                data-compliance={a.followedInstructionRate ?? ''}
+                data-framing={framing ? shiftFor(row.result).moved : ''}
+                data-one-word={a.followedInstructionRate ?? ''}
                 data-cost={a.costEstimateUsd ?? ''}
                 data-composite={row.composite}
               >
@@ -124,6 +144,15 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
                 <td role="cell" data-label="Verdict">
                   <VerdictBadge verdict={a.verdict} />
                 </td>
+                {framing && (
+                  <td
+                    role="cell"
+                    class:list={['framing-cell', shiftFor(row.result).moved > 0 && 'moved']}
+                    data-label={framing.label}
+                  >
+                    {shiftFor(row.result).label}
+                  </td>
+                )}
                 <td role="cell" class="numeric" data-label="Decisiveness">
                   {row.decisiveness.toFixed(2)}
                 </td>
@@ -136,7 +165,7 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
                 <td role="cell" class="numeric" data-label="Output tokens">
                   {formatInteger(a.outputTokens?.median)}
                 </td>
-                <td role="cell" class="numeric" data-label="Compliance">
+                <td role="cell" class="numeric" data-label="One word">
                   {formatPercent(a.followedInstructionRate)}
                 </td>
                 <td role="cell" class="numeric" data-label="Cost est.">
@@ -156,7 +185,17 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
   <p class="footnote">
     Rows are ordered by composite score. Decisiveness, efficiency and the composite score are
     defined on the <a href={routes.methodology()}>methodology page</a>; they are constructed
-    measures, not observations.
+    measures, not observations.{' '}
+    {
+      framing && (
+        <>
+          <q>{framing.label}</q> is whether the system prompt moved the model's answer;{' '}
+          <q>One word</q> is only whether the answer was one word, as asked. A model can hold at
+          100% on the second and still ignore what it was told — see{' '}
+          <a href={`${routes.methodology()}#compliance`}>one-word compliance</a>.
+        </>
+      )
+    }
   </p>
 </section>
 
@@ -333,6 +372,13 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     margin: 0;
     font-size: var(--step--1);
     color: var(--muted);
+  }
+
+  /* The word does the work; the weight is a second, redundant cue. Nothing
+     here is color-only, so the column reads in forced-colors mode too. */
+  .framing-cell.moved {
+    font-weight: 600;
+    color: var(--text-strong);
   }
 
   th.sortable {

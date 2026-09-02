@@ -16,9 +16,18 @@ import type { ModelResult } from '../../../schema/run.ts'
 interface Props {
   results: ModelResult[]
   previous?: ModelResult[] | null
+  /**
+   * How much of the field held its position when a framing stated the answer.
+   *
+   * The row otherwise says nothing about the system prompts, which invites the
+   * reading that one-word compliance covers them. It does not: a model can
+   * answer in one word and ignore everything it was told. Omitted when the
+   * edition ran only the control, since then there is nothing to hold against.
+   */
+  framing?: { held: number; comparable: number; label: string; sub: string } | null
 }
 
-const { results, previous = null } = Astro.props
+const { results, previous = null, framing = null } = Astro.props
 
 const answering = results.filter((r) => r.samples.length > 0)
 const consensus = consensusOf(results)
@@ -94,11 +103,21 @@ const tiles = [
     delta: delta(outputTokens, priorTokens, (v) => formatInteger(v), true),
   },
   {
-    label: 'Instruction compliance',
+    label: 'One-word compliance',
     value: compliance == null ? NOT_REPORTED : formatPercent(compliance),
-    sub: null,
+    sub: 'answered in exactly one word',
     delta: delta(compliance, priorCompliance, (v) => formatPercent(v)),
   },
+  ...(framing && framing.comparable > 0
+    ? [
+        {
+          label: framing.label,
+          value: `${framing.held} of ${framing.comparable}`,
+          sub: framing.sub,
+          delta: null,
+        },
+      ]
+    : []),
 ]
 ---
 

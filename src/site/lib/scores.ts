@@ -21,8 +21,8 @@
  */
 import type { ModelResult } from '../../schema/run.ts'
 
-/** Weight of instruction compliance within the decisiveness score. */
-const COMPLIANCE_WEIGHT = 0.4
+/** Weight of one-word compliance within the decisiveness score. */
+const ONE_WORD_WEIGHT = 0.4
 
 /** Weight of latency within the efficiency score; the rest is token economy. */
 const LATENCY_WEIGHT = 0.7
@@ -48,7 +48,7 @@ export function decisiveness(result: ModelResult): number {
     result.samples.filter((sample) => sample.verdict !== 'other').length / result.samples.length
   const compliance = result.aggregate.followedInstructionRate ?? 0
 
-  return clamp01(committed * (1 - COMPLIANCE_WEIGHT) + compliance * COMPLIANCE_WEIGHT)
+  return clamp01(committed * (1 - ONE_WORD_WEIGHT) + compliance * ONE_WORD_WEIGHT)
 }
 
 /**
@@ -135,7 +135,7 @@ export const RADAR_AXIS_LABELS: Record<keyof RadarAxes, string> = {
   speed: 'Speed',
   responsiveness: 'First-token responsiveness',
   tokenEconomy: 'Token economy',
-  compliance: 'Instruction compliance',
+  compliance: 'One-word compliance',
 }
 
 export function radarAxes(result: ModelResult, peers: ModelResult[]): RadarAxes {
@@ -192,7 +192,7 @@ export const SCORE_DEFINITIONS = [
   {
     name: 'Decisiveness',
     range: '0 to 1',
-    formula: `(share of samples with a yes or no verdict) × ${1 - COMPLIANCE_WEIGHT} + (share answering in exactly one word) × ${COMPLIANCE_WEIGHT}`,
+    formula: `(share of samples with a yes or no verdict) × ${1 - ONE_WORD_WEIGHT} + (share answering in exactly one word) × ${ONE_WORD_WEIGHT}`,
     note: 'Verdict-agnostic: answering "Yes" three times and "No" three times score identically. There is no correct answer here, and a score implying otherwise would be a claim this research cannot support.',
   },
   {

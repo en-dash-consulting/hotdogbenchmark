@@ -162,8 +162,11 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Three across, so the row wraps to two tidy lines whether the edition has
+     five tiles (control only) or six (with the framing result). A fixed five
+     pushed the sixth tile off the measure. */
   .kpi-row {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   /* Surfaces that rely on a background need a rule instead, since most

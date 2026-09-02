@@ -3,9 +3,15 @@ import {
   SENSITIVITY_DEFINITION,
   editionSensitivity,
   fieldSensitivity,
+  framingColumnAcross,
+  framingColumnUnder,
   framingSensitivity,
+  framingShiftAcross,
+  framingShiftUnder,
   hasConditions,
+  modelKey,
   modelsInRun,
+  questionFieldShift,
   questionShifts,
   replayedFromControl,
   treatedConditions,
@@ -316,5 +322,158 @@ describe('SENSITIVITY_DEFINITION', () => {
     expect(SENSITIVITY_DEFINITION.note).toMatch(/Neither end of the scale is better/)
     expect(SENSITIVITY_DEFINITION.note).toMatch(/robust/)
     expect(SENSITIVITY_DEFINITION.note).toMatch(/compliant/)
+  })
+})
+
+describe('framingShiftUnder', () => {
+  it('names the position a model held', () => {
+    expect(framingShiftUnder(verdictShift(model('A', 'no'), model('A', 'no')))).toEqual({
+      label: 'Held No',
+      moved: 0,
+      comparable: 1,
+    })
+  })
+
+  it('names where a model moved to', () => {
+    expect(framingShiftUnder(verdictShift(model('A', 'no'), model('A', 'yes')))).toEqual({
+      label: 'Moved to Yes',
+      moved: 1,
+      comparable: 1,
+    })
+  })
+
+  it('says a non-committal arm produced no answer rather than calling it a verdict', () => {
+    expect(framingShiftUnder(verdictShift(model('A', 'no'), model('A', 'other'))).label).toBe(
+      'Moved to no answer',
+    )
+  })
+
+  it('renders a dash, not a claim, when there is nothing to compare', () => {
+    expect(framingShiftUnder(verdictShift(model('A', 'no'), model('A', null)))).toEqual({
+      label: '—',
+      moved: 0,
+      comparable: 0,
+    })
+  })
+})
+
+describe('framingShiftAcross', () => {
+  const across = (table: Record<string, Record<string, Verdict | null>>) =>
+    framingShiftAcross(
+      questionShifts(run({ 'hot-dog': table }, [CONTROL, ASSERTED, DENIED]), 'hot-dog')[0]!,
+    )
+
+  it('reports a model that held under every arm', () => {
+    expect(
+      across({
+        control: { A: 'no' },
+        asserted: { A: 'no' },
+        denied: { A: 'no' },
+      }),
+    ).toEqual({ label: 'Held', moved: 0, comparable: 2 })
+  })
+
+  it('names the arm a model moved under', () => {
+    expect(
+      across({
+        control: { A: 'no' },
+        asserted: { A: 'yes' },
+        denied: { A: 'no' },
+      }),
+    ).toEqual({ label: 'Moved: Asserted', moved: 1, comparable: 2 })
+  })
+
+  it('names every arm when a model moved under more than one', () => {
+    expect(
+      across({
+        control: { A: 'other' },
+        asserted: { A: 'yes' },
+        denied: { A: 'no' },
+      }).label,
+    ).toBe('Moved: all')
+  })
+
+  it('drops an arm that errored from the denominator rather than counting it as held', () => {
+    expect(
+      across({
+        control: { A: 'no' },
+        asserted: { A: 'no' },
+        denied: { A: null },
+      }),
+    ).toEqual({ label: 'Held', moved: 0, comparable: 1 })
+  })
+
+  it('has nothing to say when the control itself produced no verdict', () => {
+    expect(
+      across({
+        control: { A: null },
+        asserted: { A: 'yes' },
+        denied: { A: 'no' },
+      }),
+    ).toEqual({ label: '—', moved: 0, comparable: 0 })
+  })
+})
+
+describe('questionFieldShift', () => {
+  it('splits the field into models that moved and models that held', () => {
+    const edition = run(
+      {
+        'hot-dog': {
+          control: { A: 'no', B: 'no', C: 'no' },
+          asserted: { A: 'no', B: 'yes', C: 'yes' },
+        },
+      },
+      [CONTROL, ASSERTED],
+    )
+    expect(questionFieldShift(edition, 'hot-dog')).toEqual({ comparable: 3, moved: 2, held: 1 })
+  })
+
+  it('excludes a model with no comparable arm from both counts', () => {
+    const edition = run(
+      {
+        'hot-dog': {
+          control: { A: 'no', B: null },
+          asserted: { A: 'yes', B: 'yes' },
+        },
+      },
+      [CONTROL, ASSERTED],
+    )
+    expect(questionFieldShift(edition, 'hot-dog')).toEqual({ comparable: 1, moved: 1, held: 0 })
+  })
+})
+
+describe('framing columns', () => {
+  const edition = run(
+    {
+      'hot-dog': {
+        control: { A: 'no', B: 'no' },
+        asserted: { A: 'no', B: 'yes' },
+        denied: { A: 'no', B: 'no' },
+      },
+    },
+    [CONTROL, ASSERTED, DENIED],
+  )
+
+  it('keys cells the same way the rest of the module keys models', () => {
+    const column = framingColumnAcross(edition, 'hot-dog')!
+    expect(column.label).toBe('Framing shift')
+    expect(column.cells[modelKey({ provider: 'a', modelId: 'a-1' })]!.label).toBe('Held')
+    expect(column.cells[modelKey({ provider: 'b', modelId: 'b-1' })]!.label).toBe('Moved: Asserted')
+  })
+
+  it("compares one arm against the control on that arm's own page", () => {
+    const column = framingColumnUnder(edition, 'hot-dog', 'asserted')!
+    expect(column.label).toBe('vs. control')
+    expect(column.cells[modelKey({ provider: 'a', modelId: 'a-1' })]!.label).toBe('Held No')
+    expect(column.cells[modelKey({ provider: 'b', modelId: 'b-1' })]!.label).toBe('Moved to Yes')
+  })
+
+  it('offers no column for the control, which has nothing to have moved from', () => {
+    expect(framingColumnUnder(edition, 'hot-dog', 'control')).toBeNull()
+  })
+
+  it('offers no column at all when the edition ran only the control', () => {
+    const controlOnly = run({ 'hot-dog': { control: { A: 'no' } } }, [CONTROL])
+    expect(framingColumnAcross(controlOnly, 'hot-dog')).toBeNull()
   })
 })

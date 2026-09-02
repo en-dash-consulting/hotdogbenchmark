@@ -21,6 +21,7 @@ import {
   getQuestion,
   getQuestionTextInRun,
 } from '../../../lib/data.ts'
+import { framingColumnAcross, questionFieldShift } from '../../../lib/sensitivity.ts'
 import { formatEdition } from '../../../lib/format.ts'
 import { archivedQuestionDescription, breadcrumbJsonLd } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
@@ -41,6 +42,17 @@ const results = getModelResults(run, question.id)
 const previous = getPreviousRun(run.isoWeek)
 const previousResults = previous ? getModelResults(previous, question.id) : null
 const askedText = getQuestionTextInRun(run, question.id)
+const framingColumn = framingColumnAcross(run, question.id)
+const fieldShift = questionFieldShift(run, question.id)
+const framingTile =
+  fieldShift.comparable > 0
+    ? {
+        held: fieldShift.held,
+        comparable: fieldShift.comparable,
+        label: 'Held under framing',
+        sub: 'kept their answer when told otherwise',
+      }
+    : null
 ---
 
 <Base
@@ -55,7 +67,7 @@ const askedText = getQuestionTextInRun(run, question.id)
   ])}
 >
   <Masthead question={question} run={run} archived questionText={askedText ?? question.text} />
-  <KpiTiles results={results} previous={previousResults} />
+  <KpiTiles results={results} previous={previousResults} framing={framingTile} />
   <ExecutiveSummary subject={question.subject} results={results} />
 
   <FramingSensitivity run={run} question={question} />
@@ -70,6 +82,7 @@ const askedText = getQuestionTextInRun(run, question.id)
   <ResultsTable
     results={results}
     caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
+    framing={framingColumn}
   />
 </Base>
 

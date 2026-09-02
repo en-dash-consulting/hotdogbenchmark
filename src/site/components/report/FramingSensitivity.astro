@@ -24,6 +24,7 @@ import { framingSummary } from '../../lib/prose.ts'
 import {
   editionSensitivity,
   hasConditions,
+  questionFieldShift,
   questionShifts,
   replayedFromControl,
   treatedConditions,
@@ -66,10 +67,13 @@ function said(result: ModelResult | null): { text: string; agreement: string } |
   }
 }
 
-const movedCount = rows.filter((row) => row.movedAnywhere).length
-const comparableCount = rows.filter((row) =>
-  row.cells.some((cell) => cell.shift.status !== 'incomparable'),
-).length
+// The same counts the KPI row shows, from the same function, so the headline
+// at the top of the report and the one in this section cannot disagree.
+const fieldShift = enabled
+  ? questionFieldShift(run, question.id)
+  : { comparable: 0, moved: 0, held: 0 }
+const movedCount = fieldShift.moved
+const comparableCount = fieldShift.comparable
 ---
 
 {

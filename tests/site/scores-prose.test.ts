@@ -663,13 +663,29 @@ describe('framingSummary', () => {
     })
     const summary = framingSummary(run, 'burrito', BURRITO)
     expect(summary).toContain(
-      'Told a burrito is a wrap, 1 of 2 models changed their answer: A (negative to affirmative).',
+      'Told a burrito is a wrap, 1 of 2 models changed their answer, all of them to affirmative.',
     )
     expect(summary).toContain(
       'Told a burrito is not a wrap, all 2 models stuck with their original answer.',
     )
     expect(summary).toContain('B did not budge.')
     expect(summary).not.toMatch(/sandwich/i)
+  })
+
+  it('counts where the movers landed instead of listing every one of them', () => {
+    // The matrix below the paragraph names each model. Repeating them inline
+    // produced a block of text with a name and a parenthetical seven times
+    // over, which is the shape of a table, not of a sentence.
+    const run = framedRun(BURRITO, {
+      control: { A: 'no', B: 'no', C: 'yes', D: 'yes' },
+      asserted: { A: 'yes', B: 'yes', C: 'no', D: 'yes' },
+      denied: { A: 'no', B: 'no', C: 'yes', D: 'yes' },
+    })
+    const summary = framingSummary(run, 'burrito', BURRITO)
+    expect(summary).toContain(
+      'Told a burrito is a wrap, 3 of 4 models changed their answer: 2 to affirmative and 1 to negative.',
+    )
+    expect(summary).not.toContain('(negative to affirmative)')
   })
 
   it('names the arm instead when the question declares no claim', () => {
@@ -680,7 +696,7 @@ describe('framingSummary', () => {
     })
     const summary = framingSummary(run, 'cereal', BARE)
     expect(summary).toContain(
-      'Under the asserted framing, all 1 models stuck with their original answer on cereal.',
+      'Under the asserted framing, the only comparable model stuck with its original answer on cereal.',
     )
     expect(summary).not.toMatch(/undefined|sandwich/)
   })

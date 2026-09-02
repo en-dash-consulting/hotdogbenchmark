@@ -195,6 +195,43 @@ describe('experimental conditions in the built report', () => {
     }
   })
 
+  it('never leaves one-word compliance to stand alone as the only instruction number', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      // "Instruction compliance" invited the reading that the number covered
+      // the framing's system prompt. It counts answer length and nothing else.
+      expect(html, `${questionId} still calls it instruction compliance`).not.toContain(
+        'Instruction compliance',
+      )
+      expect(html).toContain('One-word compliance')
+      if (treated.length > 0) {
+        // The framing result sits in the same KPI row and the same table, so
+        // neither can be read without the other.
+        expect(html, `${questionId} lacks the framing KPI`).toContain('Held under framing')
+        expect(html, `${questionId} lacks the framing column`).toContain('Framing shift')
+        expect(html).toMatch(/Moved: |>Held</)
+      }
+    }
+  })
+
+  it("names each model's position against the control on a framing report", () => {
+    for (const questionId of questionIds) {
+      for (const conditionId of treated) {
+        const html = readFileSync(
+          join(DIST, 'reports', questionId, conditionId, 'index.html'),
+          'utf8',
+        )
+        expect(html, `${questionId}/${conditionId} lacks the control comparison`).toContain(
+          'Held vs. control',
+        )
+        expect(html).toContain('vs. control')
+        // Every model either held or moved; a cell that says neither means the
+        // column rendered without data behind it.
+        expect(html).toMatch(/Held (Yes|No|no answer)|Moved to (Yes|No|no answer)/)
+      }
+    }
+  })
+
   it('emits one full report per non-control framing, and none when there are none', () => {
     for (const questionId of questionIds) {
       for (const conditionId of treated) {
@@ -483,6 +520,21 @@ describe('the learn pages', () => {
     expect(html).toContain('id="fn1"')
     expect(html).toContain('href="#fnref1"')
     expect(html).toContain('id="fnref1"')
+  })
+
+  it('methodology says no model writes the report', () => {
+    const html = read('methodology')
+    expect(html).toMatch(/No language model writes any of it/i)
+    expect(html).toContain('src/site/lib/prose.ts')
+    expect(html).toMatch(/quoted\s*\n?\s*verbatim|verbatim/i)
+  })
+
+  it('methodology separates one-word compliance from premise adoption', () => {
+    const html = read('methodology')
+    // The KPI tile reads 100% even when models ignore the framing's system
+    // prompt. If this explanation goes missing the number is misleading.
+    expect(html).toMatch(/counts one thing and only one thing/i)
+    expect(html).toContain('href="#sensitivity"')
   })
 
   it('methodology documents every constructed score with its formula', () => {

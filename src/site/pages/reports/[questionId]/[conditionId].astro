@@ -25,7 +25,13 @@ import {
   getQuestionResult,
   getQuestions,
 } from '../../../lib/data.ts'
-import { treatedConditions } from '../../../lib/sensitivity.ts'
+import {
+  framingColumnUnder,
+  treatedConditions,
+  verdictShift,
+  resultIn,
+} from '../../../lib/sensitivity.ts'
+import { CONTROL_CONDITION_ID } from '../../../../schema/conditions.ts'
 import { formatEdition } from '../../../lib/format.ts'
 import { breadcrumbJsonLd, framingDescription } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
@@ -51,6 +57,22 @@ const cell = getQuestionResult(run, question.id, condition.id)!
 const results = cell.models
 const previous = getPreviousRun(run.isoWeek)
 const previousResults = previous ? getModelResults(previous, question.id, condition.id) : null
+// This page is one arm, so the comparison worth putting at the top is against
+// the control: which models this system prompt actually moved.
+const framingColumn = framingColumnUnder(run, question.id, condition.id)
+const shifts = results.map((result) =>
+  verdictShift(resultIn(run, question.id, CONTROL_CONDITION_ID, result), result),
+)
+const comparable = shifts.filter((shift) => shift.status !== 'incomparable')
+const framingTile =
+  comparable.length > 0
+    ? {
+        held: comparable.filter((shift) => shift.status === 'held').length,
+        comparable: comparable.length,
+        label: 'Held vs. control',
+        sub: `unmoved by the ${condition.label.toLowerCase()} system prompt`,
+      }
+    : null
 ---
 
 <Base
@@ -80,7 +102,7 @@ const previousResults = previous ? getModelResults(previous, question.id, condit
       </p>
     ) : (
       <>
-        <KpiTiles results={results} previous={previousResults} />
+        <KpiTiles results={results} previous={previousResults} framing={framingTile} />
         <ExecutiveSummary subject={question.subject} results={results} />
 
         <p class="compare-link">
@@ -118,6 +140,7 @@ const previousResults = previous ? getModelResults(previous, question.id, condit
 
         <ResultsTable
           results={results}
+          framing={framingColumn}
           caption={`${question.reportTitle} — ${condition.label} framing — ${formatEdition(run.isoWeek)} edition`}
         />
       </>

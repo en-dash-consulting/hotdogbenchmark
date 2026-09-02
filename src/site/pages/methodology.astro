@@ -76,7 +76,7 @@ const contested = exampleQuestion
     </ul>
 
     <p>
-      Every question ends with <q>One word answer.</q> That is what makes the compliance number mean anything:
+      Every question ends with <q>One word answer.</q> That is what makes the one-word compliance number mean anything:
       you can only measure whether a model did what it was told if you told it something.<sup
         ><a href="#fn1" id="fnref1">1</a></sup
       >
@@ -281,12 +281,30 @@ const contested = exampleQuestion
       <a href={`${REPO_URL}/issues`}>issue tracker</a> is the right place for it.
     </p>
 
-    <h2 id="compliance">6. Instruction compliance</h2>
+    <h2 id="compliance">6. One-word compliance</h2>
 
     <p>
       Reported separately from classification throughout, because they measure different
       capabilities. A model can be decisive and disobedient, or obedient and evasive. Collapsing
       them into a single score would hide the more interesting half of the result.
+    </p>
+
+    <p>
+      <strong>This counts one thing and only one thing: answer length.</strong> Every question ends
+      with <q>One word answer.</q>, and the rate is the share of samples whose answer normalized to
+      exactly one word. It is a format measure. It says nothing about whether the model agreed with
+      anything it was told.
+    </p>
+
+    <p>
+      In particular it is <strong>not</strong> a measure of whether a model accepted the premise in
+      the framing's system prompt. A model told {
+        exampleAssertion ? <q>{exampleAssertion}</q> : 'the answer as fact'
+      }{' '}
+      that then answers <q>No</q> has ignored its operator and still scores 100% here, because{' '}
+      <q>No</q> is one word. Premise adoption is measured by{' '}
+      <a href="#sensitivity">framing sensitivity</a> instead, and the framing explorer on each report
+      shows it model by model.
     </p>
 
     <h2 id="scores">7. Constructed scores</h2>
@@ -355,6 +373,31 @@ const contested = exampleQuestion
       Where a provider returns no usable data, that is recorded and published rather than
       suppressed. Excluding unavailable providers would bias the longitudinal record toward
       whichever vendors happened to be operating.
+    </p>
+
+    <h2 id="authorship">11. Who writes this report</h2>
+
+    <p>
+      <strong>No language model writes any of it.</strong> The executive summary, the key findings,
+      the vendor profiles, the headlines and every number on this site are produced at build time by
+      pure functions in{' '}
+      <a href={sourceUrl('src/site/lib/prose.ts')}><code>src/site/lib/prose.ts</code></a>,{' '}
+      <a href={sourceUrl('src/site/lib/scores.ts')}><code>src/site/lib/scores.ts</code></a> and{' '}
+      <a href={sourceUrl('src/site/lib/sensitivity.ts')}><code>src/site/lib/sensitivity.ts</code></a>,
+      reading the committed edition. The same edition always renders the same words, and a sentence
+      only appears when the data supports it — a quiet week gets fewer findings rather than padded
+      ones.
+    </p>
+
+    <p>
+      The only text on this site that a model produced is the answers themselves. Those are quoted
+      verbatim from the run file and are never edited, summarized or paraphrased.
+    </p>
+
+    <p>
+      This is a deliberate constraint rather than an implementation detail. An analyst note written
+      by a model would be an unreproducible claim about a reproducible measurement, and the published
+      site would then depend on a provider at build time — which it never does.
     </p>
 
     <h2 id="limitations">What this does not measure</h2>
