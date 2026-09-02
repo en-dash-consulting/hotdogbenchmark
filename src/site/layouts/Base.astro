@@ -66,6 +66,19 @@ const ogImageUrl = new URL(
 ).href
 const latest = getLatestRun()
 
+/**
+ * Google Analytics, only when a measurement ID is supplied at build time
+ * (PUBLIC_GA_MEASUREMENT_ID, a repository variable on the deploy). A fork
+ * gets no analytics unless it sets its own. The ID is validated so a stray
+ * value cannot inject markup.
+ */
+const gaId = /^G-[A-Z0-9]{4,}$/.test(import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? '')
+  ? (import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string)
+  : null
+const gaSnippet = gaId
+  ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}',{anonymize_ip:true});`
+  : ''
+
 const NAV = [
   { href: routes.reports(), label: 'Reports' },
   { href: routes.history(), label: 'History' },
@@ -98,6 +111,20 @@ const isCurrent = (href: string) => {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+
+    {
+      gaId && (
+        <>
+          <script
+            is:inline
+            async
+            data-analytics
+            src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+          />
+          <script is:inline data-analytics set:html={gaSnippet} />
+        </>
+      )
+    }
 
     {/* The En Dash faces: Montserrat for headings and interface, Merriweather for prose. */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />

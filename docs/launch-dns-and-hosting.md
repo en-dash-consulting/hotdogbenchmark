@@ -40,7 +40,7 @@ One `CNAME` record pointing at the organization's Pages host:
 
 | Type  | Name | Value            |
 | ----- | ---- | ---------------- |
-| CNAME | www  | endash.github.io |
+| CNAME | www  | en-dash-consulting.github.io |
 
 GitHub redirects `www.hotdogbenchmark.lol` to the apex once the custom domain is set, so the
 `www` record only needs to reach GitHub.
@@ -57,7 +57,7 @@ records.
 
 ## 2. The repository settings
 
-In `endash/hotdogbenchmark`, open **Settings > Pages**.
+In `en-dash-consulting/hotdogbenchmark`, open **Settings > Pages**.
 
 1. **Build and deployment > Source** must be **GitHub Actions**. The deploy workflow
    (`.github/workflows/deploy.yml`) publishes the built `dist/`; there is no branch to serve.
@@ -86,7 +86,7 @@ dig +short www.hotdogbenchmark.lol CNAME
 ```
 
 Expect the four `185.199.*.153` addresses, the four `2606:50c0:*::153` addresses, and
-`endash.github.io.` for `www`.
+`en-dash-consulting.github.io.` for `www`.
 
 The apex serves the site over HTTPS:
 
@@ -125,7 +125,7 @@ curl -sI https://hotdogbenchmark.lol/feed.xml | head -1
 
 Expect `200` on each. `robots.txt` names the sitemap; `sitemap-index.xml` points at
 `sitemap-0.xml`, whose URLs must all begin with `https://hotdogbenchmark.lol/`. If they begin
-with `https://endash.github.io/`, the build ran without `public/CNAME` and needs to run again.
+with `https://en-dash-consulting.github.io/`, the build ran without `public/CNAME` and needs to run again.
 
 Finally, open `https://hotdogbenchmark.lol/` in a browser, confirm the padlock, and paste the URL
 into one social card validator to see `og/default.png` render.

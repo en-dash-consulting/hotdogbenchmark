@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, it } from 'vitest'
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -21,6 +21,15 @@ const ROOT = fileURLToPath(new URL('../../', import.meta.url))
  * the other is reading.
  */
 const DIST = join(ROOT, 'dist-feature-flag-test')
+
+/** Every built page, so a per-page assertion cannot miss one. */
+function htmlFiles(dir = DIST): string[] {
+  return readdirSync(dir).flatMap((name) => {
+    const full = join(dir, name)
+    if (statSync(full).isDirectory()) return htmlFiles(full)
+    return name.endsWith('.html') ? [full] : []
+  })
+}
 
 function buildWith(env: NodeJS.ProcessEnv) {
   rmSync(DIST, { recursive: true, force: true })
@@ -66,4 +75,28 @@ describe('RUN_YOUR_OWN_ENABLED', () => {
 
 afterAll(() => {
   rmSync(DIST, { recursive: true, force: true })
+})
+
+describe('PUBLIC_GA_MEASUREMENT_ID', () => {
+  it('ships no analytics markup when unset', () => {
+    buildWith({ PUBLIC_GA_MEASUREMENT_ID: '' })
+    for (const file of htmlFiles()) {
+      const html = readFileSync(file, 'utf8')
+      expect(html, file).not.toContain('googletagmanager')
+      expect(html, file).not.toContain('data-analytics')
+    }
+  })
+
+  it('tags every page with the ID when set, and ignores a malformed one', () => {
+    buildWith({ PUBLIC_GA_MEASUREMENT_ID: 'G-TEST12345' })
+    for (const file of htmlFiles()) {
+      const html = readFileSync(file, 'utf8')
+      expect(html, file).toContain('https://www.googletagmanager.com/gtag/js?id=G-TEST12345')
+      expect(html, file).toContain("gtag('config','G-TEST12345'")
+    }
+    buildWith({ PUBLIC_GA_MEASUREMENT_ID: '<script>alert(1)</script>' })
+    for (const file of htmlFiles()) {
+      expect(readFileSync(file, 'utf8'), file).not.toContain('googletagmanager')
+    }
+  })
 })

@@ -118,9 +118,13 @@ for (const file of files) {
     if (relative(DIST, file).startsWith('run/')) continue
     const html = readFileSync(file, 'utf8')
     // A JSON-LD block is data in a script element, never executed, so it is
-    // not client JavaScript and does not count.
+    // not client JavaScript and does not count. The analytics tag (present
+    // only when PUBLIC_GA_MEASUREMENT_ID is set at build) is marked
+    // data-analytics and is excluded too: it is a third-party payload the
+    // deploy opts into, not part of the site's own budget, and forks without
+    // an ID never ship it.
     for (const match of html.matchAll(
-      /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)[^>]*>([\s\S]*?)<\/script>/g,
+      /<script(?![^>]*\bsrc=)(?![^>]*application\/ld\+json)(?![^>]*data-analytics)[^>]*>([\s\S]*?)<\/script>/g,
     )) {
       const body = match[1].trim()
       if (body.length === 0) continue

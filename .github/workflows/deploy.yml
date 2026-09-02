@@ -63,6 +63,9 @@ jobs:
           # SITE_URL is set as a repository variable only when serving from a
           # custom domain; otherwise the base path is derived from the repo name.
           SITE_URL: ${{ vars.SITE_URL }}
+          # Google Analytics measurement ID, a repository variable, never
+          # committed. Unset means no analytics markup in the build.
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
         run: npm run build
 
       - uses: actions/upload-pages-artifact@v3

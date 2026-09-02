@@ -2,7 +2,7 @@
 
 Notable changes to this project. The weekly data itself is not changelogged —
 every edition is in [`data/runs/`](data/runs/) and on the
-[history page](https://endash.github.io/hotdogbenchmark/history/).
+[history page](https://hotdogbenchmark.lol/history/).
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [semantic versioning](https://semver.org/spec/v2.0.0.html)
@@ -204,5 +204,5 @@ The whole pipeline, end to end, with sample data.
 - Zero axe violations across every page in both themes.
 - 835 tests.
 
-[Unreleased]: https://github.com/endash/hotdogbenchmark/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/endash/hotdogbenchmark/releases/tag/v0.1.0
+[Unreleased]: https://github.com/en-dash-consulting/hotdogbenchmark/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/en-dash-consulting/hotdogbenchmark/releases/tag/v0.1.0

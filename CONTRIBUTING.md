@@ -15,7 +15,7 @@ understand why the code is shaped the way it is.
 ## Setup
 
 ```sh
-git clone https://github.com/endash/hotdogbenchmark.git
+git clone https://github.com/en-dash-consulting/hotdogbenchmark.git
 cd hotdogbenchmark
 nvm use            # Node version is pinned in .nvmrc
 npm install

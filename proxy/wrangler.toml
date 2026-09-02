@@ -14,7 +14,7 @@ compatibility_date = "2026-09-01"
 OIDC_ISSUER = "https://id.endash.example"
 OIDC_CLIENT_ID = "hotdogbenchmark"
 OIDC_REDIRECT_URI = "https://hotdogbenchmark-proxy.workers.dev/auth/callback"
-SITE_ORIGIN = "https://endash.github.io"
+SITE_ORIGIN = "https://hotdogbenchmark.lol"
 SESSION_TTL_SECONDS = "3600"
 
 # Rate-limit counters. Optional: without it the limiter falls back to an

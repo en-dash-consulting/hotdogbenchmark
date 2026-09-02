@@ -62,7 +62,7 @@ export function profileAnchor(model: { provider: string; modelId: string }): str
 }
 
 /** The GitHub repository this site is built from. */
-export const REPO_URL = 'https://github.com/endash/hotdogbenchmark'
+export const REPO_URL = 'https://github.com/en-dash-consulting/hotdogbenchmark'
 
 /** Deep link to a source file, so the site can point at the code it describes. */
 export function sourceUrl(path: string, ref = 'main'): string {

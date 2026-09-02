@@ -1,8 +1,8 @@
 # hotdogbenchmark
 
-[![CI](https://github.com/endash/hotdogbenchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/ci.yml)
-[![Weekly benchmark](https://github.com/endash/hotdogbenchmark/actions/workflows/benchmark.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/benchmark.yml)
-[![Deploy site](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml)
+[![CI](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/ci.yml)
+[![Weekly benchmark](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/benchmark.yml/badge.svg)](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/benchmark.yml)
+[![Deploy site](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/deploy.yml/badge.svg)](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Every Monday at 12:00 UTC, this project asks the largest AI models, ten of them at last count, the same question,
@@ -64,7 +64,7 @@ the vendor's own total because of it. That kind of thing is what the tutorial is
 runs offline.
 
 ```sh
-git clone https://github.com/endash/hotdogbenchmark.git
+git clone https://github.com/en-dash-consulting/hotdogbenchmark.git
 cd hotdogbenchmark
 nvm use && npm install
 

@@ -33,7 +33,7 @@ const base = siteUrl || !repository ? '/' : `/${repository}/`
 const site =
   siteUrl ||
   (repository
-    ? `https://${process.env.GITHUB_REPOSITORY_OWNER ?? 'endash'}.github.io${base}`
+    ? `https://${process.env.GITHUB_REPOSITORY_OWNER ?? 'en-dash-consulting'}.github.io${base}`
     : 'http://localhost:4321')
 
 export default defineConfig({
