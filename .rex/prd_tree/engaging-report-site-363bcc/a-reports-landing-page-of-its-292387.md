@@ -1,0 +1,22 @@
+---
+id: "29238703-9b66-44f3-b76f-93e7a7765cce"
+level: "feature"
+title: "A reports landing page of its own, so the home page can be the hook and the reports the destination"
+status: "pending"
+priority: "high"
+tags:
+  - "site"
+  - "reports"
+  - "navigation"
+  - "design"
+source: "ndx-capture"
+acceptanceCriteria:
+  - "/reports/ builds as its own page with one card per question in the registry, each showing the latest edition's headline verdict and tally, at least one framing-sensitivity fact (who flipped, or that nobody did), the edition date, and links to the full report, both framed variants, and the PDF"
+  - "The nav's Reports item links to /reports/ and carries aria-current on /reports/ and on every page under /reports/"
+  - "The home page keeps the answer board, alignment grid, sway chart and fork block, and replaces the per-question tiles with one hand-off block to /reports/ that names the number of reports and the latest edition"
+  - "The page carries its own title, description and OG image, appears in the sitemap and llms.txt, and meets the launch test's word floor without adding client JavaScript"
+  - "axe (four modes) and the responsive audit report zero findings for /reports/, and the tests that build the site are updated for the new route and the changed home page"
+description: "Today the nav's \"Reports\" link points at the home page, there is no /reports/ index, and the full reports are reached only through three tiles below the answer board and the alignment grid. They get lost, and they are the best thing on the site: the leaderboard, the quadrant, the framing matrix with the explorer, the per-model profiles, the verbatim answers, the PDF.\n\nSplit the two jobs. The home page stays the hook: the question, the replay, the alignment grid, the sway chart, the fork block, and one strong hand-off to the reports. A new /reports/ page is the destination: one card per question that sells the report before the click, built from that question's latest edition (the headline verdict and tally, who flipped under framing, the most and least decisive model, the fastest and slowest, the edition date) with the framed variants (asserted, denied) reachable from the card and the PDF one click away. The landing page should feel like a magazine's issue rack, not a table of contents: big question headlines in Montserrat, one line each, En Dash color per question, the same restraint as the rest of the site. The nav's Reports item points at /reports/ and is marked current on every report page; the home tiles become a single hand-off block that points at the landing page, with the tile-per-question list living on /reports/ instead.\n\nKeep the budget and the gates: no new client JavaScript, axe and the responsive audit clean, per-page title and description and OG card, llms.txt and the sitemap picking the page up automatically, the launch test's word floor met."
+lastModified: "2026-09-02T05:13:37.132Z"
+lastModifiedBy: "Nick Daniel <nick@endash.us>"
+---

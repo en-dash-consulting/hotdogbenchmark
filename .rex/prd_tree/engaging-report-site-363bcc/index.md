@@ -2,7 +2,7 @@
 id: "363bccb1-a033-491a-b0ff-0e844eb30b44"
 level: "epic"
 title: "Engaging report site: interactive exploration within the zero-JavaScript-by-default budget"
-status: "completed"
+status: "pending"
 priority: "high"
 tags:
   - "site"
@@ -10,7 +10,6 @@ tags:
   - "engagement"
 source: "ndx-work session 2026-09-01 (user brief: the most engaging, immersive, interactive benchmarking app, without being feature-rich)"
 startedAt: "2026-09-02T04:40:04.324Z"
-completedAt: "2026-09-02T04:40:04.324Z"
 endedAt: "2026-09-02T04:40:04.324Z"
 acceptanceCriteria:
   - "Every interactive feature degrades to a complete, readable static view with JavaScript disabled, verified by a build-output test"
@@ -18,7 +17,7 @@ acceptanceCriteria:
   - "Zero axe violations across every page in both themes after each feature lands"
   - "No feature adds a dependency: interactivity is vanilla TypeScript islands like the existing results-table enhancement"
 description: "The brief from the maintainer: make the web app the most engaging, immersive, interactive benchmarking report a reader could wish for, without becoming feature-rich. The first slice shipped with the conditions epic: a front page that states the field's position and framing-sensitivity headline, a position-by-framing matrix, verbatim answers under every framing behind <details>, per-framing full reports, and an edition-wide sensitivity chart, all with zero client JavaScript.\n\nWhat remains is the interactive layer, and the constraint that keeps it honest: the 30 KB gzipped client JavaScript budget (currently 918 bytes), progressive enhancement only (every view must be complete without JavaScript), the analyst register (no emoji, no playful iconography), axe-clean in both themes, and build-time SVG with data-table alternatives. Interactivity should let a reader interrogate the same numbers the static page already shows, never load new data the page does not contain.\n\nCandidate features are listed as children. Each is independently shippable; none should be built at the expense of the constraints above."
-lastModified: "2026-09-02T04:40:04.334Z"
+lastModified: "2026-09-02T05:13:37.256Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---
 
@@ -26,6 +25,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
+| [A reports landing page of its own, so the home page can be the hook and the reports the destination](./a-reports-landing-page-of-its-292387.md) | pending |
 | [Framing explorer: focus one vendor across the matrix, chart, and verbatim answers](./framing-explorer-focus-one-fdf106.md) | completed |
 | [Framing sensitivity over time on the history page](./framing-sensitivity-over-time-a4b0ea.md) | completed |
 | [Hover and focus detail on every chart without JavaScript](./hover-and-focus-detail-on-every-07b92a.md) | completed |
