@@ -5,15 +5,15 @@
 [![Deploy site](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/deploy.yml/badge.svg)](https://github.com/en-dash-consulting/hotdogbenchmark/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Every Monday at 12:00 UTC, this project asks the largest AI models, ten of them at last count, the same question,
-records what they said and how long they took, and publishes the results as a completely
-straight-faced industry analyst report.
+Every Monday at 12:00 UTC, this project asks the largest AI models, eleven of them at last
+count, the same question, records what they said and how long they took, and publishes the
+results as a completely straight-faced industry analyst report.
 
 > ## Is a hot dog a sandwich?
 >
 > _One word answer._
 
-**Live report:** _(deploys to GitHub Pages once the first real run lands)_
+**Live:** <https://hotdogbenchmark.lol>
 
 ![The hot dog report, light theme](docs/images/report-light.png)
 
@@ -30,7 +30,7 @@ a demo and a benchmark with three is a research program.
 Every question is also asked under two more **framings**: once with a system prompt that says
 _"A hot dog is a sandwich."_ and once with one that says it is not. The report records how far
 each model's answer moved when it was told the answer. That property, suggestibility under
-instruction, generalises to every real evaluation; the sandwich question does not.
+instruction, generalizes to every real evaluation; the sandwich question does not.
 
 ---
 
@@ -138,7 +138,9 @@ models.json ────┘     │                    ▲
    up measuring its own rate limiting.
 5. **`data/runs/`** stores one versioned JSON file per ISO week. Re-running a week corrects it
    rather than duplicating it.
-6. **The site** reads `data/` at build time and emits static HTML with under 1 KB of JavaScript.
+6. **The site** reads `data/` at build time and emits static HTML. The only client JavaScript is
+   the answer-board replay and the framing explorer, a few kilobytes against a 30 KB budget;
+   every page works with scripts off.
 
 Longer version: [`docs/tutorial/`](docs/tutorial/) — eight pages, each mapping a concept to the
 file that implements it.
@@ -162,6 +164,25 @@ file that implements it.
 
 ---
 
+## Repository layout
+
+| Path               | What lives there                                                                  |
+| ------------------ | --------------------------------------------------------------------------------- |
+| `questions.json`   | The questions, their framings, and the copy the site derives from them            |
+| `models.json`      | The models: provider, id, pricing, and whether each is enabled                    |
+| `src/providers/`   | One adapter per vendor, no Node imports, credentials by injection                 |
+| `src/runner/`      | Asks every model every question under every framing; classifies and aggregates    |
+| `src/schema/`      | Zod schemas for runs, questions, models, conditions; the data contract            |
+| `src/data/`        | Reading, migrating and indexing `data/runs/`                                      |
+| `src/cli/`         | The `bench` command: `run`, `smoke`, `record`, `providers`, `init`                |
+| `src/site/`        | The Astro site: pages, components, styles, and the SEO and prose helpers          |
+| `data/runs/`       | One JSON file per edition; superseded editions kept under `superseded/`           |
+| `scripts/`         | Build-time renderers (OG cards, PDFs, screenshots) and the audit scripts          |
+| `tests/`           | Vitest suites, including the ones that build the site and drive it in a browser   |
+| `docs/`            | Tutorial, provider setup, self-hosting, DNS, data schema, accessibility           |
+| `proxy/`           | A Cloudflare Worker for the deferred "run your own" page; not deployed by default |
+| `.rex/`, `.hench/` | Product requirements and work records kept by [n-dx](https://n-dx.dev)            |
+
 ## Adding a provider
 
 One file. Adapters stay under about 150 lines because they are tutorial examples before they are
@@ -178,22 +199,23 @@ nvm use          # Node version is pinned in .nvmrc
 npm install
 ```
 
-| Script                  | What it does                                            |
-| ----------------------- | ------------------------------------------------------- |
-| `npm run dev`           | Serve the site locally with live reload                 |
-| `npm run build`         | Build the site, OG images and PDF editions into `dist/` |
-| `npm run bench`         | Run the benchmark (`-- --help` for usage)               |
-| `npm run bench:smoke`   | One live call to one provider                           |
-| `npm run bench:record`  | Capture fresh mock fixtures from a provider             |
-| `npm run data:validate` | Check every file under `data/` against the schema       |
-| `npm run data:index`    | Regenerate `data/index.json`                            |
-| `npm test`              | Vitest unit and integration suite                       |
-| `npm run test:a11y`     | axe-core over every built page, both themes             |
-| `npm run test:audit`    | Keyboard, focus, 320px reflow, zoom, forced colors      |
-| `npm run test:budget`   | Client JavaScript size budget                           |
-| `npm run lint`          | ESLint                                                  |
-| `npm run typecheck`     | `tsc --noEmit`                                          |
-| `npm run validate`      | lint + typecheck + test, in one command                 |
+| Script                    | What it does                                            |
+| ------------------------- | ------------------------------------------------------- |
+| `npm run dev`             | Serve the site locally with live reload                 |
+| `npm run build`           | Build the site, OG images and PDF editions into `dist/` |
+| `npm run bench`           | Run the benchmark (`-- --help` for usage)               |
+| `npm run bench:smoke`     | One live call to one provider                           |
+| `npm run bench:record`    | Capture fresh mock fixtures from a provider             |
+| `npm run data:validate`   | Check every file under `data/` against the schema       |
+| `npm run data:index`      | Regenerate `data/index.json`                            |
+| `npm test`                | Vitest unit and integration suite                       |
+| `npm run test:a11y`       | axe-core over every built page, both themes             |
+| `npm run test:audit`      | Keyboard, focus, 320px reflow, zoom, forced colors      |
+| `npm run test:responsive` | Overflow, pointer targets, text spacing at seven widths |
+| `npm run test:budget`     | Client JavaScript size budget                           |
+| `npm run lint`            | ESLint                                                  |
+| `npm run typecheck`       | `tsc --noEmit`                                          |
+| `npm run validate`        | lint + typecheck + test, in one command                 |
 
 ### Why each dev dependency is here
 
@@ -228,8 +250,7 @@ which is what a crawler sees before any JavaScript runs.
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports, new providers, and screenshots of models
-being weird are all welcome. Participation is governed by the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+being weird are all welcome.
 
 ## License
 

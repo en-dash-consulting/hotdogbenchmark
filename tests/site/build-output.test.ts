@@ -268,12 +268,14 @@ describe('experimental conditions in the built report', () => {
  */
 describe('chart marks', () => {
   const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
-  const questionIds = readdirSync(join(DIST, 'reports'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
+  // Read lazily: at collection time dist/ may not exist yet on a fresh runner.
+  const questionIds = () =>
+    readdirSync(join(DIST, 'reports'), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
 
   it('link every plotted vendor to a profile card on the same page', () => {
-    for (const questionId of questionIds) {
+    for (const questionId of questionIds()) {
       const html = read(`reports/${questionId}`)
       const targets = [...html.matchAll(/class="mark[^"]*" href="#(profile-[^"]+)"/g)].map(
         (m) => m[1]!,
@@ -286,7 +288,7 @@ describe('chart marks', () => {
   })
 
   it('give every linked mark a native tooltip', () => {
-    for (const questionId of questionIds) {
+    for (const questionId of questionIds()) {
       const html = read(`reports/${questionId}`)
       const marks = (html.match(/class="mark[^"]*" href=/g) ?? []).length
       const titles = (html.match(/<a class="mark[^>]*>\s*<title>/g) ?? []).length

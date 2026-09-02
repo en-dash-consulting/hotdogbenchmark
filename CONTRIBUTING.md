@@ -153,4 +153,4 @@ Keep the adapter under about 150 lines. It is a tutorial example before it is in
 
 ## Code of Conduct
 
-By participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
+Be decent to each other; disagreements about classification rules are welcome, disagreements about people are not.

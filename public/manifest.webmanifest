@@ -1,0 +1,14 @@
+{
+  "name": "HOTDOG BENCHMARK",
+  "short_name": "Hotdog Bench",
+  "description": "Every week, eleven AI models are asked whether a hot dog is a sandwich. Then they are told the answer.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "minimal-ui",
+  "background_color": "#ffffff",
+  "theme_color": "#001769",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/pwa-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

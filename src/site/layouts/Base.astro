@@ -89,7 +89,7 @@ const PRELOADED_FONTS = [
 const LATIN_RANGE =
   'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
 const fontFace = (family: string, style: string, weight: string, file: string) =>
-  `@font-face{font-family:'${family}';font-style:${style};font-weight:${weight};font-display:swap;src:url('${href(`fonts/${file}`)}') format('woff2');unicode-range:${LATIN_RANGE}}`
+  `@font-face{font-family:'${family}';font-style:${style};font-weight:${weight};font-display:optional;src:url('${href(`fonts/${file}`)}') format('woff2');unicode-range:${LATIN_RANGE}}`
 const FONT_FACES = [
   fontFace('Montserrat', 'normal', '400 900', 'montserrat-normal-latin.woff2'),
   fontFace('Montserrat', 'italic', '400 900', 'montserrat-italic-latin.woff2'),
@@ -129,6 +129,13 @@ const isCurrent = (href: string) => {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    <meta name="theme-color" content="#001769" />
+
+    {/* The En Dash square, the same icon set the other En Dash properties use. */}
+    <link rel="icon" href={href('favicon.ico')} sizes="any" />
+    <link rel="icon" type="image/svg+xml" href={href('brand/endash-square.svg')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={href('apple-touch-icon.png')} />
+    <link rel="manifest" href={href('manifest.webmanifest')} />
     <link rel="canonical" href={canonical} />
 
     {
@@ -148,7 +155,10 @@ const isCurrent = (href: string) => {
     {
       /* The En Dash faces, self-hosted and preloaded: no third-party request,
          and the two upright files are in flight before the stylesheet asks
-         for them, so the swap from the fallback face rarely moves anything. */
+         for them. font-display: optional means a font that has not arrived by
+         first paint is skipped for that page view rather than swapped in
+         later, so the layout never shifts; with the preload it is nearly
+         always there in time, and it is cached for every page after. */
     }
     {
       PRELOADED_FONTS.map((font) => (
