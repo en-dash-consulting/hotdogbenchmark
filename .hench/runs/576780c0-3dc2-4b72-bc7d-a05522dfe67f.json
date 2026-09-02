@@ -1,0 +1,28 @@
+{
+  "id": "576780c0-3dc2-4b72-bc7d-a05522dfe67f",
+  "taskId": "b6265a4a-723c-4442-99e5-3d4630b0e2d4",
+  "taskTitle": "ndx-capture: Pristine responsive and accessible site: every page, every width, every input method",
+  "startedAt": "2026-09-01T23:45:39-04:00",
+  "finishedAt": "2026-09-02T03:47:40.200Z",
+  "status": "completed",
+  "turns": 15,
+  "summary": "Captured the responsive and accessibility epic with five ordered features: reflow audit, board keyboard and screen-reader work, WCAG 2.2 manual-only criteria, CI gates, manual pass and statement page",
+  "tokenUsage": {
+    "input": 844,
+    "output": 30471,
+    "cacheCreationInput": 33105,
+    "cacheReadInput": 12040481
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 844,
+    "output": 30471,
+    "cached": 12073586,
+    "total": 12104901
+  }
+}
