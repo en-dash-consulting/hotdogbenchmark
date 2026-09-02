@@ -15,6 +15,7 @@ on:
       - 'src/**'
       - 'data/**'
       - 'public/**'
+      - 'scripts/**'
       - 'questions.json'
       - 'models.json'
       - 'astro.config.mjs'
