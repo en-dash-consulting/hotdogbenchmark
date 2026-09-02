@@ -18,8 +18,16 @@ import sitemap from '@astrojs/sitemap'
  * Always use Astro's `import.meta.env.BASE_URL` (or the `href()` helper in
  * src/site/lib/urls.ts) rather than writing absolute paths by hand.
  */
+import { existsSync, readFileSync } from 'node:fs'
+
+/**
+ * A custom domain wins over everything: when public/CNAME exists, GitHub Pages
+ * serves the site from that host at the root, so the canonical origin is that
+ * host and the base is "/". One host only; the other redirects.
+ */
+const cname = existsSync('./public/CNAME') ? readFileSync('./public/CNAME', 'utf8').trim() : ''
 const repository = process.env.GITHUB_REPOSITORY?.split('/')[1]
-const siteUrl = process.env.SITE_URL
+const siteUrl = process.env.SITE_URL || (cname ? `https://${cname}` : '')
 
 const base = siteUrl || !repository ? '/' : `/${repository}/`
 const site =
