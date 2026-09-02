@@ -46,6 +46,11 @@ const STEPS = [
     body: 'One JSON file per ISO week, validated against a versioned schema and committed. Re-running a week corrects that edition rather than creating a second one.',
   },
   {
+    file: 'src/site/lib/prose.ts',
+    title: 'Let the data write the report',
+    body: 'The summary, the findings and the vendor profiles are pure functions over the committed edition, evaluated at build time. Nothing here calls a model: an analyst note written by an LLM would be an unreproducible claim about a reproducible measurement, and it would put a provider in the build. Change the question and the prose follows, because it is derived rather than authored.',
+  },
+  {
     file: '.github/workflows/benchmark.yml',
     title: 'Do it again next week without being asked',
     body: 'A scheduled GitHub Action runs the benchmark with keys from repository secrets, commits the new data, and triggers a redeploy. Nobody runs the benchmark by hand.',

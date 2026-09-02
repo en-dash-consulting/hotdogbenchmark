@@ -82,6 +82,12 @@ Everything downstream of the network call is real: answer classification, aggreg
 estimation, schema validation, and the site build. Set `BENCH_SEED=1` to make mock timings
 deterministic.
 
+That includes the report itself. **No model writes any of the prose.** The executive summary, the
+key findings, the vendor profiles and the scores are pure functions over the committed edition,
+evaluated at build time, so the same data always renders the same words and building the site
+needs no API key at all. Ask a different question and the report follows, because it is derived
+from `questions.json` rather than authored.
+
 ```sh
 npm run bench -- run --dry-run  # print the plan without calling anything
 ```

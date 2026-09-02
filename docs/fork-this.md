@@ -208,6 +208,19 @@ Open <http://localhost:4321>. The site reads `data/` at build time, so every edi
 `data/runs/` is a page. Check the report title, the tagline, and the framing descriptions from
 step 4; they are all rendered from the registries you edited.
 
+You now have a full report, and **you did not have to ask a model to write one**. The executive
+summary, the key findings, the vendor profiles and the headlines are pure functions over the run
+data, evaluated during `astro build` — `src/site/lib/prose.ts` for the sentences,
+`src/site/lib/scores.ts` for the quadrant and the ranking, `src/site/lib/sensitivity.ts` for the
+framing comparison. There is no summarization step, no report-writing model, and no API key
+involved in building the site. The only cost of a fork is the benchmark calls themselves.
+
+That also means the prose follows your question with no code change: the sentences are assembled
+from `subject`, `claim` and `denial` in `questions.json` and from the numbers in the edition, so
+"Whether a burrito is a wrap is not a matter of fact" is generated, not written. If a sentence
+reads wrong for your question, the fix is almost always a better `subject` or `claim`, not an edit
+to `prose.ts`.
+
 ## 10. Push and deploy
 
 Commit `questions.json`, `conditions.json`, `models.json`, the fixtures, and the data, then push
