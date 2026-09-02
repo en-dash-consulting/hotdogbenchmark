@@ -786,6 +786,18 @@ const Heading = headline ? 'h1' : 'h2'
     color: #001769;
   }
 
+  /*
+   * The question tabs and the framing controls need the script, so they ship
+   * hidden. They keep their space while hidden: the board must not grow by a
+   * row of buttons the moment the script wakes up, which would push every
+   * section below it down mid-read.
+   */
+  .subjects[hidden],
+  .controls[hidden] {
+    display: flex;
+    visibility: hidden;
+  }
+
   .controls {
     display: flex;
     flex-wrap: wrap;
@@ -910,7 +922,9 @@ const Heading = headline ? 'h1' : 'h2'
     padding-left: 0;
   }
 
-  .thinking {
+  /* The dots indicator, not the row: the row carries the same class while it
+     thinks, and hiding it made every row pop into existence as it landed. */
+  .row .thinking {
     display: none;
     gap: 0.3em;
     align-items: center;
@@ -1026,11 +1040,12 @@ const Heading = headline ? 'h1' : 'h2'
     text-align: right;
   }
 
+  /* Two lines reserved: a detail that wraps must not grow the row. */
   .detail {
     grid-column: 1 / -1;
     font-size: var(--step--1);
     color: var(--muted);
-    min-height: 1.4em;
+    min-height: 2.8em;
   }
 
   .row.thinking .detail {
