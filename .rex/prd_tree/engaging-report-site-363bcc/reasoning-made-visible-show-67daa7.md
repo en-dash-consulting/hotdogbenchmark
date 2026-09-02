@@ -2,7 +2,7 @@
 id: "67daa7e6-081f-4c42-8c13-f805bcd6255a"
 level: "feature"
 title: "Reasoning made visible: show thinking as a phase, a cost, and a variable"
-status: "in_progress"
+status: "completed"
 priority: "high"
 tags:
   - "site"
@@ -11,12 +11,16 @@ tags:
   - "reasoning"
 source: "ndx-capture 2026-09-01 (maintainer: \"we should have something that indicates reasoning too\")"
 startedAt: "2026-09-02T03:23:50.007Z"
+completedAt: "2026-09-02T03:42:45.601Z"
+endedAt: "2026-09-02T03:42:45.601Z"
+resolutionType: "code-change"
+resolutionDetail: "Board thinking phase and reasoning tag; reasoningEffort on models.json and conditions.json, mapped by xAI/OpenAI-compatible (reasoning_effort) and OpenAI Responses (reasoning.effort), recorded on each ModelResult; a think-less arm is a data change documented in providers.md but not enabled"
 acceptanceCriteria:
   - "The answer board shows a distinct thinking phase during replay and a split thinking/answer bar plus a reasoning tag with token count after landing, for every row whose samples report reasoning tokens"
   - "models.json accepts an optional reasoningEffort; the run file records it per model; adapters that support it send it in the vendor's field, with tests for presence and for the unchanged body when unset"
   - "The methodology page explains that time to first answer token excludes reasoning and why, next to the reasoning-effort setting"
   - "A reasoning-effort condition is documented as an option with its cost, and can be enabled without code changes once layer 2 exists"
 description: "Grok 4.6 takes 12.6 s to say \"No\" because it spends 600 reasoning tokens first; Grok 4.20 with reasoning off says it in 0.4 s. The data already records reasoning tokens and time to first answer token per sample, and the difference between them is the single most legible fact in the benchmark. It should be impossible to miss.\n\nThree layers, in order of value:\n\n1. On the answer board, thinking is a visible phase: during the replay the latency bar fills in a hatched \"thinking\" style until the first answer token, with the reasoning-token count ticking up alongside the clock; once landed, the bar is split into thinking and answering segments and the row carries a REASONING tag with the token count and the share of the call spent thinking. Rows with no reasoning say so.\n2. Reasoning effort as a per-model setting: an optional reasoningEffort in models.json, carried on CompleteRequest, mapped by each adapter that supports it (xAI and the OpenAI-compatible dialect: reasoning_effort; OpenAI Responses: reasoning.effort; Anthropic: a thinking budget; Gemini: thinking config), recorded in the run file so an edition says what effort it asked for. Each adapter's request test asserts the field lands, and that the body is unchanged when unset.\n3. Reasoning effort as an experimental condition, so the matrix can answer \"does thinking less change the answer?\" — the same shape as the system-prompt arms, with the cost multiplier stated.\n\nLayers 1 and 2 are cheap. Layer 3 is a fourth arm and triples nothing but adds a third; it should be a deliberate decision, not a default."
-lastModified: "2026-09-02T03:23:50.020Z"
+lastModified: "2026-09-02T03:42:45.612Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

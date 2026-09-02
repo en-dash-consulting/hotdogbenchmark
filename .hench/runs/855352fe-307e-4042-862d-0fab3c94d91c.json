@@ -1,0 +1,28 @@
+{
+  "id": "855352fe-307e-4042-862d-0fab3c94d91c",
+  "taskId": "67daa7e6-081f-4c42-8c13-f805bcd6255a",
+  "taskTitle": "Reasoning made visible: show thinking as a phase, a cost, and a variable",
+  "startedAt": "2026-09-01T23:23:52-04:00",
+  "finishedAt": "2026-09-02T03:42:43.427Z",
+  "status": "completed",
+  "turns": 54,
+  "summary": "Thinking phase on the answer board with token ticking and a reasoning tag; reasoningEffort on models and conditions mapped by xAI/OpenAI-compatible/OpenAI adapters and recorded per result; docs and tests",
+  "tokenUsage": {
+    "input": 5346,
+    "output": 153103,
+    "cacheCreationInput": 197184,
+    "cacheReadInput": 39980519
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 5346,
+    "output": 153103,
+    "cached": 40177703,
+    "total": 40336152
+  }
+}

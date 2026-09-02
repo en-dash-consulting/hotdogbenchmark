@@ -72,6 +72,14 @@ const sensitivity =
     : []
 
 const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
+
+/** Kept as a string so the formatter cannot fold the line breaks out of a <pre>. */
+const QUICKSTART = [
+  `git clone ${REPO_URL}.git`,
+  'cd hotdogbenchmark && npm install',
+  'npm run bench -- run --mock --out tmp/mock-run.json',
+  'npm run dev',
+].join('\n')
 ---
 
 <Base
@@ -227,10 +235,7 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
               </p>
             </div>
             <pre class="fork-code" aria-label="Quickstart commands" tabindex="0">
-              <code>
-                git clone {REPO_URL}.git cd hotdogbenchmark && npm install npm run bench -- run
-                --mock --out tmp/mock-run.json npm run dev
-              </code>
+              <code>{QUICKSTART}</code>
             </pre>
           </div>
 
