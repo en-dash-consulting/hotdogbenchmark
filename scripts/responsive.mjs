@@ -41,7 +41,7 @@ const PRIMARY_SELECTOR = [
   '[data-question]',
   '[data-condition]',
   '[data-replay]',
-  '.question-switch a',
+  '.question-switcher a',
 ].join(', ')
 
 const MIME = {

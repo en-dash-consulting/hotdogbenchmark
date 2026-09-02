@@ -11,6 +11,7 @@
  * historical run.
  */
 import Base from '../../layouts/Base.astro'
+import QuestionSwitcher from '../../components/QuestionSwitcher.astro'
 import Masthead from '../../components/report/Masthead.astro'
 import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../components/report/KpiTiles.astro'
@@ -41,6 +42,7 @@ export function getStaticPaths() {
 }
 
 const { question } = Astro.props
+const questions = getQuestions()
 /** "Sandwich Certainty Quadrant" for the shipped claim; the noun comes from the registry. */
 const noun = (question.claim ?? 'is a sandwich').split(' ').at(-1) ?? 'sandwich'
 const quadrantTitle = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} Certainty Quadrant`
@@ -78,6 +80,11 @@ const framingTile =
   {
     run ? (
       <>
+        <QuestionSwitcher
+          questions={questions}
+          current={question.id}
+          hrefFor={(id) => routes.report(id)}
+        />
         <ConditionNav run={run} questionId={question.id} current={CONTROL_CONDITION_ID} />
         <Masthead
           question={question}

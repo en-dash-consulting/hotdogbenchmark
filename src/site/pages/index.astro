@@ -16,7 +16,7 @@ import {
   hasData,
 } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
-import { consensusOf, questionHeadline } from '../lib/prose.ts'
+import { questionHeadline } from '../lib/prose.ts'
 import { count, faqPageJsonLd, homeDescription, homeTitle, webSiteJsonLd } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { twinPairs, twinsWorthShowing } from '../lib/twins.ts'
@@ -173,6 +173,18 @@ const QUICKSTART = [
               {twins.length > 3 && ` · and ${twins.length - 3} more pairs`}
             </p>
           )}
+
+          {asked.length > 0 && (
+            <p class="handoff-line">
+              <a class="handoff-cta" href={routes.reports()}>
+                Read the {count(asked.length, 'report')} →
+              </a>
+              <span class="handoff-note">
+                One straight-faced analyst report per question: standings, the certainty quadrant,
+                every verbatim answer under every framing, and a PDF for each.
+              </span>
+            </p>
+          )}
         </section>
 
         {sensitivity.length > 0 && (
@@ -205,40 +217,7 @@ const QUICKSTART = [
           </section>
         )}
 
-        <section class="reports" aria-labelledby="reports-heading">
-          {asked.length > 0 ? (
-            <>
-              <div class="minds-head">
-                <p class="eyebrow">The full reports</p>
-                <h2 id="reports-heading">One straight-faced analyst report per question.</h2>
-              </div>
-              <div class="handoff">
-                <ul class="handoff-list">
-                  {asked.map((q) => {
-                    const verdict = consensusOf(getModelResults(latest, q.id)).verdict
-                    return (
-                      <li>
-                        <span class="handoff-q">{questionHeadline(q)}</span>
-                        <span class="handoff-v">{verdict ? GLYPH[verdict] : '—'}</span>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <div class="handoff-copy">
-                  <p>
-                    Leaderboards, the certainty quadrant, every verbatim answer under every framing,
-                    and a PDF for each. {formatEdition(latest.isoWeek)} edition.
-                  </p>
-                  <a class="handoff-cta" href={routes.reports()}>
-                    Read the {count(asked.length, 'report')} →
-                  </a>
-                  <a class="handoff-more" href={routes.methodology()}>
-                    How it is measured
-                  </a>
-                </div>
-              </div>
-            </>
-          ) : null}
+        <section class="reports" aria-labelledby="fork-heading">
           <div class="fork">
             <div class="fork-copy">
               <p class="eyebrow">Open source</p>
@@ -268,9 +247,8 @@ const QUICKSTART = [
 
           <p class="edition-line">
             {formatEdition(latest.isoWeek)} · published {formatDate(latest.finishedAt)} ·{' '}
-            <a href={routes.history()}>history</a> ·{' '}
             <a href={routes.runs()}>
-              {editions === 1 ? 'one edition' : `${editions} editions`} in the archive
+              {editions === 1 ? 'one edition' : `${editions} editions`} so far
             </a>
             {latest.isMock && <strong class="mock"> · sample data</strong>}
           </p>
@@ -516,59 +494,15 @@ const QUICKSTART = [
     }
   }
 
-  /* --- Report tiles -------------------------------------------------------- */
-  .reports {
-    margin-block: var(--space-3xl);
-  }
-
-  .handoff {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-    gap: var(--space-l);
-    align-items: center;
-    padding: var(--space-l);
-    border-radius: var(--radius);
-    background: linear-gradient(135deg, #000b45 0%, #001769 100%);
-    color: #ffffff;
-    box-shadow: var(--shadow-sm, var(--shadow-subtle));
-  }
-
-  .handoff-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-2xs);
-  }
-
-  .handoff-list li {
+  /* --- The hand-off line ------------------------------------------------- */
+  .handoff-line {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-s);
-    padding: var(--space-2xs) 0;
-    border-bottom: 1px solid rgb(255 255 255 / 18%);
-  }
-
-  .handoff-q {
-    font-family: var(--font-display);
-    font-size: var(--step-1);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  .handoff-v {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    font-weight: 800;
-    color: var(--accent-fill);
-  }
-
-  .handoff-copy p {
-    font-family: var(--font-text);
-    margin: 0 0 var(--space-m);
-    opacity: 0.85;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
+    margin: var(--space-l) 0 0;
+    padding-top: var(--space-m);
+    border-top: 3px solid var(--text-strong);
   }
 
   .handoff-cta {
@@ -577,15 +511,22 @@ const QUICKSTART = [
     min-height: 2.75rem;
     padding: var(--space-2xs) var(--space-m);
     border-radius: 999px;
-    background: var(--accent-fill);
-    color: #001769;
+    background: var(--primary);
+    color: var(--on-primary);
     font-family: var(--font-ui);
     font-weight: 700;
     text-decoration: none;
   }
 
   .handoff-cta:hover {
-    background: #ffffff;
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  .handoff-note {
+    font-family: var(--font-text);
+    color: var(--muted);
+    max-width: 48ch;
   }
 
   @media (forced-colors: active) {
@@ -597,14 +538,8 @@ const QUICKSTART = [
     }
   }
 
-  .handoff-more {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-    margin-left: var(--space-m);
-    color: #ffffff;
-    font-family: var(--font-ui);
-    font-weight: 700;
+  .reports {
+    margin-block: var(--space-3xl);
   }
 
   .fork {
@@ -612,7 +547,6 @@ const QUICKSTART = [
     grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
     gap: var(--space-l);
     align-items: center;
-    margin-top: var(--space-2xl);
     padding: var(--space-xl);
     border-radius: var(--radius);
     background: linear-gradient(135deg, #000b45 0%, #120c3f 100%);

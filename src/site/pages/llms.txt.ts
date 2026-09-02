@@ -103,8 +103,9 @@ export const GET: APIRoute = ({ site }) => {
       `- [${question.reportTitle}, week by week](${url(`history/${question.id}/`)}): how each model's answer has moved across editions, and sample consistency within the latest one.`,
     )
   }
-  lines.push(`- [History](${url('history/')}): pick a question to see its trends.`)
-  lines.push(`- [Every edition](${url('runs/')}): the archive, newest first.`)
+  lines.push(
+    `- [Editions](${url('runs/')}): every edition, newest first, with each question's week-by-week history.`,
+  )
   for (const run of runs) {
     lines.push(
       `- [${formatEdition(run.isoWeek)} edition](${url(`runs/${run.isoWeek}/`)}): every question asked that week, with the raw JSON at ${REPO_URL}/blob/main/data/runs/${run.isoWeek}.json.`,

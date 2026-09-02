@@ -9,6 +9,7 @@
  * editions accumulate.
  */
 import Base from '../../layouts/Base.astro'
+import QuestionSwitcher from '../../components/QuestionSwitcher.astro'
 import { breadcrumbJsonLd } from '../../lib/seo.ts'
 import StackedShare from '../../components/charts/StackedShare.astro'
 import Sparkline from '../../components/charts/Sparkline.astro'
@@ -74,25 +75,18 @@ const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
   description={`"${question.text.replace(/\s*One word answer\.$/, '')}" across ${runs.length === 1 ? 'one edition' : `${runs.length} editions`}, every model. ${changes.length === 0 ? 'No changes of position yet.' : `Latest change: ${changes[0]!.displayName}, ${changes[0]!.from} to ${changes[0]!.to} in ${formatEdition(changes[0]!.toEdition)}.`}`}
   jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
     { name: 'Home', path: routes.home() },
-    { name: 'History', path: routes.history() },
+    { name: 'Editions', path: routes.runs() },
     { name: `${question.reportTitle}, week by week`, path: routes.historyForQuestion(question.id) },
   ])}
 >
   <h1>{question.reportTitle}, week by week</h1>
   {question.tagline && <p class="lede">{question.tagline}</p>}
 
-  <nav class="question-switch" aria-label="Question">
-    {
-      questions.map((other) => (
-        <a
-          href={routes.historyForQuestion(other.id)}
-          aria-current={other.id === question.id ? 'page' : undefined}
-        >
-          {other.subject}
-        </a>
-      ))
-    }
-  </nav>
+  <QuestionSwitcher
+    questions={questions}
+    current={question.id}
+    hrefFor={(id) => routes.historyForQuestion(id)}
+  />
 
   {
     latest && consistency.length > 0 && (
@@ -411,40 +405,6 @@ const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
     text-transform: uppercase;
     color: var(--accent);
     margin: 0 0 var(--space-3xs);
-  }
-
-  .question-switch {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-    padding-bottom: var(--space-s);
-    border-bottom: var(--hairline) solid var(--rule);
-    margin-bottom: var(--space-l);
-  }
-
-  .question-switch a {
-    font-family: var(--font-ui);
-    font-size: var(--step--1);
-    font-weight: 700;
-    text-decoration: none;
-    padding: var(--space-3xs) var(--space-s);
-    border: 2px solid var(--rule-strong);
-    border-radius: 999px;
-    color: var(--text-strong);
-  }
-
-  @media (max-width: 26rem) {
-    .question-switch a {
-      min-height: 2.75rem;
-      display: inline-flex;
-      align-items: center;
-    }
-  }
-
-  .question-switch a[aria-current='page'] {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: var(--on-primary);
   }
 
   .up-close {

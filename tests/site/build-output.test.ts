@@ -697,3 +697,73 @@ describe('the reports landing page', () => {
     expect(home).not.toContain('class="tile"')
   })
 })
+
+/**
+ * One archive, one switcher, and no page that points at where things used
+ * to be. The reports index was once the home page and the history index was
+ * once the archive; copy that still says so sends a reader to the wrong
+ * place, and this is the check that stops it coming back.
+ */
+describe('navigation after the consolidation', () => {
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const mainNav = (html: string) =>
+    html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
+  it('has Editions in the primary nav and no History', () => {
+    const nav = mainNav(read(''))
+    expect(nav).toContain('>Editions<')
+    expect(nav).not.toContain('>History<')
+  })
+
+  it('builds no history index: the editions page is the one archive', () => {
+    expect(existsSync(join(DIST, 'history', 'index.html'))).toBe(false)
+  })
+
+  it('marks Editions current on the editions pages and on every week-by-week page', () => {
+    const under = pages.filter((page) => /^\/(runs|history)\//.test(page.path))
+    expect(under.length).toBeGreaterThan(1)
+    for (const page of under) {
+      const current = mainNav(page.html).match(
+        /<a href="([^"]*)" aria-current="page"[^>]*>([^<]*)</,
+      )
+      expect(current?.[2]?.trim(), `${page.path} does not mark Editions current`).toBe('Editions')
+    }
+  })
+
+  it('renders the question switcher on every report, arm and history page', () => {
+    const targets = pages.filter((page) =>
+      /^\/(reports\/[^/]+\/(?:[^/]+\/)?|history\/[^/]+\/)index\.html$/.test(page.path),
+    )
+    expect(targets.length).toBeGreaterThan(2)
+    for (const page of targets) {
+      expect(page.html, `${page.path} lacks the switcher`).toMatch(
+        /<nav class="question-switcher[^"]*"[^>]*aria-label="Question"/,
+      )
+      expect(page.html, `${page.path} marks no question current`).toMatch(
+        /question-switcher[\s\S]*?aria-current="page"/,
+      )
+    }
+  })
+
+  it('never links "the archive" or "home page" to somewhere the thing is not', () => {
+    for (const page of pages) {
+      for (const match of page.html.matchAll(/<a href="([^"]+)"[^>]*>([^<]*)<\/a>/g)) {
+        const [, href, text] = match
+        const label = text!.trim().toLowerCase()
+        if (/archive|editions/.test(label) && !/report/.test(label)) {
+          expect(href, `${page.path}: "${text!.trim()}" links ${href}`).toMatch(/\/runs\/$/)
+        }
+        if (label === 'home page') {
+          expect(href, `${page.path}: "home page" links ${href}`).toBe('/')
+        }
+      }
+    }
+  })
+
+  it('has exactly one dark call-to-action block on the home page', () => {
+    const home = read('')
+    expect(home).not.toContain('class="handoff"')
+    expect((home.match(/class="fork"/g) ?? []).length).toBe(1)
+    expect(home).toContain('class="handoff-line"')
+  })
+})

@@ -2,23 +2,32 @@
 /**
  * The archive page for one edition.
  *
- * Reuses the report components against a historical run, under a banner
- * marking it as archived, with previous/next navigation.
+ * What the edition found, one entry per question: the tally, who changed
+ * their mind when told the answer, and the ways in. The full archived report
+ * for each question is one click away and is not repeated here.
  */
 import Base from '../../layouts/Base.astro'
-import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
-import KpiTiles from '../../components/report/KpiTiles.astro'
 import {
   getAllRuns,
   getModelResults,
   getNextRun,
   getPreviousRun,
   getQuestion,
-  getQuestions,
 } from '../../lib/data.ts'
-import { formatEdition } from '../../lib/format.ts'
-import { breadcrumbJsonLd, editionDatasetJsonLd, editionDescription } from '../../lib/seo.ts'
+import { formatDate, formatEdition } from '../../lib/format.ts'
+import { consensusOf, questionHeadline } from '../../lib/prose.ts'
+import {
+  breadcrumbJsonLd,
+  count,
+  editionDatasetJsonLd,
+  editionDescription,
+  flippedNames,
+  nameList,
+  tallyPhrase,
+} from '../../lib/seo.ts'
+import { questionShifts, treatedConditions } from '../../lib/sensitivity.ts'
 import { routes } from '../../lib/urls.ts'
+import type { Verdict } from '../../../schema/run.ts'
 
 export function getStaticPaths() {
   return getAllRuns().map((run) => ({ params: { isoWeek: run.isoWeek }, props: { run } }))
@@ -27,11 +36,40 @@ export function getStaticPaths() {
 const { run } = Astro.props
 const previous = getPreviousRun(run.isoWeek)
 const next = getNextRun(run.isoWeek)
+const latest = getAllRuns()[0]
+const isLatest = latest?.isoWeek === run.isoWeek
 
-const questions = getQuestions()
+const questions = run.questions
+  .map((asked) => getQuestion(asked.id))
+  .filter((question): question is NonNullable<typeof question> => question !== null)
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
 /** The edition is a dataset: one JSON file, MIT, published on a known date. */
 const jsonLd = editionDatasetJsonLd(run, questions, canonical)
+
+const VERDICT_WORD: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
+const models = new Set(
+  run.results.flatMap((cell) => cell.models.map((m) => `${m.provider}/${m.modelId}`)),
+).size
+
+const entries = questions.map((question) => {
+  const results = getModelResults(run, question.id)
+  const consensus = consensusOf(results)
+  const compared = questionShifts(run, question.id).filter((row) =>
+    row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+  ).length
+  const flipped = flippedNames(run, question.id)
+  return {
+    question,
+    verdict: consensus.verdict ? VERDICT_WORD[consensus.verdict] : null,
+    tally: tallyPhrase(results, 'said'),
+    minds:
+      compared === 0
+        ? null
+        : flipped.length === 0
+          ? 'Told the answer, nobody changed their mind.'
+          : `Told the answer, ${nameList(flipped, 3)} changed their ${flipped.length === 1 ? 'mind' : 'minds'}.`,
+  }
+})
 ---
 
 <Base
@@ -42,7 +80,7 @@ const jsonLd = editionDatasetJsonLd(run, questions, canonical)
     jsonLd,
     breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
       { name: 'Home', path: routes.home() },
-      { name: 'Every edition', path: routes.runs() },
+      { name: 'Editions', path: routes.runs() },
       { name: `${formatEdition(run.isoWeek)} edition`, path: routes.run(run.isoWeek) },
     ]),
   ]}
@@ -68,30 +106,46 @@ const jsonLd = editionDatasetJsonLd(run, questions, canonical)
   <h1>{formatEdition(run.isoWeek)} edition</h1>
 
   <p class="archive-note">
-    An archived record of every question asked in this edition. Current reports are on the{' '}
-    <a href={routes.home()}>home page</a>.
+    Published {formatDate(run.finishedAt)}: {count(models, 'model')},{' '}
+    {count(treatedConditions(run).length + 1, 'framing')}, {count(questions.length, 'question')},
+    every answer recorded and never revised.{' '}
+    {
+      isLatest ? (
+        <>
+          This is the current edition; its full reports are under{' '}
+          <a href={routes.reports()}>Reports</a>.
+        </>
+      ) : (
+        <>
+          The current edition's reports are under <a href={routes.reports()}>Reports</a>.
+        </>
+      )
+    }
+    {run.isMock && <strong> Sample data, generated from recorded fixtures.</strong>}
   </p>
 
-  {
-    run.questions.map((asked) => {
-      const question = getQuestion(asked.id)
-      const results = getModelResults(run, asked.id)
-      if (!question) return null
-      return (
-        <section class="archived-report" aria-labelledby={`q-${asked.id}`}>
-          <h2 id={`q-${asked.id}`}>{question.reportTitle}</h2>
-          <p class="asked">
-            <a href={routes.runQuestion(run.isoWeek, asked.id)}>Full archived report →</a>
+  <ol class="edition-questions">
+    {
+      entries.map((entry) => (
+        <li class="edition-question">
+          <h2>
+            <a href={routes.runQuestion(run.isoWeek, entry.question.id)}>
+              {questionHeadline(entry.question)}
+            </a>
+          </h2>
+          <p class="verdict">
+            {entry.verdict && <span class="verdict-word">{entry.verdict}</span>}
+            <span class="verdict-tally">{entry.tally}.</span>
           </p>
-          <KpiTiles
-            results={results}
-            previous={previous ? getModelResults(previous, asked.id) : null}
-          />
-          <ExecutiveSummary subject={question.subject} results={results} />
-        </section>
-      )
-    })
-  }
+          {entry.minds && <p class="minds">{entry.minds}</p>}
+          <p class="links">
+            <a href={routes.runQuestion(run.isoWeek, entry.question.id)}>Archived report</a>
+            <a href={routes.historyForQuestion(entry.question.id)}>Week by week</a>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
 </Base>
 
 <style>
@@ -116,13 +170,72 @@ const jsonLd = editionDatasetJsonLd(run, questions, canonical)
     max-width: var(--measure);
   }
 
-  .archived-report {
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-l);
+  .edition-questions {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .edition-question {
+    padding: var(--space-m);
+    background: var(--surface);
     border-top: 3px solid var(--text-strong);
   }
 
-  .asked {
+  .edition-question h2 {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--step-2);
+  }
+
+  .edition-question h2 a {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .edition-question h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .verdict {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .verdict-word {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 800;
+    color: var(--text-strong);
+  }
+
+  .verdict-tally,
+  .minds {
+    font-family: var(--font-text);
+    color: var(--muted);
+  }
+
+  .minds {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    margin: var(--space-s) 0 0;
+    font-family: var(--font-ui);
+    font-weight: 700;
     font-size: var(--step--1);
+  }
+
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
   }
 </style>

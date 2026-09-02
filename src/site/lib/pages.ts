@@ -55,7 +55,6 @@ export function sitePages(): SitePage[] {
       priority: 0.6,
     })
   }
-  add(routes.history(), { lastmod: latestDate, changefreq: 'weekly', priority: 0.5 })
   add(routes.runs(), { lastmod: latestDate, changefreq: 'weekly', priority: 0.5 })
   for (const run of runs) {
     const published = run.finishedAt.slice(0, 10)

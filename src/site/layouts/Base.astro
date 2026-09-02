@@ -97,9 +97,13 @@ const FONT_FACES = [
   fontFace('Merriweather', 'italic', '400', 'merriweather-italic-latin.woff2'),
 ].join('')
 
-const NAV = [
+/**
+ * `also`: further sections a nav item is current for. A question's
+ * week-by-week history is reached from Editions, so Editions is current there.
+ */
+const NAV: Array<{ href: string; label: string; also?: string[] }> = [
   { href: routes.reports(), label: 'Reports' },
-  { href: routes.history(), label: 'History' },
+  { href: routes.runs(), label: 'Editions', also: [routes.historyForQuestion('')] },
   // Only present when the deferred feature is switched on at build time.
   ...(RUN_YOUR_OWN_ENABLED ? [{ href: routes.runYourOwn(), label: 'Run your own' }] : []),
   { href: routes.methodology(), label: 'Methodology' },
@@ -108,17 +112,20 @@ const NAV = [
 ]
 
 /**
- * Trailing slashes are normalized so `/history` and `/history/` both match, and
- * a section stays current on its children: Reports on every report, History
- * on every question's history. The home page matches only itself.
+ * Trailing slashes are normalized so `/runs` and `/runs/` both match, and a
+ * section stays current on its children: Reports on every report, Editions on
+ * every edition and every question's history. The home page matches only
+ * itself.
  */
 const normalize = (path: string) => path.replace(/\/+$/, '') || '/'
 const current = normalize(Astro.url.pathname)
 const home = normalize(routes.home())
-const isCurrent = (href: string) => {
+const under = (href: string) => {
   const target = normalize(href)
   return target === current || (target !== home && current.startsWith(`${target}/`))
 }
+const isCurrent = (item: { href: string; also?: string[] }) =>
+  under(item.href) || (item.also ?? []).some(under)
 ---
 
 <!doctype html>
@@ -242,7 +249,7 @@ const isCurrent = (href: string) => {
               {
                 NAV.map((item) => (
                   <li>
-                    <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <a href={item.href} aria-current={isCurrent(item) ? 'page' : undefined}>
                       {item.label}
                     </a>
                   </li>

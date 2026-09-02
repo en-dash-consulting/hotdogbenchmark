@@ -1,0 +1,161 @@
+---
+/**
+ * The one way to change question, everywhere a question can change.
+ *
+ * A row of pills naming each question's subject. Two modes, one look:
+ *
+ *   - `links`: a `<nav>` of anchors with `aria-current` on the active one.
+ *     Report, arm and history pages, where switching is a page change.
+ *   - `tabs`: a WAI-ARIA tablist of buttons for the answer board, where the
+ *     board's script switches the question in place. Ships hidden until that
+ *     script reveals it, and keeps its space while hidden so the board does
+ *     not grow by a row the moment the script wakes up.
+ *
+ * `tone="hero"` is the variant for the navy band at the top of the home page.
+ */
+import type { QuestionEntry } from '../../schema/questions.ts'
+
+interface Props {
+  questions: Array<Pick<QuestionEntry, 'id' | 'subject'>>
+  /** The question this page, or this tab panel, is about. */
+  current: string
+  mode?: 'links' | 'tabs'
+  tone?: 'plain' | 'hero'
+  /** For `links`: where each question's pill goes. */
+  hrefFor?: (questionId: string) => string
+  /** For `tabs`: the id of the panel the tabs control. */
+  controls?: string
+}
+
+const {
+  questions,
+  current,
+  mode = 'links',
+  tone = 'plain',
+  hrefFor = () => '#',
+  controls = 'panel',
+} = Astro.props
+
+/** "a hot dog" becomes "hot dog": the pill is a label, not a sentence. */
+const bare = (subject: string) => subject.replace(/^(an?|the)\s+/i, '')
+---
+
+{
+  mode === 'links' ? (
+    <nav class:list={['question-switcher', `tone-${tone}`]} aria-label="Question">
+      <ul>
+        {questions.map((question) => (
+          <li>
+            <a
+              href={hrefFor(question.id)}
+              aria-current={question.id === current ? 'page' : undefined}
+            >
+              {bare(question.subject)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  ) : (
+    <div
+      class:list={['question-switcher', `tone-${tone}`, 'subjects']}
+      role="tablist"
+      aria-label="Question"
+      data-subjects
+      hidden
+    >
+      {questions.map((question) => (
+        <button
+          type="button"
+          role="tab"
+          id={`board-tab-${question.id}`}
+          aria-controls={controls}
+          data-question={question.id}
+          aria-selected={question.id === current ? 'true' : 'false'}
+          tabindex={question.id === current ? 0 : -1}
+        >
+          {bare(question.subject)}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .question-switcher,
+  .question-switcher ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .question-switcher.tone-plain {
+    padding-bottom: var(--space-s);
+    border-bottom: var(--hairline) solid var(--rule);
+    margin-bottom: var(--space-m);
+  }
+
+  .question-switcher a,
+  .question-switcher button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font: inherit;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: var(--space-3xs) var(--space-s);
+    border: 2px solid var(--rule-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-strong);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background 150ms var(--ease-out),
+      color 150ms var(--ease-out),
+      transform 150ms var(--ease-out);
+  }
+
+  .question-switcher a:hover,
+  .question-switcher button:hover {
+    transform: translateY(-1px);
+    border-color: var(--text-strong);
+  }
+
+  /* The current one is a filled pill, not a color change alone. */
+  .question-switcher a[aria-current='page'],
+  .question-switcher button[aria-selected='true'] {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+  }
+
+  /* On the navy band the pills take the band's ink and the teal fill. */
+  .tone-hero a,
+  .tone-hero button {
+    border-color: rgb(255 255 255 / 55%);
+    color: #ffffff;
+  }
+
+  .tone-hero a[aria-current='page'],
+  .tone-hero button[aria-selected='true'] {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+    color: #001769;
+  }
+
+  .tone-hero.subjects {
+    margin-bottom: var(--space-l);
+  }
+
+  /* Tabs need the script; they ship hidden but keep their space. */
+  .subjects[hidden] {
+    display: flex;
+    visibility: hidden;
+  }
+</style>

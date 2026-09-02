@@ -1,7 +1,7 @@
 /**
  * Internal links.
  *
- * GitHub Pages serves this site under `/<repo>/`, so a hand-written `/history/`
+ * GitHub Pages serves this site under `/<repo>/`, so a hand-written `/runs/`
  * works locally and 404s in production. Every internal href goes through
  * `href()`, which prefixes Astro's configured base.
  *
@@ -28,7 +28,6 @@ export const routes = {
   methodology: () => href('methodology/'),
   howItWorks: () => href('how-it-works/'),
   addAModel: () => href('add-a-model/'),
-  history: () => href('history/'),
   historyForQuestion: (questionId: string) => href(`history/${questionId}/`),
   runs: () => href('runs/'),
   reports: () => href('reports/'),

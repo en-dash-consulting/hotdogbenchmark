@@ -1,24 +1,27 @@
 ---
 /**
- * The archive index: every edition, newest first, with what each one found.
+ * Editions: every edition, newest first, and each question week by week.
  *
- * The table is the index; the list under it is the substance, one line per
- * edition per question, so a reader (or a crawler) gets the verdicts without
- * opening anything.
+ * The one archive. The table is the index; the list under it is the
+ * substance, one line per edition per question, so a reader (or a crawler)
+ * gets the verdicts without opening anything. The per-question history pages
+ * are reached from here, so a trend is one click from the editions that make
+ * it.
  */
 import Base from '../../layouts/Base.astro'
-import { getAllRuns, getModelResults, getQuestion } from '../../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../../lib/data.ts'
 import { formatDate, formatEdition } from '../../lib/format.ts'
 import { runsIndexDescription, subjectName, tallyPhrase } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 const runs = getAllRuns()
+const questions = getQuestions()
 
 const modelCount = (run: (typeof runs)[number]) =>
   new Set(run.results.flatMap((r) => r.models.map((m) => `${m.provider}/${m.modelId}`))).size
 ---
 
-<Base title="Every edition" description={runsIndexDescription(runs)}>
+<Base title="Editions" description={runsIndexDescription(runs)}>
   <h1>Every week, asked again.</h1>
   <p class="muted">Newest first. An edition is never revised after it is published.</p>
 
@@ -64,6 +67,25 @@ const modelCount = (run: (typeof runs)[number]) =>
           </table>
         </div>
 
+        <section class="by-question" aria-labelledby="by-question-heading">
+          <h2 id="by-question-heading">Each question, week by week</h2>
+          <p class="muted">
+            {runs.length === 1
+              ? 'One edition so far: each page shows how consistent every model was with itself. Trends begin with the second edition.'
+              : 'How every model has answered across editions: verdict share, latency, tokens and framing sensitivity over time.'}
+          </p>
+          <ul class="question-list">
+            {questions.map((question) => (
+              <li>
+                <a href={routes.historyForQuestion(question.id)}>
+                  {question.reportTitle}, week by week
+                </a>
+                <p class="muted">{question.tagline ?? question.text}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section class="findings" aria-labelledby="findings-heading">
           <h2 id="findings-heading">What each edition found</h2>
           <p class="muted">
@@ -103,9 +125,32 @@ const modelCount = (run: (typeof runs)[number]) =>
 </Base>
 
 <style>
+  .by-question,
   .findings {
     margin-top: var(--space-2xl);
     max-width: var(--measure);
+  }
+
+  .question-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-m) 0 0;
+  }
+
+  .question-list li + li {
+    margin-top: var(--space-s);
+    padding-top: var(--space-s);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .question-list a {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--step-0);
+  }
+
+  .question-list p {
+    margin: var(--space-3xs) 0 0;
   }
 
   .edition {
