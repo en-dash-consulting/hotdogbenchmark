@@ -13,9 +13,13 @@ import {
   ticks,
 } from '../../src/site/lib/scale.ts'
 import {
+  latencySpread,
   latestDelta,
   metricOverTime,
   positionChanges,
+  runOverRunChanges,
+  sampleConsistency,
+  sensitivityOverTime,
   verdictShareOverTime,
 } from '../../src/site/lib/history.ts'
 import type { BenchmarkRun, ModelResult, Verdict } from '../../src/schema/run.ts'
@@ -361,5 +365,49 @@ describe('latestDelta', () => {
   it('returns null when there is nothing to compare', () => {
     expect(latestDelta([{ value: 100 }])).toBeNull()
     expect(latestDelta([])).toBeNull()
+  })
+})
+
+describe('sampleConsistency', () => {
+  it('lists every sample verdict per framing and scores agreement with the majority', () => {
+    const mixed = model('a', 'no')
+    mixed.samples = [mixed.samples[0]!, { ...mixed.samples[0]!, verdict: 'yes' }, mixed.samples[0]!]
+    const edition = run('2026-W36', [mixed, model('b', 'yes')])
+    const rows = sampleConsistency(edition, 'hot-dog')
+    expect(rows.map((r) => r.displayName)).toEqual(['a', 'b'])
+    expect(rows[0]?.byCondition[0]?.verdicts).toEqual(['no', 'yes', 'no'])
+    expect(rows[0]?.agreement).toBeCloseTo(2 / 3, 3)
+    expect(rows[1]?.agreement).toBe(1)
+  })
+
+  it('reports null agreement for a model with no verdict', () => {
+    const rows = sampleConsistency(run('2026-W36', [model('down', null)]), 'hot-dog')
+    expect(rows[0]?.agreement).toBeNull()
+    expect(rows[0]?.byCondition[0]?.verdicts).toEqual([])
+  })
+})
+
+describe('latencySpread', () => {
+  it('returns the control arm min, median and max per answering model', () => {
+    const rows = latencySpread(run('2026-W36', [model('a', 'no'), model('down', null)]), 'hot-dog')
+    expect(rows.map((r) => r.displayName)).toEqual(['a'])
+    expect(rows[0]).toMatchObject({ min: 900, median: 900, max: 900 })
+  })
+})
+
+describe('sensitivityOverTime', () => {
+  it('yields a gap for editions that ran only the control', () => {
+    const series = sensitivityOverTime([run('2026-W36', [model('a', 'no')])])
+    expect(series[0]?.points).toEqual([{ isoWeek: '2026-W36', value: null }])
+  })
+})
+
+describe('runOverRunChanges', () => {
+  it('finds the answer that changed between two runs of the same week', () => {
+    const first = run('2026-W36', [model('a', 'no')])
+    const second = run('2026-W36', [model('a', 'yes')])
+    const changes = runOverRunChanges([first, second], 'hot-dog')
+    expect(changes).toHaveLength(1)
+    expect(changes[0]).toMatchObject({ from: 'no', to: 'yes' })
   })
 })

@@ -1,15 +1,38 @@
 ---
 /**
- * Trends for one question across every edition.
+ * One question across every edition, and up close within the latest one.
+ *
+ * With a single edition the trend charts have nothing to draw, so the page
+ * leads with what one edition can show: how consistent each model was with
+ * itself across its samples, how spread out its latency was, and, when a week
+ * was run more than once, what changed between runs. The trends take over as
+ * editions accumulate.
  */
 import Base from '../../layouts/Base.astro'
 import StackedShare from '../../components/charts/StackedShare.astro'
 import Sparkline from '../../components/charts/Sparkline.astro'
 import VerdictBadge from '../../components/report/VerdictBadge.astro'
-import { getAllRuns, getQuestions } from '../../lib/data.ts'
-import { metricOverTime, positionChanges, verdictShareOverTime } from '../../lib/history.ts'
-import { formatDuration, formatEdition, formatInteger } from '../../lib/format.ts'
+import { getAllRuns, getLatestRun, getQuestions } from '../../lib/data.ts'
+import {
+  latencySpread,
+  metricOverTime,
+  positionChanges,
+  runOverRunChanges,
+  sampleConsistency,
+  sensitivityOverTime,
+  verdictShareOverTime,
+} from '../../lib/history.ts'
+import { loadSupersededRuns, runsWithinEdition } from '../../lib/superseded.ts'
+import { hasConditions } from '../../lib/sensitivity.ts'
+import {
+  formatDate,
+  formatDuration,
+  formatEdition,
+  formatInteger,
+  formatPercent,
+} from '../../lib/format.ts'
 import { routes } from '../../lib/urls.ts'
+import type { Verdict } from '../../../schema/run.ts'
 
 export function getStaticPaths() {
   return getQuestions().map((question) => ({
@@ -21,13 +44,28 @@ export function getStaticPaths() {
 const { question } = Astro.props
 const questions = getQuestions()
 const runs = getAllRuns()
+const latest = getLatestRun()
 
 const share = verdictShareOverTime(runs, question.id)
 const changes = positionChanges(runs, question.id)
 const latency = metricOverTime(runs, question.id, (r) => r.aggregate.totalMs?.median)
 const tokens = metricOverTime(runs, question.id, (r) => r.aggregate.outputTokens?.median)
+const sway = sensitivityOverTime(runs).filter((series) =>
+  series.points.some((point) => point.value !== null),
+)
+const swayEditions = runs.filter(hasConditions).length
 
 const singleEdition = runs.length < 2
+
+const consistency = latest ? sampleConsistency(latest, question.id) : []
+const spread = latest ? latencySpread(latest, question.id) : []
+const slowest = Math.max(1, ...spread.map((row) => row.max ?? 0))
+
+const withinWeek = latest ? runsWithinEdition(latest, loadSupersededRuns()) : []
+const withinChanges = latest ? runOverRunChanges(withinWeek, question.id) : []
+
+const GLYPH: Record<Verdict, string> = { yes: 'Y', no: 'N', other: '~' }
+const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
 ---
 
 <Base
@@ -51,60 +89,270 @@ const singleEdition = runs.length < 2
   </nav>
 
   {
-    singleEdition ? (
-      <p class="empty-state">
-        Only one edition has been published so far. Trend analysis becomes available once a second
-        edition is collected — by design, since a trend drawn through a single point would be an
-        illustration rather than a measurement.
-      </p>
-    ) : (
-      <>
-        <StackedShare
-          points={share}
-          title="Verdict share by edition"
-          caption="Each model contributes one vote, based on its majority verdict across samples, so a model sampled three times does not outvote one sampled once."
-        />
-
-        <section aria-labelledby="latency-heading">
-          <h2 id="latency-heading">Median latency by model</h2>
-          <div class="spark-grid">
-            {latency.map((series) => (
-              <Sparkline
-                points={series.points}
-                label={series.displayName}
-                format={(value) => formatDuration(value)}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section aria-labelledby="tokens-heading">
-          <h2 id="tokens-heading">Median output tokens by model</h2>
-          <div class="spark-grid">
-            {tokens.map((series) => (
-              <Sparkline
-                points={series.points}
-                label={series.displayName}
-                format={(value) => formatInteger(value)}
-                color="var(--chart-2)"
-              />
-            ))}
-          </div>
-        </section>
-      </>
+    latest && consistency.length > 0 && (
+      <section aria-labelledby="consistency-heading" class="up-close">
+        <p class="eyebrow">{formatEdition(latest.isoWeek)}, up close</p>
+        <h2 id="consistency-heading">Did each model agree with itself?</h2>
+        <p class="note">
+          Every sample's answer, in the order it was taken, under each framing. A row of identical
+          chips is a model that has made up its mind. Y is yes, N is no, ~ is a hedge.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Table, scrolls sideways on narrow screens"
+        >
+          <table class="consistency">
+            <caption class="visually-hidden">
+              Sample-by-sample verdicts per model and framing, {formatEdition(latest.isoWeek)}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                {latest.conditions.map((condition) => (
+                  <th scope="col">{condition.label}</th>
+                ))}
+                <th scope="col" class="numeric">
+                  Self-agreement
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {consistency.map((row) => (
+                <tr>
+                  <th scope="row">{row.displayName}</th>
+                  {row.byCondition.map((cell) => (
+                    <td>
+                      {cell.verdicts.length === 0 ? (
+                        <span class="muted">no data</span>
+                      ) : (
+                        <span
+                          class="chips"
+                          role="img"
+                          aria-label={cell.verdicts.map((v) => WORD[v]).join(', ')}
+                        >
+                          {cell.verdicts.map((v) => (
+                            <span class:list={['chip', `chip-${v}`]} aria-hidden="true">
+                              {GLYPH[v]}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                    </td>
+                  ))}
+                  <td class="numeric">
+                    {row.agreement === null ? '—' : formatPercent(row.agreement)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     )
   }
+
+  {
+    latest && spread.length > 0 && (
+      <section aria-labelledby="spread-heading" class="up-close">
+        <h2 id="spread-heading">How much did latency swing?</h2>
+        <p class="note">
+          The fastest and slowest call behind each median, asked plainly. A long bar is a model
+          whose speed you cannot count on.
+        </p>
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Table, scrolls sideways on narrow screens"
+        >
+          <table class="spread">
+            <caption class="visually-hidden">
+              Fastest, median and slowest call per model, {formatEdition(latest.isoWeek)}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Range</th>
+                <th scope="col" class="numeric">
+                  Fastest
+                </th>
+                <th scope="col" class="numeric">
+                  Median
+                </th>
+                <th scope="col" class="numeric">
+                  Slowest
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {spread.map((row) => (
+                <tr>
+                  <th scope="row">{row.displayName}</th>
+                  <td class="range-cell">
+                    <span class="range" aria-hidden="true">
+                      <i
+                        class="range-bar"
+                        style={`left:${((row.min ?? 0) / slowest) * 100}%; width:${(((row.max ?? 0) - (row.min ?? 0)) / slowest) * 100}%`}
+                      />
+                      <i
+                        class="range-median"
+                        style={`left:${((row.median ?? 0) / slowest) * 100}%`}
+                      />
+                    </span>
+                  </td>
+                  <td class="numeric">{formatDuration(row.min)}</td>
+                  <td class="numeric">{formatDuration(row.median)}</td>
+                  <td class="numeric">{formatDuration(row.max)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    latest && (
+      <section aria-labelledby="rerun-heading" class="up-close">
+        <h2 id="rerun-heading">Asked again the same week</h2>
+        {withinWeek.length < 2 ? (
+          <p class="note">
+            {formatEdition(latest.isoWeek)} was run once. When a week is re-run, the earlier runs
+            are kept and the answers that changed between them show up here.
+          </p>
+        ) : (
+          <>
+            <p class="note">
+              {formatEdition(latest.isoWeek)} was run {withinWeek.length} times, on{' '}
+              {withinWeek.map((run) => formatDate(run.startedAt)).join(', ')}. Answers that changed
+              between consecutive runs:
+            </p>
+            {withinChanges.length === 0 ? (
+              <p class="note">None. Every model gave the same majority answer each time.</p>
+            ) : (
+              <div
+                class="table-scroll"
+                tabindex="0"
+                role="region"
+                aria-label="Table, scrolls sideways on narrow screens"
+              >
+                <table>
+                  <caption class="visually-hidden">Answers that changed between runs</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Model</th>
+                      <th scope="col">Earlier run</th>
+                      <th scope="col">Later run</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {withinChanges.map((change) => (
+                      <tr>
+                        <th scope="row">{change.displayName}</th>
+                        <td>
+                          <VerdictBadge verdict={change.from} />
+                        </td>
+                        <td>
+                          <VerdictBadge verdict={change.to} />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    )
+  }
+
+  <section aria-labelledby="trends-heading" class="trends">
+    <p class="eyebrow">Across editions</p>
+    <h2 id="trends-heading">Week by week</h2>
+    {
+      singleEdition ? (
+        <p class="empty-state">
+          One edition so far. Trends start with the second one; a line through a single point is a
+          drawing, not a measurement.
+        </p>
+      ) : (
+        <>
+          <StackedShare
+            points={share}
+            title="Verdict share by edition"
+            caption="Each model contributes one vote, based on its majority verdict across samples, so a model sampled three times does not outvote one sampled once."
+          />
+
+          {sway.length > 0 && (
+            <section aria-labelledby="sway-heading">
+              <h3 id="sway-heading">How easily each model changes its mind</h3>
+              <p class="note">
+                Framing sensitivity per edition: the share of questions where telling the model the
+                answer changed it. Editions that ran only the control leave a gap.
+                {swayEditions < 2 && ' One edition with framings so far, so no trend yet.'}
+              </p>
+              <div class="spark-grid">
+                {sway.map((series) => (
+                  <Sparkline
+                    points={series.points}
+                    label={series.displayName}
+                    format={(value) => formatPercent(value)}
+                    color="var(--chart-2)"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section aria-labelledby="latency-heading">
+            <h3 id="latency-heading">Median latency by model</h3>
+            <div class="spark-grid">
+              {latency.map((series) => (
+                <Sparkline
+                  points={series.points}
+                  label={series.displayName}
+                  format={(value) => formatDuration(value)}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section aria-labelledby="tokens-heading">
+            <h3 id="tokens-heading">Median output tokens by model</h3>
+            <div class="spark-grid">
+              {tokens.map((series) => (
+                <Sparkline
+                  points={series.points}
+                  label={series.displayName}
+                  format={(value) => formatInteger(value)}
+                  color="var(--chart-3)"
+                />
+              ))}
+            </div>
+          </section>
+        </>
+      )
+    }
+  </section>
 
   <section aria-labelledby="changes-heading">
     <h2 id="changes-heading">Position changes</h2>
     {
       changes.length === 0 ? (
         <p class="empty-state">
-          No model has revised its classification of {question.subject} between consecutive
-          editions. Positions in this category remain stable.
+          No model has changed its answer on {question.subject} between consecutive editions.
         </p>
       ) : (
-        <div class="table-scroll">
+        <div
+          class="table-scroll"
+          tabindex="0"
+          role="region"
+          aria-label="Table, scrolls sideways on narrow screens"
+        >
           <table>
             <caption>Models whose majority verdict changed between consecutive editions</caption>
             <thead>
@@ -149,19 +397,133 @@ const singleEdition = runs.length < 2
     margin-bottom: var(--space-m);
   }
 
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-3xs);
+  }
+
   .question-switch {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-s);
+    gap: var(--space-2xs);
     padding-bottom: var(--space-s);
     border-bottom: var(--hairline) solid var(--rule);
     margin-bottom: var(--space-l);
+  }
+
+  .question-switch a {
+    font-family: var(--font-ui);
     font-size: var(--step--1);
+    font-weight: 700;
+    text-decoration: none;
+    padding: var(--space-3xs) var(--space-s);
+    border: 2px solid var(--rule-strong);
+    border-radius: 999px;
+    color: var(--text-strong);
+  }
+
+  @media (max-width: 26rem) {
+    .question-switch a {
+      min-height: 2.75rem;
+      display: inline-flex;
+      align-items: center;
+    }
   }
 
   .question-switch a[aria-current='page'] {
-    font-weight: 600;
-    color: var(--text-strong);
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
+  }
+
+  .up-close {
+    margin-bottom: var(--space-xl);
+  }
+
+  .up-close h2,
+  .trends h2 {
+    margin-top: 0;
+  }
+
+  .note {
+    max-width: var(--measure);
+    color: var(--muted);
+  }
+
+  .chips {
+    display: inline-flex;
+    gap: 0.25rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 999px;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+
+  .chip-yes {
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  .chip-no {
+    background: var(--orange);
+    color: #001769;
+  }
+
+  .chip-other {
+    background: var(--purple);
+    color: #ffffff;
+  }
+
+  .range-cell {
+    min-width: 12rem;
+    width: 40%;
+  }
+
+  .range {
+    position: relative;
+    display: block;
+    height: 0.75rem;
+    background: var(--surface-sunken);
+    border-radius: 999px;
+  }
+
+  .range-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    min-width: 0.25rem;
+    background: var(--primary);
+    opacity: 0.35;
+    border-radius: 999px;
+  }
+
+  .range-median {
+    position: absolute;
+    top: -0.2rem;
+    bottom: -0.2rem;
+    width: 0.25rem;
+    margin-left: -0.125rem;
+    background: var(--accent-fill);
+    border-radius: 999px;
+  }
+
+  .trends {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-l);
+    border-top: 3px solid var(--text-strong);
   }
 
   .spark-grid {

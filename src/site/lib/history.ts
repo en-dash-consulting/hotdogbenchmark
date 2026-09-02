@@ -7,6 +7,8 @@
  */
 import type { BenchmarkRun, ModelResult, Verdict } from '../../schema/run.ts'
 import { getModelResults } from './data.ts'
+import { editionSensitivity, hasConditions, modelsInRun, resultIn } from './sensitivity.ts'
+import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
 
 export interface VerdictSharePoint {
   isoWeek: string
@@ -146,4 +148,123 @@ export function latestDelta(points: Array<{ value: number | null }>): number | n
   const values = points.map((point) => point.value).filter((v): v is number => v !== null)
   if (values.length < 2) return null
   return values.at(-1)! - values.at(-2)!
+}
+
+/**
+ * Framing sensitivity per model across editions, oldest first.
+ *
+ * An edition that ran only the control has no sensitivity to report, so it
+ * yields null: a gap in the sparkline, not a zero. Zero means the model was
+ * asked under every framing and never moved, which is a finding.
+ */
+export function sensitivityOverTime(runs: BenchmarkRun[]): MetricSeries[] {
+  const oldestFirst = [...runs].reverse()
+  const models = new Map<string, MetricSeries>()
+
+  for (const run of oldestFirst) {
+    for (const model of modelsInRun(run)) {
+      const key = `${model.provider}/${model.modelId}`
+      if (!models.has(key)) models.set(key, { ...model, points: [] })
+    }
+  }
+
+  for (const [key, series] of models) {
+    series.points = oldestFirst.map((run) => {
+      if (!hasConditions(run)) return { isoWeek: run.isoWeek, value: null }
+      const entry = editionSensitivity(run).find(
+        (candidate) => `${candidate.model.provider}/${candidate.model.modelId}` === key,
+      )
+      return { isoWeek: run.isoWeek, value: entry?.overall.score ?? null }
+    })
+  }
+
+  return [...models.values()]
+}
+
+export interface ConsistencyRow {
+  provider: string
+  modelId: string
+  displayName: string
+  /** One entry per condition in the run, each listing every sample's verdict in order. */
+  byCondition: Array<{ conditionId: string; label: string; verdicts: Verdict[] }>
+  /** Share of samples, across every condition, that matched their cell's majority. 1 is perfectly consistent. */
+  agreement: number | null
+}
+
+/**
+ * How consistent each model was with itself: every sample's verdict, per
+ * framing, for one question in one edition. Three identical chips in a row
+ * is a model that has made its mind up; a mixed row is one that has not,
+ * whatever its majority verdict says.
+ */
+export function sampleConsistency(run: BenchmarkRun, questionId: string): ConsistencyRow[] {
+  return modelsInRun(run)
+    .filter((model) => run.conditions.some((c) => resultIn(run, questionId, c.id, model)))
+    .map((model) => {
+      const byCondition = run.conditions.map((condition) => ({
+        conditionId: condition.id,
+        label: condition.label,
+        verdicts: (resultIn(run, questionId, condition.id, model)?.samples ?? []).map(
+          (sample) => sample.verdict,
+        ),
+      }))
+      let matched = 0
+      let total = 0
+      for (const cell of byCondition) {
+        const result = resultIn(run, questionId, cell.conditionId, model)
+        const majority = result?.aggregate.verdict
+        if (!majority) continue
+        for (const verdict of cell.verdicts) {
+          total += 1
+          if (verdict === majority) matched += 1
+        }
+      }
+      return {
+        ...model,
+        byCondition,
+        agreement: total === 0 ? null : Math.round((matched / total) * 10_000) / 10_000,
+      }
+    })
+}
+
+export interface SpreadRow {
+  provider: string
+  modelId: string
+  displayName: string
+  /** Fastest, median, and slowest sample under the control, in milliseconds. */
+  min: number | null
+  median: number | null
+  max: number | null
+}
+
+/**
+ * The spread of latency across a model's samples under the control: the
+ * median the report shows, plus the fastest and slowest call behind it.
+ */
+export function latencySpread(run: BenchmarkRun, questionId: string): SpreadRow[] {
+  return modelsInRun(run).flatMap((model) => {
+    const result = resultIn(run, questionId, CONTROL_CONDITION_ID, model)
+    if (!result || result.samples.length === 0) return []
+    const stat = result.aggregate.totalMs
+    return [
+      {
+        ...model,
+        min: stat?.min ?? null,
+        median: stat?.median ?? null,
+        max: stat?.max ?? null,
+      },
+    ]
+  })
+}
+
+/**
+ * Position changes between consecutive runs of the same edition, newest
+ * first. The same `positionChanges` logic as between editions, applied to a
+ * week that was asked more than once.
+ */
+export function runOverRunChanges(
+  runsOldestFirst: BenchmarkRun[],
+  questionId: string,
+): PositionChange[] {
+  return positionChanges([...runsOldestFirst].reverse(), questionId)
 }
