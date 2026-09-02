@@ -645,6 +645,9 @@ const comparableCount = rows.filter((row) =>
   }
 
   .vendor-name[role='button'] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
@@ -779,7 +782,6 @@ const comparableCount = rows.filter((row) =>
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-    white-space: nowrap;
   }
 
   .verbatim-body {

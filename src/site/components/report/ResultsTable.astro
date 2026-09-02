@@ -77,20 +77,16 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     <p class="status" role="status" data-status></p>
   </div>
 
-  <div
-    class="table-scroll"
-    tabindex="0"
-    role="region"
-    aria-label="Table, scrolls sideways on narrow screens"
-  >
-    <table>
+  <div class="table-scroll table-stack" tabindex="0" role="region" aria-label="Results table">
+    <table role="table">
       <caption>{caption}</caption>
       <thead>
-        <tr>
+        <tr role="row">
           {
             COLUMNS.map((column) => (
               <th
                 scope="col"
+                role="columnheader"
                 class:list={[column.type === 'number' && 'numeric']}
                 data-column={column.key}
                 data-type={column.type}
@@ -107,6 +103,7 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
             const a = row.result.aggregate
             return (
               <tr
+                role="row"
                 data-vendor={row.vendor}
                 data-verdict={a.verdict ?? 'none'}
                 data-model={row.result.displayName}
@@ -118,18 +115,36 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
                 data-cost={a.costEstimateUsd ?? ''}
                 data-composite={row.composite}
               >
-                <th scope="row">{row.result.displayName}</th>
-                <td>{row.vendor}</td>
-                <td>
+                <th scope="row" role="rowheader">
+                  {row.result.displayName}
+                </th>
+                <td role="cell" data-label="Vendor">
+                  {row.vendor}
+                </td>
+                <td role="cell" data-label="Verdict">
                   <VerdictBadge verdict={a.verdict} />
                 </td>
-                <td class="numeric">{row.decisiveness.toFixed(2)}</td>
-                <td class="numeric">{row.efficiency.toFixed(2)}</td>
-                <td class="numeric">{formatDuration(a.totalMs?.median)}</td>
-                <td class="numeric">{formatInteger(a.outputTokens?.median)}</td>
-                <td class="numeric">{formatPercent(a.followedInstructionRate)}</td>
-                <td class="numeric">{formatUsd(a.costEstimateUsd)}</td>
-                <td class="numeric">{row.composite.toFixed(2)}</td>
+                <td role="cell" class="numeric" data-label="Decisiveness">
+                  {row.decisiveness.toFixed(2)}
+                </td>
+                <td role="cell" class="numeric" data-label="Efficiency">
+                  {row.efficiency.toFixed(2)}
+                </td>
+                <td role="cell" class="numeric" data-label="Median latency">
+                  {formatDuration(a.totalMs?.median)}
+                </td>
+                <td role="cell" class="numeric" data-label="Output tokens">
+                  {formatInteger(a.outputTokens?.median)}
+                </td>
+                <td role="cell" class="numeric" data-label="Compliance">
+                  {formatPercent(a.followedInstructionRate)}
+                </td>
+                <td role="cell" class="numeric" data-label="Cost est.">
+                  {formatUsd(a.costEstimateUsd)}
+                </td>
+                <td role="cell" class="numeric" data-label="Composite">
+                  {row.composite.toFixed(2)}
+                </td>
               </tr>
             )
           })

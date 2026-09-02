@@ -139,17 +139,21 @@ const Heading = headline ? 'h1' : 'h2'
       <script type="application/json" data-board-data set:html={payload} />
 
       <div class="board-head">
-        <nav class="subjects" aria-label="Question" data-subjects hidden>
+        <div class="subjects" role="tablist" aria-label="Question" data-subjects hidden>
           {asked.map((q) => (
             <button
               type="button"
+              role="tab"
+              id={`board-tab-${q.id}`}
+              aria-controls="board-panel"
               data-question={q.id}
-              aria-pressed={q.id === first.id ? 'true' : 'false'}
+              aria-selected={q.id === first.id ? 'true' : 'false'}
+              tabindex={q.id === first.id ? 0 : -1}
             >
               {q.subject.replace(/^an? /, '')}
             </button>
           ))}
-        </nav>
+        </div>
 
         <p class="kicker">Every week, the largest AI models are asked the question:</p>
         <Heading id="board-question" class="question">
@@ -164,12 +168,14 @@ const Heading = headline ? 'h1' : 'h2'
       </div>
 
       <div class="controls" data-controls hidden>
-        <div class="framings" role="group" aria-label="Framing">
+        <div class="framings" role="radiogroup" aria-label="Framing" data-framings>
           {conditions.map((c) => (
             <button
               type="button"
+              role="radio"
               data-condition={c.id}
-              aria-pressed={c.id === CONTROL_CONDITION_ID ? 'true' : 'false'}
+              aria-checked={c.id === CONTROL_CONDITION_ID ? 'true' : 'false'}
+              tabindex={c.id === CONTROL_CONDITION_ID ? 0 : -1}
               class:list={['framing', `framing-${c.id}`]}
             >
               <span data-framing-label>{labels[first.id]![c.id]}</span>
@@ -183,56 +189,61 @@ const Heading = headline ? 'h1' : 'h2'
         </div>
       </div>
 
-      <ol class="rows" data-rows>
-        {initial.rows.map((row) => (
-          <li
-            class:list={['row', row.error && 'row-error']}
-            data-row={row.key}
-            data-verdict={row.verdict ?? 'none'}
-          >
-            <div class="who">
-              <span class="name">{row.name}</span>
-              <span class="vendor">{row.vendor}</span>
-            </div>
-            <div class="answer" data-answer>
-              <span class="word" data-word>
-                {row.error ? 'no answer' : (row.text ?? '—')}
-              </span>
-              <span class="tag-reasoning" data-tag-reasoning hidden={!row.thinking}>
-                reasoning
-              </span>
-              <span class="stamp" data-stamp aria-hidden="true" />
-              <span class="thinking" data-thinking aria-hidden="true">
-                <i />
-                <i />
-                <i />
-              </span>
-            </div>
-            <div class="timing">
-              <span class="bar" aria-hidden="true">
-                <i
-                  class="bar-total"
-                  data-bar-total
-                  style={`width:${row.totalMs ? Math.max(1, (row.totalMs / slowest) * 100) : 0}%`}
-                />
-                <i
-                  class="bar-ttfb"
-                  data-bar-ttfb
-                  style={`width:${row.ttfbMs ? Math.max(0.5, (row.ttfbMs / slowest) * 100) : 0}%`}
-                />
-              </span>
-              <span class="ms tabular" data-ms>
-                {row.error ? row.error.replace('_', ' ') : formatMs(row.totalMs)}
-              </span>
-              <span class="detail" data-detail>
-                {row.error ? '' : detailFor(row)}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ol>
+      {/* One polite live region for the whole board; nothing else announces. */}
+      <p class="visually-hidden" role="status" aria-live="polite" data-announce />
 
-      <div class="tally" data-tally role="status" aria-live="polite">
+      <div id="board-panel" role="tabpanel" aria-labelledby="board-question">
+        <ol class="rows" data-rows>
+          {initial.rows.map((row) => (
+            <li
+              class:list={['row', row.error && 'row-error']}
+              data-row={row.key}
+              data-verdict={row.verdict ?? 'none'}
+            >
+              <div class="who">
+                <span class="name">{row.name}</span>
+                <span class="vendor">{row.vendor}</span>
+              </div>
+              <div class="answer" data-answer>
+                <span class="word" data-word>
+                  {row.error ? 'no answer' : (row.text ?? '—')}
+                </span>
+                <span class="tag-reasoning" data-tag-reasoning hidden={!row.thinking}>
+                  reasoning
+                </span>
+                <span class="stamp" data-stamp aria-hidden="true" />
+                <span class="thinking" data-thinking aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+              <div class="timing">
+                <span class="bar" aria-hidden="true">
+                  <i
+                    class="bar-total"
+                    data-bar-total
+                    style={`width:${row.totalMs ? Math.max(1, (row.totalMs / slowest) * 100) : 0}%`}
+                  />
+                  <i
+                    class="bar-ttfb"
+                    data-bar-ttfb
+                    style={`width:${row.ttfbMs ? Math.max(0.5, (row.ttfbMs / slowest) * 100) : 0}%`}
+                  />
+                </span>
+                <span class="ms tabular" data-ms>
+                  {row.error ? row.error.replace('_', ' ') : formatMs(row.totalMs)}
+                </span>
+                <span class="detail" data-detail>
+                  {row.error ? '' : detailFor(row)}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="tally" data-tally>
         {initialTally.map(([v, count]) => (
           <span class:list={['tally-item', `tally-${v}`]}>
             <b class="tabular">{count}</b> {VERDICT_WORD[v]}
@@ -304,6 +315,64 @@ const Heading = headline ? 'h1' : 'h2'
     const systemText = q('[data-system-text]')!
     const reportLink = q<HTMLAnchorElement>('[data-report-link]')!
     const speedNote = q('[data-speed-note]')!
+    const announcer = q('[data-announce]')!
+
+    /**
+     * Say one thing, politely. Landings during a replay are batched so a
+     * screen reader hears a short sentence every second or so rather than a
+     * word per row; the tally at the end is its own sentence.
+     */
+    let pending: string[] = []
+    let flushTimer: number | null = null
+    function announce(text: string, immediate = false) {
+      if (immediate) {
+        pending = []
+        if (flushTimer !== null) window.clearTimeout(flushTimer)
+        flushTimer = null
+        announcer.textContent = text
+        return
+      }
+      pending.push(text)
+      if (flushTimer === null) {
+        flushTimer = window.setTimeout(() => {
+          announcer.textContent = pending.join(' ')
+          pending = []
+          flushTimer = null
+        }, 1200)
+      }
+    }
+
+    /** Roving tabindex with arrow keys for a tablist or radiogroup of buttons. */
+    function arrowNav(buttons: HTMLButtonElement[], activate: (button: HTMLButtonElement) => void) {
+      for (const button of buttons) {
+        button.addEventListener('keydown', (event) => {
+          const index = buttons.indexOf(button)
+          let next: number | null = null
+          if (event.key === 'ArrowRight' || event.key === 'ArrowDown')
+            next = (index + 1) % buttons.length
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowUp')
+            next = (index - 1 + buttons.length) % buttons.length
+          if (event.key === 'Home') next = 0
+          if (event.key === 'End') next = buttons.length - 1
+          if (next === null) return
+          event.preventDefault()
+          buttons[next]!.focus()
+          activate(buttons[next]!)
+        })
+      }
+    }
+
+    function setSelected(
+      buttons: HTMLButtonElement[],
+      attribute: string,
+      isOn: (b: HTMLButtonElement) => boolean,
+    ) {
+      for (const button of buttons) {
+        const on = isOn(button)
+        button.setAttribute(attribute, String(on))
+        button.tabIndex = on ? 0 : -1
+      }
+    }
 
     let questionId = data.questions[0]!.id
     let conditionId = data.conditions[0]!.id
@@ -463,6 +532,7 @@ const Heading = headline ? 'h1' : 'h2'
             ms.textContent = formatMs(row.totalMs)
             detail.textContent = detailFor(row)
             ttfbBar.style.transition = ''
+            announce(`${row.name}: ${row.text ?? 'no answer'}, after ${formatMs(row.totalMs)}.`)
           }, row.totalMs / speed),
         )
       })
@@ -474,6 +544,7 @@ const Heading = headline ? 'h1' : 'h2'
             if (generation !== mine) return
             root.classList.remove('replaying')
             renderTally(cell.rows)
+            announce(`All answered. ${tallySentence(cell.rows)}`)
           },
           reduced ? 0 : longest / factor() + 150,
         ),
@@ -489,9 +560,11 @@ const Heading = headline ? 'h1' : 'h2'
       generation += 1
       root.classList.remove('replaying')
       conditionId = next
-      for (const button of all<HTMLButtonElement>('[data-condition]')) {
-        button.setAttribute('aria-pressed', String(button.dataset.condition === next))
-      }
+      setSelected(
+        all<HTMLButtonElement>('[data-condition]'),
+        'aria-checked',
+        (b) => b.dataset.condition === next,
+      )
       systemWrap.hidden = !to.system
       systemText.textContent = to.system ?? ''
 
@@ -518,33 +591,61 @@ const Heading = headline ? 'h1' : 'h2'
         }
       })
       renderTally(to.rows, next === data.conditions[0]!.id ? undefined : from.rows)
+      const changedCount = to.rows.filter((row) => {
+        const before = from.rows.find((r) => r.key === row.key)
+        return before?.verdict && row.verdict && before.verdict !== row.verdict
+      }).length
+      const label = data.conditions.find((c) => c.id === next)?.label ?? next
+      announce(
+        `${label}${to.system ? `, system prompt "${to.system}"` : ''}. ${tallySentence(to.rows)}${
+          next === data.conditions[0]!.id ? '' : ` ${changedCount} changed their mind.`
+        }`,
+        true,
+      )
+    }
+
+    function tallySentence(rows: Row[]): string {
+      const counts = { yes: 0, no: 0, other: 0 }
+      for (const row of rows) if (row.verdict) counts[row.verdict] += 1
+      return `${counts.yes} said yes, ${counts.no} said no${counts.other ? `, ${counts.other} hedged` : ''}.`
     }
 
     function setQuestion(next: string) {
       questionId = next
       conditionId = data.conditions[0]!.id
-      for (const button of all<HTMLButtonElement>('[data-question]')) {
-        button.setAttribute('aria-pressed', String(button.dataset.question === next))
-      }
+      setSelected(
+        all<HTMLButtonElement>('[data-question]'),
+        'aria-selected',
+        (b) => b.dataset.question === next,
+      )
+      setSelected(
+        all<HTMLButtonElement>('[data-condition]'),
+        'aria-checked',
+        (b) => b.dataset.condition === conditionId,
+      )
       for (const button of all<HTMLButtonElement>('[data-condition]')) {
-        button.setAttribute('aria-pressed', String(button.dataset.condition === conditionId))
         const label = button.querySelector('[data-framing-label]')!
         label.textContent = data.labels[next]?.[button.dataset.condition!] ?? label.textContent
       }
       const question = data.questions.find((x) => x.id === next)!
       questionText.textContent = question.text.replace(/ One word answer\.$/, '')
+      announce(`Now asking: ${question.text}`, true)
       systemWrap.hidden = true
       reportLink.href = reportLink.href.replace(/reports\/[^/]+\//, `reports/${next}/`)
       for (const li of all('[data-row]')) li.classList.remove('flipped', 'flip')
       replay()
     }
 
-    for (const button of all<HTMLButtonElement>('[data-question]')) {
+    const questionTabs = all<HTMLButtonElement>('[data-question]')
+    const framingRadios = all<HTMLButtonElement>('[data-condition]')
+    for (const button of questionTabs) {
       button.addEventListener('click', () => setQuestion(button.dataset.question!))
     }
-    for (const button of all<HTMLButtonElement>('[data-condition]')) {
+    for (const button of framingRadios) {
       button.addEventListener('click', () => setFraming(button.dataset.condition!))
     }
+    arrowNav(questionTabs, (button) => setQuestion(button.dataset.question!))
+    arrowNav(framingRadios, (button) => setFraming(button.dataset.condition!))
     q('[data-replay]')!.addEventListener('click', () => {
       for (const li of all('[data-row]')) li.classList.remove('flipped', 'flip')
       setFraming(data.conditions[0]!.id)
@@ -601,6 +702,7 @@ const Heading = headline ? 'h1' : 'h2'
     max-width: 12ch;
     color: var(--hero-text);
     text-wrap: balance;
+    overflow-wrap: anywhere;
   }
 
   .instruction {
@@ -666,19 +768,19 @@ const Heading = headline ? 'h1' : 'h2'
     transform: translateY(-1px);
   }
 
-  .subjects button[aria-pressed='true'],
-  .framing[aria-pressed='true'] {
+  .subjects button[aria-selected='true'],
+  .framing[aria-checked='true'] {
     background: var(--text-strong);
     color: var(--bg);
   }
 
-  .framing-asserted[aria-pressed='true'] {
+  .framing-asserted[aria-checked='true'] {
     background: var(--accent-fill);
     border-color: var(--accent-fill);
     color: #001769;
   }
 
-  .framing-denied[aria-pressed='true'] {
+  .framing-denied[aria-checked='true'] {
     background: var(--orange);
     border-color: var(--orange);
     color: #001769;
@@ -711,7 +813,7 @@ const Heading = headline ? 'h1' : 'h2'
     background: transparent;
   }
 
-  .board-head .subjects button[aria-pressed='true'] {
+  .board-head .subjects button[aria-selected='true'] {
     background: var(--accent-fill);
     border-color: var(--accent-fill);
     color: #001769;
@@ -1020,6 +1122,9 @@ const Heading = headline ? 'h1' : 'h2'
   }
 
   .board-foot a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
     font-weight: 600;
     color: var(--text-strong);
   }
@@ -1099,8 +1204,24 @@ const Heading = headline ? 'h1' : 'h2'
   }
 
   @media (max-width: 48rem) {
+    /* Touch targets: 44px on phones, where the fingers are. */
+    .subjects button,
+    .framing,
+    .replay {
+      min-height: 2.75rem;
+    }
+
     .row {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .answer,
+    .timing {
+      min-width: 0;
+    }
+
+    .tag-reasoning {
+      white-space: normal;
     }
 
     .timing {

@@ -10,20 +10,22 @@ sat down with a screen reader" is not much of a checklist.
 
 ## Status summary
 
-| Area                                             | Verified by                                                                         | Status              |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------- |
-| WCAG rule violations                             | `npm run test:a11y` (axe-core; light, dark, forced colors, reduced motion)          | ✅ Automated, in CI |
-| Color contrast                                   | `tests/site/contrast.test.ts` (computed ratios over the token file)                 | ✅ Automated, in CI |
-| Reflow at 320 to 1920 px and 400% zoom           | `npm run test:responsive`                                                           | ✅ Automated, in CI |
-| Pointer target size (2.5.8)                      | `npm run test:responsive` (24 px everywhere, 44 px for primary controls on a phone) | ✅ Automated, in CI |
-| Focus not obscured by the sticky header (2.4.11) | `npm run test:responsive`                                                           | ✅ Automated, in CI |
-| Text spacing (1.4.12)                            | `npm run test:responsive`                                                           | ✅ Automated, in CI |
-| Keyboard reachability and focus visibility       | `npm run test:audit`                                                                | ✅ Automated        |
-| Heading outline                                  | `npm run test:audit`                                                                | ✅ Automated        |
-| Structural markup (landmarks, one h1, skip link) | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
-| Chart marks link to evidence, with tooltips      | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
-| **Screen-reader pass**                           | A person, with VoiceOver and NVDA                                                   | ⚠️ **Not yet done** |
-| **Voice control and touch pass**                 | A person, with Voice Control and a phone                                            | ⚠️ **Not yet done** |
+| Area                                                     | Verified by                                                                         | Status              |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------- |
+| WCAG rule violations                                     | `npm run test:a11y` (axe-core; light, dark, forced colors, reduced motion)          | ✅ Automated, in CI |
+| Color contrast                                           | `tests/site/contrast.test.ts` (computed ratios over the token file)                 | ✅ Automated, in CI |
+| Reflow at 320 to 1920 px and 400% zoom                   | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Pointer target size (2.5.8)                              | `npm run test:responsive` (24 px everywhere, 44 px for primary controls on a phone) | ✅ Automated, in CI |
+| Focus not obscured by the sticky header (2.4.11)         | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Text spacing (1.4.12)                                    | `npm run test:responsive`                                                           | ✅ Automated, in CI |
+| Keyboard reachability and focus visibility               | `npm run test:audit`                                                                | ✅ Automated        |
+| Answer board by keyboard (tabs, radios, one live region) | `tests/site/board-keyboard.test.ts`                                                 | ✅ Automated, in CI |
+| Data tables stack into labeled rows below 48 rem         | `npm run test:responsive` (explicit table roles keep the semantics)                 | ✅ Automated, in CI |
+| Heading outline                                          | `npm run test:audit`                                                                | ✅ Automated        |
+| Structural markup (landmarks, one h1, skip link)         | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
+| Chart marks link to evidence, with tooltips              | `tests/site/build-output.test.ts`                                                   | ✅ Automated, in CI |
+| **Screen-reader pass**                                   | A person, with VoiceOver and NVDA                                                   | ⚠️ **Not yet done** |
+| **Voice control and touch pass**                         | A person, with Voice Control and a phone                                            | ⚠️ **Not yet done** |
 
 The site states this publicly at `/accessibility/`.
 
