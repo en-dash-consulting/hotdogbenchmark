@@ -691,6 +691,28 @@ describe('the reports landing page', () => {
     expect(html).toMatch(/Week \d+, \d{4}/)
   })
 
+  it('offers an ask-a-question form that works with scripts off and stays on site with them', () => {
+    const html = read('reports')
+    // A real label, a real form: the floor is a GET to the issue form with the
+    // question in its text field, on the repository site.json names.
+    expect(html).toMatch(/<label for="ask-text"[^>]*>Your question<\/label>/)
+    expect(html).toMatch(
+      /<form class="ask-form" method="get" action="https:\/\/github\.com\/[^/]+\/[^/"]+\/issues\/new"/,
+    )
+    expect(html).toMatch(/<input type="hidden" name="template" value="add_question\.yml"/)
+    expect(html).toMatch(/<input id="ask-text" name="text" type="text" required/)
+    expect(html).toContain('One word answer.')
+    expect(html).toMatch(/issues\/new\?template=add_question\.yml"[^>]*data-ask-github/)
+    expect(html).toMatch(/issues\/new\?template=add_model_or_provider\.yml/)
+    // The shipped site configures the publisher's contact route.
+    expect(html).toMatch(
+      /href="https:\/\/endash\.us\/\?[^"]*contactMessage=[^"]*"[^>]*data-ask-contact/,
+    )
+    expect(html).toContain('Up next')
+    // The home page points at it in one line rather than a third block.
+    expect(read('')).toContain('href="/reports/#ask"')
+  })
+
   it('renders no Up next section while nothing is proposed', () => {
     const html = read('reports')
     expect(html).not.toContain('id="up-next-heading"')

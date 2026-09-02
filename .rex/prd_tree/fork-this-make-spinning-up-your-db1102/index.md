@@ -26,7 +26,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Ask-a-question input on the site: stays on the site, GitHub first, the En Dash contact route as a configured option](./ask-a-question-input-on-the-328249.md) | pending |
+| [Ask-a-question input on the site: stays on the site, GitHub first, the En Dash contact route as a configured option](./ask-a-question-input-on-the-328249.md) | in_progress |
 | [bench init: swap the questions and framings interactively and clear stale fixtures](./bench-init-swap-the-questions-63d31b.md) | completed |
 | [CONTRIBUTING sections and issue templates for adding a provider, a model, and a question](./contributing-sections-and-issue-57ade3.md) | completed |
 | [docs/fork-this.md: clone to deployed site with your own question, start to finish](./docs-fork-this-md-clone-to-820d0a.md) | completed |

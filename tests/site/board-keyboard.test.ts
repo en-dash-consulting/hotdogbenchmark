@@ -140,3 +140,33 @@ describe('the answer board by keyboard', () => {
     await page.close()
   })
 })
+
+describe('the ask-a-question block by keyboard', () => {
+  it('keeps the visitor on the page and prefills both routes with what they typed', async () => {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+    await page.goto(`http://localhost:${port}/reports/`, { waitUntil: 'networkidle' })
+    const input = page.locator('#ask-text')
+    await input.focus()
+    await page.keyboard.type('Is a "po\' boy" & a hoagie the same thing?')
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(100)
+    // Still here: no navigation happened on Enter.
+    expect(new URL(page.url()).pathname).toBe('/reports/')
+    expect(await page.locator('[data-ask-preview]').textContent()).toBe(
+      'Is a "po\' boy" & a hoagie the same thing? One word answer.',
+    )
+    const github = new URL((await page.locator('[data-ask-github]').getAttribute('href'))!)
+    expect(github.searchParams.get('template')).toBe('add_question.yml')
+    expect(github.searchParams.get('text')).toBe(
+      'Is a "po\' boy" & a hoagie the same thing? One word answer.',
+    )
+    const contact = await page.locator('[data-ask-contact]').getAttribute('href')
+    expect(contact).toBeTruthy()
+    expect(new URL(contact!).searchParams.get('contactMessage')).toContain("po' boy")
+    // Focus moved to the primary route, so Enter again files the issue.
+    expect(await page.evaluate(() => document.activeElement?.getAttribute('data-ask-github'))).toBe(
+      '',
+    )
+    await page.close()
+  })
+})

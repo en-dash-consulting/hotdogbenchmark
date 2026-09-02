@@ -236,6 +236,10 @@ const QUICKSTART = [
                 <span aria-hidden="true"> · </span>
                 <a href={sourceUrl('CONTRIBUTING.md')}>Contributing</a>
               </p>
+              <p class="fork-ask">
+                Have a question the models should get?{' '}
+                <a href={`${routes.reports()}#ask`}>Send it in</a>.
+              </p>
             </div>
             <pre
               class="fork-code"
@@ -566,6 +570,17 @@ const QUICKSTART = [
   .fork-copy p {
     color: #d5d9ee;
     max-width: 48ch;
+  }
+
+  .fork-ask {
+    color: #d5d9ee;
+    margin: var(--space-s) 0 0;
+  }
+
+  .fork-ask a {
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-weight: 700;
   }
 
   .fork-links a {

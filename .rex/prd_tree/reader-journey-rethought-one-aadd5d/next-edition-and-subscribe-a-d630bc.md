@@ -2,7 +2,7 @@
 id: "d630bc94-50bb-436e-900c-fea04d43c17e"
 level: "feature"
 title: "Next edition and subscribe: a weekly publication that says when it publishes next"
-status: "in_progress"
+status: "completed"
 priority: "medium"
 tags:
   - "site"
@@ -10,12 +10,16 @@ tags:
   - "feeds"
 source: "UX review 2026-09-02"
 startedAt: "2026-09-02T22:33:09.250Z"
+completedAt: "2026-09-02T22:45:43.273Z"
+endedAt: "2026-09-02T22:45:43.273Z"
+resolutionType: "code-change"
+resolutionDetail: "site.json gains schedule (weekday, hourUtc; default Monday 12:00 UTC) and tests/workflows.test.ts asserts it matches benchmark.yml's cron; src/site/lib/next-edition.ts computes the next slot after the latest edition and flags it late after a day of grace, with unit tests; every footer carries the line and RSS and JSON feed links with rel and type, and the reports index repeats both under its lede; a build test asserts the line and both links on every page."
 acceptanceCriteria:
   - "Every page's footer shows the next edition date derived from the schedule and the latest edition, with a unit test over the date arithmetic including a late edition"
   - "RSS and JSON feed links are visible in the footer and on the reports index, with correct rel and type attributes"
   - "The schedule source is a single configuration value that bench init can set"
   - "The launch build test and the OG and SEO tests remain green"
 description: "The site is a weekly publication with a JSON feed and an RSS feed, and neither is visible: they exist as `<link rel=\"alternate\">` in the head and one line in llms.txt. No page says when the next edition lands. The voting epic and the contribution work are engagement features that need a backend or a maintainer; the cheapest retention loop, \"come back Monday, or subscribe,\" needs neither.\n\nAdd one line to the footer's data line: \"Next edition: Monday, September 8\" computed from the latest edition's ISO week and the workflow's schedule (read the cron from benchmark.yml at build, or a `schedule` field in site.json, so a fork on a different day is right), followed by the feed links (RSS, JSON). On the /reports/ rack the same line sits under the lede. When the latest edition is older than its cadence allows, the line says the edition is late rather than predicting a date that passed; that honesty is in the project's voice."
-lastModified: "2026-09-02T22:33:09.262Z"
+lastModified: "2026-09-02T22:45:43.285Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

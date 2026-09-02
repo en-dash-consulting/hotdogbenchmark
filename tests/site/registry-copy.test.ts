@@ -338,6 +338,16 @@ describe('a fork that asks whether a burrito is a wrap', () => {
     expect(home).not.toContain('quesadilla')
   })
 
+  it("sends a question to the fork's own repository, with no contact route configured", () => {
+    const reports = pages.find((p) => p.path === '/reports/index.html')!.html
+    expect(reports).toContain(
+      'action="https://github.com/taqueria-labs/burritobenchmark/issues/new"',
+    )
+    // The script mentions the hook; no link carries it.
+    expect(reports).not.toMatch(/<a[^>]*data-ask-contact/)
+    expect(reports).toContain('Is a burrito a wrap?')
+  })
+
   it('describes the feeds from the registry', () => {
     for (const feed of ['feed.json', 'feed.xml']) {
       const text = readFileSync(join(dist, feed), 'utf8')

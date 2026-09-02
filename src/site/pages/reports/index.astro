@@ -8,6 +8,7 @@
  * the hook points.
  */
 import Base from '../../layouts/Base.astro'
+import AskQuestion from '../../components/AskQuestion.astro'
 import {
   getAllRuns,
   getLatestRun,
@@ -251,6 +252,8 @@ const cards = questions.map((question, index) => {
       </section>
     )
   }
+
+  <AskQuestion />
 
   <p class="rack-foot">
     Every edition, and each question week by week, is under{' '}
