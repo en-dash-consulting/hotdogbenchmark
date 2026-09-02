@@ -43,6 +43,9 @@ export function getStaticPaths() {
 }
 
 const { question, condition, run } = Astro.props
+/** "Sandwich Certainty Quadrant" for the shipped claim; the noun comes from the registry. */
+const noun = (question.claim ?? 'is a sandwich').split(' ').at(-1) ?? 'sandwich'
+const quadrantTitle = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} Certainty Quadrant`
 const cell = getQuestionResult(run, question.id, condition.id)!
 const results = cell.models
 const previous = getPreviousRun(run.isoWeek)
@@ -78,7 +81,7 @@ const previousResults = previous ? getModelResults(previous, question.id, condit
           is on the <a href={`${routes.report(question.id)}#framing-heading`}>canonical report</a>.
         </p>
 
-        <Quadrant results={results} title="Sandwich Certainty Quadrant" />
+        <Quadrant results={results} title={quadrantTitle} />
 
         <Leaderboard
           results={results}

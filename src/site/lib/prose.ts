@@ -11,9 +11,94 @@
  * contrast is the entire joke, and it only works if the prose plays it
  * completely straight.
  */
+import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
+import { ONE_WORD_SUFFIX } from '../../schema/questions.ts'
+import type { QuestionEntry } from '../../schema/questions.ts'
 import type { BenchmarkRun, ModelResult, Verdict } from '../../schema/run.ts'
 import { scoreModels } from './scores.ts'
 import { questionShifts, treatedConditions } from './sensitivity.ts'
+
+/**
+ * Copy about the topic itself: what the question claims, and how a framing
+ * is described in plain words.
+ *
+ * Everything here reads `claim` and `denial` from the questions registry, so
+ * a fork that asks "Is a burrito a wrap?" gets "Tell them a burrito is a wrap"
+ * on the answer board without touching a component. When the registry does
+ * not say, the copy falls back to the condition's own label and never invents
+ * a predicate.
+ */
+
+/** The question as a heading: its text without the one-word instruction. */
+export function questionHeadline(question: Pick<QuestionEntry, 'text'>): string {
+  return question.text.endsWith(ONE_WORD_SUFFIX)
+    ? question.text.slice(0, -ONE_WORD_SUFFIX.length).trim()
+    : question.text
+}
+
+/** The condition ids that state an answer, and which registry field states it. */
+const FRAMING_FIELD: Record<string, 'claim' | 'denial'> = {
+  asserted: 'claim',
+  denied: 'denial',
+}
+
+/**
+ * What a framing tells the model about the subject: "is a sandwich" under the
+ * asserted arm, "is not a sandwich" under the denied one. Null for the control,
+ * for an arm the registry has no predicate for, and for a question that does
+ * not declare one.
+ */
+export function framingClaim(
+  question: Pick<QuestionEntry, 'claim' | 'denial'>,
+  conditionId: string,
+): string | null {
+  const field = FRAMING_FIELD[conditionId]
+  return field ? (question[field] ?? null) : null
+}
+
+/**
+ * The answer board's framing switch, in plain words: "Just ask", then
+ * "Tell them a hot dog is a sandwich". An arm with no predicate keeps the
+ * label it has in the registry.
+ */
+export function framingLabel(
+  question: Pick<QuestionEntry, 'subject' | 'claim' | 'denial'>,
+  condition: { id: string; label: string },
+): string {
+  if (condition.id === CONTROL_CONDITION_ID) return 'Just ask'
+  const claim = framingClaim(question, condition.id)
+  return claim ? `Tell them ${question.subject} ${claim}` : condition.label
+}
+
+/** Small counts in words, the way the rest of the copy writes them. */
+const SMALL_NUMBERS = [
+  'zero',
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+]
+
+/** One line for the feed channels, built from the questions actually asked. */
+export function feedDescription(questions: QuestionEntry[]): string {
+  const [first, ...rest] = questions
+  if (!first) return 'Weekly cross-vendor evaluation of one-word questions.'
+  const topic = first.claim
+    ? `whether ${first.subject} ${first.claim}`
+    : `the question ${questionHeadline(first)}`
+  const more =
+    rest.length === 0
+      ? ''
+      : rest.length === 1
+        ? ', and one more'
+        : `, and ${SMALL_NUMBERS[rest.length] ?? rest.length} more`
+  return `Weekly cross-vendor evaluation of ${topic}${more}.`
+}
 
 /** How a verdict is written in running prose. */
 const VERDICT_NOUN: Record<Verdict, string> = {
@@ -305,11 +390,16 @@ const VERDICT_POSITION: Record<Verdict, string> = {
  * the better outcome — the methodology page makes that explicit, and this
  * prose must not undercut it.
  */
-export function framingSummary(run: BenchmarkRun, questionId: string, subject: string): string {
+export function framingSummary(
+  run: BenchmarkRun,
+  questionId: string,
+  question: Pick<QuestionEntry, 'subject' | 'claim' | 'denial'>,
+): string {
   const rows = questionShifts(run, questionId)
   const arms = treatedConditions(run)
   if (arms.length === 0) return ''
 
+  const { subject } = question
   const sentences: string[] = []
 
   for (const arm of arms) {
@@ -322,10 +412,17 @@ export function framingSummary(run: BenchmarkRun, questionId: string, subject: s
       )
       continue
     }
+    // "Told a hot dog is a sandwich, ..." when the registry states the claim;
+    // otherwise the arm is named and the subject closes the sentence.
+    const claim = framingClaim(question, arm.id)
+    const opening = claim
+      ? `Told ${subject} ${claim}`
+      : `Under the ${arm.label.toLowerCase()} framing`
+    const closing = claim ? '' : ` on ${subject}`
     const moved = cells.filter(({ cell }) => cell.shift.status === 'moved')
     if (moved.length === 0) {
       sentences.push(
-        `Told ${arm.id === 'asserted' ? 'it is' : 'it is not'} a sandwich, all ${cells.length} models stuck with their original answer on ${subject}.`,
+        `${opening}, all ${cells.length} models stuck with their original answer${closing}.`,
       )
       continue
     }
@@ -334,7 +431,7 @@ export function framingSummary(run: BenchmarkRun, questionId: string, subject: s
         `${row.model.displayName} (${VERDICT_POSITION[cell.shift.from!]} to ${VERDICT_POSITION[cell.shift.to!]})`,
     )
     sentences.push(
-      `Told ${arm.id === 'asserted' ? 'it is' : 'it is not'} a sandwich, ${moved.length} of ${cells.length} models changed their answer on ${subject}: ${list(described)}.`,
+      `${opening}, ${moved.length} of ${cells.length} models changed their answer${closing}: ${list(described)}.`,
     )
   }
 

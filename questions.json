@@ -4,6 +4,8 @@
     {
       "id": "hot-dog",
       "subject": "a hot dog",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
       "text": "Is a hot dog a sandwich? One word answer.",
       "reportTitle": "The Hot Dog Question",
       "tagline": "Bread on two sides. One piece or two? The question that started all this.",
@@ -13,6 +15,8 @@
     {
       "id": "hamburger",
       "subject": "a hamburger",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
       "text": "Is a hamburger a sandwich? One word answer.",
       "reportTitle": "The Hamburger Control",
       "tagline": "Nobody disputes this one. That is exactly why it is here.",
@@ -22,6 +26,8 @@
     {
       "id": "taco",
       "subject": "a taco",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
       "text": "Is a taco a sandwich? One word answer.",
       "reportTitle": "The Taco Boundary",
       "tagline": "The only sandwich question with case law. Massachusetts, 2006.",

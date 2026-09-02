@@ -1,6 +1,50 @@
 ---
+/**
+ * About. The voice stays the hot dog's, but every sentence that names the
+ * topic reads it from the registries, so a fork asking a different question
+ * does not describe itself as a sandwich benchmark.
+ */
 import Base from '../layouts/Base.astro'
+import { DEFAULT_SAMPLES } from '../../runner/run.ts'
+import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
+import { getConditionsRegistry, getQuestions } from '../lib/data.ts'
+import { framingClaim, questionHeadline } from '../lib/prose.ts'
 import { REPO_URL, routes } from '../lib/urls.ts'
+
+const questions = getQuestions()
+const conditions = getConditionsRegistry()
+const first = questions[0]
+const others = questions.slice(1)
+
+/** "whether a hot dog is a sandwich", or the question itself when no claim is declared. */
+const asked = first
+  ? first.claim
+    ? `whether ${first.subject} ${first.claim}`
+    : `the question ${questionHeadline(first)}`
+  : 'a question'
+
+/** "a hot dog" becomes "the hot dog" in the sentence about swapping it out. */
+const noun = first ? first.subject.replace(/^an? /, '') : 'question'
+
+/** One phrase per framing: asked plainly, told it is a sandwich, told it is not a sandwich. */
+const framings = conditions.map((condition) => {
+  if (condition.id === CONTROL_CONDITION_ID) return 'asked plainly'
+  const claim = first ? framingClaim(first, condition.id) : null
+  return claim ? `told it ${claim}` : condition.label.toLowerCase()
+})
+
+const SMALL = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+const inWords = (n: number) => SMALL[n] ?? String(n)
+const times = inWords(DEFAULT_SAMPLES)
+
+/** "Also a hamburger, also a taco." Empty with a single question. */
+const alsoLine = others.length > 0 ? ` Also ${others.map((q) => q.subject).join(', also ')}.` : ''
+/** "Three times each, under three framings: asked plainly, told it is a sandwich, told it is not a sandwich." */
+const howLine = `${times.charAt(0).toUpperCase()}${times.slice(1)} times each${
+  conditions.length > 1
+    ? `, under ${inWords(conditions.length)} framings: ${framings.join(', ')}`
+    : ''
+}.`
 ---
 
 <Base
@@ -11,10 +55,8 @@ import { REPO_URL, routes } from '../lib/urls.ts'
     <h1>About</h1>
 
     <p>
-      Every Monday we ask the biggest AI models whether a hot dog is a sandwich. Also a hamburger,
-      also a taco. One word. Three times each, under three framings: asked plainly, told it is a
-      sandwich, told it is not. Then we publish exactly what they said, how long they took, and what
-      it cost.
+      Every Monday we ask the biggest AI models {asked}.{alsoLine} One word. {howLine} Then we publish
+      exactly what they said, how long they took, and what it cost.
     </p>
 
     <h2>Why</h2>
@@ -24,7 +66,7 @@ import { REPO_URL, routes } from '../lib/urls.ts'
       a different API per vendor, token counts that mean different things, latency that depends on
       where you run it, models that answer differently on Tuesday, and someone being down mid-run.
       This repo handles all of that in the smallest honest way and shows its work, so you can drop
-      the hot dog and put your own question in its place.
+      the {noun} and put your own question in its place.
     </p>
 
     <p>

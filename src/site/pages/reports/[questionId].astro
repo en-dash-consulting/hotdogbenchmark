@@ -35,6 +35,9 @@ export function getStaticPaths() {
 }
 
 const { question } = Astro.props
+/** "Sandwich Certainty Quadrant" for the shipped claim; the noun comes from the registry. */
+const noun = (question.claim ?? 'is a sandwich').split(' ').at(-1) ?? 'sandwich'
+const quadrantTitle = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} Certainty Quadrant`
 const run = getLatestRun()
 const results = run ? getModelResults(run, question.id) : []
 const previous = run ? getPreviousRun(run.isoWeek) : null
@@ -65,7 +68,7 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
 
             <FramingSensitivity run={run} question={question} />
 
-            <Quadrant results={results} title="Sandwich Certainty Quadrant" />
+            <Quadrant results={results} title={quadrantTitle} />
 
             <Leaderboard
               results={results}

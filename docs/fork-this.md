@@ -47,6 +47,8 @@ Edit `questions.json`. Delete the hot dog, hamburger and taco entries and add yo
 {
   "id": "burrito",
   "subject": "a burrito",
+  "claim": "is a sandwich",
+  "denial": "is not a sandwich",
   "text": "Is a burrito a sandwich? One word answer.",
   "reportTitle": "The Burrito Question",
   "tagline": "Bread on all sides. Massachusetts said no in 2006.",
@@ -59,6 +61,12 @@ Field by field:
 - `id` is a lowercase slug. It appears in URLs and in run files, so pick it once.
 - `subject` is the noun phrase with its article, lowercase: `a burrito`. It is dropped into the
   framing templates in the next step and into generated prose.
+- `claim` and `denial` are the two answers as predicates on the subject: `is a sandwich` and
+  `is not a sandwich`. The site builds its own copy from them: the answer board's framing
+  buttons read "Tell them a burrito is a sandwich", and the About and Methodology pages say what
+  the question contests. For "Is cereal a soup?" they would be `is a soup` and `is not a soup`.
+  Both are optional; without them the site falls back to the framing labels from
+  `conditions.json` and quotes the question text.
 - `text` is the exact prompt sent to every model. The schema requires it to end with
   `One word answer.` so the one-word compliance metric means something.
 - `reportTitle` and `tagline` are the report page's heading and the line under it.

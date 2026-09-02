@@ -11,8 +11,9 @@ import { HEDGE_WORDS, NO_WORDS, YES_WORDS } from '../../runner/analyze.ts'
 import { SCORE_DEFINITIONS } from '../lib/scores.ts'
 import { SENSITIVITY_DEFINITION } from '../lib/sensitivity.ts'
 import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
-import { renderSystemPrompt } from '../../schema/conditions.ts'
+import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../../schema/conditions.ts'
 import { getConditionsRegistry, getModels, getQuestions } from '../lib/data.ts'
+import { questionHeadline } from '../lib/prose.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
 const questions = getQuestions()
@@ -23,6 +24,26 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
 const callsPerWeek = conditions.length * questions.length * models.length * DEFAULT_SAMPLES
 const controlOnlyCalls = questions.length * models.length * DEFAULT_SAMPLES
 const exampleQuestion = questions[0]
+
+/**
+ * The first arm that states an answer, rendered for the first question:
+ * "A hot dog is a sandwich". Used where the page needs one concrete framing
+ * to talk about; null when every arm is plain.
+ */
+const statingArm = conditions.find(
+  (condition) => condition.id !== CONTROL_CONDITION_ID && condition.systemPrompt !== null,
+)
+const exampleAssertion =
+  statingArm && exampleQuestion
+    ? renderSystemPrompt(statingArm, exampleQuestion)?.replace(/\.$/, '')
+    : null
+
+/** What is contested: "Whether a hot dog is a sandwich", from the registry. */
+const contested = exampleQuestion
+  ? exampleQuestion.claim
+    ? `Whether ${exampleQuestion.subject} ${exampleQuestion.claim}`
+    : `The answer to "${questionHeadline(exampleQuestion)}"`
+  : 'What is asked'
 ---
 
 <Base
@@ -150,9 +171,11 @@ const exampleQuestion = questions[0]
 
     <p>
       <strong>Neither robustness nor compliance is treated as better.</strong> A model that says
-      <q>No</q> after being told <q>A hot dog is a sandwich</q> ignored a false premise. A model that
-      says <q>Yes</q> followed its operator's instruction. Both are defensible. We record the movement
-      and do not grade it.
+      <q>No</q> after being told {
+        exampleAssertion ? <q>{exampleAssertion}</q> : 'the answer as fact'
+      }{' '}
+      ignored a false premise. A model that says <q>Yes</q> followed its operator's instruction. Both
+      are defensible. We record the movement and do not grade it.
     </p>
 
     <h2 id="sampling">3. Sampling and aggregation</h2>
@@ -335,11 +358,11 @@ const exampleQuestion = questions[0]
     <h2 id="limitations">What this does not measure</h2>
 
     <p>
-      The questions are silly. Whether a hot dog is a sandwich is not a matter of fact, there is no
-      correct answer, and consequently <strong
-        >nothing in this publication measures model quality</strong
-      >. A model that answers <q>No</q> is not better or worse than one that answers <q>Yes</q>, and
-      the scores here are deliberately verdict-agnostic to avoid implying otherwise.
+      The questions are silly. {contested} is not a matter of fact, there is no correct answer, and consequently
+      <strong>nothing in this publication measures model quality</strong>. A model that answers <q
+        >No</q
+      > is not better or worse than one that answers <q>Yes</q>, and the scores here are
+      deliberately verdict-agnostic to avoid implying otherwise.
     </p>
 
     <p>

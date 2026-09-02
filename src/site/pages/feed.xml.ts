@@ -2,8 +2,9 @@
  * RSS of weekly editions, for readers that do not speak JSON Feed.
  */
 import type { APIRoute } from 'astro'
-import { getAllRuns, getModelResults, getQuestion } from '../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../lib/data.ts'
 import { formatEdition } from '../lib/format.ts'
+import { feedDescription } from '../lib/prose.ts'
 
 /** XML text escaping. Titles and summaries are generated, but not trusted. */
 const escape = (value: string) =>
@@ -45,7 +46,7 @@ export const GET: APIRoute = ({ site }) => {
     '  <channel>',
     '    <title>HOTDOG BENCHMARK</title>',
     `    <link>${escape(url(''))}</link>`,
-    '    <description>Weekly cross-vendor evaluation of contested sandwich classification.</description>',
+    `    <description>${escape(feedDescription(getQuestions()))}</description>`,
     '    <language>en</language>',
     `    <atom:link href="${escape(url('feed.xml'))}" rel="self" type="application/rss+xml" />`,
     items,

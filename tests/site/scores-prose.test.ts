@@ -12,7 +12,12 @@ import {
   complianceRate,
   consensusOf,
   executiveSummary,
+  feedDescription,
+  framingClaim,
+  framingLabel,
+  framingSummary,
   keyFindings,
+  questionHeadline,
   vendorVerdictLine,
 } from '../../src/site/lib/prose.ts'
 import {
@@ -21,7 +26,14 @@ import {
   rankModels,
   rankWithDeltas,
 } from '../../src/site/lib/rank.ts'
-import type { ModelResult, Sample, Verdict } from '../../src/schema/run.ts'
+import type {
+  BenchmarkRun,
+  ModelResult,
+  RunCondition,
+  Sample,
+  Verdict,
+} from '../../src/schema/run.ts'
+import type { QuestionEntry } from '../../src/schema/questions.ts'
 
 function sample(verdict: Verdict, followed = true, totalMs = 900, outputTokens = 1): Sample {
   return {
@@ -500,5 +512,183 @@ describe('rankModels and rankWithDeltas', () => {
     expect(MOVEMENT_GLYPH.returning).toBe('')
     expect(MOVEMENT_GLYPH.up).not.toBe('')
     expect(MOVEMENT_GLYPH.down).not.toBe('')
+  })
+})
+
+/**
+ * Topic copy: everything that names what the question claims comes from the
+ * registry entry, so these run against a hot dog and a burrito alike.
+ */
+const HOT_DOG: QuestionEntry = {
+  id: 'hot-dog',
+  subject: 'a hot dog',
+  claim: 'is a sandwich',
+  denial: 'is not a sandwich',
+  text: 'Is a hot dog a sandwich? One word answer.',
+  reportTitle: 'The Hot Dog Question',
+  enabled: true,
+}
+const BURRITO: QuestionEntry = {
+  id: 'burrito',
+  subject: 'a burrito',
+  claim: 'is a wrap',
+  denial: 'is not a wrap',
+  text: 'Is a burrito a wrap? One word answer.',
+  reportTitle: 'The Burrito Question',
+  enabled: true,
+}
+/** A question whose registry entry says nothing about what it claims. */
+const BARE: QuestionEntry = {
+  id: 'cereal',
+  subject: 'cereal',
+  text: 'Is cereal a soup? One word answer.',
+  reportTitle: 'The Cereal Question',
+  enabled: true,
+}
+
+const CONTROL: RunCondition = {
+  id: 'control',
+  label: 'Control',
+  description: 'Plain.',
+  systemPrompt: null,
+  promptPrefix: null,
+  promptSuffix: null,
+  temperature: null,
+  reasoningEffort: null,
+}
+const ASSERTED: RunCondition = {
+  ...CONTROL,
+  id: 'asserted',
+  label: 'Asserted',
+  description: 'Told yes.',
+  systemPrompt: '{subject} is a wrap.',
+}
+const DENIED: RunCondition = {
+  ...CONTROL,
+  id: 'denied',
+  label: 'Denied',
+  description: 'Told no.',
+  systemPrompt: '{subject} is not a wrap.',
+}
+
+/** One question under three arms; each arm lists what each model said. */
+function framedRun(
+  question: QuestionEntry,
+  verdicts: Record<string, Record<string, Verdict>>,
+): BenchmarkRun {
+  const conditions = [CONTROL, ASSERTED, DENIED]
+  return {
+    schemaVersion: 2,
+    runId: 'r',
+    isoWeek: '2026-W36',
+    startedAt: '2026-09-01T12:00:00.000Z',
+    finishedAt: '2026-09-01T12:05:00.000Z',
+    runnerVersion: '0.1.0',
+    gitSha: null,
+    isMock: false,
+    questions: [{ id: question.id, text: question.text }],
+    conditions,
+    results: conditions.map((condition) => ({
+      questionId: question.id,
+      conditionId: condition.id,
+      prompt: question.text,
+      systemPrompt: condition.systemPrompt,
+      models: Object.entries(verdicts[condition.id] ?? {}).map(([name, verdict]) =>
+        result(name, [verdict]),
+      ),
+    })),
+  }
+}
+
+describe('questionHeadline', () => {
+  it('drops the one-word instruction and nothing else', () => {
+    expect(questionHeadline(HOT_DOG)).toBe('Is a hot dog a sandwich?')
+    expect(questionHeadline({ text: 'Is it Tuesday?' })).toBe('Is it Tuesday?')
+  })
+})
+
+describe('framingClaim', () => {
+  it('reads the claim for the asserted arm and the denial for the denied one', () => {
+    expect(framingClaim(BURRITO, 'asserted')).toBe('is a wrap')
+    expect(framingClaim(BURRITO, 'denied')).toBe('is not a wrap')
+  })
+
+  it('has nothing to say for the control, an unknown arm, or a question with no claim', () => {
+    expect(framingClaim(BURRITO, 'control')).toBeNull()
+    expect(framingClaim(BURRITO, 'shouted')).toBeNull()
+    expect(framingClaim(BARE, 'asserted')).toBeNull()
+  })
+})
+
+describe('framingLabel', () => {
+  it('builds the answer board switch from the registry entry', () => {
+    expect(framingLabel(HOT_DOG, CONTROL)).toBe('Just ask')
+    expect(framingLabel(HOT_DOG, ASSERTED)).toBe('Tell them a hot dog is a sandwich')
+    expect(framingLabel(HOT_DOG, DENIED)).toBe('Tell them a hot dog is not a sandwich')
+    expect(framingLabel(BURRITO, ASSERTED)).toBe('Tell them a burrito is a wrap')
+    expect(framingLabel(BURRITO, DENIED)).toBe('Tell them a burrito is not a wrap')
+  })
+
+  it('falls back to the condition label rather than inventing a claim', () => {
+    expect(framingLabel(BARE, ASSERTED)).toBe('Asserted')
+    expect(framingLabel(BURRITO, { id: 'shouted', label: 'Shouted' })).toBe('Shouted')
+  })
+})
+
+describe('feedDescription', () => {
+  it('names the first question and counts the rest', () => {
+    expect(feedDescription([HOT_DOG])).toBe(
+      'Weekly cross-vendor evaluation of whether a hot dog is a sandwich.',
+    )
+    expect(feedDescription([HOT_DOG, BURRITO])).toBe(
+      'Weekly cross-vendor evaluation of whether a hot dog is a sandwich, and one more.',
+    )
+    expect(feedDescription([HOT_DOG, BURRITO, BARE])).toMatch(/and two more\.$/)
+  })
+
+  it('quotes the question when there is no claim, and copes with no questions', () => {
+    expect(feedDescription([BARE])).toBe(
+      'Weekly cross-vendor evaluation of the question Is cereal a soup?.',
+    )
+    expect(feedDescription([])).not.toMatch(/undefined/)
+  })
+})
+
+describe('framingSummary', () => {
+  it('says what the models were told, from the registry, and who moved', () => {
+    const run = framedRun(BURRITO, {
+      control: { A: 'no', B: 'no' },
+      asserted: { A: 'yes', B: 'no' },
+      denied: { A: 'no', B: 'no' },
+    })
+    const summary = framingSummary(run, 'burrito', BURRITO)
+    expect(summary).toContain(
+      'Told a burrito is a wrap, 1 of 2 models changed their answer: A (negative to affirmative).',
+    )
+    expect(summary).toContain(
+      'Told a burrito is not a wrap, all 2 models stuck with their original answer.',
+    )
+    expect(summary).toContain('B did not budge.')
+    expect(summary).not.toMatch(/sandwich/i)
+  })
+
+  it('names the arm instead when the question declares no claim', () => {
+    const run = framedRun(BARE, {
+      control: { A: 'no' },
+      asserted: { A: 'no' },
+      denied: { A: 'no' },
+    })
+    const summary = framingSummary(run, 'cereal', BARE)
+    expect(summary).toContain(
+      'Under the asserted framing, all 1 models stuck with their original answer on cereal.',
+    )
+    expect(summary).not.toMatch(/undefined|sandwich/)
+  })
+
+  it('is empty when the run has only the control', () => {
+    const run = framedRun(HOT_DOG, { control: { A: 'no' } })
+    run.conditions = [CONTROL]
+    run.results = run.results.filter((cell) => cell.conditionId === 'control')
+    expect(framingSummary(run, 'hot-dog', HOT_DOG)).toBe('')
   })
 })

@@ -39,6 +39,28 @@ describe('the committed questions.json', () => {
       expect(question.tagline?.length ?? 0).toBeGreaterThan(0)
     }
   })
+
+  it('states the claim and its denial on every question, so site copy can name them', () => {
+    // The answer board's "Tell them a hot dog is a sandwich" and the About and
+    // Methodology pages are built from these two fields, not from a string in
+    // a component. A fork that changes the question changes them here.
+    for (const question of loadQuestions()) {
+      expect(question.claim).toBe('is a sandwich')
+      expect(question.denial).toBe('is not a sandwich')
+    }
+  })
+})
+
+describe('questionsRegistrySchema accepts', () => {
+  it('a question that declares no claim or denial', () => {
+    // Both are optional: the site falls back to the framing labels.
+    const registry = structuredClone(questionsRegistry) as any
+    delete registry.questions[0].claim
+    delete registry.questions[0].denial
+    const result = questionsRegistrySchema.safeParse(registry)
+    expect(result.success).toBe(true)
+    expect(result.data?.questions[0]?.claim).toBeUndefined()
+  })
 })
 
 describe('questionsRegistrySchema rejects', () => {
@@ -64,6 +86,15 @@ describe('questionsRegistrySchema rejects', () => {
     const registry = valid()
     registry.questions[0].id = 'Hot Dog'
     expect(questionsRegistrySchema.safeParse(registry).success).toBe(false)
+  })
+
+  it('an empty claim or denial, which would render "Tell them a hot dog "', () => {
+    const withClaim = valid()
+    withClaim.questions[0].claim = ''
+    expect(questionsRegistrySchema.safeParse(withClaim).success).toBe(false)
+    const withDenial = valid()
+    withDenial.questions[0].denial = ''
+    expect(questionsRegistrySchema.safeParse(withDenial).success).toBe(false)
   })
 
   it('an empty question list', () => {

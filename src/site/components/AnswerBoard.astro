@@ -15,6 +15,7 @@
  */
 import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
 import { getModelEntry, getQuestionResult } from '../lib/data.ts'
+import { framingLabel, questionHeadline } from '../lib/prose.ts'
 import { routes } from '../lib/urls.ts'
 import type { BenchmarkRun, ModelResult, Verdict } from '../../schema/run.ts'
 import type { QuestionEntry } from '../../schema/questions.ts'
@@ -85,9 +86,19 @@ const slowest = Math.max(
   ...Object.values(cells).flatMap((c) => c.rows.map((r) => r.totalMs ?? 0)),
 )
 
+/**
+ * The framing switch labels per question, from the registries: "Just ask",
+ * then "Tell them a hot dog is a sandwich". Computed here once so the client
+ * script relabels on a question switch without knowing what the claim is.
+ */
+const labels = Object.fromEntries(
+  asked.map((q) => [q.id, Object.fromEntries(conditions.map((c) => [c.id, framingLabel(q, c)]))]),
+)
+
 const payload = JSON.stringify({
   questions: asked.map((q) => ({ id: q.id, subject: q.subject, text: q.text })),
   conditions: conditions.map((c) => ({ id: c.id, label: c.label })),
+  labels,
   cells,
   slowest,
 })
@@ -97,16 +108,6 @@ const VERDICT_WORD: Record<Verdict, string> = {
   no: 'said no',
   other: 'hedged',
 }
-
-/** Framing switch labels, in plain words rather than registry labels. */
-const framingLabel = (id: string, label: string, subject: string) =>
-  id === CONTROL_CONDITION_ID
-    ? 'Just ask'
-    : id === 'asserted'
-      ? `Tell them ${subject} is a sandwich`
-      : id === 'denied'
-        ? `Tell them ${subject} is not a sandwich`
-        : label
 
 const formatMs = (ms: number | null) =>
   ms === null ? '—' : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`
@@ -152,7 +153,7 @@ const Heading = headline ? 'h1' : 'h2'
 
         <p class="kicker">Every week, the largest AI models are asked the question:</p>
         <Heading id="board-question" class="question">
-          <span data-question-text>{first.text.replace(/ One word answer\.$/, '')}</span>
+          <span data-question-text>{questionHeadline(first)}</span>
         </Heading>
         <p class="instruction">
           <span>One word answer.</span>
@@ -171,7 +172,7 @@ const Heading = headline ? 'h1' : 'h2'
               aria-pressed={c.id === CONTROL_CONDITION_ID ? 'true' : 'false'}
               class:list={['framing', `framing-${c.id}`]}
             >
-              <span data-framing-label>{framingLabel(c.id, c.label, first.subject)}</span>
+              <span data-framing-label>{labels[first.id]![c.id]}</span>
             </button>
           ))}
         </div>
@@ -280,6 +281,8 @@ const Heading = headline ? 'h1' : 'h2'
   interface Data {
     questions: Array<{ id: string; subject: string; text: string }>
     conditions: Array<{ id: string; label: string }>
+    /** Framing switch label per question id, per condition id. */
+    labels: Record<string, Record<string, string>>
     cells: Record<string, Cell>
     slowest: number
   }
@@ -308,7 +311,6 @@ const Heading = headline ? 'h1' : 'h2'
     let generation = 0
 
     const cellFor = (qid: string, cid: string) => data.cells[`${qid}|${cid}`]
-    const subjectOf = (qid: string) => data.questions.find((x) => x.id === qid)!.subject
 
     const formatMs = (ms: number | null) =>
       ms === null ? '—' : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`
@@ -527,13 +529,7 @@ const Heading = headline ? 'h1' : 'h2'
       for (const button of all<HTMLButtonElement>('[data-condition]')) {
         button.setAttribute('aria-pressed', String(button.dataset.condition === conditionId))
         const label = button.querySelector('[data-framing-label]')!
-        const subject = subjectOf(next)
-        label.textContent =
-          button.dataset.condition === 'asserted'
-            ? `Tell them ${subject} is a sandwich`
-            : button.dataset.condition === 'denied'
-              ? `Tell them ${subject} is not a sandwich`
-              : label.textContent
+        label.textContent = data.labels[next]?.[button.dataset.condition!] ?? label.textContent
       }
       const question = data.questions.find((x) => x.id === next)!
       questionText.textContent = question.text.replace(/ One word answer\.$/, '')

@@ -28,6 +28,17 @@ export const questionEntrySchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'question id must be a lowercase slug like "hot-dog"'),
   /** The food, phrased to drop into the template: "a hot dog". Used in generated prose. */
   subject: z.string().min(1),
+  /**
+   * The affirmative answer as a predicate on the subject: "is a sandwich".
+   *
+   * Site copy that names what the question asserts is built from this, so a
+   * fork asking "Is a burrito a wrap?" reads "Tell them a burrito is a wrap"
+   * rather than a sentence about sandwiches. Optional: without it the site
+   * falls back to the condition labels and quotes the question text.
+   */
+  claim: z.string().min(1).optional(),
+  /** The negative answer as a predicate on the subject: "is not a sandwich". */
+  denial: z.string().min(1).optional(),
   /** The exact prompt sent to every model. */
   text: z
     .string()

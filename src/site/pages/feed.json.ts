@@ -5,9 +5,9 @@
  * subscriber sees the result without opening the page.
  */
 import type { APIRoute } from 'astro'
-import { getAllRuns, getModelResults, getQuestion } from '../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../lib/data.ts'
 import { formatEdition } from '../lib/format.ts'
-import { consensusOf } from '../lib/prose.ts'
+import { consensusOf, feedDescription } from '../lib/prose.ts'
 
 export const GET: APIRoute = ({ site }) => {
   const origin = site ?? new URL('http://localhost:4321')
@@ -44,7 +44,7 @@ export const GET: APIRoute = ({ site }) => {
         title: 'HOTDOG BENCHMARK',
         home_page_url: url(''),
         feed_url: url('feed.json'),
-        description: 'Weekly cross-vendor evaluation of contested sandwich classification.',
+        description: feedDescription(getQuestions()),
         language: 'en',
         items,
       },
