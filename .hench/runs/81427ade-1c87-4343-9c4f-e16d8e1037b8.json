@@ -1,0 +1,28 @@
+{
+  "id": "81427ade-1c87-4343-9c4f-e16d8e1037b8",
+  "taskId": "cb0c7462-cff9-42be-9cfc-009c3694d4e0",
+  "taskTitle": "CI gates",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:50.859Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "axe in four modes, responsive audit in CI, Lighthouse a11y 100",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

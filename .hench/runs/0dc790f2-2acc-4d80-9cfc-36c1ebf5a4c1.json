@@ -1,0 +1,28 @@
+{
+  "id": "0dc790f2-2acc-4d80-9cfc-36c1ebf5a4c1",
+  "taskId": "a4b0ea81-cf3b-4928-92a0-8331523aec5a",
+  "taskTitle": "Framing sensitivity over time",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:50.476Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "sensitivityOverTime with gaps, sparklines",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

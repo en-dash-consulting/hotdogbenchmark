@@ -1,0 +1,28 @@
+{
+  "id": "627e775b-831a-4b8f-a68f-b0d92ac75e75",
+  "taskId": "76c3857d-2381-4823-8b5a-e4231973a750",
+  "taskTitle": "Registry-driven site copy",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:50.095Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Delegated: claim/denial on questions, derived copy, fork build test",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

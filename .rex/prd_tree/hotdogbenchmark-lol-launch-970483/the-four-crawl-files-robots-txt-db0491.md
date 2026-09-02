@@ -2,12 +2,17 @@
 id: "db049142-7350-418e-b8bf-c178770deaef"
 level: "feature"
 title: "The four crawl files: robots.txt, sitemap, llms.txt, IndexNow key"
-status: "pending"
+status: "completed"
 priority: "critical"
 tags:
   - "launch"
   - "seo"
 source: "ndx-capture"
+startedAt: "2026-09-02T04:40:18.086Z"
+completedAt: "2026-09-02T04:40:18.086Z"
+endedAt: "2026-09-02T04:40:18.086Z"
+resolutionType: "code-change"
+resolutionDetail: "robots.txt points at the sitemap on the canonical origin, sitemap covers every page, llms.txt is generated from routes and data, the IndexNow key is served at the root; live confirmation waits on DNS"
 acceptanceCriteria:
   - "dist/robots.txt allows all and points at the sitemap on the canonical origin"
   - "dist/sitemap-index.xml and its sitemap list every built HTML page, verified by a build test that diffs the sitemap against the page list"
@@ -15,6 +20,6 @@ acceptanceCriteria:
   - "dist/4620f6c856eb31607cedc6155c820eec.txt contains exactly 4620f6c856eb31607cedc6155c820eec"
   - "Nick has been told the four files are live once the domain is up"
 description: "robots.txt allows everything and points at the sitemap (it exists; confirm the sitemap URL uses the canonical origin). The sitemap integration already emits every page; confirm archive and per-framing pages are in it. llms.txt is new: a plain-language summary of the project, what it measures (questions, framings, models, samples, the sensitivity measure), and a list of every real page with one line each, generated from the same route data the site builds from so it cannot drift the way html-in-canvas.dev's did. The IndexNow key file public/4620f6c856eb31607cedc6155c820eec.txt contains exactly that key, public by design. When these are live on the host, tell Nick."
-lastModified: "2026-09-02T04:11:31.536Z"
+lastModified: "2026-09-02T04:40:18.101Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

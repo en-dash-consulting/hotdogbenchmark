@@ -28,11 +28,11 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [A real 404 on GitHub Pages](./a-real-404-on-github-pages-e94703.md) | pending |
+| [A real 404 on GitHub Pages](./a-real-404-on-github-pages-e94703.md) | completed |
 | [Add the GA4 tag once the measurement ID exists](./add-the-ga4-tag-once-the-5b1218.md) | blocked |
 | [Custom domain: one canonical host at hotdogbenchmark.lol](./custom-domain-one-canonical-97b0d2.md) | pending |
-| [One footer line to the En Dash learning apps this audience wants](./one-footer-line-to-the-en-dash-ee829b.md) | pending |
-| [Prove the substance is in the HTML: a server-rendered content floor](./prove-the-substance-is-in-the-974d4f.md) | pending |
-| [Structured data that is true: FAQPage, Dataset per edition, SoftwareSourceCode](./structured-data-that-is-true-0f727b.md) | pending |
-| [The four crawl files: robots.txt, sitemap, llms.txt, IndexNow key](./the-four-crawl-files-robots-txt-db0491.md) | pending |
-| [Titles for the query people type, a description per page, an OG card per page](./titles-for-the-query-people-a7d311.md) | pending |
+| [One footer line to the En Dash learning apps this audience wants](./one-footer-line-to-the-en-dash-ee829b.md) | completed |
+| [Prove the substance is in the HTML: a server-rendered content floor](./prove-the-substance-is-in-the-974d4f.md) | completed |
+| [Structured data that is true: FAQPage, Dataset per edition, SoftwareSourceCode](./structured-data-that-is-true-0f727b.md) | completed |
+| [The four crawl files: robots.txt, sitemap, llms.txt, IndexNow key](./the-four-crawl-files-robots-txt-db0491.md) | completed |
+| [Titles for the query people type, a description per page, an OG card per page](./titles-for-the-query-people-a7d311.md) | completed |

@@ -1,0 +1,28 @@
+{
+  "id": "f7333106-2206-4a32-846d-881116381538",
+  "taskId": "105fe096-263e-40a6-bb63-030442ff3f6f",
+  "taskTitle": "Responsive audit and reflow of every page",
+  "startedAt": "2026-09-02T00:40:00-04:00",
+  "finishedAt": "2026-09-02T05:11:24.680Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Stacked tables with ARIA roles, 44 px phone targets, text-spacing overflows fixed; responsive audit zero findings across 25 pages x 7 widths",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

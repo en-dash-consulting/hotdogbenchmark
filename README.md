@@ -218,6 +218,11 @@ Beyond the usual: that the pull-request workflow references no secrets, that no 
 that regenerating `data/index.json` produces no diff, that every color pair meets its WCAG
 ratio, that no page ships an emoji, and that the client JavaScript budget is not exceeded.
 
+The launch test also holds a content floor: with scripts and styles stripped, the front page
+and every report must still carry the model names, their answers and a few hundred words. The
+manual equivalent, against the live site, is `curl -s https://hotdogbenchmark.lol/ | wc -w`,
+which is what a crawler sees before any JavaScript runs.
+
 ---
 
 ## Contributing

@@ -1,0 +1,28 @@
+{
+  "id": "8d176164-086a-45ec-877f-8eb8f6ddff32",
+  "taskId": "ee829b32-a154-4500-aa3f-0c743273a622",
+  "taskTitle": "One footer line to the En Dash learning apps",
+  "startedAt": "2026-09-02T00:50:00-04:00",
+  "finishedAt": "2026-09-02T05:11:36.150Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Footer line with the three learning-app links, asserted on every page",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

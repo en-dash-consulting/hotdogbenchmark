@@ -1,0 +1,28 @@
+{
+  "id": "3bbdf85b-6b0e-491a-8e95-d2b9768d356c",
+  "taskId": "bfcd69d5-3af7-4c0d-92da-9e9edcad3115",
+  "taskTitle": "Edition cadence option",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:49.902Z",
+  "status": "completed",
+  "turns": 49,
+  "summary": "Delegated: --cadence week/day, editionKey, ordering, docs, tests",
+  "tokenUsage": {
+    "input": 4124,
+    "output": 171395,
+    "cacheCreationInput": 150821,
+    "cacheReadInput": 46297650
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 4124,
+    "output": 171395,
+    "cached": 46448471,
+    "total": 46623990
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "a600a8d9-bc2c-4154-a7fd-1f84cdf058f2",
+  "taskId": "eb149b9b-f9d2-49f1-b330-7526a6baa5f7",
+  "taskTitle": "Keyboard and screen-reader support for the answer board and explorer",
+  "startedAt": "2026-09-02T00:05:00-04:00",
+  "finishedAt": "2026-09-02T05:11:24.494Z",
+  "status": "completed",
+  "turns": 70,
+  "summary": "Tablist/radiogroup roles, roving focus, one live region, Playwright keyboard test; axe clean in four modes",
+  "tokenUsage": {
+    "input": 41792,
+    "output": 127304,
+    "cacheCreationInput": 451487,
+    "cacheReadInput": 22106653
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 41792,
+    "output": 127304,
+    "cached": 22558140,
+    "total": 22727236
+  }
+}

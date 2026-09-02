@@ -1,0 +1,28 @@
+{
+  "id": "3ed6c6e8-6dbb-4d14-949f-157599799264",
+  "taskId": "a7d311a4-265a-4051-94c8-64f7f866002b",
+  "taskTitle": "Titles, per-page descriptions, OG card per page",
+  "startedAt": "2026-09-02T00:50:00-04:00",
+  "finishedAt": "2026-09-02T05:11:35.966Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Query-targeting home title, data-derived descriptions, 11 OG cards from run data",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

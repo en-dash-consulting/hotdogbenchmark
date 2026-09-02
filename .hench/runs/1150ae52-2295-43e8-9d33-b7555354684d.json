@@ -1,0 +1,28 @@
+{
+  "id": "1150ae52-2295-43e8-9d33-b7555354684d",
+  "taskId": "0f727bfe-231f-4c10-abf8-59f781e37f31",
+  "taskTitle": "Structured data: FAQPage, Dataset, SoftwareSourceCode",
+  "startedAt": "2026-09-02T00:50:00-04:00",
+  "finishedAt": "2026-09-02T05:11:35.782Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Three JSON-LD types built from run data, parsed and type-restricted by test",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

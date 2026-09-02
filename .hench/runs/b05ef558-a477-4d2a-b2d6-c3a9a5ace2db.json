@@ -1,0 +1,28 @@
+{
+  "id": "b05ef558-a477-4d2a-b2d6-c3a9a5ace2db",
+  "taskId": "e9470302-24b4-4996-aac9-f6b8b6652061",
+  "taskTitle": "Real 404",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:51.046Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "404.astro builds to dist/404.html",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

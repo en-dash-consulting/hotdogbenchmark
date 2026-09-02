@@ -1,0 +1,28 @@
+{
+  "id": "f3b66811-f095-468f-b95a-17b4912230ff",
+  "taskId": "974d4fda-4157-4fdd-b241-cadb712e99d0",
+  "taskTitle": "Prove the substance is in the HTML",
+  "startedAt": "2026-09-02T00:50:00-04:00",
+  "finishedAt": "2026-09-02T05:11:35.594Z",
+  "status": "completed",
+  "turns": 7,
+  "summary": "Content floor test: word counts, model names and control answers in the HTML",
+  "tokenUsage": {
+    "input": 392,
+    "output": 14756,
+    "cacheCreationInput": 17731,
+    "cacheReadInput": 839951
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 392,
+    "output": 14756,
+    "cached": 857682,
+    "total": 872830
+  }
+}

@@ -2,12 +2,17 @@
 id: "105fe096-263e-40a6-bb63-030442ff3f6f"
 level: "feature"
 title: "Responsive audit and reflow of every page from 320px to 1920px"
-status: "pending"
+status: "completed"
 priority: "critical"
 tags:
   - "site"
   - "responsive"
 source: "ndx-capture"
+startedAt: "2026-09-02T04:41:05.126Z"
+completedAt: "2026-09-02T05:11:09.840Z"
+endedAt: "2026-09-02T05:11:09.840Z"
+resolutionType: "code-change"
+resolutionDetail: "scripts/responsive.mjs (npm run test:responsive, in CI with screenshot artifacts) audits 25 pages at 7 widths for overflow, 24/44 px targets, focus-not-obscured and WCAG text spacing; the final run reports zero findings. Fixes along the way: results table and leaderboard stack into labeled cards below 48rem with explicit table roles (global .table-stack), 44 px board controls on phones, explorer vendor-name buttons and footer/edition-nav links at 24 px, unpinned masthead under 52rem, minmax(0,1fr) grids, bare URLs wrap anywhere, sticky-header obscuring fixed. Commit 2e08aaa."
 acceptanceCriteria:
   - "A Playwright test builds the site and asserts document.scrollWidth equals the viewport width on every page at each of the seven widths and at 400% zoom"
   - "Data tables stack into labeled rows below 48rem and remain real tables with headers for assistive technology"
@@ -15,6 +20,6 @@ acceptanceCriteria:
   - "No fixed pixel widths remain in component CSS except SVG viewBoxes and the brand mark"
   - "The answer board, alignment grid and sway chart read correctly at 320px with no clipped words"
 description: "Walk every page at 320, 375, 414, 768, 1024, 1280 and 1920 CSS pixels, portrait and landscape, and at 200% and 400% zoom, and fix what is tolerated rather than designed. Known work: the report data table, leaderboard, position-by-framing matrix and alignment grid fall back to horizontal scrolling on narrow screens and should stack into labeled rows (a `data-label` per cell driven by the header) below a breakpoint; the quadrant, sensitivity bars, radar scorecards and stacked-share SVGs need viewBox-scaled sizing with legible labels at 320px, or a narrow variant; the answer board's timing column should drop under the answer at narrow widths without losing the thinking segment; the hero question scale should be checked at 320 (no orphaned single-character lines) and at 1920 (a max line length); the fork block's command list must wrap or scroll without pushing the page wide; the masthead pill row must not clip the toggle. Every fix is done with fluid units and container-aware layout, not device-specific hacks, and WCAG 1.4.10 reflow (no two-dimensional scrolling at 320 CSS px except for tables and charts, which get a scroll container with keyboard access) is the rule."
-lastModified: "2026-09-02T03:46:22.561Z"
+lastModified: "2026-09-02T05:11:09.854Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

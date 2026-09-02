@@ -1,0 +1,28 @@
+{
+  "id": "74b4ba85-4b76-4fb1-9e0c-d469021deaa6",
+  "taskId": "1ef3a25d-fe4d-46a2-b018-e9ef88c3c1ff",
+  "taskTitle": "History page with one edition",
+  "startedAt": "2026-09-02T00:02:15-04:00",
+  "finishedAt": "2026-09-02T04:40:50.287Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Consistency strip, latency spread, run-over-run from superseded runs",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}
