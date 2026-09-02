@@ -324,7 +324,7 @@ function supersede(target: string, newRunId: string): string | null {
  * cannot be read — an unreadable file is not evidence of real data, and the
  * write will surface whatever is wrong with it anyway.
  */
-function readIsMock(path: string): boolean | null {
+export function readIsMock(path: string): boolean | null {
   if (!existsSync(path)) return null
   try {
     const parsed = JSON.parse(readFileSync(path, 'utf8')) as { isMock?: unknown }

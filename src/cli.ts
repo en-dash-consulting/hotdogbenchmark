@@ -11,6 +11,7 @@ import { validateAllRuns, writeManifest } from './data/index.ts'
 import { runSmoke, runSmokeAll } from './cli/smoke.ts'
 import { runBenchCommand } from './cli/run-command.ts'
 import { runRecord } from './cli/record.ts'
+import { runInit } from './cli/init.ts'
 import { DEFAULT_CONCURRENCY, DEFAULT_SAMPLES, DEFAULT_TIMEOUT_MS } from './runner/run.ts'
 
 const USAGE = `hotdogbenchmark — ask every model whether a hot dog is a sandwich
@@ -26,6 +27,8 @@ Commands:
   smoke               Make one live call to one provider and print the result
                       (--all pings every provider that has a key)
   record              Capture fresh mock fixtures from one provider (live)
+  init                Point the benchmark at new questions: rewrite questions.json
+                      and conditions.json, drop stale fixtures and mock editions
   help                Show this message
 
 Options for \`run\`:
@@ -46,10 +49,23 @@ Options for \`smoke\` and \`record\`:
   --all               (smoke) Ping every enabled model that has a key configured
   --prompt <text>     (smoke) Override the question asked
 
+Options for \`init\` (prompts for everything when run with no --question from a terminal):
+  --question <text>   The prompt to send (repeatable). "One word answer." is appended if missing
+  --subject <phrase>  The subject as it reads in a sentence, like "a burrito" (one per question)
+  --id <slug>         Question id; default is the subject slugged without its article (repeatable)
+  --title <text>      Report title; default is "The <Subject> Question" (repeatable)
+  --tagline <text>    One line under the title (repeatable)
+  --assert <template> System prompt for the asserted arm; "{subject}" is filled per question
+  --deny <template>   System prompt for the denied arm
+  --no-framings       Write the control condition only
+  --force             Also remove real editions (isMock: false) under data/runs/
+  --yes               Skip the confirmation prompt
+  --dry-run           Print what would change and write nothing
+
 Exit codes:
   0  success (at least one model answered)
   1  every job failed
-  2  invalid usage
+  2  invalid usage, a registry that would not validate, or an init that was not confirmed
 `
 
 /** Print which providers have a key configured. Never prints a key. */
@@ -92,6 +108,17 @@ function listFlag(argv: string[], flag: string): string[] {
     .split(',')
     .map((part) => part.trim())
     .filter(Boolean)
+}
+
+/** Every value of a repeatable `--flag value`, in argv order. */
+function repeatFlag(argv: string[], flag: string): string[] {
+  const values: string[] = []
+  argv.forEach((arg, index) => {
+    if (arg !== flag) return
+    const value = argv[index + 1]
+    if (value !== undefined && !value.startsWith('--')) values.push(value)
+  })
+  return values
 }
 
 /** Read `--flag value` from argv, or undefined. */
@@ -191,6 +218,21 @@ export async function main(argv: string[]): Promise<number> {
       }
       return runRecord({ provider, model: flagValue(argv, '--model') })
     }
+
+    case 'init':
+      return runInit({
+        questions: repeatFlag(argv, '--question'),
+        subjects: repeatFlag(argv, '--subject'),
+        ids: repeatFlag(argv, '--id'),
+        titles: repeatFlag(argv, '--title'),
+        taglines: repeatFlag(argv, '--tagline'),
+        assertTemplate: flagValue(argv, '--assert'),
+        denyTemplate: flagValue(argv, '--deny'),
+        framings: !argv.includes('--no-framings'),
+        force: argv.includes('--force'),
+        yes: argv.includes('--yes'),
+        dryRun: argv.includes('--dry-run'),
+      })
 
     default:
       console.error(`Unknown command: ${command}\n`)
