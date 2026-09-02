@@ -1,0 +1,28 @@
+{
+  "id": "abd96d4a-de69-4d9d-b48a-00a17de494bd",
+  "taskId": "29238703-9b66-44f3-b76f-93e7a7765cce",
+  "taskTitle": "ndx-capture: A reports landing page of its own",
+  "startedAt": "2026-09-02T01:13:09-04:00",
+  "finishedAt": "2026-09-02T05:13:45.736Z",
+  "status": "completed",
+  "turns": 5,
+  "summary": "Captured the split between a hook home page and a /reports/ landing page that sells each report",
+  "tokenUsage": {
+    "input": 507,
+    "output": 3730,
+    "cacheCreationInput": 15379,
+    "cacheReadInput": 686659
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 507,
+    "output": 3730,
+    "cached": 702038,
+    "total": 706275
+  }
+}
