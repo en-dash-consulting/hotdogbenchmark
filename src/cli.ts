@@ -40,10 +40,11 @@ Options for \`run\`:
                       The control is always run, so "--conditions control" is the cheap path
   --out <path>        Override the output file path
 
-Options for \`smoke\`:
+Options for \`smoke\` and \`record\`:
   --provider <id>     Which provider to call
-  --all               Ping every provider that has a key configured
-  --prompt <text>     Override the question asked
+  --model <id>        Which of that provider's models; default is its first enabled model
+  --all               (smoke) Ping every enabled model that has a key configured
+  --prompt <text>     (smoke) Override the question asked
 
 Exit codes:
   0  success (at least one model answered)
@@ -179,7 +180,7 @@ export async function main(argv: string[]): Promise<number> {
         console.error('Usage: npm run bench:smoke -- --provider <id>   (or --all)')
         return 2
       }
-      return runSmoke({ provider, prompt })
+      return runSmoke({ provider, model: flagValue(argv, '--model'), prompt })
     }
 
     case 'record': {
@@ -188,7 +189,7 @@ export async function main(argv: string[]): Promise<number> {
         console.error('Usage: npm run bench:record -- --provider <id>')
         return 2
       }
-      return runRecord({ provider })
+      return runRecord({ provider, model: flagValue(argv, '--model') })
     }
 
     default:

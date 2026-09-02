@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createMockAdapter } from '../../src/providers/mock.ts'
-import { loadMockFixtures } from '../../src/cli/mock-fixtures.ts'
+import { fixtureKey, loadMockFixtures, modelSlug } from '../../src/cli/mock-fixtures.ts'
 import { benchmarkRunSchema } from '../../src/schema/run.ts'
 import { fakeContext } from '../helpers/fake-adapter.ts'
 
@@ -28,13 +28,28 @@ const REQUEST = {
 }
 
 describe('the recorded response fixtures', () => {
-  it('exist for every provider in models.json', () => {
+  it('exist for every enabled model in models.json, each under its own key', () => {
     const models = JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
-      models: Array<{ provider: string; enabled: boolean }>
+      models: Array<{ provider: string; modelId: string; enabled: boolean }>
     }
     for (const model of models.models.filter((m) => m.enabled)) {
-      expect(fixtures.has(model.provider), `no fixture for ${model.provider}`).toBe(true)
+      const key = fixtureKey(model.provider, model.modelId)
+      expect(fixtures.has(key), `no fixture for ${key}`).toBe(true)
+      expect(fixtures.get(key)?.modelId).toBe(model.modelId)
     }
+  })
+
+  it('serve a model-specific recording ahead of the provider fallback', async () => {
+    // Two Anthropic models, two recordings; the mock must not hand Haiku
+    // Opus's answers.
+    const mock = createMockAdapter('anthropic', { fixtures, speed: 0 })
+    const opus = await mock.complete({ ...REQUEST, modelId: 'claude-opus-5' }, fakeContext())
+    const haiku = await mock.complete(
+      { ...REQUEST, modelId: 'claude-haiku-4-5-20251001' },
+      fakeContext(),
+    )
+    expect(opus.text).toBe(recordedFor('anthropic', 'claude-opus-5', 'hot-dog').text)
+    expect(haiku.text).toBe(recordedFor('anthropic', 'claude-haiku-4-5-20251001', 'hot-dog').text)
   })
 
   it('cover every enabled question', () => {
@@ -66,6 +81,21 @@ describe('the recorded response fixtures', () => {
       expect(/xai-[A-Za-z0-9]{16,}/.test(content), name).toBe(false)
       expect(/AIza[A-Za-z0-9_-]{20,}/.test(content), name).toBe(false)
     }
+  })
+})
+
+/** The control recording for one model and question, straight from the fixture file. */
+const recordedFor = (provider: string, modelId: string, questionId: string) =>
+  fixtures
+    .get(fixtureKey(provider, modelId))!
+    .responses.find((r) => r.questionId === questionId && (r.systemPrompt ?? null) === null)!
+
+describe('modelSlug', () => {
+  it('turns a model id with slashes and dots into a filename fragment', () => {
+    expect(modelSlug('meta-llama/Llama-3.3-70B-Instruct-Turbo')).toBe(
+      'meta-llama-llama-3-3-70b-instruct-turbo',
+    )
+    expect(modelSlug('gpt-5.4-mini')).toBe('gpt-5-4-mini')
   })
 })
 
@@ -377,8 +407,15 @@ describe('bench run --mock end to end, with no API keys', () => {
     const output = runCli(cwd, ['run', '--mock', '--dry-run', '--samples', '2'])
     expect(output).toContain('Conditions:   3')
     expect(output).toContain('"A hot dog is a sandwich."')
-    expect(output).toContain('Matrix:       3 conditions x 3 questions x 7 models x 2 samples')
-    expect(output).toContain('Total calls:  126')
+    const enabledModels = (
+      JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
+        models: Array<{ enabled: boolean }>
+      }
+    ).models.filter((m) => m.enabled).length
+    expect(output).toContain(
+      `Matrix:       3 conditions x 3 questions x ${enabledModels} models x 2 samples`,
+    )
+    expect(output).toContain(`Total calls:  ${3 * 3 * enabledModels * 2}`)
   })
 
   it('refuses to overwrite a real edition with mock data, unless --out says where', () => {

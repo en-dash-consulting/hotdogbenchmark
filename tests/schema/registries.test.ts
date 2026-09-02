@@ -83,17 +83,40 @@ describe('the committed models.json', () => {
     expect(modelsRegistrySchema.safeParse(modelsRegistry).success).toBe(true)
   })
 
-  it('enables one model for each of the seven planned providers', () => {
-    const providers = loadModels().map((m) => m.provider)
-    expect(providers).toEqual([
-      'anthropic',
-      'openai',
-      'gemini',
-      'xai',
-      'mistral',
-      'deepseek',
-      'llama-hosted',
-    ])
+  it('lists every one of the seven planned providers, enabled or not', () => {
+    // A provider can be switched off while its account is sorted out, but it
+    // stays in the registry so the switch back is a one-word change.
+    const providers = new Set(modelsRegistry.models.map((m) => m.provider))
+    expect([...providers].sort()).toEqual(
+      ['anthropic', 'openai', 'gemini', 'xai', 'mistral', 'deepseek', 'llama-hosted'].sort(),
+    )
+  })
+
+  it('enables at least one model, and only from providers with an adapter', () => {
+    const enabled = loadModels()
+    expect(enabled.length).toBeGreaterThan(0)
+    for (const model of enabled) expect(PROVIDER_IDS).toContain(model.provider)
+  })
+
+  it('says why every disabled model is disabled', () => {
+    for (const model of modelsRegistry.models.filter((m) => !m.enabled)) {
+      expect(model.notes, `${model.modelId} is disabled with no note`).toMatch(/Disabled/)
+    }
+  })
+
+  it('keeps models of one provider adjacent and the flagship first', () => {
+    // The first model of a provider keeps the provider-named fixture file, so
+    // its position is load-bearing for mock mode.
+    const providers = modelsRegistry.models.map((m) => m.provider)
+    const firstSeen = new Map<string, number>()
+    providers.forEach((provider, index) => {
+      if (!firstSeen.has(provider)) firstSeen.set(provider, index)
+    })
+    for (const [provider, start] of firstSeen) {
+      const run = providers.slice(start).findIndex((p) => p !== provider)
+      const block = run === -1 ? providers.length - start : run
+      expect(providers.slice(start + block)).not.toContain(provider)
+    }
   })
 
   it('only names providers that have a credential variable defined', () => {
@@ -157,15 +180,13 @@ describe('modelsRegistrySchema rejects', () => {
 describe('enabledModels and findModel', () => {
   it('filters to enabled entries and preserves file order', () => {
     const registry = structuredClone(modelsRegistry) as any
-    registry.models[1].enabled = false
-    expect(enabledModels(registry).map((m) => m.provider)).toEqual([
-      'anthropic',
-      'gemini',
-      'xai',
-      'mistral',
-      'deepseek',
-      'llama-hosted',
-    ])
+    const enabledBefore = enabledModels(registry).map((m: { modelId: string }) => m.modelId)
+    // Switch off the second enabled entry and expect exactly it to vanish, in place.
+    const victim = enabledBefore[1]
+    registry.models.find((m: { modelId: string }) => m.modelId === victim).enabled = false
+    expect(enabledModels(registry).map((m: { modelId: string }) => m.modelId)).toEqual(
+      enabledBefore.filter((id: string) => id !== victim),
+    )
   })
 
   it('finds an entry by provider and model id', () => {

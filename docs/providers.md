@@ -86,6 +86,24 @@ will show you immediately.
 
 Set a spend limit in every console you use.
 
+## Several models per provider
+
+A provider can contribute as many models as `models.json` lists, and the current registry has
+three each from Anthropic, OpenAI and xAI and two from Mistral. The scheduling rule is per
+provider, not per model: the runner still never has more than one call in flight to a vendor, so
+adding a model lengthens a run rather than hammering the vendor harder. Each model has its own
+mock fixture (`tests/fixtures/responses/<provider>--<model-slug>.json`; the provider's first model
+keeps the plain `<provider>.json`), recorded with:
+
+```sh
+npm run bench:record -- --provider openai --model gpt-5.4-mini
+npm run bench:smoke -- --provider openai --model gpt-5.4-mini   # one live call
+npm run bench:smoke -- --all                                    # every enabled model with a key
+```
+
+Model ids come from each vendor's live model-listing endpoint, not from prose docs, for the
+reason in the Mistral notes below.
+
 ## Per-provider setup
 
 Prices below are from `models.json` and carry the date they were read. Verify before relying on
@@ -93,33 +111,37 @@ them; vendors change pricing and promotional rates expire.
 
 ### Anthropic
 
-|                  |                                                                                |
-| ---------------- | ------------------------------------------------------------------------------ |
-| Secret name      | `ANTHROPIC_API_KEY`                                                            |
-| Create a key     | <https://console.anthropic.com/settings/keys>                                  |
-| Free tier        | No standing free tier; new accounts have historically received starting credit |
-| Model            | `claude-opus-5` at $5 / $25 per million tokens                                 |
-| Estimated weekly | $0.0014 – $0.19                                                                |
-| Rate limits      | Tiered by spend. The lowest tier is far above 9 calls a week.                  |
+|                  |                                                                                                                       |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Secret name      | `ANTHROPIC_API_KEY`                                                                                                   |
+| Create a key     | <https://console.anthropic.com/settings/keys>                                                                         |
+| Free tier        | No standing free tier; new accounts have historically received starting credit                                        |
+| Models           | `claude-opus-5` at $5 / $25, `claude-sonnet-5` at $2 / $10, `claude-haiku-4-5-20251001` at $1 / $5 per million tokens |
+| Estimated weekly | $0.0014 – $0.19                                                                                                       |
+| Rate limits      | Tiered by spend. The lowest tier is far above 9 calls a week.                                                         |
 
 Reports `cache_read_input_tokens`, which matters here: the same short prompt is sent nine times a
 week, so cache hits are the normal case.
 
 ### OpenAI
 
-|                  |                                                  |
-| ---------------- | ------------------------------------------------ |
-| Secret name      | `OPENAI_API_KEY`                                 |
-| Create a key     | <https://platform.openai.com/api-keys>           |
-| Free tier        | Prepaid credit; no standing free tier            |
-| Model            | `gpt-5.6-sol` at $4 / $20 per million tokens     |
-| Estimated weekly | $0.0011 – $0.15                                  |
-| Rate limits      | Tiered by spend; not a constraint at this volume |
+|                  |                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------- |
+| Secret name      | `OPENAI_API_KEY`                                                                                     |
+| Create a key     | <https://platform.openai.com/api-keys>                                                               |
+| Free tier        | Prepaid credit; no standing free tier                                                                |
+| Models           | `gpt-5.6-sol` at $4 / $20, `gpt-5.5` at $5 / $30, `gpt-5.4-mini` at $0.75 / $4.50 per million tokens |
+| Estimated weekly | $0.0011 – $0.15                                                                                      |
+| Rate limits      | Tiered by spend; not a constraint at this volume                                                     |
 
 Pricing was published as promotional at the time of writing, running at least through
 2026-11-21. Re-read the pricing page after that date and update `asOf`.
 
 ### Google Gemini
+
+**Disabled in `models.json` as of 2026-09-01:** the free-tier daily quota was exhausted during
+fixture recording and every call returned 429. Set `enabled: true` once the quota resets or the
+key is on a paid tier, then `npm run bench:record -- --provider gemini`.
 
 |                  |                                                                                 |
 | ---------------- | ------------------------------------------------------------------------------- |
@@ -135,14 +157,14 @@ one key that costs nothing.**
 
 ### xAI
 
-|                  |                                                                     |
-| ---------------- | ------------------------------------------------------------------- |
-| Secret name      | `XAI_API_KEY`                                                       |
-| Create a key     | <https://console.x.ai/>                                             |
-| Free tier        | Promotional credit has been offered periodically; check the console |
-| Model            | `grok-4.6` at $2 / $6 per million tokens                            |
-| Estimated weekly | $0.0004 – $0.05                                                     |
-| Rate limits      | Not a constraint at this volume                                     |
+|                  |                                                                                                          |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| Secret name      | `XAI_API_KEY`                                                                                            |
+| Create a key     | <https://console.x.ai/>                                                                                  |
+| Free tier        | Promotional credit has been offered periodically; check the console                                      |
+| Models           | `grok-4.6` at $2 / $6, `grok-4.3` and `grok-4.20-0309-non-reasoning` at $1.25 / $2.50 per million tokens |
+| Estimated weekly | $0.0004 – $0.05                                                                                          |
+| Rate limits      | Not a constraint at this volume                                                                          |
 
 The one provider whose numbers in this repository come from real measured calls. Its reasoning
 tokens are billed **outside** `completion_tokens`, so its real cost is several times what a naive
@@ -151,19 +173,23 @@ benchmark never approaches.
 
 ### Mistral
 
-|                  |                                                           |
-| ---------------- | --------------------------------------------------------- |
-| Secret name      | `MISTRAL_API_KEY`                                         |
-| Create a key     | <https://console.mistral.ai/api-keys>                     |
-| Free tier        | **Yes** — La Plateforme has an experimentation tier       |
-| Model            | `mistral-large-3-25-12` at $0.5 / $1.5 per million tokens |
-| Estimated weekly | $0.0001 – $0.01                                           |
-| Rate limits      | Free-tier limits are generous relative to this workload   |
+|                  |                                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| Secret name      | `MISTRAL_API_KEY`                                                                              |
+| Create a key     | <https://console.mistral.ai/api-keys>                                                          |
+| Free tier        | **Yes** — La Plateforme has an experimentation tier                                            |
+| Models           | `mistral-medium-2604` at $1.5 / $7.5, `mistral-small-2603` at $0.15 / $0.60 per million tokens |
+| Estimated weekly | $0.0001 – $0.01                                                                                |
+| Rate limits      | Free-tier limits are generous relative to this workload                                        |
 
 Mistral's flagship is currently cheaper per token than its mid-tier model, which is unusual
 enough to be worth stating rather than assuming is a mistake in the table.
 
 ### DeepSeek
+
+**Disabled in `models.json` as of 2026-09-01:** the key authenticates but the account has no
+credit, so every call returns 402 Insufficient Balance. Add credit, set `enabled: true`, and
+record the fixture.
 
 |                  |                                                                  |
 | ---------------- | ---------------------------------------------------------------- |
@@ -179,6 +205,9 @@ weekdays. The weekly job runs Monday 12:00 UTC, which is off-peak, so the off-pe
 `models.json` records. If you move the cron, check whether you moved into peak hours.
 
 ### Meta Llama, via Together AI
+
+**Disabled in `models.json` as of 2026-09-01:** no `TOGETHER_API_KEY` is configured. Set one,
+set `enabled: true`, and record the fixture.
 
 Provider id `llama-hosted`.
 

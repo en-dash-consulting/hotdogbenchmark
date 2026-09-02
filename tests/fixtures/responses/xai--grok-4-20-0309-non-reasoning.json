@@ -1,0 +1,144 @@
+{
+  "provider": "xai",
+  "modelId": "grok-4.20-0309-non-reasoning",
+  "source": "live",
+  "recordedAt": "2026-09-02",
+  "note": "Captured from live calls to Grok 4.20 (non-reasoning).",
+  "responses": [
+    {
+      "questionId": "hot-dog",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 195,
+        "outputTokens": 1,
+        "totalTokens": 196,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 453,
+      "approxTtfbMs": 432
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 194,
+        "outputTokens": 1,
+        "totalTokens": 195,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 580,
+      "approxTtfbMs": 579
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "No.",
+      "usage": {
+        "inputTokens": 194,
+        "outputTokens": 2,
+        "totalTokens": 196,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 423,
+      "approxTtfbMs": 380
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "asserted",
+      "systemPrompt": "A hot dog is a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 205,
+        "outputTokens": 2,
+        "totalTokens": 207,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 5227,
+      "approxTtfbMs": 5222
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "asserted",
+      "systemPrompt": "A hamburger is a sandwich.",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 203,
+        "outputTokens": 1,
+        "totalTokens": 204,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 490,
+      "approxTtfbMs": 478
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "asserted",
+      "systemPrompt": "A taco is a sandwich.",
+      "text": "Yes",
+      "usage": {
+        "inputTokens": 203,
+        "outputTokens": 1,
+        "totalTokens": 204,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 432,
+      "approxTtfbMs": 398
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "denied",
+      "systemPrompt": "A hot dog is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 206,
+        "outputTokens": 2,
+        "totalTokens": 208,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 464,
+      "approxTtfbMs": 463
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "denied",
+      "systemPrompt": "A hamburger is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 204,
+        "outputTokens": 2,
+        "totalTokens": 206,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 463,
+      "approxTtfbMs": 444
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "denied",
+      "systemPrompt": "A taco is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 204,
+        "outputTokens": 2,
+        "totalTokens": 206,
+        "reasoningTokens": 0,
+        "cachedInputTokens": 128
+      },
+      "approxTotalMs": 432,
+      "approxTtfbMs": 431
+    }
+  ]
+}

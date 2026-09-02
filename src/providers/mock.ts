@@ -101,7 +101,6 @@ function mulberry32(seed: number): () => number {
  * nobody recorded.
  */
 export function createMockAdapter(providerId: string, options: MockOptions): ProviderAdapter {
-  const fixture = options.fixtures.get(providerId)
   const speed = options.speed ?? 1
 
   return {
@@ -109,11 +108,16 @@ export function createMockAdapter(providerId: string, options: MockOptions): Pro
     displayName: `${providerId} (mock)`,
 
     async complete(request: CompleteRequest, context: AdapterContext): Promise<CompleteResult> {
+      // The model's own recording first; the provider's legacy single-model
+      // fixture otherwise, so a fixture recorded before a provider had two
+      // models still serves its first one.
+      const fixture =
+        options.fixtures.get(`${providerId}/${request.modelId}`) ?? options.fixtures.get(providerId)
       if (!fixture) {
         throw new ProviderError(
           'bad_response',
-          `No recorded fixture for provider "${providerId}". ` +
-            `Record one with: npm run bench:record -- --provider ${providerId}`,
+          `No recorded fixture for ${providerId} model "${request.modelId}". ` +
+            `Record one with: npm run bench:record -- --provider ${providerId} --model ${request.modelId}`,
         )
       }
 

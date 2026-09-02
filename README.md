@@ -5,7 +5,7 @@
 [![Deploy site](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml/badge.svg)](https://github.com/endash/hotdogbenchmark/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Every Monday at 12:00 UTC, this project asks seven of the largest AI models the same question,
+Every Monday at 12:00 UTC, this project asks the largest AI models, ten of them at last count, the same question,
 records what they said and how long they took, and publishes the results as a completely
 straight-faced industry analyst report.
 
@@ -65,7 +65,7 @@ git clone https://github.com/endash/hotdogbenchmark.git
 cd hotdogbenchmark
 nvm use && npm install
 
-npm run bench -- run --mock --out tmp/mock-run.json   # ask all seven models, from recorded fixtures
+npm run bench -- run --mock --out tmp/mock-run.json   # ask every model, from recorded fixtures
 npm run dev                                            # serve the report site
 ```
 

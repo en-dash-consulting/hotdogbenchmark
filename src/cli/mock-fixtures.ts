@@ -13,16 +13,41 @@ import { REPO_ROOT } from '../data/registries.ts'
 /** Where recorded responses live, relative to the repository root. */
 export const FIXTURE_DIR = 'tests/fixtures/responses'
 
-/**
- * A model id can contain a slash (`meta-llama/Llama-3.3-70B-Instruct-Turbo`),
- * which is not a filename. Fixtures are named by provider instead, which is
- * unique anyway since one provider contributes one model to a run.
- */
-export function fixturePathFor(provider: string): string {
-  return `${FIXTURE_DIR}/${provider}.json`
+/** A model id as a filename fragment: `meta-llama/Llama-3.3-70B` → `meta-llama-llama-3-3-70b`. */
+export function modelSlug(modelId: string): string {
+  return modelId
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
 }
 
-/** Read every recorded fixture. A missing directory yields an empty map. */
+/**
+ * Where a model's fixture lives.
+ *
+ * A provider's first fixture is named by provider alone (`anthropic.json`),
+ * which is how every fixture was named while each provider contributed one
+ * model. Further models get `provider--model-slug.json`. A model id can
+ * contain a slash, which is not a filename, hence the slug.
+ */
+export function fixturePathFor(provider: string, modelId?: string): string {
+  return modelId === undefined
+    ? `${FIXTURE_DIR}/${provider}.json`
+    : `${FIXTURE_DIR}/${provider}--${modelSlug(modelId)}.json`
+}
+
+/** The lookup key the mock adapter uses for one model. */
+export function fixtureKey(provider: string, modelId: string): string {
+  return `${provider}/${modelId}`
+}
+
+/**
+ * Read every recorded fixture.
+ *
+ * Each fixture is keyed by `provider/modelId`. A fixture in the legacy
+ * provider-named file is also keyed by provider alone, which is what a mock
+ * adapter falls back to for a model with no recording of its own. A missing
+ * directory yields an empty map.
+ */
 export function loadMockFixtures(root: string = REPO_ROOT): Map<string, MockFixture> {
   const fixtures = new Map<string, MockFixture>()
   const dir = join(root, FIXTURE_DIR)
@@ -47,7 +72,8 @@ export function loadMockFixtures(root: string = REPO_ROOT): Map<string, MockFixt
         `${FIXTURE_DIR}/${name} is missing "provider" or "responses"; see docs/data-schema.md`,
       )
     }
-    fixtures.set(parsed.provider, parsed)
+    if (parsed.modelId) fixtures.set(fixtureKey(parsed.provider, parsed.modelId), parsed)
+    if (name === `${parsed.provider}.json`) fixtures.set(parsed.provider, parsed)
   }
 
   return fixtures

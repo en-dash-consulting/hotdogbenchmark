@@ -19,6 +19,40 @@
       "notes": "Reference adapter. Reports cache_read_input_tokens, which matters here because the same short prompt is sent 9 times a week."
     },
     {
+      "provider": "anthropic",
+      "modelId": "claude-sonnet-5",
+      "displayName": "Claude Sonnet 5",
+      "vendor": "Anthropic",
+      "docsUrl": "https://platform.claude.com/docs/en/about-claude/models/overview",
+      "pricing": {
+        "inputUsdPerMTok": 2,
+        "outputUsdPerMTok": 10,
+        "pricingUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Id read from the live GET /v1/models listing on 2026-09-01. The $2/$10 launch price became the standard price; the scheduled rise to $3/$15 was cancelled."
+    },
+    {
+      "provider": "anthropic",
+      "modelId": "claude-haiku-4-5-20251001",
+      "displayName": "Claude Haiku 4.5",
+      "vendor": "Anthropic",
+      "docsUrl": "https://platform.claude.com/docs/en/about-claude/models/overview",
+      "pricing": {
+        "inputUsdPerMTok": 1,
+        "outputUsdPerMTok": 5,
+        "pricingUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "The small one. Id read from the live model listing on 2026-09-01; pinned with its date suffix, as Anthropic publishes it."
+    },
+    {
       "provider": "openai",
       "modelId": "gpt-5.6-sol",
       "displayName": "GPT-5.6 Sol",
@@ -36,6 +70,40 @@
       "notes": "Promotional pricing published as running at least through 2026-11-21; re-read the pricing page after that date."
     },
     {
+      "provider": "openai",
+      "modelId": "gpt-5.5",
+      "displayName": "GPT-5.5",
+      "vendor": "OpenAI",
+      "docsUrl": "https://developers.openai.com/api/docs/models/gpt-5.5",
+      "pricing": {
+        "inputUsdPerMTok": 5,
+        "outputUsdPerMTok": 30,
+        "pricingUrl": "https://developers.openai.com/api/docs/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "The previous flagship, kept for the generation-over-generation comparison. Id from the live GET /v1/models listing on 2026-09-01; short-context price."
+    },
+    {
+      "provider": "openai",
+      "modelId": "gpt-5.4-mini",
+      "displayName": "GPT-5.4 mini",
+      "vendor": "OpenAI",
+      "docsUrl": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+      "pricing": {
+        "inputUsdPerMTok": 0.75,
+        "outputUsdPerMTok": 4.5,
+        "pricingUrl": "https://developers.openai.com/api/docs/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "The small one. Id from the live model listing on 2026-09-01; short-context price."
+    },
+    {
       "provider": "gemini",
       "modelId": "gemini-3.7-flash",
       "displayName": "Gemini 3.7 Flash",
@@ -49,8 +117,8 @@
       },
       "supportsStreaming": true,
       "supportsUsage": true,
-      "enabled": true,
-      "notes": "Introductory pricing through 2026-12-31, after which it doubles to 1.50/7.50. Reports thoughtsTokenCount separately from candidatesTokenCount."
+      "enabled": false,
+      "notes": "Disabled 2026-09-01: the free-tier daily quota was exhausted during fixture recording and every call returned 429. Re-enable once the quota resets or the key is on a paid tier, then re-record the fixture. Previously: Introductory pricing through 2026-12-31, after which it doubles to 1.50/7.50. Reports thoughtsTokenCount separately from candidatesTokenCount."
     },
     {
       "provider": "xai",
@@ -70,6 +138,40 @@
       "notes": "Model id and prices confirmed against the live GET /v1/language-models endpoint on 2026-09-01. Long-context tier (200k+ prompt tokens) is double these rates; this benchmark's prompts are ~15 tokens, so the base rate always applies."
     },
     {
+      "provider": "xai",
+      "modelId": "grok-4.3",
+      "displayName": "Grok 4.3",
+      "vendor": "xAI",
+      "docsUrl": "https://docs.x.ai/developers/models",
+      "pricing": {
+        "inputUsdPerMTok": 1.25,
+        "outputUsdPerMTok": 2.5,
+        "pricingUrl": "https://docs.x.ai/developers/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "Id and prices read from the live GET /v1/language-models endpoint on 2026-09-01."
+    },
+    {
+      "provider": "xai",
+      "modelId": "grok-4.20-0309-non-reasoning",
+      "displayName": "Grok 4.20 (non-reasoning)",
+      "vendor": "xAI",
+      "docsUrl": "https://docs.x.ai/developers/models",
+      "pricing": {
+        "inputUsdPerMTok": 1.25,
+        "outputUsdPerMTok": 2.5,
+        "pricingUrl": "https://docs.x.ai/developers/pricing",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "The same family with reasoning switched off, so the reasoning-token overhead the other Grok rows carry is visible by contrast. Pinned to the dated id rather than the grok-4.20-non-reasoning alias; prices from the live model listing on 2026-09-01."
+    },
+    {
       "provider": "mistral",
       "modelId": "mistral-medium-2604",
       "displayName": "Mistral Medium 3.5",
@@ -84,7 +186,24 @@
       "supportsStreaming": true,
       "supportsUsage": true,
       "enabled": true,
-      "notes": "Model id read from the live GET /v1/models endpoint on 2026-09-01, not from the pricing page: that page lists 'mistral-large-3-25-12', a documentation slug the API rejects with 'Invalid model'. Prefer a provider's own model listing over its prose docs where one exists. Medium rather than Large because Large returns 403 'not available in your subscription tier' on the standard tier \u2014 a benchmark should ask a model its readers can actually reach. Pinned rather than -latest so a run records what it actually asked."
+      "notes": "Model id read from the live GET /v1/models endpoint on 2026-09-01, not from the pricing page: that page lists 'mistral-large-3-25-12', a documentation slug the API rejects with 'Invalid model'. Prefer a provider's own model listing over its prose docs where one exists. Medium rather than Large because Large returns 403 'not available in your subscription tier' on the standard tier — a benchmark should ask a model its readers can actually reach. Pinned rather than -latest so a run records what it actually asked."
+    },
+    {
+      "provider": "mistral",
+      "modelId": "mistral-small-2603",
+      "displayName": "Mistral Small 4",
+      "vendor": "Mistral AI",
+      "docsUrl": "https://docs.mistral.ai/api/endpoint/models",
+      "pricing": {
+        "inputUsdPerMTok": 0.15,
+        "outputUsdPerMTok": 0.6,
+        "pricingUrl": "https://mistral.ai/pricing/api/",
+        "asOf": "2026-09-01"
+      },
+      "supportsStreaming": true,
+      "supportsUsage": true,
+      "enabled": true,
+      "notes": "The small one. Id from the live GET /v1/models listing on 2026-09-01; the pricing page lists it as Mistral Small 4 under the mistral-small-latest alias."
     },
     {
       "provider": "deepseek",
@@ -100,8 +219,8 @@
       },
       "supportsStreaming": true,
       "supportsUsage": true,
-      "enabled": true,
-      "notes": "DeepSeek charges peak and off-peak rates. Peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays; the weekly run is Monday 12:00 UTC, which is off-peak, so the off-peak rate is the one recorded here. The retired deepseek-chat alias now routes to the v4 family."
+      "enabled": false,
+      "notes": "Disabled 2026-09-01: the key authenticates but the account has no credit (402 Insufficient Balance). Re-enable after adding credit at platform.deepseek.com and re-recording the fixture. Previously: DeepSeek charges peak and off-peak rates. Peak is 01:00-04:00 and 06:00-10:00 UTC on weekdays; the weekly run is Monday 12:00 UTC, which is off-peak, so the off-peak rate is the one recorded here. The retired deepseek-chat alias now routes to the v4 family."
     },
     {
       "provider": "llama-hosted",
@@ -117,8 +236,8 @@
       },
       "supportsStreaming": true,
       "supportsUsage": true,
-      "enabled": true,
-      "notes": "Open weights, so somebody else's hardware answers. Together AI was chosen over Groq because Groq moved its Llama models to enterprise-only 'contact sales' pricing in June 2026, which a forker on a free tier cannot use. Latency for this row measures Together's serving, not Meta's model."
+      "enabled": false,
+      "notes": "Disabled 2026-09-01: no TOGETHER_API_KEY configured. Re-enable once a key is set and the fixture is recorded live. Previously: Open weights, so somebody else's hardware answers. Together AI was chosen over Groq because Groq moved its Llama models to enterprise-only 'contact sales' pricing in June 2026, which a forker on a free tier cannot use. Latency for this row measures Together's serving, not Meta's model."
     }
   ]
 }

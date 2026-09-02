@@ -20,6 +20,8 @@ const DEFAULT_PROMPT = 'Is a hot dog a sandwich? One word answer.'
 
 export interface SmokeOptions {
   provider: string
+  /** Which of the provider's models to call. Defaults to its first enabled model. */
+  model?: string
   prompt?: string
   timeoutMs?: number
 }
@@ -38,37 +40,44 @@ export interface SmokeOptions {
 export async function runSmokeAll(options: { prompt?: string } = {}): Promise<number> {
   registerAllAdapters()
 
-  const providers = [...new Set(loadModels().map((model) => model.provider))]
+  const models = loadModels()
   const credentials = credentialsFromEnv()
 
-  const configured = providers.filter((provider) => credentials[provider as ProviderId])
-  const skipped = providers.filter((provider) => !credentials[provider as ProviderId])
+  const configured = models.filter((model) => credentials[model.provider as ProviderId])
+  const skipped = models.filter((model) => !credentials[model.provider as ProviderId])
 
   console.log(
-    `Pinging ${configured.length} of ${providers.length} providers ` +
+    `Pinging ${configured.length} of ${models.length} models ` +
       `(${skipped.length} have no key configured).\n`,
   )
 
-  const results: Array<{ provider: string; ok: boolean }> = []
+  const results: Array<{ provider: string; modelId: string; ok: boolean }> = []
 
-  for (const provider of configured) {
+  for (const model of configured) {
     console.log('─'.repeat(64))
-    const code = await runSmoke({ provider, prompt: options.prompt })
-    results.push({ provider, ok: code === 0 })
+    const code = await runSmoke({
+      provider: model.provider,
+      model: model.modelId,
+      prompt: options.prompt,
+    })
+    results.push({ provider: model.provider, modelId: model.modelId, ok: code === 0 })
     console.log('')
   }
 
   console.log('─'.repeat(64))
   console.log('\nSummary\n')
 
-  const width = Math.max(...providers.map((p) => p.length))
-  for (const provider of providers) {
-    const result = results.find((entry) => entry.provider === provider)
+  const width = Math.max(...models.map((m) => `${m.provider} ${m.modelId}`.length))
+  for (const model of models) {
+    const label = `${model.provider} ${model.modelId}`.padEnd(width)
+    const result = results.find(
+      (entry) => entry.provider === model.provider && entry.modelId === model.modelId,
+    )
     if (!result) {
-      const envVar = PROVIDER_ENV_VARS[provider as ProviderId] ?? '(unknown)'
-      console.log(`  ${provider.padEnd(width)}  skipped   set ${envVar} to include it`)
+      const envVar = PROVIDER_ENV_VARS[model.provider as ProviderId] ?? '(unknown)'
+      console.log(`  ${label}  skipped   set ${envVar} to include it`)
     } else {
-      console.log(`  ${provider.padEnd(width)}  ${result.ok ? 'ok' : 'FAILED'}`)
+      console.log(`  ${label}  ${result.ok ? 'ok' : 'FAILED'}`)
     }
   }
 
@@ -78,10 +87,10 @@ export async function runSmokeAll(options: { prompt?: string } = {}): Promise<nu
     return 2
   }
   if (failed.length > 0) {
-    console.error(`\n${failed.length} configured provider(s) failed.`)
+    console.error(`\n${failed.length} configured model(s) failed.`)
     return 1
   }
-  console.log(`\nAll ${configured.length} configured provider(s) responded.`)
+  console.log(`\nAll ${configured.length} configured model(s) responded.`)
   return 0
 }
 
@@ -90,12 +99,19 @@ export async function runSmoke(options: SmokeOptions): Promise<number> {
   registerAllAdapters()
 
   const models = loadModels()
-  const model = models.find((entry) => entry.provider === options.provider)
+  const candidates = models.filter((entry) => entry.provider === options.provider)
+  const model =
+    options.model === undefined
+      ? candidates[0]
+      : candidates.find((entry) => entry.modelId === options.model)
   if (!model) {
     const available = [...new Set(models.map((m) => m.provider))].sort().join(', ')
     console.error(
-      `No enabled model in models.json for provider "${options.provider}".\n` +
-        `Providers with an enabled model: ${available}`,
+      options.model === undefined
+        ? `No enabled model in models.json for provider "${options.provider}".\n` +
+            `Providers with an enabled model: ${available}`
+        : `No enabled model "${options.model}" for provider "${options.provider}".\n` +
+            `Enabled: ${candidates.map((c) => c.modelId).join(', ') || '(none)'}`,
     )
     return 2
   }

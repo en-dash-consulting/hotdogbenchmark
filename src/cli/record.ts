@@ -41,6 +41,8 @@ const KEY_SHAPES = [
 
 export interface RecordOptions {
   provider: string
+  /** Which of the provider's models to record. Defaults to its first enabled model. */
+  model?: string
   root?: string
 }
 
@@ -48,11 +50,22 @@ export async function runRecord(options: RecordOptions): Promise<number> {
   const root = options.root ?? REPO_ROOT
   registerAllAdapters()
 
-  const model = loadModels(root).find((entry) => entry.provider === options.provider)
+  const candidates = loadModels(root).filter((entry) => entry.provider === options.provider)
+  const model =
+    options.model === undefined
+      ? candidates[0]
+      : candidates.find((entry) => entry.modelId === options.model)
   if (!model) {
-    console.error(`No enabled model in models.json for provider "${options.provider}".`)
+    console.error(
+      options.model === undefined
+        ? `No enabled model in models.json for provider "${options.provider}".`
+        : `No enabled model "${options.model}" for provider "${options.provider}". ` +
+            `Enabled: ${candidates.map((c) => c.modelId).join(', ') || '(none)'}`,
+    )
     return 2
   }
+  // The provider's first model keeps the legacy provider-named file.
+  const isFirst = candidates[0]?.modelId === model.modelId
 
   const apiKey = credentialsFromEnv()[options.provider as ProviderId]
   if (!apiKey) {
@@ -141,7 +154,9 @@ export async function runRecord(options: RecordOptions): Promise<number> {
     }
   }
 
-  const relativePath = fixturePathFor(options.provider)
+  const relativePath = isFirst
+    ? fixturePathFor(options.provider)
+    : fixturePathFor(options.provider, model.modelId)
   const target = join(root, relativePath)
   mkdirSync(dirname(target), { recursive: true })
   writeFileSync(target, serialized)

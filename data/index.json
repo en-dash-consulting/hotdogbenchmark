@@ -4,9 +4,9 @@
     {
       "isoWeek": "2026-W36",
       "path": "data/runs/2026-W36.json",
-      "runId": "3ea45a76-f348-4b00-b873-32e85704347e",
-      "startedAt": "2026-09-02T01:39:11.538Z",
-      "finishedAt": "2026-09-02T01:43:47.347Z",
+      "runId": "9707a0d5-d9f7-4332-b0d7-0a3fdd7ad825",
+      "startedAt": "2026-09-02T02:44:43.013Z",
+      "finishedAt": "2026-09-02T02:52:27.081Z",
       "isMock": false,
       "questionIds": [
         "hot-dog",
@@ -18,26 +18,26 @@
         "asserted",
         "denied"
       ],
-      "modelCount": 6,
+      "modelCount": 11,
       "questions": [
         {
           "questionId": "hot-dog",
           "conditionId": "control",
-          "okCount": 4,
-          "errorCount": 2,
+          "okCount": 11,
+          "errorCount": 0,
           "verdicts": {
-            "yes": 1,
-            "no": 3,
+            "yes": 6,
+            "no": 5,
             "other": 0
           }
         },
         {
           "questionId": "hamburger",
           "conditionId": "control",
-          "okCount": 4,
-          "errorCount": 2,
+          "okCount": 11,
+          "errorCount": 0,
           "verdicts": {
-            "yes": 4,
+            "yes": 11,
             "no": 0,
             "other": 0
           }
@@ -45,11 +45,11 @@
         {
           "questionId": "taco",
           "conditionId": "control",
-          "okCount": 4,
-          "errorCount": 2,
+          "okCount": 11,
+          "errorCount": 0,
           "verdicts": {
             "yes": 0,
-            "no": 4,
+            "no": 11,
             "other": 0
           }
         }

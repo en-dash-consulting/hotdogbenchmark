@@ -46,8 +46,24 @@ where the public surface is the **data schema**, not the TypeScript API.
   `--dry-run` printing the full matrix and call count, and `bench:record`
   capturing every condition so mock mode replays real recorded sensitivity.
 
+- **Several models per provider.** `models.json` now lists Claude Opus 5,
+  Sonnet 5 and Haiku 4.5; GPT-5.6 Sol, GPT-5.5 and GPT-5.4 mini; Grok 4.6,
+  Grok 4.3 and Grok 4.20 with reasoning off; Mistral Medium 3.5 and Small 4.
+  Ids and prices were read from each vendor's live model listing or pricing
+  page on 2026-09-01. Mock fixtures are per model
+  (`<provider>--<model-slug>.json`), and `bench:smoke` and `bench:record` take
+  `--model`; `bench:smoke -- --all` pings every enabled model.
+- **A redesigned site on the En Dash brand.** Navy, teal and purple;
+  Montserrat and Merriweather; the square En Dash mark. The front page replays
+  each model's answer at its recorded latency, lets a reader tell the models
+  the answer and watch who flips, and shows an alignment grid and a sway
+  chart. Nothing on the site calls a provider.
+
 ### Changed
 
+- Gemini, DeepSeek and Llama via Together are **disabled in `models.json`**
+  until their accounts are sorted: exhausted free-tier quota, no credit, and
+  no key respectively. Each entry says so and how to re-enable it.
 - Mock fixtures for Anthropic, OpenAI, xAI and Mistral are now live captures
   under all three conditions. Gemini's stayed authored: its free-tier quota was
   exhausted during recording. DeepSeek and Together remain authored, blocked on
