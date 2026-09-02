@@ -53,7 +53,7 @@ Responses API, with different event names and different usage field names. So th
 ## The lesson
 
 Your abstraction should absorb the differences that are incidental — auth headers, base URLs,
-field names — and _surface_ the ones that are real. Gemini's filtered-response behaviour is real.
+field names — and _surface_ the ones that are real. Gemini's filtered-response behavior is real.
 Hiding it behind a uniform interface would have meant publishing empty strings as answers.
 
 ## Exercise

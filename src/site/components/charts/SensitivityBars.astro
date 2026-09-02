@@ -5,7 +5,7 @@
  * One row per model, one bar per non-control arm, each bar's length the share
  * of questions on which the model's position moved. Every bar carries its
  * value as a direct label and each arm has its own fill pattern, so the chart
- * reads without colour and in forced-colors mode.
+ * reads without color and in forced-colors mode.
  *
  * A model with nothing comparable under an arm gets no bar and a note, not a
  * bar of zero length — "could not be compared" and "never moved" are
@@ -27,7 +27,7 @@ interface Props {
 const { entries, conditions, title, caption } = Astro.props
 
 const PATTERNS = ['sens-solid', 'sens-diagonal', 'sens-cross', 'sens-dots']
-const COLOURS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)']
+const COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)', 'var(--chart-4)']
 
 const ROW_HEIGHT = 18
 const ROW_GAP = 10
@@ -53,7 +53,7 @@ const rows = entries.map((entry, index) => ({
       width: score?.score == null ? 0 : round(score.score * barMax),
       arm: armIndex,
       pattern: PATTERNS[armIndex % PATTERNS.length]!,
-      colour: COLOURS[armIndex % COLOURS.length]!,
+      color: COLORS[armIndex % COLORS.length]!,
     }
   }),
 }))
@@ -75,7 +75,7 @@ const summary =
   <svg viewBox={`0 0 ${WIDTH} ${height}`} width={WIDTH} height={height}>
     <defs>
       <pattern id="sens-solid" width="6" height="6" patternUnits="userSpaceOnUse">
-        <rect width="6" height="6" fill={COLOURS[0]}></rect>
+        <rect width="6" height="6" fill={COLORS[0]}></rect>
       </pattern>
       <pattern
         id="sens-diagonal"
@@ -84,16 +84,16 @@ const summary =
         patternUnits="userSpaceOnUse"
         patternTransform="rotate(45)"
       >
-        <rect width="6" height="6" fill={COLOURS[1]}></rect>
+        <rect width="6" height="6" fill={COLORS[1]}></rect>
         <line x1="0" y1="0" x2="0" y2="6" stroke="var(--surface)" stroke-width="2"></line>
       </pattern>
       <pattern id="sens-cross" width="6" height="6" patternUnits="userSpaceOnUse">
-        <rect width="6" height="6" fill={COLOURS[2]}></rect>
+        <rect width="6" height="6" fill={COLORS[2]}></rect>
         <line x1="0" y1="3" x2="6" y2="3" stroke="var(--surface)" stroke-width="1.5"></line>
         <line x1="3" y1="0" x2="3" y2="6" stroke="var(--surface)" stroke-width="1.5"></line>
       </pattern>
       <pattern id="sens-dots" width="6" height="6" patternUnits="userSpaceOnUse">
-        <rect width="6" height="6" fill={COLOURS[3]}></rect>
+        <rect width="6" height="6" fill={COLORS[3]}></rect>
         <circle cx="3" cy="3" r="1.4" fill="var(--surface)"></circle>
       </pattern>
     </defs>
@@ -204,7 +204,7 @@ const summary =
       <li>
         <span
           class="swatch"
-          style={`background: ${COLOURS[index % COLOURS.length]}`}
+          style={`background: ${COLORS[index % COLORS.length]}`}
           aria-hidden="true"
         />
         {condition.label}

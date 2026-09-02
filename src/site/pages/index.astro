@@ -75,8 +75,8 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
 ---
 
 <Base
-  title="Is a hot dog a sandwich?"
-  description="The largest AI models, one question, every week. Watch them answer in real time, then tell them the answer and see who changes their mind. An En Dash research programme."
+  title="HOTDOG BENCHMARK"
+  description="The largest AI models, one question, every week. Watch them answer in real time, then tell them the answer and see who changes their mind. An En Dash research program."
   bareTitle
 >
   {
@@ -190,7 +190,7 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
                 <a class="tile" href={routes.report(q.id)}>
                   <span class="tile-number tabular">0{index + 1}</span>
                   <span class="tile-title">{q.subject.replace(/^an? /, '')}</span>
-                  <span class="tile-sub">{q.reportTitle}</span>
+                  <span class="tile-sub">{q.tagline ?? q.reportTitle}</span>
                   <span class="tile-cta">Read the report →</span>
                 </a>
               </li>

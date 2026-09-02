@@ -169,7 +169,7 @@ export function enabledConditions(registry: ConditionsRegistry): ConditionEntry[
  * Fill a template's `{subject}` placeholder for one question.
  *
  * The subject is stored lowercase ("a hot dog") so it drops into a sentence;
- * when the placeholder opens the template the first letter is capitalised so
+ * when the placeholder opens the template the first letter is capitalized so
  * "{subject} is a sandwich." renders as "A hot dog is a sandwich." rather than
  * starting a system prompt with a lowercase article.
  */

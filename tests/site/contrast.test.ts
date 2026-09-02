@@ -42,7 +42,7 @@ function toRgb(hex: string): [number, number, number] {
           .map((c) => c + c)
           .join('')
       : clean
-  if (!/^[0-9a-f]{6}$/i.test(full)) throw new Error(`not a hex colour: "${hex}"`)
+  if (!/^[0-9a-f]{6}$/i.test(full)) throw new Error(`not a hex color: "${hex}"`)
   return [
     parseInt(full.slice(0, 2), 16),
     parseInt(full.slice(2, 4), 16),
@@ -79,7 +79,7 @@ function toLab(hex: string): [number, number, number] {
   return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))]
 }
 
-/** CIE76 colour difference. Roughly: below 20 two swatches read as the same family. */
+/** CIE76 color difference. Roughly: below 20 two swatches read as the same family. */
 function deltaE(a: string, b: string): number {
   const [l1, a1, b1] = toLab(a)
   const [l2, a2, b2] = toLab(b)
@@ -173,7 +173,7 @@ describe('the categorical chart palette', () => {
 
   it.each(THEMES)('$name keeps every pair of series perceptually distinct', ({ tokens }) => {
     // Measured as CIE76 dE in Lab space, not as a luminance contrast ratio.
-    // Two colours can differ wildly in hue while sharing a luminance — a navy
+    // Two colors can differ wildly in hue while sharing a luminance — a navy
     // and an ochre of the same lightness are obviously different to look at
     // and score about 1.07:1 on contrast. Contrast is the right tool for
     // foreground-on-background legibility and the wrong one for telling two
@@ -223,7 +223,7 @@ describe('the token file', () => {
     expect(css).toContain(":root[data-theme='dark']")
   })
 
-  it('contains no colour value that failed to parse', () => {
+  it('contains no color value that failed to parse', () => {
     // A typo in a hex value fails silently in CSS: the declaration is dropped
     // and the token falls back, which is easy to miss in review.
     for (const [name, value] of Object.entries({ ...light, ...dark })) {

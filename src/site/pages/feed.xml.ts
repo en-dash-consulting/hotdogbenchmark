@@ -43,7 +43,7 @@ export const GET: APIRoute = ({ site }) => {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     '  <channel>',
-    '    <title>Sandwich Classification Benchmark</title>',
+    '    <title>HOTDOG BENCHMARK</title>',
     `    <link>${escape(url(''))}</link>`,
     '    <description>Weekly cross-vendor evaluation of contested sandwich classification.</description>',
     '    <language>en</language>',

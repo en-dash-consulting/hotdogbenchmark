@@ -40,7 +40,7 @@ function instantPolicy(recorded: number[] = []) {
     sleep: async (ms: number) => {
       recorded.push(ms)
     },
-    random: () => 0.5, // centre of the jitter band, so delays are deterministic
+    random: () => 0.5, // center of the jitter band, so delays are deterministic
     recorded,
   }
 }
@@ -82,10 +82,10 @@ describe('backoffDelay', () => {
   const policy = { ...DEFAULT_RETRY_POLICY }
 
   it('doubles with each attempt', () => {
-    const centre = () => 0.5
-    expect(backoffDelay(1, policy, centre)).toBe(500)
-    expect(backoffDelay(2, policy, centre)).toBe(1000)
-    expect(backoffDelay(3, policy, centre)).toBe(2000)
+    const center = () => 0.5
+    expect(backoffDelay(1, policy, center)).toBe(500)
+    expect(backoffDelay(2, policy, center)).toBe(1000)
+    expect(backoffDelay(3, policy, center)).toBe(2000)
   })
 
   it('applies jitter symmetrically around the computed delay', () => {
@@ -132,7 +132,7 @@ describe('fetchWithPolicy on success', () => {
   })
 })
 
-describe('fetchWithPolicy retry behaviour', () => {
+describe('fetchWithPolicy retry behavior', () => {
   it('retries a 429 with growing delays and then succeeds', async () => {
     const { sleep, random, recorded } = instantPolicy()
     const fetch = scriptedFetch([status(429), status(429), ok()])
@@ -151,7 +151,7 @@ describe('fetchWithPolicy retry behaviour', () => {
     expect(fetch.calls.length).toBe(2)
   })
 
-  it('honours Retry-After in preference to computed backoff', async () => {
+  it('honors Retry-After in preference to computed backoff', async () => {
     const { sleep, random, recorded } = instantPolicy()
     const fetch = scriptedFetch([status(429, '', { 'retry-after': '7' }), ok()])
     await fetchWithPolicy(URL_UNDER_TEST, {}, { fetch }, { sleep, random })

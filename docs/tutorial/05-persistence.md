@@ -49,7 +49,7 @@ comparison section, because there is nothing to compare. That is the payoff.
 
 `data/runs/2026-W36.json`, not `data/runs/1788298852.json`.
 
-The consequence is that **re-running a week overwrites it**. That is the behaviour you want: when
+The consequence is that **re-running a week overwrites it**. That is the behavior you want: when
 a provider outage ruins Monday's run, you re-run on Tuesday and the edition is corrected rather
 than duplicated. With timestamped filenames you get two files for one week and every downstream
 consumer has to decide which is real.

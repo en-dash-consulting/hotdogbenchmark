@@ -35,7 +35,8 @@ describe('the committed questions.json', () => {
 
   it('gives every question a deadpan report title', () => {
     for (const question of loadQuestions()) {
-      expect(question.reportTitle).toMatch(/^Sandwich Classification Benchmark: /)
+      expect(question.reportTitle).not.toMatch(/Sandwich Classification Benchmark/)
+      expect(question.tagline?.length ?? 0).toBeGreaterThan(0)
     }
   })
 })

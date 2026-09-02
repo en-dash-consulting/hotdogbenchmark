@@ -33,7 +33,7 @@
       "supportsStreaming": true,
       "supportsUsage": true,
       "enabled": true,
-      "notes": "Id read from the live GET /v1/models listing on 2026-09-01. The $2/$10 launch price became the standard price; the scheduled rise to $3/$15 was cancelled."
+      "notes": "Id read from the live GET /v1/models listing on 2026-09-01. The $2/$10 launch price became the standard price; the scheduled rise to $3/$15 was canceled."
     },
     {
       "provider": "anthropic",

@@ -67,8 +67,8 @@ export function scaleLinear(
   return range.start + t * (range.end - range.start)
 }
 
-/** Evenly spaced band centres, for categorical axes like weeks. */
-export function bandCentres(count: number, start: number, end: number): number[] {
+/** Evenly spaced band centers, for categorical axes like weeks. */
+export function bandCenters(count: number, start: number, end: number): number[] {
   if (count <= 0) return []
   if (count === 1) return [(start + end) / 2]
   const step = (end - start) / count
@@ -116,15 +116,15 @@ export function polygonPath(points: Array<{ x: number; y: number }>): string {
 
 /** A point on a circle, for radar axes. Angle 0 is straight up. */
 export function polarPoint(
-  centre: { x: number; y: number },
+  center: { x: number; y: number },
   radius: number,
   index: number,
   total: number,
 ): { x: number; y: number } {
   const angle = (index / total) * Math.PI * 2 - Math.PI / 2
   return {
-    x: round(centre.x + Math.cos(angle) * radius),
-    y: round(centre.y + Math.sin(angle) * radius),
+    x: round(center.x + Math.cos(angle) * radius),
+    y: round(center.y + Math.sin(angle) * radius),
   }
 }
 

@@ -7,12 +7,9 @@ import { routes } from '../../lib/urls.ts'
 const runs = getAllRuns()
 ---
 
-<Base
-  title="All editions"
-  description="Every published edition of the Sandwich Classification Benchmark."
->
-  <h1>All editions</h1>
-  <p class="muted">Every edition published, newest first. Editions are never revised.</p>
+<Base title="Every edition" description="Every published edition of the Hotdog Benchmark.">
+  <h1>Every week, asked again.</h1>
+  <p class="muted">Newest first. An edition is never revised after it is published.</p>
 
   {
     runs.length === 0 ? (

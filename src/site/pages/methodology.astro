@@ -27,7 +27,7 @@ const exampleQuestion = questions[0]
 
 <Base
   title="Methodology and caveats"
-  description="How the Sandwich Classification Benchmark is conducted, what it measures, and what it does not."
+  description="How the Hotdog Benchmark is conducted, what it measures, and what it does not."
 >
   <div class="prose">
     <h1>Methodology and caveats</h1>
@@ -66,9 +66,11 @@ const exampleQuestion = questions[0]
 
     <p>
       Under the control condition each model receives the question as a single user message with no
-      system prompt. Maximum output is capped at {DEFAULT_MAX_OUTPUT_TOKENS} tokens — enough for a model
-      to demonstrate that it is ignoring the instruction, and bounded enough that doing so costs a known
-      amount.
+      system prompt. Generation is capped at {DEFAULT_MAX_OUTPUT_TOKENS} output tokens, and the cap includes
+      any reasoning tokens a model spends before it answers. It is far more than one word: a model that
+      disregards <q>One word answer.</q> and writes a paragraph is allowed to, because that disregard
+      is itself a measurement, but it can only run up a known bill doing so. The cap never changes which
+      word a model chooses.
     </p>
 
     <p>
@@ -169,7 +171,7 @@ const exampleQuestion = questions[0]
     <p>
       Aggregates are <strong>medians, not means</strong>. With three samples, one cold start or one
       retried request drags a mean somewhere unrepresentative, and the report would then be
-      describing an artefact of the collection rather than the model.
+      describing an artifact of the collection rather than the model.
     </p>
 
     <p>
@@ -205,7 +207,7 @@ const exampleQuestion = questions[0]
     <h2 id="verdicts">5. How answers are classified</h2>
 
     <p>
-      An answer is normalised — trimmed, stripped of surrounding quotes, markdown emphasis and
+      An answer is normalized — trimmed, stripped of surrounding quotes, markdown emphasis and
       trailing punctuation, lowercased — and then classified. <strong
         >Only a single-word answer receives a yes or no verdict.</strong
       > Anything longer is recorded as non-committal, including <q>Yes, but…</q>, because a model
@@ -238,7 +240,7 @@ const exampleQuestion = questions[0]
         </ul>
       </div>
       <div>
-        <h3>Recognised hedges</h3>
+        <h3>Recognized hedges</h3>
         <ul class="word-list">
           {
             HEDGE_WORDS.map((word) => (
@@ -304,7 +306,7 @@ const exampleQuestion = questions[0]
     <h2 id="tokens">8. Token counts are not comparable across vendors</h2>
 
     <p>
-      Three independent reasons, each sufficient on its own: every vendor tokenises differently;
+      Three independent reasons, each sufficient on its own: every vendor tokenizes differently;
       vendors disagree about whether reasoning tokens are counted inside output tokens; and vendors
       report prompt-cache hits differently. A live measurement in this repository found one vendor
       reporting a total of 1,295 tokens for a call whose prompt and completion summed to 648 — the
@@ -347,7 +349,7 @@ const exampleQuestion = questions[0]
 
     <p>
       This project exists to demonstrate how a cross-provider benchmark is built: the adapter layer,
-      usage normalisation, latency measurement, sampling, versioned data, scheduled collection, and
+      usage normalization, latency measurement, sampling, versioned data, scheduled collection, and
       honest presentation. Those parts are sincere. The subject matter is a vehicle for them.
     </p>
 

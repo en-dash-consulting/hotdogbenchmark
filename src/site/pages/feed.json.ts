@@ -41,7 +41,7 @@ export const GET: APIRoute = ({ site }) => {
     JSON.stringify(
       {
         version: 'https://jsonfeed.org/version/1.1',
-        title: 'Sandwich Classification Benchmark',
+        title: 'HOTDOG BENCHMARK',
         home_page_url: url(''),
         feed_url: url('feed.json'),
         description: 'Weekly cross-vendor evaluation of contested sandwich classification.',

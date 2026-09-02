@@ -169,7 +169,7 @@ The whole pipeline, end to end, with sample data.
 - Pull-request CI referencing no secrets: format, lint, typecheck, tests, a
   keyless benchmark run, data validation, site build, axe accessibility checks,
   Lighthouse budgets, and a browser-bundle test.
-- Failure policy opening labelled issues for a failed run or a provider that
+- Failure policy opening labeled issues for a failed run or a provider that
   has failed three consecutive editions.
 
 **Deferred feature, behind a flag**

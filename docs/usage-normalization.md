@@ -22,7 +22,7 @@ difference on a fifteen-token prompt is seven percent.
 word "No" can therefore report output token counts that differ by a factor of a hundred, with
 neither one wrong. The per-provider table below has a column for exactly this.
 
-**Different caching behaviour.** This benchmark sends the same short prompt repeatedly, so prompt
+**Different caching behavior.** This benchmark sends the same short prompt repeatedly, so prompt
 caches hit often. A vendor that reports cached input tokens separately will show a lower
 `inputTokens` than one that folds them in, for identical work at a lower price.
 

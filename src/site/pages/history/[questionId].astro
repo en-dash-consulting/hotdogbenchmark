@@ -31,10 +31,11 @@ const singleEdition = runs.length < 2
 ---
 
 <Base
-  title={`History — ${question.reportTitle}`}
-  description={`Verdict share and per-model trends for: ${question.text}`}
+  title={`${question.reportTitle}, week by week`}
+  description={`How every model's answer to "${question.text}" has moved across editions.`}
 >
-  <h1>History: {question.reportTitle}</h1>
+  <h1>{question.reportTitle}, week by week</h1>
+  {question.tagline && <p class="lede">{question.tagline}</p>}
 
   <nav class="question-switch" aria-label="Question">
     {
@@ -85,7 +86,7 @@ const singleEdition = runs.length < 2
                 points={series.points}
                 label={series.displayName}
                 format={(value) => formatInteger(value)}
-                colour="var(--chart-2)"
+                color="var(--chart-2)"
               />
             ))}
           </div>
@@ -140,6 +141,14 @@ const singleEdition = runs.length < 2
 </Base>
 
 <style>
+  .lede {
+    font-family: var(--font-text);
+    font-style: italic;
+    color: var(--muted);
+    margin-top: calc(-1 * var(--space-2xs));
+    margin-bottom: var(--space-m);
+  }
+
   .question-switch {
     display: flex;
     flex-wrap: wrap;

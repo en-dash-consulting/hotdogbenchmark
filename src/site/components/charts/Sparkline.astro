@@ -18,10 +18,10 @@ interface Props {
   label: string
   /** Renders the value, e.g. "834 ms". */
   format: (value: number) => string
-  colour?: string
+  color?: string
 }
 
-const { points, label, format, colour = 'var(--chart-1)' } = Astro.props
+const { points, label, format, color = 'var(--chart-1)' } = Astro.props
 
 const BOX = { width: 200, height: 44, padding: { top: 4, right: 4, bottom: 4, left: 4 } }
 const area = plotArea(BOX)
@@ -85,8 +85,8 @@ const summary =
         role="img"
         aria-label={summary}
       >
-        <path d={path} fill="none" stroke={colour} stroke-width="1.5" stroke-linejoin="round" />
-        {last && <circle cx={last.x} cy={last.y} r="2.5" fill={colour} />}
+        <path d={path} fill="none" stroke={color} stroke-width="1.5" stroke-linejoin="round" />
+        {last && <circle cx={last.x} cy={last.y} r="2.5" fill={color} />}
       </svg>
     ) : (
       <p class="sparkline-empty">No data</p>

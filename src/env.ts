@@ -39,7 +39,7 @@ export interface ProviderCredentialStatus {
  *
  * Only for local development. CI supplies secrets as real environment variables,
  * so this is skipped when `CI` is set — a `.env` file in CI would be a mistake
- * worth failing loudly over rather than silently honouring.
+ * worth failing loudly over rather than silently honoring.
  */
 export function loadLocalEnv(cwd: string = process.cwd()): boolean {
   if (process.env.CI) return false

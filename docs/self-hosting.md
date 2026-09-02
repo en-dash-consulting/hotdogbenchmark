@@ -17,7 +17,7 @@ Use the **Fork** button on GitHub. Everything below happens in your fork.
 
 If you would rather not publish under your own name, that is fine — nothing in the pipeline
 depends on the repository being public _except_ GitHub Pages on a free plan. Private repositories
-need GitHub Pro or an organisation plan to publish Pages.
+need GitHub Pro or an organization plan to publish Pages.
 
 ## 2. Enable GitHub Pages
 
@@ -65,7 +65,7 @@ It takes a couple of minutes. When it finishes:
 
 - Open the run and read the **step summary** — the yes/no/other tally and a per-model table.
 - Check that a commit appeared on `main` adding `data/runs/<iso-week>.json`.
-- The **Deploy site** workflow should start on its own immediately afterwards.
+- The **Deploy site** workflow should start on its own immediately afterward.
 
 When the deploy finishes, your site is at `https://<your-username>.github.io/<repo-name>/`.
 
@@ -129,7 +129,7 @@ This is the point of the project. Edit `questions.json`:
   "id": "grilled-cheese",
   "subject": "a grilled cheese",
   "text": "Is a grilled cheese a sandwich? One word answer.",
-  "reportTitle": "Sandwich Classification Benchmark: Grilled Cheese Edition",
+  "reportTitle": "The Grilled Cheese Question",
   "enabled": true
 }
 ```
@@ -191,19 +191,19 @@ and listed in the table above.
 
 The `workflow_run` trigger only fires for workflow files that exist **on the default branch**. On
 a fresh fork it will not fire until the workflows have landed on your `main` at least once. Run
-the deploy manually the first time (**Actions → Deploy site → Run workflow**); afterwards it
+the deploy manually the first time (**Actions → Deploy site → Run workflow**); afterward it
 chains automatically.
 
 ### The benchmark job fails entirely
 
 Exit code 1 means _every_ model failed, which is systemic rather than one provider having a bad
-day. The workflow opens an issue labelled `benchmark-failure` with a link to the run. Usual
+day. The workflow opens an issue labeled `benchmark-failure` with a link to the run. Usual
 causes, in order: no secrets set at all, an expired key, or a provider changing its wire format —
 in which case that adapter's tests will be failing too.
 
 ### One provider fails every week
 
-After three consecutive editions the workflow opens an issue labelled `provider-degraded`. Either
+After three consecutive editions the workflow opens an issue labeled `provider-degraded`. Either
 fix the key or set `"enabled": false` for that model. Leaving it enabled publishes a permanent
 outage in your report, which is worse than not asking.
 

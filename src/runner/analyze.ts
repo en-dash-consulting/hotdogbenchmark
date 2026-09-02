@@ -22,7 +22,7 @@
 /**
  * Answers counted as "yes".
  *
- * Deliberately short. Every addition is a judgement call that moves numbers on
+ * Deliberately short. Every addition is a judgment call that moves numbers on
  * a published chart, so the bar is "a reasonable person would call this a yes
  * with no further context".
  */
@@ -141,7 +141,7 @@ function verdictFor(words: string[]): Verdict {
   return 'other'
 }
 
-/** Whether a normalized answer contains a recognised hedge. For the methodology page. */
+/** Whether a normalized answer contains a recognized hedge. For the methodology page. */
 export function containsHedge(normalized: string): boolean {
   const words = normalized.split(' ')
   return words.some((word) => HEDGE_WORDS.includes(word))

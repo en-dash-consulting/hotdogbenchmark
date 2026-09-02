@@ -13,7 +13,7 @@ sat down with a screen reader" is not much of a checklist.
 | Area                                             | Verified by                                                         | Status              |
 | ------------------------------------------------ | ------------------------------------------------------------------- | ------------------- |
 | WCAG rule violations                             | `npm run test:a11y` (axe-core, both themes, every page)             | ✅ Automated, in CI |
-| Colour contrast                                  | `tests/site/contrast.test.ts` (computed ratios over the token file) | ✅ Automated, in CI |
+| Color contrast                                   | `tests/site/contrast.test.ts` (computed ratios over the token file) | ✅ Automated, in CI |
 | Keyboard reachability and focus visibility       | `npm run test:audit`                                                | ✅ Automated        |
 | Heading outline                                  | `npm run test:audit`                                                | ✅ Automated        |
 | 320 px reflow and 200% zoom                      | `npm run test:audit`                                                | ✅ Automated        |
@@ -31,7 +31,7 @@ Tooling: axe-core 4.x via `@axe-core/playwright`, Chromium via Playwright 1.62.
 ### axe-core — zero violations
 
 `npm run test:a11y` serves `dist/` and runs axe over **every** built page in **both** light and
-dark colour schemes, with tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`.
+dark color schemes, with tags `wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`.
 
 Result: **0 violations across 34 page checks** (17 pages × 2 themes).
 
@@ -78,7 +78,7 @@ will not pretend otherwise:
 - [ ] **Reading order.** Does a vendor profile read sensibly — vendor, model, verdict, answer,
       metrics — to somebody who cannot see the card layout?
 - [ ] **Chart summaries.** Every chart has an `aria-label` stating the finding in words. Are those
-      sentences actually useful, or do they merely exist? This is a judgement call and axe will
+      sentences actually useful, or do they merely exist? This is a judgment call and axe will
       always pass them.
 - [ ] **Table navigation.** Do the results table and leaderboard navigate cell-by-cell correctly
       with row and column headers announced? Are the `aria-sort` changes announced when a column is
@@ -93,7 +93,7 @@ will not pretend otherwise:
       index. Is it clear which edition each refers to when read out of context?
 
 Recommended: VoiceOver on macOS with Safari as a minimum, ideally plus NVDA on Windows with Firefox,
-since the two disagree about table and live-region behaviour often enough to matter.
+since the two disagree about table and live-region behavior often enough to matter.
 
 When this is done, replace this section with the findings, the date, the screen reader and browser
 versions, and either fix what was found or link the issues.
@@ -104,7 +104,7 @@ versions, and either fix what was found or link the issues.
 
 Recorded here because they constrain future changes, and someone will otherwise undo them.
 
-**Nothing is encoded by colour alone.** Verdicts carry a glyph and a word as well as a colour.
+**Nothing is encoded by color alone.** Verdicts carry a glyph and a word as well as a color.
 Chart series carry hatch patterns and direct labels. Rank movement carries an arrow and a word.
 This is WCAG 1.4.1, and it is also what makes the site legible in forced-colors mode.
 

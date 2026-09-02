@@ -3,12 +3,12 @@
  * Verdict share per edition, as a stacked bar.
  *
  * Each segment carries a **direct label** when it is tall enough to hold one,
- * and every segment is additionally distinguished by a hatch pattern. Colour is
+ * and every segment is additionally distinguished by a hatch pattern. Color is
  * never the only encoding: that fails WCAG 1.4.1, and it disappears entirely in
  * forced-colors mode where the patterns still read.
  */
 import ChartFrame from './ChartFrame.astro'
-import { bandCentres, bandWidth, plotArea, round } from '../../lib/scale.ts'
+import { bandCenters, bandWidth, plotArea, round } from '../../lib/scale.ts'
 import { formatEdition } from '../../lib/format.ts'
 import type { Verdict } from '../../../schema/run.ts'
 
@@ -28,13 +28,13 @@ const { points, title, caption } = Astro.props
 const BOX = { width: 720, height: 260, padding: { top: 16, right: 16, bottom: 44, left: 44 } }
 const area = plotArea(BOX)
 
-const SERIES: Array<{ key: Verdict; label: string; colour: string; pattern: string }> = [
-  { key: 'yes', label: 'Affirmative', colour: 'var(--chart-1)', pattern: 'pattern-yes' },
-  { key: 'no', label: 'Negative', colour: 'var(--chart-2)', pattern: 'pattern-no' },
-  { key: 'other', label: 'Non-committal', colour: 'var(--chart-3)', pattern: 'pattern-other' },
+const SERIES: Array<{ key: Verdict; label: string; color: string; pattern: string }> = [
+  { key: 'yes', label: 'Affirmative', color: 'var(--chart-1)', pattern: 'pattern-yes' },
+  { key: 'no', label: 'Negative', color: 'var(--chart-2)', pattern: 'pattern-no' },
+  { key: 'other', label: 'Non-committal', color: 'var(--chart-3)', pattern: 'pattern-other' },
 ]
 
-const centres = bandCentres(points.length, area.x, area.x + area.width)
+const centers = bandCenters(points.length, area.x, area.x + area.width)
 const width = bandWidth(points.length, area.x, area.x + area.width, 0.35)
 
 const bars = points.map((point, index) => {
@@ -51,7 +51,7 @@ const bars = points.map((point, index) => {
   return {
     isoWeek: point.isoWeek,
     total,
-    x: round(centres[index]! - width / 2),
+    x: round(centers[index]! - width / 2),
     segments,
   }
 })
@@ -67,7 +67,7 @@ const summary =
 <ChartFrame title={title} summary={summary} caption={caption}>
   <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} width={BOX.width} height={BOX.height}>
     <defs>
-      {/* Patterns, so the series stay distinguishable without colour. */}
+      {/* Patterns, so the series stay distinguishable without color. */}
       <pattern id="pattern-yes" width="6" height="6" patternUnits="userSpaceOnUse">
         <rect width="6" height="6" fill="var(--chart-1)"></rect>
       </pattern>
@@ -178,7 +178,7 @@ const summary =
   {
     SERIES.map((series) => (
       <li>
-        <span class="swatch" style={`background: ${series.colour}`} aria-hidden="true" />
+        <span class="swatch" style={`background: ${series.color}`} aria-hidden="true" />
         {series.label}
       </li>
     ))

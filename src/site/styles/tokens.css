@@ -1,11 +1,11 @@
 /*
- * Design tokens for the Sandwich Classification Benchmark.
+ * Design tokens for the Hotdog Benchmark.
  *
- * An En Dash Consulting research programme, so it wears the En Dash brand:
+ * An En Dash Consulting research program, so it wears the En Dash brand:
  * navy, electric teal, a purple secondary, Montserrat for headings and UI,
  * Merriweather for editorial prose. The words stay deadpan — a straight-faced
  * analyst report — but the experience should not: a giant question, answers
- * that land in their real recorded time, and colour where the data has a
+ * that land in their real recorded time, and color where the data has a
  * verdict in it. Teal says yes, orange says no, purple hedges.
  *
  * Every semantic pair below meets WCAG 2.2 AA in both themes — 4.5:1 for body
@@ -55,7 +55,7 @@
   --on-primary: var(--white);
   --focus: #7c5cff;
 
-  /* Verdicts. Always paired with a glyph and a word — never colour alone. */
+  /* Verdicts. Always paired with a glyph and a word — never color alone. */
   --verdict-yes: var(--teal-ink);
   --verdict-yes-bg: var(--teal-tint);
   --verdict-no: var(--orange-ink);
@@ -69,7 +69,7 @@
    * Categorical chart palette.
    *
    * Six series, distinguishable in both themes and under the common forms of
-   * colour blindness. Charts still never rely on hue alone: every series
+   * color blindness. Charts still never rely on hue alone: every series
    * carries a direct label or a pattern as well.
    */
   --chart-1: #001769;

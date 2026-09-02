@@ -84,7 +84,7 @@ function card({ title, edition, verdict, detail }) {
     .verdict-detail { font-size: 24px; color: #4d5768; margin-top: 6px; }
   </style></head><body>
     <div>
-      <p class="kicker">Sandwich Classification Benchmark</p>
+      <p class="kicker">Hotdog Benchmark</p>
       <div class="rule"></div>
       <h1>${title}</h1>
     </div>

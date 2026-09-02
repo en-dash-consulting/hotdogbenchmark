@@ -91,7 +91,7 @@ the run records each enabled condition as it stood that week.
 | `temperature`  | number | **yes**  | Sampling temperature requested, or null to leave the vendor default. The control's is always null.          |
 
 Templates may contain `{subject}`, replaced with the question's subject (`a hot dog`) and
-capitalised when it opens the template — so one `asserted` arm says "A hot dog is a sandwich."
+capitalized when it opens the template — so one `asserted` arm says "A hot dog is a sandwich."
 to the hot dog question and "A taco is a sandwich." to the taco question.
 
 ## `QuestionResult`
@@ -193,14 +193,14 @@ Every statistic is a `{ median, min, max }` object, or null when it cannot be co
 
 ### Error categories
 
-| Category       | Meaning                                          | Retried?                                   |
-| -------------- | ------------------------------------------------ | ------------------------------------------ |
-| `auth`         | Bad or missing credentials                       | No — retrying will not find a key          |
-| `rate_limit`   | Rate limited (429)                               | Yes, with backoff, honouring `Retry-After` |
-| `timeout`      | Exceeded the per-request timeout and was aborted | Yes                                        |
-| `server`       | 5xx from the provider                            | Yes                                        |
-| `bad_response` | A 2xx whose body could not be interpreted        | No — retrying gets the same body           |
-| `unknown`      | Anything else, including network failures        | No                                         |
+| Category       | Meaning                                          | Retried?                                  |
+| -------------- | ------------------------------------------------ | ----------------------------------------- |
+| `auth`         | Bad or missing credentials                       | No — retrying will not find a key         |
+| `rate_limit`   | Rate limited (429)                               | Yes, with backoff, honoring `Retry-After` |
+| `timeout`      | Exceeded the per-request timeout and was aborted | Yes                                       |
+| `server`       | 5xx from the provider                            | Yes                                       |
+| `bad_response` | A 2xx whose body could not be interpreted        | No — retrying gets the same body          |
+| `unknown`      | Anything else, including network failures        | No                                        |
 
 ## An example
 

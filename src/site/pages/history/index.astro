@@ -8,20 +8,17 @@ const questions = getQuestions()
 
 <Base
   title="History"
-  description="Verdict share, latency and token trends across every published edition."
+  description="Do the models change their minds? Verdicts, latency and tokens across every edition."
 >
-  <h1>History and trends</h1>
-  <p class="lede">
-    Longitudinal analysis for each research question. Select a question to view verdict share over
-    time, per-model trends, and recorded position changes.
-  </p>
+  <h1>Do they change their minds?</h1>
+  <p class="lede">Every edition, every question, every model. Pick a question.</p>
 
   <ul class="question-list">
     {
       questions.map((question) => (
         <li>
           <a href={routes.historyForQuestion(question.id)}>{question.reportTitle}</a>
-          <p class="muted">{question.text}</p>
+          <p class="muted">{question.tagline ?? question.text}</p>
         </li>
       ))
     }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { MIGRATED_CONTROL_CONDITION } from '../../src/data/migrate.ts'
 import {
-  bandCentres,
+  bandCenters,
   bandWidth,
   boundsOf,
   linePath,
@@ -87,16 +87,16 @@ describe('plotArea', () => {
 })
 
 describe('band helpers', () => {
-  it('spaces band centres evenly', () => {
-    expect(bandCentres(2, 0, 100)).toEqual([25, 75])
+  it('spaces band centers evenly', () => {
+    expect(bandCenters(2, 0, 100)).toEqual([25, 75])
   })
 
-  it('centres a single band', () => {
-    expect(bandCentres(1, 0, 100)).toEqual([50])
+  it('centers a single band', () => {
+    expect(bandCenters(1, 0, 100)).toEqual([50])
   })
 
   it('returns nothing for zero bands', () => {
-    expect(bandCentres(0, 0, 100)).toEqual([])
+    expect(bandCenters(0, 0, 100)).toEqual([])
     expect(bandWidth(0, 0, 100)).toBe(0)
   })
 

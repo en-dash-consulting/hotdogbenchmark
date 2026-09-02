@@ -60,7 +60,7 @@ describe('run file paths', () => {
     expect(runPathFor('2026-W36')).toBe('data/runs/2026-W36.json')
   })
 
-  it('recognises a run filename and ignores anything else', () => {
+  it('recognizes a run filename and ignores anything else', () => {
     expect(isoWeekFromFilename('2026-W36.json')).toBe('2026-W36')
     expect(isoWeekFromFilename('README.md')).toBeNull()
     expect(isoWeekFromFilename('2026-W36.json.bak')).toBeNull()

@@ -9,7 +9,7 @@
  * ## Redaction
  *
  * A recorded fixture is committed to a public repository, so nothing that could
- * be key material may reach it. Two defences:
+ * be key material may reach it. Two defenses:
  *
  *   1. Only specific fields are copied out of the response — text, token
  *      counts, timings. The vendor's raw payload is never written, so there is
@@ -17,7 +17,7 @@
  *   2. What *is* written is scanned for key-shaped strings before saving, and
  *      the write is refused if anything matches.
  *
- * The first defence is the real one. The second exists because the first
+ * The first defense is the real one. The second exists because the first
  * depends on this file continuing to be careful.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'

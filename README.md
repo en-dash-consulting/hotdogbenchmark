@@ -25,7 +25,7 @@ straight-faced industry analyst report.
 </details>
 
 The models are also asked about a hamburger and a taco, because a benchmark with one question is
-a demo and a benchmark with three is a research programme.
+a demo and a benchmark with three is a research program.
 
 Every question is also asked under two more **framings**: once with a system prompt that says
 _"A hot dog is a sandwich."_ and once with one that says it is not. The report records how far
@@ -33,6 +33,9 @@ each model's answer moved when it was told the answer. That property, suggestibi
 instruction, generalises to every real evaluation; the sandwich question does not.
 
 ---
+
+Planned and built with [n-dx](https://n-dx.dev), En Dash's AI-powered development toolkit. An
+[En Dash Consulting](https://endash.us) research program.
 
 ## This is a teaching project
 
@@ -73,7 +76,7 @@ Open <http://localhost:4321>. That is the whole loop, and it takes about two min
 clone. The site renders the committed edition in `data/runs/`, which is real data; the mock run
 proves the pipeline works on your machine without touching it. Mock mode refuses to overwrite a
 real edition — on a fork with no data yet, drop `--out` and the mock run becomes the site's
-first edition, clearly labelled as sample data.
+first edition, clearly labeled as sample data.
 
 Everything downstream of the network call is real: answer classification, aggregation, cost
 estimation, schema validation, and the site build. Set `BENCH_SEED=1` to make mock timings
@@ -203,7 +206,7 @@ npm install
 
 Beyond the usual: that the pull-request workflow references no secrets, that no file under
 `src/providers` reads `process.env`, that every committed fixture is free of key-shaped strings,
-that regenerating `data/index.json` produces no diff, that every colour pair meets its WCAG
+that regenerating `data/index.json` produces no diff, that every color pair meets its WCAG
 ratio, that no page ships an emoji, and that the client JavaScript budget is not exceeded.
 
 ---
@@ -217,5 +220,5 @@ being weird are all welcome. Participation is governed by the
 ## License
 
 MIT — see [LICENSE](LICENSE). The data under `data/` is published under the same terms; if you
-cite the Sandwich Classification Benchmark in your own work, that is between you and your
+cite the Hotdog Benchmark in your own work, that is between you and your
 conscience.

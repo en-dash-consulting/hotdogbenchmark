@@ -43,7 +43,7 @@ export const modelEntrySchema = z.object({
   modelId: z.string().min(1),
   /** Human label for the report. */
   displayName: z.string().min(1),
-  /** The organisation that made the model, which is not always who serves it. */
+  /** The organization that made the model, which is not always who serves it. */
   vendor: z.string().min(1),
   /** The page `modelId` was verified against. Required — an unverified ID is a guess. */
   docsUrl: z.string().url(),

@@ -17,7 +17,7 @@ import ThemeToggle from '../components/ThemeToggle.astro'
 interface Props {
   title: string
   description: string
-  /** Rendered in the <title> as "<title> — Sandwich Classification Benchmark". */
+  /** Rendered in the <title> as "<title> — HOTDOG BENCHMARK". */
   bareTitle?: boolean
   /** Name of a card under /og/, without the extension. Defaults to the site card. */
   ogImage?: string
@@ -25,7 +25,7 @@ interface Props {
 
 const { title, description, bareTitle = false, ogImage = 'default' } = Astro.props
 
-const SITE_NAME = 'Sandwich Classification Benchmark'
+const SITE_NAME = 'HOTDOG BENCHMARK'
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
@@ -77,7 +77,7 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${title} — Sandwich Classification Benchmark`} />
+    <meta property="og:image:alt" content={`${title} — ${SITE_NAME}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:title" content={fullTitle} />
@@ -131,7 +131,7 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
             height="44"
           />
           <span class="wordmark-name">
-            <span class="wordmark-line">Sandwich Classification</span>
+            <span class="wordmark-line">Hotdog</span>
             <span class="wordmark-line">Benchmark</span>
           </span>
         </a>
@@ -182,11 +182,13 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
             <span aria-hidden="true"> · </span>
             <a href={routes.methodology()}>Methodology</a>
             <span aria-hidden="true"> · </span>
-            <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT licence</a>
+            <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
+            <span aria-hidden="true"> · </span>
+            <a href="https://n-dx.dev">Built with n-dx</a>
           </p>
         </div>
         <p class="footer-note">
-          An <a href="https://endash.us">En Dash Consulting</a> research programme of no consequence whatsoever,
+          An <a href="https://endash.us">En Dash Consulting</a> research program of no consequence whatsoever,
           published weekly. The questions are silly on purpose; the measurement is not. See <a
             href={routes.about()}>About</a
           >.
@@ -285,7 +287,7 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     background: var(--surface-sunken);
   }
 
-  /* The current page is a filled pill, not a colour change alone. */
+  /* The current page is a filled pill, not a color change alone. */
   .nav-list a[aria-current='page'] {
     background: var(--primary);
     color: var(--on-primary);

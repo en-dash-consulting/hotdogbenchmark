@@ -10,7 +10,7 @@
  * tell you whether a chart summary is a useful sentence or whether the reading
  * order makes sense to somebody who cannot see the layout. What it can do is
  * clear the mechanical failures out of the way so a human's time is spent on
- * the judgement calls. `docs/a11y-checklist.md` records which is which.
+ * the judgment calls. `docs/a11y-checklist.md` records which is which.
  *
  * Usage: node scripts/a11y-audit.mjs
  */

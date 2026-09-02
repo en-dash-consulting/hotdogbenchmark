@@ -33,8 +33,10 @@ export const questionEntrySchema = z.object({
     .string()
     .min(1)
     .endsWith(ONE_WORD_SUFFIX, `question text must end with "${ONE_WORD_SUFFIX}"`),
-  /** The deadpan analyst-register title the report page uses. */
+  /** The report page's title. Short, and its own — no two questions share a shape. */
   reportTitle: z.string().min(1),
+  /** One line under the title: what makes this question worth asking. */
+  tagline: z.string().min(1).optional(),
   /** Disabled questions stay in the file (and in the archive) but are not asked. */
   enabled: z.boolean(),
   /** Editorial note, rendered nowhere. Context for whoever reads the registry. */

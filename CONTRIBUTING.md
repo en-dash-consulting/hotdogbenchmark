@@ -93,7 +93,7 @@ implementation; start by reading it.
 
 1. Copy `src/providers/anthropic.ts` to `src/providers/<vendor>.ts`.
 2. Implement `complete()` against the vendor's HTTP API. Use `fetchWithPolicy` from
-   `src/providers/http.ts` for timeout and retry behaviour rather than calling `fetch` directly.
+   `src/providers/http.ts` for timeout and retry behavior rather than calling `fetch` directly.
 3. Map the vendor's usage payload onto the shared `Usage` shape and add your row to
    `docs/usage-normalization.md`, including whether reasoning tokens are counted inside output
    tokens for that vendor.

@@ -9,7 +9,7 @@
  * No `fs`, no `process`, no `node:` imports — enforced by ESLint and by a test
  * that reads the source. Everything external arrives as a parameter: `fetch`,
  * credentials, the clock, the adapter lookup. Persistence happens in the CLI
- * layer afterwards.
+ * layer afterward.
  *
  * That is not architectural purity for its own sake. It is what lets the same
  * function run in a browser for the deferred "run your own benchmark" feature,
@@ -360,7 +360,7 @@ async function takeSample(job: Job, context: JobContext): Promise<Sample> {
 
   const adapter = context.getAdapter(model.provider)
 
-  // A per-request deadline that also honours the caller's overall signal, so
+  // A per-request deadline that also honors the caller's overall signal, so
   // one hung provider cannot hold the whole run open.
   const timeoutController = new AbortController()
   const timer = setTimeout(() => timeoutController.abort(), context.timeoutMs)

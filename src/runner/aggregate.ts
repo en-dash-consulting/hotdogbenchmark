@@ -3,7 +3,7 @@
  *
  * **Medians, not means, throughout.** With three samples, one cold start or one
  * retried request drags a mean somewhere misleading, and the report would then
- * be describing an artefact. The median of three is the middle observation,
+ * be describing an artifact. The median of three is the middle observation,
  * which is what a reader assumes "typical latency" means anyway.
  *
  * Pure functions with no I/O, so the whole of this file is exhaustively

@@ -283,7 +283,7 @@ export function vendorVerdictLine(result: ModelResult, peers: ModelResult[]): st
   const efficient = (scored?.efficiency ?? 0) >= 0.6
 
   if (decisive && efficient) {
-    return 'Commits to a position and returns it promptly. Suitable for buyers prioritising both conviction and throughput.'
+    return 'Commits to a position and returns it promptly. Suitable for buyers prioritizing both conviction and throughput.'
   }
   if (decisive) {
     return 'Commits to a clear position, though response times trail the field. Conviction over speed.'

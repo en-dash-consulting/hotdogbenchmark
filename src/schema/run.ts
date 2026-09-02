@@ -72,7 +72,7 @@ export type Verdict = z.infer<typeof verdictSchema>
 export const errorCategorySchema = z.enum([
   /** Bad or missing credentials. Never retried — retrying will not find a key. */
   'auth',
-  /** Rate limited. Retried with backoff, honouring `Retry-After`. */
+  /** Rate limited. Retried with backoff, honoring `Retry-After`. */
   'rate_limit',
   /** The request exceeded the per-request timeout and was aborted. */
   'timeout',

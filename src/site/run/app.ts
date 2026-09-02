@@ -69,7 +69,7 @@ if (root) {
       identity = response.ok ? ((await response.json()) as Identity) : null
     } catch {
       // The proxy being unreachable is a signed-out state as far as the UI is
-      // concerned; it must not throw and leave the page half-initialised.
+      // concerned; it must not throw and leave the page half-initialized.
       identity = null
     }
 

@@ -143,7 +143,7 @@ describe('toProviderError', () => {
     expect(toProviderError(original)).toBe(original)
   })
 
-  it('recognises an aborted fetch as the timeout the runner asked for', () => {
+  it('recognizes an aborted fetch as the timeout the runner asked for', () => {
     const abort = new Error('The operation was aborted')
     abort.name = 'AbortError'
     const error = toProviderError(abort)

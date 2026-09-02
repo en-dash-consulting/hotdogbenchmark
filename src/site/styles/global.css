@@ -291,7 +291,7 @@ svg {
 
 /*
  * Forced-colors mode replaces the palette entirely. Anything that carried
- * meaning through colour needs a non-colour fallback here.
+ * meaning through color needs a non-color fallback here.
  */
 @media (forced-colors: active) {
   .verdict-badge {

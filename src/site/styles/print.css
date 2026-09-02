@@ -154,7 +154,7 @@
 }
 
 /*
- * Chromium rasterises SVG pattern fills into images when printing, which
+ * Chromium rasterizes SVG pattern fills into images when printing, which
  * would turn the tagged, text-layer PDF into one with embedded bitmaps. In
  * print the sensitivity bars use solid fills and a stroke instead; every bar
  * already carries its arm's name as a direct label, so nothing is lost.

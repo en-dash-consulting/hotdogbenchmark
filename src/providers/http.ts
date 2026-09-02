@@ -155,7 +155,7 @@ export async function fetchWithPolicy(
     // The caller gave up (overall run timeout, Ctrl-C) — stop immediately
     // rather than starting another attempt.
     if (context.signal?.aborted) {
-      throw new ProviderError('timeout', 'Request cancelled before it was sent')
+      throw new ProviderError('timeout', 'Request canceled before it was sent')
     }
 
     const timeoutController = new AbortController()
@@ -183,7 +183,7 @@ export async function fetchWithPolicy(
         throw await httpError(response, logUrl)
       }
       failure = await httpError(response, logUrl)
-      // A retryable status still carries a Retry-After worth honouring.
+      // A retryable status still carries a Retry-After worth honoring.
       const retryAfter = parseRetryAfter(response.headers.get('retry-after'))
       if (attempt < policy.maxRetries) {
         attempt += 1
@@ -194,7 +194,7 @@ export async function fetchWithPolicy(
           delayMs,
           status: response.status,
           url: logUrl,
-          reason: retryAfter === null ? `status ${response.status}` : `Retry-After honoured`,
+          reason: retryAfter === null ? `status ${response.status}` : `Retry-After honored`,
         })
         await sleep(delayMs)
         continue

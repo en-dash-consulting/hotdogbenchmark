@@ -126,7 +126,7 @@ describe('enabledConditions', () => {
 })
 
 describe('renderTemplate', () => {
-  it('substitutes the subject and capitalises a leading article', () => {
+  it('substitutes the subject and capitalizes a leading article', () => {
     expect(renderTemplate('{subject} is a sandwich.', HOT_DOG)).toBe('A hot dog is a sandwich.')
   })
 

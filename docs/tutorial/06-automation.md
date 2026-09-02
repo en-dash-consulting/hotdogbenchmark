@@ -47,7 +47,7 @@ Two failure modes, two responses:
 **Everything failed.** Systemic. The job fails and opens an issue.
 
 **One provider has failed three weeks running.** Nobody noticed, because partial failures are
-tolerated by design. `health.ts` detects it and opens a labelled issue.
+tolerated by design. `health.ts` detects it and opens a labeled issue.
 
 That second check has a subtlety worth stealing: a provider **absent** from an edition breaks the
 failure streak rather than extending it. A provider added two weeks ago did not "fail" the week

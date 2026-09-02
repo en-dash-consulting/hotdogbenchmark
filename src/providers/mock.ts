@@ -147,7 +147,7 @@ export function createMockAdapter(providerId: string, options: MockOptions): Pro
       }
 
       if (context.signal.aborted) {
-        throw new ProviderError('timeout', 'Mock request cancelled')
+        throw new ProviderError('timeout', 'Mock request canceled')
       }
       context.onFirstToken?.()
 

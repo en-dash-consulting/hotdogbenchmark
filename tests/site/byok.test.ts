@@ -9,7 +9,7 @@ import type { BenchmarkRun } from '../../src/schema/run.ts'
 /**
  * The bring-your-own-keys page, checked at the source level.
  *
- * The behaviours that matter here are security properties — where keys are
+ * The behaviors that matter here are security properties — where keys are
  * stored, what is sent where — so they are asserted against the code that
  * implements them rather than only against rendered output.
  */

@@ -5,7 +5,8 @@
       "id": "hot-dog",
       "subject": "a hot dog",
       "text": "Is a hot dog a sandwich? One word answer.",
-      "reportTitle": "Sandwich Classification Benchmark: Hot Dog Edition",
+      "reportTitle": "The Hot Dog Question",
+      "tagline": "Bread on two sides. One piece or two? The question that started all this.",
       "enabled": true,
       "notes": "The founding question. Structurally contested: bread on two sides, but is it one piece of bread or two?"
     },
@@ -13,7 +14,8 @@
       "id": "hamburger",
       "subject": "a hamburger",
       "text": "Is a hamburger a sandwich? One word answer.",
-      "reportTitle": "Sandwich Classification Benchmark: Hamburger Edition",
+      "reportTitle": "The Hamburger Control",
+      "tagline": "Nobody disputes this one. That is exactly why it is here.",
       "enabled": true,
       "notes": "The control question. Expected to be less contested than the hot dog, which makes disagreement here more interesting, not less."
     },
@@ -21,7 +23,8 @@
       "id": "taco",
       "subject": "a taco",
       "text": "Is a taco a sandwich? One word answer.",
-      "reportTitle": "Sandwich Classification Benchmark: Taco Edition",
+      "reportTitle": "The Taco Boundary",
+      "tagline": "The only sandwich question with case law. Massachusetts, 2006.",
       "enabled": true,
       "notes": "The boundary case. A 2006 Massachusetts court ruling on whether a burrito is a sandwich makes this the only question here with case law."
     }

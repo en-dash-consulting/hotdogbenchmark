@@ -16,7 +16,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
 
 <Base
   title="Add a model"
-  description="How to add a model or a whole new provider to the Sandwich Classification Benchmark."
+  description="How to add a model or a whole new provider to the Hotdog Benchmark."
 >
   <div class="prose">
     <h1>Add a model</h1>
@@ -89,7 +89,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
           Use <code>fetchWithPolicy</code> from
           <a href={sourceUrl('src/providers/http.ts')}><code>http.ts</code></a> rather than calling
           <code>fetch</code> directly, so your adapter gets the same timeout, retry and error classification
-          behaviour as every other.
+          behavior as every other.
         </p>
       </li>
       <li>

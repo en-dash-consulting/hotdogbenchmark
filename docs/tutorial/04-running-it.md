@@ -17,7 +17,7 @@ you a majority verdict — three being odd, so a majority exists.
 ## Medians, not means
 
 With three samples, one cold start drags a mean somewhere unrepresentative and your report ends
-up describing an artefact of your collection rather than the model. The median of three is the
+up describing an artifact of your collection rather than the model. The median of three is the
 middle observation, which is what a reader assumes "typical latency" means anyway.
 
 ## Never more than one call in flight per provider
