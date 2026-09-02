@@ -245,13 +245,8 @@ function classifyThrow(cause: unknown, timedOut: boolean, timeoutMs: number): Pr
  */
 async function httpError(response: Response, logUrl: string): Promise<ProviderError> {
   const category = categoryForStatus(response.status)
-  let detail = ''
-  try {
-    const body = await response.text()
-    detail = summarizeErrorBody(body)
-  } catch {
-    detail = ''
-  }
+  // An unreadable body is an empty detail, not a second failure.
+  const detail = await response.text().then(summarizeErrorBody, () => '')
   const message = detail
     ? `${response.status} ${response.statusText || category} from ${logUrl}: ${detail}`
     : `${response.status} ${response.statusText || category} from ${logUrl}`

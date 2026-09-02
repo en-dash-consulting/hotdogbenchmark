@@ -38,7 +38,7 @@ const readJson = async (path, fallback) => {
 
 /** Every committed run, newest first. Non-run files in the directory are skipped. */
 async function loadRuns() {
-  let names = []
+  let names
   try {
     names = await readdir('data/runs')
   } catch {
