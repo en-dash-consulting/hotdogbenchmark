@@ -325,7 +325,7 @@ svg {
   .explorer button,
   .question-switch a,
   .nav-list a,
-  .tile,
+  .handoff,
   .kpi,
   .card {
     border: 2px solid CanvasText;
@@ -345,7 +345,6 @@ svg {
   .question-switch a,
   .theme-toggle,
   .condition-nav a,
-  .tile,
   .tag-reasoning,
   .dot,
   .word,

@@ -43,8 +43,18 @@ const cards = questions.map((question, index) => {
   const consensus = consensusOf(results)
   const scored = scoreModels(results).filter((s) => s.result.samples.length > 0)
   const bySureness = [...scored].sort((a, b) => b.decisiveness - a.decisiveness)
-  const surest = bySureness[0] ?? null
-  const leastSure = bySureness.length > 1 ? (bySureness.at(-1) ?? null) : null
+  // A tie at the top names nobody: "surest" only means something when one
+  // model was surer than the rest.
+  const surest =
+    bySureness.length > 0 &&
+    (bySureness.length === 1 || bySureness[1]!.decisiveness < bySureness[0]!.decisiveness)
+      ? bySureness[0]!
+      : null
+  // Least sure is worth naming whenever one model was less sure than the top.
+  const leastSure =
+    bySureness.length > 1 && bySureness.at(-1)!.decisiveness < bySureness[0]!.decisiveness
+      ? bySureness.at(-1)!
+      : null
   const timed = answering
     .filter((r) => typeof r.aggregate.totalMs?.median === 'number')
     .sort((a, b) => a.aggregate.totalMs!.median - b.aggregate.totalMs!.median)
@@ -76,9 +86,12 @@ const cards = questions.map((question, index) => {
           ? `Told the answer, nobody changed their mind.`
           : `Told the answer, ${nameList(flipped, 3)} changed their ${flipped.length === 1 ? 'mind' : 'minds'}.`,
     surest,
-    leastSure: leastSure && leastSure !== surest ? leastSure : null,
+    leastSure,
     fastest,
-    slowest: slowest && slowest !== fastest ? slowest : null,
+    slowest:
+      slowest && fastest && slowest.aggregate.totalMs!.median > fastest.aggregate.totalMs!.median
+        ? slowest
+        : null,
     framings,
   }
 })
@@ -134,12 +147,13 @@ const cards = questions.map((question, index) => {
                       <dd>{card.minds}</dd>
                     </div>
                   )}
-                  {card.surest && (
+                  {(card.surest || card.leastSure) && (
                     <div>
-                      <dt>Surest</dt>
+                      <dt>{card.surest ? 'Surest' : 'Least sure'}</dt>
                       <dd>
-                        {card.surest.result.displayName}
-                        {card.leastSure && `, least sure ${card.leastSure.result.displayName}`}
+                        {card.surest?.result.displayName}
+                        {card.surest && card.leastSure && ', least sure '}
+                        {card.leastSure?.result.displayName}
                       </dd>
                     </div>
                   )}
@@ -356,9 +370,12 @@ const cards = questions.map((question, index) => {
     text-decoration: none;
   }
 
+  /* The hover inverts to the surface rather than the card color: navy on the
+     purple card would fall to 2.75:1. */
   .issue-cta:hover {
-    background: var(--issue-color, var(--accent-fill));
-    color: #001769;
+    background: var(--surface);
+    color: var(--text-strong);
+    box-shadow: inset 0 0 0 2px var(--text-strong);
   }
 
   .rack-foot {

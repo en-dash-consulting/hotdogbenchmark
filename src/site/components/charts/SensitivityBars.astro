@@ -248,7 +248,12 @@ const summary =
 
   .mark {
     cursor: pointer;
-    outline: none;
+  }
+
+  /* The ring sits on the link itself, where a focus audit and a keyboard user both look. */
+  .mark:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .mark:hover .model-label,
@@ -261,11 +266,6 @@ const summary =
   .mark:focus-visible rect:not(.mark-hit) {
     stroke: var(--text-strong);
     stroke-width: 2;
-  }
-
-  .mark:focus-visible .model-label {
-    outline: 3px solid var(--focus);
-    outline-offset: 3px;
   }
 
   /* The explorer dims everything but the focused vendor. */

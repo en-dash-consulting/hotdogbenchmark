@@ -219,8 +219,9 @@ const cards = [
   }),
 ]
 
-// The reports landing page: every question with its latest verdict.
-if (latest) {
+// The reports landing page: every question with its latest verdict. Rendered
+// even without an edition, because the page always references it.
+{
   cards.push({
     name: 'reports',
     html: card({

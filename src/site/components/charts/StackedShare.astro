@@ -211,7 +211,12 @@ const summary =
 
   .mark {
     cursor: pointer;
-    outline: none;
+  }
+
+  /* The ring sits on the link itself, where a focus audit and a keyboard user both look. */
+  .mark:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .mark:hover rect,

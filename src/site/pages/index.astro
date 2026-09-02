@@ -16,7 +16,7 @@ import {
   hasData,
 } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
-import { questionHeadline } from '../lib/prose.ts'
+import { consensusOf, questionHeadline } from '../lib/prose.ts'
 import { count, faqPageJsonLd, homeDescription, homeTitle } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
@@ -204,40 +204,39 @@ const QUICKSTART = [
         )}
 
         <section class="reports" aria-labelledby="reports-heading">
-          <div class="minds-head">
-            <p class="eyebrow">The full reports</p>
-            <h2 id="reports-heading">One straight-faced analyst report per question.</h2>
-          </div>
-          <div class="handoff">
-            <ul class="handoff-list">
-              {asked.map((q) => {
-                const verdict = agreement.find((a) => a.question.id === q.id)
-                const top = verdict
-                  ? ((['yes', 'no', 'other'] as const).sort(
-                      (a, b) => verdict.counts[b] - verdict.counts[a],
-                    )[0] ?? null)
-                  : null
-                return (
-                  <li>
-                    <span class="handoff-q">{questionHeadline(q)}</span>
-                    <span class="handoff-v">{top ? GLYPH[top] : '—'}</span>
-                  </li>
-                )
-              })}
-            </ul>
-            <div class="handoff-copy">
-              <p>
-                Leaderboards, the certainty quadrant, every verbatim answer under every framing, and
-                a PDF for each. {formatEdition(latest.isoWeek)} edition.
-              </p>
-              <a class="handoff-cta" href={routes.reports()}>
-                Read the {count(asked.length, 'report')} →
-              </a>
-              <a class="handoff-more" href={routes.methodology()}>
-                How it is measured
-              </a>
-            </div>
-          </div>
+          {asked.length > 0 ? (
+            <>
+              <div class="minds-head">
+                <p class="eyebrow">The full reports</p>
+                <h2 id="reports-heading">One straight-faced analyst report per question.</h2>
+              </div>
+              <div class="handoff">
+                <ul class="handoff-list">
+                  {asked.map((q) => {
+                    const verdict = consensusOf(getModelResults(latest, q.id)).verdict
+                    return (
+                      <li>
+                        <span class="handoff-q">{questionHeadline(q)}</span>
+                        <span class="handoff-v">{verdict ? GLYPH[verdict] : '—'}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <div class="handoff-copy">
+                  <p>
+                    Leaderboards, the certainty quadrant, every verbatim answer under every framing,
+                    and a PDF for each. {formatEdition(latest.isoWeek)} edition.
+                  </p>
+                  <a class="handoff-cta" href={routes.reports()}>
+                    Read the {count(asked.length, 'report')} →
+                  </a>
+                  <a class="handoff-more" href={routes.methodology()}>
+                    How it is measured
+                  </a>
+                </div>
+              </div>
+            </>
+          ) : null}
           <div class="fork">
             <div class="fork-copy">
               <p class="eyebrow">Open source</p>

@@ -223,7 +223,12 @@ const summary =
   /* Marks are links: hover or focus grows the dot and underlines the label. */
   .mark {
     cursor: pointer;
-    outline: none;
+  }
+
+  /* The ring sits on the link itself, where a focus audit and a keyboard user both look. */
+  .mark:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .mark-dot {
@@ -241,11 +246,6 @@ const summary =
   .mark:focus-visible .point-label {
     text-decoration: underline;
     font-weight: 700;
-  }
-
-  .mark:focus-visible .mark-dot {
-    outline: 3px solid var(--focus);
-    outline-offset: 3px;
   }
 
   .axis-title {

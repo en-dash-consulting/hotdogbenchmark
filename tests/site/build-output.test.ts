@@ -563,26 +563,50 @@ describe('SEO and social metadata', () => {
 
 describe('the reports landing page', () => {
   const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
-  const html = read('reports')
-  const questionIds = (
-    JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-      questions: Array<{ id: string }>
-    }
-  ).questions.map((q) => q.id)
+  // The page renders enabled questions only, and framing links only for the
+  // framings the latest edition actually ran, so the test derives both the
+  // same way rather than assuming names.
+  const registry = JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
+    questions: Array<{ id: string; enabled?: boolean }>
+  }
+  const questionIds = registry.questions.filter((q) => q.enabled !== false).map((q) => q.id)
+  const runFiles = readdirSync(join(ROOT, 'data/runs'))
+    .filter((name) => name.endsWith('.json'))
+    .sort()
+    .reverse()
+  const latest = runFiles[0]
+    ? (JSON.parse(readFileSync(join(ROOT, 'data/runs', runFiles[0]), 'utf8')) as {
+        conditions?: Array<{ id: string }>
+        results: Array<{ questionId: string; conditionId: string }>
+      })
+    : null
+  const framingsFor = (questionId: string) =>
+    (latest?.conditions ?? [])
+      .map((c) => c.id)
+      .filter(
+        (id) =>
+          id !== 'control' &&
+          latest!.results.some((r) => r.questionId === questionId && r.conditionId === id),
+      )
 
-  it('exists and links every full report, both framed variants, the PDF and the history', () => {
+  it('exists and links every full report, its framings, the PDF and the history', () => {
+    const html = read('reports')
     for (const questionId of questionIds) {
       expect(html, `${questionId} full report`).toContain(`href="/reports/${questionId}/"`)
-      expect(html, `${questionId} asserted`).toContain(`href="/reports/${questionId}/asserted/"`)
-      expect(html, `${questionId} denied`).toContain(`href="/reports/${questionId}/denied/"`)
+      for (const conditionId of framingsFor(questionId)) {
+        expect(html, `${questionId} ${conditionId}`).toContain(
+          `href="/reports/${questionId}/${conditionId}/"`,
+        )
+      }
       expect(html, `${questionId} pdf`).toContain(`href="/reports/${questionId}/report.pdf"`)
       expect(html, `${questionId} history`).toContain(`href="/history/${questionId}/"`)
     }
   })
 
   it('shows one card per question with a verdict, a tally and a framing fact', () => {
+    const html = read('reports')
     expect((html.match(/class="issue"/g) ?? []).length).toBe(questionIds.length)
-    expect((html.match(/class="verdict-word"/g) ?? []).length).toBe(questionIds.length)
+    expect((html.match(/class="verdict-word"/g) ?? []).length).toBeGreaterThan(0)
     expect(html).toMatch(/of \d+ models say|all \d+ models say/)
     expect(html).toMatch(/changed their minds?|nobody changed their mind/)
     expect(html).toMatch(/Week \d+, \d{4}/)

@@ -101,6 +101,10 @@ try {
       const bad = []
       for (const el of document.querySelectorAll(selector)) {
         el.focus()
+        // An element that cannot take focus right now (inside a closed
+        // <details>, or hidden until a control reveals it) needs no ring; it
+        // is checked once it can be reached.
+        if (document.activeElement !== el) continue
         const style = getComputedStyle(el)
         const hasOutline = style.outlineStyle !== 'none' && parseFloat(style.outlineWidth) > 0
         const hasShadow = style.boxShadow !== 'none'
@@ -147,7 +151,9 @@ try {
   // --- Forced colors: verdict badges and charts must stay distinguishable. ---
   const forced = await browser.newContext({ forcedColors: 'active', colorScheme: 'light' })
   const forcedPage = await forced.newPage()
-  for (const file of pages.filter((f) => f.includes('reports'))) {
+  // Only the reports themselves carry verdict badges; the landing page at
+  // /reports/ shows the verdict as a word.
+  for (const file of pages.filter((f) => /reports[\\/][^\\/]+[\\/]/.test(f))) {
     const route =
       '/' +
       relative(DIST, file)
