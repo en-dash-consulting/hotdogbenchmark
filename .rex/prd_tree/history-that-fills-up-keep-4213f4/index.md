@@ -24,6 +24,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [A history page that says something with one edition: spread across samples and models](./a-history-page-that-says-1ef3a2.md) | pending |
+| [A history page that says something with one edition: spread across samples and models](./a-history-page-that-says-1ef3a2.md) | in_progress |
 | [Edition cadence option: weekly by default, daily for forks that want a denser record](./edition-cadence-option-weekly-bfcd69.md) | pending |
 | [Keep every run: superseded editions move aside instead of being deleted](./keep-every-run-superseded-a3313a.md) | completed |
