@@ -118,13 +118,13 @@ The four crawl files are served at the root:
 
 ```sh
 curl -sI https://hotdogbenchmark.lol/robots.txt | head -1
-curl -sI https://hotdogbenchmark.lol/sitemap-index.xml | head -1
+curl -sI https://hotdogbenchmark.lol/sitemap.xml | head -1
 curl -sI https://hotdogbenchmark.lol/llms.txt | head -1
 curl -sI https://hotdogbenchmark.lol/feed.xml | head -1
 ```
 
-Expect `200` on each. `robots.txt` names the sitemap; `sitemap-index.xml` points at
-`sitemap-0.xml`, whose URLs must all begin with `https://hotdogbenchmark.lol/`. If they begin
+Expect `200` on each. `robots.txt` names the sitemap; `sitemap.xml` lists every page with the
+date of the data behind it, and its URLs must all begin with `https://hotdogbenchmark.lol/`. If they begin
 with `https://en-dash-consulting.github.io/`, the build ran without `public/CNAME` and needs to run again.
 
 Finally, open `https://hotdogbenchmark.lol/` in a browser, confirm the padlock, and paste the URL
@@ -150,7 +150,7 @@ references, before compression:
 | A prose page (about, method) | 8–26 KB | 17 KB  | **25–42 KB** |
 | Average across all 25 pages  |         |        | **102 KB**   |
 
-The two web fonts come from Google Fonts and do not count against Pages bandwidth. GitHub serves
+The two web fonts are self-hosted under `/fonts/` (about 135 KB for the two upright files, cached after the first page) and count against Pages bandwidth like everything else. GitHub serves
 everything gzipped, so the bytes on the wire are roughly a fifth of these figures; the numbers
 above are the conservative case.
 

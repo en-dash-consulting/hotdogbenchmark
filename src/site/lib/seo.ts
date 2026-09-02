@@ -373,3 +373,33 @@ export function softwareSourceCodeJsonLd(description: string): object {
     license: 'https://opensource.org/license/mit',
   }
 }
+
+/** A breadcrumb trail, so a result can show where a page sits in the site. */
+export function breadcrumbJsonLd(
+  origin: URL,
+  trail: Array<{ name: string; path: string }>,
+): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: trail.map((crumb, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: crumb.name,
+      item: new URL(crumb.path, origin).href,
+    })),
+  }
+}
+
+/** The site itself, once, on the home page. */
+export function webSiteJsonLd(origin: URL, description: string): object {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'HOTDOG BENCHMARK',
+    url: origin.href,
+    description,
+    inLanguage: 'en',
+    publisher: { '@type': 'Organization', name: 'En Dash Consulting', url: 'https://endash.us' },
+  }
+}

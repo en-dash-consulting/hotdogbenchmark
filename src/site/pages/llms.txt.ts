@@ -130,6 +130,7 @@ export const GET: APIRoute = ({ site }) => {
     `- [JSON feed](${url('feed.json')}) and [RSS](${url('feed.xml')}): one entry per edition.`,
   )
   lines.push('')
+  lines.push(`Everything on the site in one plain-text file: ${url('llms-full.txt')}`)
   lines.push(`Source, data, and license: ${REPO_URL}`)
   lines.push('')
 

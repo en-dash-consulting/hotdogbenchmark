@@ -9,6 +9,7 @@
  * editions accumulate.
  */
 import Base from '../../layouts/Base.astro'
+import { breadcrumbJsonLd } from '../../lib/seo.ts'
 import StackedShare from '../../components/charts/StackedShare.astro'
 import Sparkline from '../../components/charts/Sparkline.astro'
 import VerdictBadge from '../../components/report/VerdictBadge.astro'
@@ -71,6 +72,11 @@ const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
 <Base
   title={`${question.reportTitle}, week by week`}
   description={`"${question.text.replace(/\s*One word answer\.$/, '')}" across ${runs.length === 1 ? 'one edition' : `${runs.length} editions`}, every model. ${changes.length === 0 ? 'No changes of position yet.' : `Latest change: ${changes[0]!.displayName}, ${changes[0]!.from} to ${changes[0]!.to} in ${formatEdition(changes[0]!.toEdition)}.`}`}
+  jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+    { name: 'Home', path: routes.home() },
+    { name: 'History', path: routes.history() },
+    { name: `${question.reportTitle}, week by week`, path: routes.historyForQuestion(question.id) },
+  ])}
 >
   <h1>{question.reportTitle}, week by week</h1>
   {question.tagline && <p class="lede">{question.tagline}</p>}

@@ -66,35 +66,39 @@ const providerCount = new Set(models.map((model) => model.provider)).size
     <h2>Adding a new provider</h2>
 
     <p>
-      Start by reading
+      Start by reading{' '}
       <a href={sourceUrl('src/providers/anthropic.ts')}><code>src/providers/anthropic.ts</code></a>.
-      It is the reference adapter: short, linear, and commented for exactly this purpose. The
+      It is the reference adapter: short, linear, and commented for exactly this purpose. The{' '}
       <a href={routes.howItWorks()}>how it works</a> page shows the interface an adapter satisfies.
     </p>
 
     <ol>
       <li>
         <p>
-          Copy <code>anthropic.ts</code> to <code>src/providers/&lt;vendor&gt;.ts</code> and implement
+          Copy <code>anthropic.ts</code> to <code>src/providers/&lt;vendor&gt;.ts</code> and implement{
+            ' '
+          }
           <code>complete()</code> against the vendor's API. If it speaks OpenAI's chat-completions dialect,
-          use
+          use{' '}
           <a href={sourceUrl('src/providers/openai-compatible.ts')}
             ><code>openai-compatible.ts</code></a
-          >
+          >{' '}
           instead and your adapter is about fifteen lines.
         </p>
       </li>
       <li>
         <p>
-          Use <code>fetchWithPolicy</code> from
-          <a href={sourceUrl('src/providers/http.ts')}><code>http.ts</code></a> rather than calling
+          Use <code>fetchWithPolicy</code> from{' '}
+          <a href={sourceUrl('src/providers/http.ts')}><code>http.ts</code></a> rather than calling{
+            ' '
+          }
           <code>fetch</code> directly, so your adapter gets the same timeout, retry and error classification
           behavior as every other.
         </p>
       </li>
       <li>
         <p>
-          Map the vendor's usage payload onto the shared shape and add your row to
+          Map the vendor's usage payload onto the shared shape and add your row to{' '}
           <a href={sourceUrl('docs/usage-normalization.md')}><code>usage-normalization.md</code></a
           >, including whether reasoning tokens are counted inside output tokens for that vendor.
           That column is the one that changes how a chart should be read.
@@ -106,9 +110,9 @@ const providerCount = new Set(models.map((model) => model.provider)).size
       </li>
       <li>
         <p>
-          Register it in
+          Register it in{' '}
           <a href={sourceUrl('src/providers/all.ts')}><code>all.ts</code></a>, add its key variable
-          to <code>src/env.ts</code> and <code>.env.example</code>, and add the model to
+          to <code>src/env.ts</code> and <code>.env.example</code>, and add the model to{' '}
           <code>models.json</code>.
         </p>
       </li>
@@ -117,8 +121,8 @@ const providerCount = new Set(models.map((model) => model.provider)).size
     <div class="callout">
       <h3>Two rules the linter enforces</h3>
       <p>
-        Nothing under <code>src/providers</code> or <code>src/runner</code> may import a
-        <code>node:</code> builtin or read <code>process.env</code>. Credentials and
+        Nothing under <code>src/providers</code> or <code>src/runner</code> may import a{' '}
+        <code>node:</code> builtin or read <code>process.env</code>. Credentials and{' '}
         <code>fetch</code> arrive through an injected context instead.
       </p>
       <p>
@@ -137,7 +141,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
     </p>
 
     <p>
-      Full contributor documentation is in
+      Full contributor documentation is in{' '}
       <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}>CONTRIBUTING.md</a>.
     </p>
   </div>

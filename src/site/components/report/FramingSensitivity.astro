@@ -146,7 +146,7 @@ const comparableCount = rows.filter((row) =>
         {arms.map((arm) => (
           <div class="arm">
             <dt>
-              {arm.label}
+              {arm.label}{' '}
               <a class="arm-link" href={routes.reportCondition(question.id, arm.id)}>
                 full report under this framing →
               </a>

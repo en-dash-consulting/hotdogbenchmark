@@ -189,7 +189,7 @@ describe('OpenGraph cards', () => {
 })
 
 describe('structured data', () => {
-  const ALLOWED = new Set(['FAQPage', 'Dataset', 'SoftwareSourceCode'])
+  const ALLOWED = new Set(['FAQPage', 'Dataset', 'SoftwareSourceCode', 'BreadcrumbList', 'WebSite'])
 
   const blocks = (html: string): Array<Record<string, unknown>> =>
     [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(

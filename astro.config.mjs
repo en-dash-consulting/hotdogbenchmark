@@ -1,6 +1,5 @@
 // @ts-check
 import { defineConfig } from 'astro/config'
-import sitemap from '@astrojs/sitemap'
 
 /**
  * Static output, no UI framework integration, no client JavaScript by default.
@@ -52,6 +51,5 @@ export default defineConfig({
     inlineStylesheets: 'auto',
     format: 'directory',
   },
-  integrations: [sitemap()],
   devToolbar: { enabled: false },
 })

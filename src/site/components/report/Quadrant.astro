@@ -54,18 +54,32 @@ const toX = (value: number) =>
 const toY = (value: number) =>
   round(scaleLinear(value, { min: 0, max: 1 }, { start: area.y + area.height, end: area.y }))
 
-/** Nudge overlapping labels downward until they clear. */
+/**
+ * Marks are numbered, not named. Eleven models in a 640×420 box cluster in
+ * one corner whenever they agree, and no arrangement of eleven names survives
+ * that; two-character numbers do. The number is the model's place in the
+ * standings (composite score, ties broken alphabetically), and the key under
+ * the plot spells out who is who. Numbers that would still overlap are nudged
+ * down until they clear.
+ */
 const placed: Array<{ x: number; y: number }> = []
-const points = plotted.map((entry) => {
-  const x = toX(entry.efficiency)
-  const y = toY(entry.decisiveness)
-  let labelY = y - 8
-  while (placed.some((p) => Math.abs(p.x - x) < 90 && Math.abs(p.y - labelY) < 13)) {
-    labelY += 13
-  }
-  placed.push({ x, y: labelY })
-  return { entry, x, y, labelY, anchor: x > area.x + area.width * 0.7 ? 'end' : 'start' }
-})
+const points = [...plotted]
+  .sort(
+    (a, b) => b.composite - a.composite || a.result.displayName.localeCompare(b.result.displayName),
+  )
+  .map((entry, index) => {
+    const x = toX(entry.efficiency)
+    const y = toY(entry.decisiveness)
+    const anchor = x > area.x + area.width * 0.85 ? 'end' : 'start'
+    // A number needs about 24px beside its dot; anything closer than 40px on
+    // the same line would run into a neighbor's dot or number, so it drops.
+    let labelY = y + 4
+    while (placed.some((p) => Math.abs(p.x - x) < 40 && Math.abs(p.y - labelY) < 12)) {
+      labelY += 12
+    }
+    placed.push({ x, y: labelY })
+    return { entry, number: index + 1, x, y, labelY, anchor }
+  })
 
 const QUADRANTS = [
   { label: 'Considered Voices', x: 0.02, y: 0.97, align: 'start' },
@@ -120,7 +134,7 @@ const summary =
       QUADRANTS.map((quadrant) => (
         <text
           x={round(area.x + quadrant.x * area.width)}
-          y={round(area.y + (1 - quadrant.y) * area.height + (quadrant.y > 0.5 ? 14 : -6))}
+          y={quadrant.y > 0.5 ? area.y - 10 : area.y + area.height + 16}
           text-anchor={quadrant.align}
           class="quadrant-label"
         >
@@ -140,17 +154,29 @@ const summary =
           {/* A 24px hit area, invisible, so the dot is a real pointer target. */}
           <circle class="mark-hit" cx={point.x} cy={point.y} r="12" fill="transparent" />
           <circle class="mark-dot" cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
+        </a>
+      ))
+    }
+
+    {
+      /* Numbers are painted after every dot so a coincident neighbor cannot
+         cover one. They are decorative: the title on each mark and the key
+         below carry the names. */
+    }
+    <g class="point-labels" aria-hidden="true">
+      {
+        points.map((point) => (
           <text
-            x={point.anchor === 'end' ? point.x - 8 : point.x + 8}
+            x={point.anchor === 'end' ? point.x - 9 : point.x + 9}
             y={point.labelY}
             text-anchor={point.anchor}
             class="point-label"
           >
-            {point.entry.result.displayName}
+            {point.number}
           </text>
-        </a>
-      ))
-    }
+        ))
+      }
+    </g>
 
     <text x={area.x} y={BOX.height - 16} class="axis-title">Efficiency →</text>
     <text
@@ -162,10 +188,24 @@ const summary =
     >
   </svg>
 
+  <ol class="quadrant-key" aria-label="Which number is which model">
+    {
+      points.map((point) => (
+        <li>
+          <a href={`#${profileAnchor(point.entry.result)}`}>
+            <span class="key-number tabular">{point.number}</span>
+            {point.entry.result.displayName}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+
   <table slot="table">
     <caption>{title} — plotted values</caption>
     <thead>
       <tr>
+        <th scope="col" class="numeric">#</th>
         <th scope="col">Vendor</th>
         <th scope="col" class="numeric">Decisiveness</th>
         <th scope="col" class="numeric">Efficiency</th>
@@ -174,8 +214,9 @@ const summary =
     </thead>
     <tbody>
       {
-        plotted.map((entry) => (
+        points.map(({ entry, number }) => (
           <tr>
+            <td class="numeric">{number}</td>
             <th scope="row">
               <a href={`#${profileAnchor(entry.result)}`}>{entry.result.displayName}</a>
             </th>
@@ -189,7 +230,7 @@ const summary =
         absent.map((entry) => (
           <tr>
             <th scope="row">{entry.result.displayName}</th>
-            <td colspan="3">Not plotted — no data in this edition</td>
+            <td colspan="4">Not plotted — no data in this edition</td>
           </tr>
         ))
       }
@@ -215,9 +256,52 @@ const summary =
     letter-spacing: 0.08em;
   }
 
+  .quadrant-key {
+    list-style: none;
+    margin: var(--space-xs) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-m);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+  }
+
+  .quadrant-key a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-height: 1.5rem;
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .quadrant-key a:hover {
+    text-decoration: underline;
+  }
+
+  .key-number {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.4em;
+    height: 1.4em;
+    padding-inline: 0.2em;
+    border-radius: 999px;
+    background: var(--chart-1);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8em;
+  }
+
   .point-label {
     font-size: 12px;
+    font-weight: 700;
     fill: var(--text-strong);
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: var(--surface);
+    stroke-width: 3px;
+    stroke-linejoin: round;
   }
 
   /* Marks are links: hover or focus grows the dot and underlines the label. */
@@ -240,12 +324,6 @@ const summary =
     r: 8;
     stroke: var(--accent-fill);
     stroke-width: 3;
-  }
-
-  .mark:hover .point-label,
-  .mark:focus-visible .point-label {
-    text-decoration: underline;
-    font-weight: 700;
   }
 
   .axis-title {

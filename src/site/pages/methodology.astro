@@ -137,14 +137,14 @@ const contested = exampleQuestion
     <p>
       Conditions are defined in <a href={sourceUrl('conditions.json')}
         ><code>conditions.json</code></a
-      >
+      >{' '}
       and this list is rendered from it. The control must come first and must add nothing: it is the question
       asked plainly, which is also exactly what every edition before conditions existed asked, so those
       editions remain comparable with the control arm of later ones.
     </p>
 
     <p>
-      <strong>This multiplies the cost of collection.</strong>
+      <strong>This multiplies the cost of collection.</strong>{' '}
       {conditions.length} conditions ×{' '}
       {questions.length} questions × {models.length} models × {DEFAULT_SAMPLES} samples is{' '}
       {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone. Every arm other
@@ -170,7 +170,9 @@ const contested = exampleQuestion
     </dl>
 
     <p>
-      <strong>Neither robustness nor compliance is treated as better.</strong> A model that says
+      <strong>Neither robustness nor compliance is treated as better.</strong> A model that says{
+        ' '
+      }
       <q>No</q> after being told {
         exampleAssertion ? <q>{exampleAssertion}</q> : 'the answer as fact'
       }{' '}
@@ -194,7 +196,7 @@ const contested = exampleQuestion
 
     <p>
       Where a model's samples are evenly split between two verdicts, its position is recorded as
-      non-committal. It has not given a consistent answer, and reporting either side as
+      non-committal. It has not given a consistent answer, and reporting either side as{' '}
       <q>its</q> position would be taking a side on its behalf.
     </p>
 
@@ -203,7 +205,7 @@ const contested = exampleQuestion
     <p>
       <strong>Total latency</strong> is wall-clock time from issuing the request to finishing reading
       the response. It includes DNS resolution, TLS negotiation, network transit, provider-side queueing,
-      and generation.
+      and generation.{' '}
       <strong>It is not a measure of inference speed</strong> and this publication does not present it
       as one.<sup><a href="#fn2" id="fnref2">2</a></sup>
     </p>
@@ -272,10 +274,10 @@ const contested = exampleQuestion
     </div>
 
     <p class="list-source">
-      These lists are imported directly from
+      These lists are imported directly from{' '}
       <a href={sourceUrl('src/runner/analyze.ts')}><code>src/runner/analyze.ts</code></a> when this page
       is built. They are what the classifier actually uses. If you disagree with an entry, that is a legitimate
-      disagreement about method, and the
+      disagreement about method, and the{' '}
       <a href={`${REPO_URL}/issues`}>issue tracker</a> is the right place for it.
     </p>
 
@@ -315,7 +317,7 @@ const contested = exampleQuestion
     </dl>
 
     <p>
-      Quadrant regions are named <q>Category Definers</q>, <q>Rapid Responders</q>,
+      Quadrant regions are named <q>Category Definers</q>, <q>Rapid Responders</q>,{' '}
       <q>Considered Voices</q> and <q>Emerging Participants</q>. The boundaries are the medians of
       the current edition, not fixed thresholds, so a vendor's region can change because its
       competitors changed.
@@ -332,7 +334,7 @@ const contested = exampleQuestion
     </p>
 
     <p>
-      The full per-provider mapping is in
+      The full per-provider mapping is in{' '}
       <a href={sourceUrl('docs/usage-normalization.md')}>usage-normalization.md</a>. Do not rank
       models by token count.
     </p>
@@ -358,7 +360,9 @@ const contested = exampleQuestion
     <h2 id="limitations">What this does not measure</h2>
 
     <p>
-      The questions are silly. {contested} is not a matter of fact, there is no correct answer, and consequently
+      The questions are silly. {contested} is not a matter of fact, there is no correct answer, and consequently{
+        ' '
+      }
       <strong>nothing in this publication measures model quality</strong>. A model that answers <q
         >No</q
       > is not better or worse than one that answers <q>Yes</q>, and the scores here are
@@ -372,7 +376,7 @@ const contested = exampleQuestion
     </p>
 
     <p>
-      If you want to use it for something real, fork it and change
+      If you want to use it for something real, fork it and change{' '}
       <code>questions.json</code>. The <a href={routes.howItWorks()}>how it works</a> page explains the
       pieces.
     </p>
@@ -381,12 +385,12 @@ const contested = exampleQuestion
 
     <ol class="footnotes">
       <li id="fn1">
-        A compliance rate against an instruction that was never given would measure nothing.
+        A compliance rate against an instruction that was never given would measure nothing.{' '}
         <a href="#fnref1" aria-label="Back to reference 1">↩</a>
       </li>
       <li id="fn2">
         Inference speed would require controlling for network position, hardware, batching and load.
-        This publication controls for none of them.
+        This publication controls for none of them.{' '}
         <a href="#fnref2" aria-label="Back to reference 2">↩</a>
       </li>
     </ol>

@@ -22,7 +22,8 @@ import {
   getQuestionTextInRun,
 } from '../../../lib/data.ts'
 import { formatEdition } from '../../../lib/format.ts'
-import { archivedQuestionDescription } from '../../../lib/seo.ts'
+import { archivedQuestionDescription, breadcrumbJsonLd } from '../../../lib/seo.ts'
+import { routes } from '../../../lib/urls.ts'
 
 export function getStaticPaths() {
   return getAllRuns().flatMap((run) =>
@@ -46,6 +47,12 @@ const askedText = getQuestionTextInRun(run, question.id)
   title={`${question.reportTitle} — ${formatEdition(run.isoWeek)}`}
   ogImage={question.id}
   description={archivedQuestionDescription(run, question)}
+  jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+    { name: 'Home', path: routes.home() },
+    { name: 'Every edition', path: routes.runs() },
+    { name: `${formatEdition(run.isoWeek)} edition`, path: routes.run(run.isoWeek) },
+    { name: question.reportTitle, path: routes.runQuestion(run.isoWeek, question.id) },
+  ])}
 >
   <Masthead question={question} run={run} archived questionText={askedText ?? question.text} />
   <KpiTiles results={results} previous={previousResults} />

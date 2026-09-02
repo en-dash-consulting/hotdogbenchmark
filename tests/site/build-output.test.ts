@@ -39,8 +39,15 @@ describe('the build', () => {
     expect(pages.length).toBeGreaterThan(0)
   })
 
-  it('emits a sitemap', () => {
-    expect(existsSync(join(DIST, 'sitemap-index.xml'))).toBe(true)
+  it('emits a sitemap that lists every built page exactly once, with the data date', () => {
+    const sitemap = readFileSync(join(DIST, 'sitemap.xml'), 'utf8')
+    const listed = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]!).pathname)
+    const built = pages
+      .map((page) => page.path.replace(/index\.html$/, ''))
+      .filter((path) => path !== '/404.html')
+    expect(listed.sort()).toEqual(built.sort())
+    expect(new Set(listed).size).toBe(listed.length)
+    expect(sitemap).toMatch(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/)
   })
 })
 
@@ -89,6 +96,22 @@ describe('every built page', () => {
   /** The site nav only; sub-navs (framings, history questions) mark their own current item. */
   const mainNav = (html: string) =>
     html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
+  it('never glues inline markup to the words around it', () => {
+    // Astro drops the newline between a line of text and a tag on the next
+    // line inside expressions, so "are all\n<a>on GitHub</a>" renders as
+    // "allon GitHub". The templates carry an explicit {' '} at those seams.
+    const glued = /[A-Za-z0-9,.;:)]<(a|code|strong|em|q)[ >]|<\/(a|code|strong|em|q)>[A-Za-z0-9(“]/g
+    for (const page of pages) {
+      const body = page.html
+        .replace(/<pre[\s\S]*?<\/pre>/g, '')
+        .replace(/<script[\s\S]*?<\/script>/g, '')
+      const hits = [...body.matchAll(glued)].map((m) =>
+        body.slice(Math.max(0, m.index! - 30), m.index! + 40),
+      )
+      expect(hits, `${page.path}: ${hits.join(' | ')}`).toEqual([])
+    }
+  })
 
   it('marks Reports current on the landing page and on every report under it', () => {
     const under = pages.filter((page) => /^\/reports\//.test(page.path))
@@ -515,14 +538,16 @@ describe('SEO and social metadata', () => {
   })
 
   it('emits a sitemap, robots.txt and both feeds', () => {
-    for (const file of ['sitemap-index.xml', 'robots.txt', 'feed.json', 'feed.xml']) {
+    for (const file of ['sitemap.xml', 'robots.txt', 'feed.json', 'feed.xml']) {
       expect(existsSync(join(DIST, file)), `missing ${file}`).toBe(true)
     }
   })
 
   it('points robots.txt at the sitemap on the deployed origin', () => {
     const robots = readFileSync(join(DIST, 'robots.txt'), 'utf8')
-    expect(robots).toMatch(/^Sitemap: https?:\/\/.+sitemap-index\.xml$/m)
+    expect(robots).toMatch(/^Sitemap: https?:\/\/.+\/sitemap\.xml$/m)
+    expect(robots).toMatch(/^User-agent: GPTBot\nAllow: \/$/m)
+    expect(robots).toMatch(/^User-agent: ClaudeBot\nAllow: \/$/m)
   })
 
   it('produces a valid JSON Feed with one entry per edition', () => {

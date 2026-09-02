@@ -28,7 +28,7 @@ interface Props {
    * Built in src/site/lib/seo.ts from the same data as the page, so it can
    * only say what the page says.
    */
-  jsonLd?: object | null
+  jsonLd?: object | object[] | null
 }
 
 const {
@@ -45,7 +45,9 @@ const {
  * JSON thinks. Escaping "<" keeps a model name or a question containing one
  * from closing the block early.
  */
-const jsonLdText = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null
+const jsonLdBlocks = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((block) =>
+  JSON.stringify(block).replace(/</g, '\\u003c'),
+)
 
 /** The En Dash learning apps: free, no API key, same tab. */
 const LEARNING_APPS = [
@@ -79,6 +81,22 @@ const gaSnippet = gaId
   ? `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}',{anonymize_ip:true});`
   : ''
 
+/** The upright files are preloaded; italics load only where an <em> needs them. */
+const PRELOADED_FONTS = [
+  href('fonts/montserrat-normal-latin.woff2'),
+  href('fonts/merriweather-normal-latin.woff2'),
+]
+const LATIN_RANGE =
+  'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+const fontFace = (family: string, style: string, weight: string, file: string) =>
+  `@font-face{font-family:'${family}';font-style:${style};font-weight:${weight};font-display:swap;src:url('${href(`fonts/${file}`)}') format('woff2');unicode-range:${LATIN_RANGE}}`
+const FONT_FACES = [
+  fontFace('Montserrat', 'normal', '400 900', 'montserrat-normal-latin.woff2'),
+  fontFace('Montserrat', 'italic', '400 900', 'montserrat-italic-latin.woff2'),
+  fontFace('Merriweather', 'normal', '300 700', 'merriweather-normal-latin.woff2'),
+  fontFace('Merriweather', 'italic', '400', 'merriweather-italic-latin.woff2'),
+].join('')
+
 const NAV = [
   { href: routes.reports(), label: 'Reports' },
   { href: routes.history(), label: 'History' },
@@ -110,6 +128,7 @@ const isCurrent = (href: string) => {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <link rel="canonical" href={canonical} />
 
     {
@@ -126,13 +145,17 @@ const isCurrent = (href: string) => {
       )
     }
 
-    {/* The En Dash faces: Montserrat for headings and interface, Merriweather for prose. */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
-    />
+    {
+      /* The En Dash faces, self-hosted and preloaded: no third-party request,
+         and the two upright files are in flight before the stylesheet asks
+         for them, so the swap from the fallback face rarely moves anything. */
+    }
+    {
+      PRELOADED_FONTS.map((font) => (
+        <link rel="preload" href={font} as="font" type="font/woff2" crossorigin />
+      ))
+    }
+    <style set:html={FONT_FACES}></style>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
@@ -161,7 +184,7 @@ const isCurrent = (href: string) => {
       href={routes.feedRss()}
     />
 
-    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText} />}
+    {jsonLdBlocks.map((text) => <script type="application/ld+json" set:html={text} />)}
 
     {
       /*

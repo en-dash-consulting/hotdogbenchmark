@@ -446,8 +446,15 @@ a[href^='http']:not([class]) {
   }
 
   .table-stack tr {
+    display: flex;
+    flex-direction: column;
     padding: var(--space-s) 0;
     border-top: 2px solid var(--text-strong);
+  }
+
+  /* The row header leads the card whatever column it sits in. */
+  .table-stack tbody th {
+    order: -1;
   }
 
   .table-stack td,

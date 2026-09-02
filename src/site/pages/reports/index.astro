@@ -25,6 +25,7 @@ import {
   nameList,
   reportsIndexDescription,
   tallyPhrase,
+  breadcrumbJsonLd,
 } from '../../lib/seo.ts'
 import { questionShifts, treatedConditions } from '../../lib/sensitivity.ts'
 import { routes } from '../../lib/urls.ts'
@@ -101,6 +102,10 @@ const cards = questions.map((question, index) => {
   title="The reports"
   ogImage="reports"
   description={reportsIndexDescription(latest, questions)}
+  jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+    { name: 'Home', path: routes.home() },
+    { name: 'Reports', path: routes.reports() },
+  ])}
 >
   <header class="rack-head">
     <p class="eyebrow">The reports</p>

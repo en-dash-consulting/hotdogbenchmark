@@ -1,0 +1,8 @@
+Montserrat (c) The Montserrat Project Authors, https://github.com/JulietaUla/Montserrat
+Merriweather (c) The Merriweather Project Authors, https://github.com/SorkinType/Merriweather
+
+Both are licensed under the SIL Open Font License, Version 1.1:
+https://openfontlicense.org/open-font-license-official-text/
+
+The files here are the latin subsets as served by Google Fonts, self-hosted so
+the site makes no third-party request and can preload them.

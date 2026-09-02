@@ -27,3 +27,7 @@ tmp/
 
 # Screenshots written by npm run test:responsive
 .responsive/
+
+# Machine-local: absolute paths and command logs from n-dx tooling
+claude_commands.log
+.codex/config.toml

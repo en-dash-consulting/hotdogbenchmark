@@ -17,7 +17,7 @@ import {
 } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { consensusOf, questionHeadline } from '../lib/prose.ts'
-import { count, faqPageJsonLd, homeDescription, homeTitle } from '../lib/seo.ts'
+import { count, faqPageJsonLd, homeDescription, homeTitle, webSiteJsonLd } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
@@ -29,7 +29,10 @@ const editions = getAllRuns().length
 /** The query people type, then the promise; the count is the registry's. */
 const title = homeTitle(questions[0] ?? null, getModels().length)
 const description = homeDescription(latest, questions)
-const jsonLd = latest ? faqPageJsonLd(latest, questions) : null
+const jsonLd = [
+  webSiteJsonLd(Astro.site ?? new URL('http://localhost:4321'), description),
+  ...(latest ? [faqPageJsonLd(latest, questions)] : []),
+]
 
 const asked = latest
   ? questions.filter((q) => latest.results.some((cell) => cell.questionId === q.id))

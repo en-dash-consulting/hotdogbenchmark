@@ -203,7 +203,7 @@ npm install
   `src/providers` and `src/runner` free of Node builtins and `process.env`.
 - **prettier**, **prettier-plugin-astro** — one formatting answer, no debate.
 - **vitest** — fast unit tests, no configuration.
-- **astro**, **@astrojs/sitemap** — static site, zero client JS by default.
+- **astro** — static site, zero client JS by default. The sitemap, robots.txt and llms.txt are endpoints of our own, built from one page list.
 - **playwright**, **@axe-core/playwright** — accessibility checks, the PDF edition, OG cards and
   README screenshots, all from one browser rather than four tools.
 - **@lhci/cli** — Lighthouse budgets in CI.

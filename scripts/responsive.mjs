@@ -198,7 +198,14 @@ for (const width of WIDTHS) {
         await new Promise((r) => globalThis.setTimeout(r, 0))
         const rect = el.getBoundingClientRect()
         const head = header.getBoundingClientRect()
-        const covered = rect.top < head.bottom && rect.bottom > head.top && !header.contains(el)
+        const overlaps = rect.top < head.bottom && rect.bottom > head.top && !header.contains(el)
+        // Overlapping the masthead's box is only a problem when the masthead
+        // is what the reader sees there: the skip link sits above it on purpose.
+        const onTop = document.elementFromPoint(
+          rect.left + rect.width / 2,
+          rect.top + Math.min(rect.height / 2, 12),
+        )
+        const covered = overlaps && !(onTop && (onTop === el || el.contains(onTop)))
         if (covered)
           problems.push(
             (el.textContent || el.className || el.tagName).toString().trim().slice(0, 40),

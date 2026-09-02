@@ -25,7 +25,7 @@ import {
   getQuestionTextInRun,
 } from '../../lib/data.ts'
 import { formatEdition } from '../../lib/format.ts'
-import { reportDescription } from '../../lib/seo.ts'
+import { breadcrumbJsonLd, reportDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -50,6 +50,11 @@ const askedText = run ? getQuestionTextInRun(run, question.id) : null
   title={question.reportTitle}
   ogImage={question.id}
   description={reportDescription(run, question)}
+  jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+    { name: 'Home', path: routes.home() },
+    { name: 'Reports', path: routes.reports() },
+    { name: question.reportTitle, path: routes.report(question.id) },
+  ])}
 >
   {
     run ? (

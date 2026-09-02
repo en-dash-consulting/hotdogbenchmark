@@ -19,7 +19,7 @@ import {
   getQuestions,
 } from '../../lib/data.ts'
 import { formatEdition } from '../../lib/format.ts'
-import { editionDatasetJsonLd, editionDescription } from '../../lib/seo.ts'
+import { breadcrumbJsonLd, editionDatasetJsonLd, editionDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -40,7 +40,14 @@ const jsonLd = editionDatasetJsonLd(run, questions, canonical)
   title={`${formatEdition(run.isoWeek)} edition`}
   description={editionDescription(run, questions)}
   ogImage={`runs/${run.editionKey ?? run.isoWeek}`}
-  jsonLd={jsonLd}
+  jsonLd={[
+    jsonLd,
+    breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+      { name: 'Home', path: routes.home() },
+      { name: 'Every edition', path: routes.runs() },
+      { name: `${formatEdition(run.isoWeek)} edition`, path: routes.run(run.isoWeek) },
+    ]),
+  ]}
 >
   <nav class="edition-nav" aria-label="Edition">
     {
@@ -63,7 +70,7 @@ const jsonLd = editionDatasetJsonLd(run, questions, canonical)
   <h1>{formatEdition(run.isoWeek)} edition</h1>
 
   <p class="archive-note">
-    An archived record of every question asked in this edition. Current reports are on the
+    An archived record of every question asked in this edition. Current reports are on the{' '}
     <a href={routes.home()}>home page</a>.
   </p>
 

@@ -122,9 +122,38 @@
 
   /* Charts sized to the printed column rather than the screen. */
   .chart-canvas svg,
-  .scorecard svg {
+  .scorecard svg,
+  svg {
     max-width: 100%;
     height: auto;
+  }
+
+  /* Interactive explorer controls mean nothing on paper. */
+  .explorer,
+  .explorer-status {
+    display: none !important;
+  }
+
+  /* Tables: never clipped, never scrolled. A wide table shrinks and wraps. */
+  .table-scroll {
+    overflow: visible !important;
+  }
+
+  table {
+    font-size: 8.5pt;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  th,
+  td {
+    white-space: normal !important;
+    padding: 1.2mm 1.5mm;
+  }
+
+  .vendor-name[role='button'] {
+    text-decoration: none;
+    cursor: auto;
   }
 
   .profile-grid,

@@ -27,7 +27,7 @@ import {
 } from '../../../lib/data.ts'
 import { treatedConditions } from '../../../lib/sensitivity.ts'
 import { formatEdition } from '../../../lib/format.ts'
-import { framingDescription } from '../../../lib/seo.ts'
+import { breadcrumbJsonLd, framingDescription } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -57,6 +57,12 @@ const previousResults = previous ? getModelResults(previous, question.id, condit
   title={`${question.reportTitle} — ${condition.label} framing`}
   ogImage={`${question.id}-${condition.id}`}
   description={framingDescription(run, question, condition, cell.systemPrompt)}
+  jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
+    { name: 'Home', path: routes.home() },
+    { name: 'Reports', path: routes.reports() },
+    { name: question.reportTitle, path: routes.report(question.id) },
+    { name: `${condition.label} framing`, path: routes.reportCondition(question.id, condition.id) },
+  ])}
 >
   <ConditionNav run={run} questionId={question.id} current={condition.id} />
   <Masthead

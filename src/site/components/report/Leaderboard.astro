@@ -108,13 +108,16 @@ const ranked = rankWithDeltas(results, previous)
     font-weight: 600;
   }
 
+  /* Stays a table cell: display: flex on a <td> takes the border-bottom with
+     it and misaligns the row the moment a neighbor wraps. */
   .movement {
-    display: flex;
-    gap: var(--space-3xs);
-    align-items: baseline;
     white-space: nowrap;
     font-size: var(--step--1);
     color: var(--muted);
+  }
+
+  .movement > span + span {
+    margin-left: var(--space-3xs);
   }
 
   .movement.up {
