@@ -486,13 +486,43 @@ const isCurrent = (href: string) => {
       justify-self: end;
     }
 
+    /*
+     * The row scrolls, and says so: a shadow on whichever edge has more
+     * behind it, drawn with background-attachment so it fades as the reader
+     * reaches the end. No script, and nothing to reveal that a pointer
+     * could not already reach.
+     */
     .masthead-controls nav {
       grid-row: 2;
       grid-column: 1 / -1;
       overflow-x: auto;
       scrollbar-width: none;
+      scroll-snap-type: x proximity;
       margin-inline: calc(-1 * var(--space-m));
       padding-inline: var(--space-m);
+      --scroll-shadow: color-mix(in srgb, var(--text-strong) 28%, transparent);
+      background:
+        linear-gradient(90deg, var(--bg) 40%, transparent) 0 0 / 3rem 100%,
+        linear-gradient(270deg, var(--bg) 40%, transparent) 100% 0 / 3rem 100%,
+        radial-gradient(farthest-side at 0 50%, var(--scroll-shadow), transparent) 0 0 / 1.25rem
+          100%,
+        radial-gradient(farthest-side at 100% 50%, var(--scroll-shadow), transparent) 100% 0 /
+          1.25rem 100%;
+      background-repeat: no-repeat;
+      background-attachment: local, local, scroll, scroll;
+    }
+
+    .nav-list li {
+      scroll-snap-align: start;
+    }
+
+    /* The system palette has no shadow. A hairline under the row marks it as
+       a strip of its own, which is what the reader needs to know. */
+    @media (forced-colors: active) {
+      .masthead-controls nav {
+        background: none;
+        border-bottom: 1px solid CanvasText;
+      }
     }
 
     .masthead-controls nav::-webkit-scrollbar {

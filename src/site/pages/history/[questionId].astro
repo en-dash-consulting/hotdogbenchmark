@@ -26,7 +26,7 @@ import {
 import { loadSupersededRuns, runsWithinEdition } from '../../lib/superseded.ts'
 import { hasConditions } from '../../lib/sensitivity.ts'
 import {
-  formatDate,
+  describeRunDates,
   formatDuration,
   formatEdition,
   formatInteger,
@@ -232,8 +232,8 @@ const WORD: Record<Verdict, string> = { yes: 'yes', no: 'no', other: 'hedged' }
         ) : (
           <>
             <p class="note">
-              {formatEdition(latest.isoWeek)} was run {withinWeek.length} times, on{' '}
-              {withinWeek.map((run) => formatDate(run.startedAt)).join(', ')}. Answers that changed
+              {formatEdition(latest.isoWeek)} was run {withinWeek.length} times,{' '}
+              {describeRunDates(withinWeek.map((run) => run.startedAt))}. Answers that changed
               between consecutive runs:
             </p>
             {withinChanges.length === 0 ? (

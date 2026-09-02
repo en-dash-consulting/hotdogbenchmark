@@ -19,6 +19,7 @@ import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { consensusOf, questionHeadline } from '../lib/prose.ts'
 import { count, faqPageJsonLd, homeDescription, homeTitle, webSiteJsonLd } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
+import { twinPairs, twinsWorthShowing } from '../lib/twins.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
 
@@ -67,19 +68,17 @@ const agreement = asked.map((question) => {
   return { question, share: total ? top / total : 0, total, counts }
 })
 
-/** Pairs of models that gave the same verdict on every shared question. */
-const twins: Array<[string, string]> = []
-for (let a = 0; a < grid.length; a += 1) {
-  for (let b = a + 1; b < grid.length; b += 1) {
-    const shared = grid[a]!.verdicts.filter((v, i) => v.verdict && grid[b]!.verdicts[i]!.verdict)
-    if (
-      shared.length >= 2 &&
-      shared.every((v, i) => v.verdict === grid[b]!.verdicts[grid[a]!.verdicts.indexOf(v)]!.verdict)
-    ) {
-      twins.push([grid[a]!.model.displayName, grid[b]!.model.displayName])
-    }
-  }
-}
+/**
+ * Pairs of models that gave the same verdict on every shared question, shown
+ * only when that is selective: with three questions most pairs agree.
+ */
+const twins = twinPairs(
+  grid.map((row) => ({
+    name: row.model.displayName,
+    verdicts: row.verdicts.map((v) => v.verdict),
+  })),
+)
+const showTwins = twinsWorthShowing(twins.length, grid.length, asked.length)
 
 const sensitivity =
   latest && hasConditions(latest)
@@ -164,7 +163,7 @@ const QUICKSTART = [
             </table>
           </div>
 
-          {twins.length > 0 && (
+          {showTwins && (
             <p class="twins">
               Thinking alike:{' '}
               {twins

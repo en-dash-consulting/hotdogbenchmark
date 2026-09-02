@@ -238,6 +238,40 @@ for (const width of WIDTHS) {
     })
     for (const problem of spacing) failures.push(`${path} @${width}: text spacing ${problem}`)
 
+    // 5. Truncation: nothing that clips its own text. An `overflow: hidden`
+    //    box whose content is wider than it is has cut something off, and a
+    //    text-overflow ellipsis makes that cut look intentional. None of the
+    //    reflow checks above can see it, because the clipped text never
+    //    widens the page. The site scrolls wide content in `overflow: auto`
+    //    regions, which are not hidden and so are not matched here.
+    //    Measured before the spacing style was applied, so a phone gets
+    //    judged on what it actually renders.
+    await page.reload({ waitUntil: 'networkidle' })
+    await page.evaluate(() => document.fonts.ready)
+    const truncated = await page.evaluate(() => {
+      const problems = []
+      for (const el of document.querySelectorAll('body *')) {
+        const style = getComputedStyle(el)
+        if (style.overflowX !== 'hidden' && style.overflow !== 'hidden') continue
+        const rect = el.getBoundingClientRect()
+        // The visually-hidden pattern is a 1px box on purpose.
+        if (rect.width <= 2 || rect.height <= 2) continue
+        if (el.scrollWidth > el.clientWidth + 1) {
+          const label = (el.textContent || el.className || el.tagName)
+            .toString()
+            .trim()
+            .slice(0, 40)
+          problems.push(
+            `"${label}" clips ${el.scrollWidth - el.clientWidth}px of its content${
+              style.textOverflow === 'ellipsis' ? ' behind an ellipsis' : ''
+            }`,
+          )
+        }
+      }
+      return problems
+    })
+    for (const problem of truncated) failures.push(`${path} @${width}: truncation ${problem}`)
+
     if (OUT) {
       const name = `${path.replace(/\//g, '_').replace(/^_|_$/g, '') || 'home'}@${width}.png`
       await page.screenshot({ path: join(OUT, name), fullPage: true })
