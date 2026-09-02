@@ -1,499 +1,534 @@
 ---
 /**
- * The front page: the latest edition at a glance.
+ * The front page.
  *
- * A reader should leave this page knowing three things without clicking:
- * where the field stands on each question, how much of that depended on how
- * the question was asked, and where to go for the evidence. Everything here
- * is derived from the same numbers the report pages show, so it cannot
- * disagree with them.
+ * One question, asked live. Then how differently the models think, and how
+ * easily they change their minds. As little prose as the joke can survive.
  */
 import Base from '../layouts/Base.astro'
-import VerdictBadge from '../components/report/VerdictBadge.astro'
+import AnswerBoard from '../components/AnswerBoard.astro'
 import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
-import { formatDate, formatDuration, formatEdition, formatPercent } from '../lib/format.ts'
-import { consensusOf } from '../lib/prose.ts'
-import {
-  editionSensitivity,
-  fieldSensitivity,
-  hasConditions,
-  questionShifts,
-  treatedConditions,
-} from '../lib/sensitivity.ts'
+import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
+import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
 import { routes } from '../lib/urls.ts'
-import type { ModelResult, Verdict } from '../../schema/run.ts'
+import type { Verdict } from '../../schema/run.ts'
 
 const questions = getQuestions()
 const latest = getLatestRun()
 const editions = getAllRuns().length
 
-const POSITION: Record<Verdict, string> = {
-  yes: 'Affirmative',
-  no: 'Negative',
-  other: 'Non-committal',
-}
+const asked = latest
+  ? questions.filter((q) => latest.results.some((cell) => cell.questionId === q.id))
+  : []
 
-const medianLatency = (results: ModelResult[]): number | null => {
-  const values = results
-    .map((r) => r.aggregate.totalMs?.median)
-    .filter((v): v is number => v != null)
-    .sort((a, b) => a - b)
-  if (values.length === 0) return null
-  const mid = Math.floor(values.length / 2)
-  return values.length % 2 === 0 ? (values[mid - 1]! + values[mid]!) / 2 : values[mid]!
-}
-
-/** One card per question: the field's position and how much of it survived reframing. */
-const cards = latest
-  ? questions
-      .filter((question) => latest.results.some((cell) => cell.questionId === question.id))
-      .map((question) => {
-        const results = getModelResults(latest, question.id)
-        const answering = results.filter((r) => r.samples.length > 0)
-        const consensus = consensusOf(results)
-        const tally: Record<Verdict, number> = { yes: 0, no: 0, other: 0 }
-        for (const model of answering)
-          if (model.aggregate.verdict) tally[model.aggregate.verdict] += 1
-        const shifts = hasConditions(latest) ? questionShifts(latest, question.id) : []
-        const comparable = shifts.filter((row) =>
-          row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+/** Every model's control verdict on every question: the alignment grid. */
+const grid = latest
+  ? modelsInRun(latest).map((model) => ({
+      model,
+      verdicts: asked.map((question) => {
+        const result = getModelResults(latest, question.id).find(
+          (r) => r.provider === model.provider && r.modelId === model.modelId,
         )
-        const moved = comparable.filter((row) => row.movedAnywhere)
         return {
           question,
-          answering: answering.length,
-          unavailable: results.length - answering.length,
-          consensus,
-          tally,
-          latency: medianLatency(answering),
-          moved: moved.map((row) => row.model.displayName),
-          comparable: comparable.length,
+          verdict: result?.aggregate.verdict ?? null,
+          ok: Boolean(result?.samples.length),
         }
-      })
+      }),
+    }))
   : []
 
-const modelCount = latest
-  ? new Set(latest.results.flatMap((cell) => cell.models.map((m) => `${m.provider}/${m.modelId}`)))
-      .size
-  : 0
+/** Agreement per question: share of answering models holding the majority. */
+const agreement = asked.map((question) => {
+  const verdicts = grid.map(
+    (row) => row.verdicts.find((v) => v.question.id === question.id)?.verdict ?? null,
+  )
+  const counts: Record<Verdict, number> = { yes: 0, no: 0, other: 0 }
+  for (const v of verdicts) if (v) counts[v] += 1
+  const total = counts.yes + counts.no + counts.other
+  const top = Math.max(counts.yes, counts.no, counts.other)
+  return { question, share: total ? top / total : 0, total, counts }
+})
 
-const field = latest && hasConditions(latest) ? fieldSensitivity(latest) : null
-const arms = latest ? treatedConditions(latest) : []
-const movers = latest
-  ? editionSensitivity(latest)
-      .filter((entry) => entry.overall.comparable > 0)
-      .sort((a, b) => (b.overall.score ?? 0) - (a.overall.score ?? 0))
-  : []
+/** Pairs of models that gave the same verdict on every shared question. */
+const twins: Array<[string, string]> = []
+for (let a = 0; a < grid.length; a += 1) {
+  for (let b = a + 1; b < grid.length; b += 1) {
+    const shared = grid[a]!.verdicts.filter((v, i) => v.verdict && grid[b]!.verdicts[i]!.verdict)
+    if (
+      shared.length >= 2 &&
+      shared.every((v, i) => v.verdict === grid[b]!.verdicts[grid[a]!.verdicts.indexOf(v)]!.verdict)
+    ) {
+      twins.push([grid[a]!.model.displayName, grid[b]!.model.displayName])
+    }
+  }
+}
+
+const sensitivity =
+  latest && hasConditions(latest)
+    ? editionSensitivity(latest)
+        .filter((entry) => entry.overall.comparable > 0)
+        .sort((a, b) => (b.overall.score ?? 0) - (a.overall.score ?? 0))
+    : []
+
+const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
 ---
 
 <Base
-  title="Sandwich Classification Benchmark"
-  description="A weekly cross-vendor evaluation of how leading AI models classify contested sandwich cases, and how far their answers move when told the answer."
+  title="Is a hot dog a sandwich?"
+  description="Seven AI models, one question, every week. Watch them answer in real time, then tell them the answer and see who changes their mind. An En Dash research programme."
   bareTitle
 >
-  <header class="hero">
-    <p class="kicker">Weekly cross-vendor evaluation</p>
-    <h1>Sandwich Classification Benchmark</h1>
-    {
-      hasData() && latest ? (
-        <p class="lede">
-          {formatEdition(latest.isoWeek)} edition, published {formatDate(latest.finishedAt)}.{' '}
-          {cards.length} research question{cards.length === 1 ? '' : 's'} put to {modelCount} model
-          {modelCount === 1 ? '' : 's'}
-          {arms.length > 0 && <> under {latest.conditions.length} framings</>}, sampled{' '}
-          {latest.results[0]?.models[0]?.samples.length ?? 0} times each.
-          {latest.isMock && <strong class="mock"> Sample data.</strong>}
-        </p>
-      ) : (
-        <p class="lede">No editions have been published yet.</p>
-      )
-    }
-  </header>
-
   {
-    latest && cards.length > 0 && (
-      <section aria-labelledby="glance-heading" class="glance">
-        <h2 id="glance-heading">The field at a glance</h2>
-        <ul class="card-grid">
-          {cards.map((card) => (
-            <li class="card">
-              <p class="card-subject">{card.question.subject}</p>
-              <h3>
-                <a href={routes.report(card.question.id)}>{card.question.reportTitle}</a>
-              </h3>
-              <p class="card-question">
-                <q>{card.question.text}</q>
-              </p>
+    hasData() && latest ? (
+      <>
+        <AnswerBoard run={latest} questions={asked} />
 
-              <div class="card-verdict">
-                <VerdictBadge verdict={card.consensus.verdict} size="large" />
-                <p class="card-verdict-note">
-                  {card.consensus.verdict
-                    ? card.consensus.unanimous
-                      ? `Unanimous across ${card.consensus.total} models`
-                      : `${card.consensus.count} of ${card.consensus.total} models (${formatPercent(card.consensus.share)})`
-                    : `Field divided across ${card.consensus.total} models`}
-                </p>
-              </div>
+        <section class="minds" aria-labelledby="minds-heading">
+          <div class="minds-head">
+            <p class="eyebrow">Same question, different minds</p>
+            <h2 id="minds-heading">They do not agree with each other.</h2>
+          </div>
 
-              <div
-                class="tally"
-                role="img"
-                aria-label={`${card.tally.yes} affirmative, ${card.tally.no} negative, ${card.tally.other} non-committal`}
-              >
-                {(['yes', 'no', 'other'] as const).map(
-                  (verdict) =>
-                    card.tally[verdict] > 0 && (
-                      <span
-                        class:list={['tally-segment', `tally-${verdict}`]}
-                        style={`flex-grow: ${card.tally[verdict]}`}
-                      >
-                        {card.tally[verdict]}
-                      </span>
-                    ),
-                )}
-              </div>
-              <p class="tally-key">
-                {(['yes', 'no', 'other'] as const)
-                  .filter((verdict) => card.tally[verdict] > 0)
-                  .map((verdict) => `${card.tally[verdict]} ${POSITION[verdict].toLowerCase()}`)
-                  .join(' · ')}
-                {card.unavailable > 0 && ` · ${card.unavailable} unavailable`}
-              </p>
-
-              <dl class="card-facts">
-                <div>
-                  <dt>Median latency</dt>
-                  <dd class="tabular">{formatDuration(card.latency)}</dd>
-                </div>
-                {arms.length > 0 && (
-                  <div>
-                    <dt>Changed position when told the answer</dt>
-                    <dd class="tabular">
-                      {card.comparable === 0
-                        ? 'not comparable'
-                        : `${card.moved.length} of ${card.comparable}`}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-              {card.moved.length > 0 && (
-                <p class="card-movers">
-                  {card.moved.join(', ')} moved.{' '}
-                  <a href={`${routes.report(card.question.id)}#framing-heading`}>
-                    See what they said →
-                  </a>
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
-
-  {
-    latest && field && (
-      <section aria-labelledby="framing-home-heading" class="framing-home">
-        <div class="framing-home-headline">
-          <h2 id="framing-home-heading">Framing sensitivity</h2>
-          <p class="framing-figure tabular">
-            {field.moved} <span class="framing-of">of {field.comparable}</span>
-          </p>
-          <p class="framing-caption">
-            models changed at least one answer this edition when a system prompt stated the answer
-            as fact — {arms.map((arm) => arm.label.toLowerCase()).join(' or ')}. Neither moving nor
-            holding is graded as better; the{' '}
-            <a href={`${routes.methodology()}#sensitivity`}>methodology</a> says why.
-          </p>
-        </div>
-        <div class="table-scroll">
-          <table class="movers">
-            <caption class="visually-hidden">Framing sensitivity by vendor, this edition</caption>
-            <thead>
-              <tr>
-                <th scope="col">Vendor</th>
-                {arms.map((arm) => (
-                  <th scope="col" class="numeric">
-                    {arm.label}
-                  </th>
-                ))}
-                <th scope="col" class="numeric">
-                  Overall
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {movers.map((entry) => (
+          <div class="grid-wrap table-scroll">
+            <table class="align-grid">
+              <caption class="visually-hidden">
+                Each model's majority answer to each question, {formatEdition(latest.isoWeek)}
+              </caption>
+              <thead>
                 <tr>
-                  <th scope="row">{entry.model.displayName}</th>
-                  {entry.byCondition.map(({ score }) => (
-                    <td class="numeric">
-                      {score.score === null ? '—' : `${score.moved} of ${score.comparable}`}
+                  <th scope="col">
+                    <span class="visually-hidden">Model</span>
+                  </th>
+                  {asked.map((q) => (
+                    <th scope="col">
+                      <a href={routes.report(q.id)}>{q.subject.replace(/^an? /, '')}</a>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {grid.map((row) => (
+                  <tr>
+                    <th scope="row">{row.model.displayName}</th>
+                    {row.verdicts.map((cell) => (
+                      <td>
+                        <span
+                          class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
+                          title={cell.ok ? undefined : 'no data'}
+                        >
+                          {cell.verdict ? GLYPH[cell.verdict] : '—'}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Agreement</th>
+                  {agreement.map((a) => (
+                    <td>
+                      <span class="agree tabular">{a.total ? formatPercent(a.share) : '—'}</span>
                     </td>
                   ))}
-                  <td class="numeric strong">
-                    {entry.overall.score === null ? '—' : formatPercent(entry.overall.score)}
-                  </td>
                 </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          {twins.length > 0 && (
+            <p class="twins">
+              Thinking alike:{' '}
+              {twins
+                .slice(0, 3)
+                .map((pair) => pair.join(' & '))
+                .join(' · ')}
+              {twins.length > 3 && ` · and ${twins.length - 3} more pairs`}
+            </p>
+          )}
+        </section>
+
+        {sensitivity.length > 0 && (
+          <section class="minds minds-alt" aria-labelledby="sway-heading">
+            <div class="minds-head">
+              <p class="eyebrow">Tell them the answer</p>
+              <h2 id="sway-heading">Some of them believe you.</h2>
+              <p class="minds-note">
+                Share of questions where a model changed its answer once a system prompt stated the
+                answer as fact. Holding firm and following instructions are both defensible; the{' '}
+                <a href={`${routes.methodology()}#sensitivity`}>methodology</a> grades neither.
+              </p>
+            </div>
+            <ol class="sway">
+              {sensitivity.map((entry) => (
+                <li class="sway-row">
+                  <span class="sway-name">{entry.model.displayName}</span>
+                  <span class="sway-bar" aria-hidden="true">
+                    <i style={`width:${Math.round((entry.overall.score ?? 0) * 100)}%`} />
+                  </span>
+                  <span class="sway-value tabular">
+                    {formatPercent(entry.overall.score)}
+                    <small>
+                      {entry.overall.moved} of {entry.overall.comparable}
+                    </small>
+                  </span>
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </ol>
+          </section>
+        )}
+
+        <section class="reports" aria-labelledby="reports-heading">
+          <div class="minds-head">
+            <p class="eyebrow">The full editions</p>
+            <h2 id="reports-heading">Straight-faced analyst reports, weekly.</h2>
+          </div>
+          <ul class="tiles">
+            {asked.map((q, index) => (
+              <li>
+                <a class="tile" href={routes.report(q.id)}>
+                  <span class="tile-number tabular">0{index + 1}</span>
+                  <span class="tile-title">{q.subject.replace(/^an? /, '')}</span>
+                  <span class="tile-sub">{q.reportTitle}</span>
+                  <span class="tile-cta">Read the report →</span>
+                </a>
+              </li>
+            ))}
+            <li>
+              <a class="tile tile-alt" href={routes.methodology()}>
+                <span class="tile-number tabular">—</span>
+                <span class="tile-title">How it is measured</span>
+                <span class="tile-sub">
+                  Latency, tokens, framings, and the scores the reports are built on.
+                </span>
+                <span class="tile-cta">Methodology →</span>
+              </a>
+            </li>
+          </ul>
+          <p class="edition-line">
+            {formatEdition(latest.isoWeek)} · published {formatDate(latest.finishedAt)} ·{' '}
+            <a href={routes.history()}>history</a> ·{' '}
+            <a href={routes.runs()}>
+              {editions === 1 ? 'one edition' : `${editions} editions`} in the archive
+            </a>
+            {latest.isMock && <strong class="mock"> · sample data</strong>}
+          </p>
+        </section>
+      </>
+    ) : (
+      <section class="empty">
+        <h1>Is a hot dog a sandwich?</h1>
+        <p>
+          No editions have been published yet. Run <code>npm run bench -- run --mock</code>.
+        </p>
       </section>
     )
   }
-
-  <section aria-labelledby="reports-heading" class="reports">
-    <h2 id="reports-heading">Reports</h2>
-    <ul class="report-list">
-      {
-        questions.map((question) => (
-          <li>
-            <a href={routes.report(question.id)}>{question.reportTitle}</a>
-            <p class="muted">{question.text}</p>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="archive-links">
-      <a href={routes.history()}>History and trends</a>
-      <span aria-hidden="true"> · </span>
-      <a href={routes.runs()}>
-        {editions === 1 ? 'The archive (one edition)' : `The archive (${editions} editions)`}
-      </a>
-      <span aria-hidden="true"> · </span>
-      <a href={routes.howItWorks()}>How it works</a>
-    </p>
-  </section>
 </Base>
 
 <style>
-  .hero {
-    margin-bottom: var(--space-xl);
-  }
-
-  .kicker {
+  .eyebrow {
+    font-family: var(--font-ui);
     font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--muted);
+    color: var(--accent);
     margin: 0 0 var(--space-2xs);
   }
 
-  .lede {
-    font-size: var(--step-1);
-    color: var(--muted);
+  .minds {
+    margin-block: var(--space-3xl);
+  }
+
+  .minds-head {
     max-width: var(--measure);
+    margin-bottom: var(--space-l);
+  }
+
+  .minds-head h2 {
+    font-size: var(--step-4);
+    margin: 0;
+  }
+
+  .minds-note {
+    margin: var(--space-s) 0 0;
+    color: var(--muted);
+  }
+
+  /* --- Alignment grid ------------------------------------------------------ */
+  .align-grid {
+    border-collapse: separate;
+    border-spacing: 0 var(--space-2xs);
+    width: auto;
+    min-width: min(100%, 40rem);
+  }
+
+  .align-grid th,
+  .align-grid td {
+    border: 0;
+    padding: var(--space-2xs) var(--space-s);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .align-grid thead th {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 800;
+    text-transform: capitalize;
+    letter-spacing: -0.02em;
+  }
+
+  .align-grid thead th a {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .align-grid thead th a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-fill);
+    text-decoration-thickness: 3px;
+  }
+
+  .align-grid tbody th,
+  .align-grid tfoot th {
+    text-align: left;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-strong);
+    white-space: nowrap;
+  }
+
+  .dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.5rem;
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-0);
+    letter-spacing: -0.01em;
+    transition: transform 150ms var(--ease-pop);
+  }
+
+  tr:hover .dot {
+    transform: scale(1.08);
+  }
+
+  .dot-yes {
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  /* Navy ink on the brand orange and teal: white on orange is only 3:1. */
+  .dot-no {
+    background: var(--orange);
+    color: #001769;
+  }
+
+  .dot-other {
+    background: var(--purple);
+    color: #ffffff;
+  }
+
+  .dot-none {
+    background: var(--surface-sunken);
+    color: var(--faint);
+  }
+
+  .align-grid tfoot td {
+    border-top: 2px solid var(--text-strong);
+    padding-top: var(--space-s);
+  }
+
+  .align-grid tfoot th {
+    border-top: 2px solid var(--text-strong);
+    padding-top: var(--space-s);
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .agree {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 800;
+    color: var(--text-strong);
+  }
+
+  .twins {
+    margin: var(--space-m) 0 0;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  /* --- Sway bars ----------------------------------------------------------- */
+  .minds-alt {
+    padding: var(--space-xl) var(--space-l);
+    background: var(--surface);
+    border-radius: var(--radius);
+  }
+
+  .sway {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+    max-width: 48rem;
+  }
+
+  .sway-row {
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) 1fr auto;
+    gap: var(--space-s);
+    align-items: center;
+  }
+
+  .sway-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .sway-bar {
+    display: block;
+    height: 1.25rem;
+    background: var(--surface-sunken);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .sway-bar i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple) 0%, #8a70ff 100%);
+    border-radius: 999px;
+    min-width: 0.25rem;
+    transform-origin: left;
+    animation: grow 900ms var(--ease-out) backwards;
+  }
+
+  .sway-value {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 800;
+    color: var(--text-strong);
+    line-height: 1;
+    min-width: 5ch;
+  }
+
+  .sway-value small {
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  @keyframes grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sway-bar i {
+      animation: none;
+    }
+  }
+
+  /* --- Report tiles -------------------------------------------------------- */
+  .reports {
+    margin-block: var(--space-3xl);
+  }
+
+  .tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+    gap: var(--space-s);
+  }
+
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    height: 100%;
+    padding: var(--space-m);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #000b45 0%, #001769 100%);
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: var(--shadow-sm, var(--shadow-subtle));
+    transition:
+      transform 200ms var(--ease-out),
+      box-shadow 200ms var(--ease-out);
+  }
+
+  .tile:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+
+  .tile-alt {
+    background: var(--surface);
+    color: var(--text-strong);
+    border: 2px solid var(--rule-strong);
+  }
+
+  .tile-number {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--accent-fill);
+    font-size: var(--step-0);
+  }
+
+  .tile-title {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-transform: capitalize;
+    line-height: 1;
+  }
+
+  .tile-sub {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    opacity: 0.8;
+    flex: 1;
+  }
+
+  .tile-cta {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--step--1);
+    margin-top: var(--space-s);
+  }
+
+  .edition-line {
+    margin-top: var(--space-l);
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    color: var(--muted);
   }
 
   .mock {
     color: var(--accent);
   }
 
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
-    gap: var(--space-s);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
-    padding: var(--space-m);
-    background: var(--surface);
-    border-top: 3px solid var(--text-strong);
-  }
-
-  .card-subject {
-    margin: 0;
-    font-size: var(--step--1);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-  }
-
-  .card h3 {
-    margin: 0;
-    font-size: var(--step-1);
-  }
-
-  .card h3 a {
-    color: var(--text-strong);
-    text-decoration: none;
-  }
-
-  .card h3 a:hover {
-    text-decoration: underline;
-  }
-
-  .card-question {
-    margin: 0 0 var(--space-2xs);
-    color: var(--muted);
-    font-size: var(--step--1);
-  }
-
-  .card-verdict {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2xs) var(--space-s);
-    margin-top: var(--space-2xs);
-  }
-
-  .card-verdict-note {
-    margin: 0;
-    font-size: var(--step--1);
-    color: var(--muted);
-  }
-
-  /*
-   * The tally bar. Each segment is a flex item grown by its count, labelled
-   * with the count, and hatched by verdict, so it reads without colour.
-   */
-  .tally {
-    display: flex;
-    height: 1.5rem;
-    margin-top: var(--space-2xs);
-    border: var(--hairline) solid var(--rule-strong);
-    overflow: hidden;
-  }
-
-  .tally-segment {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-basis: 0;
-    min-width: 1.5rem;
-    font-size: var(--step--1);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .tally-yes {
-    background: var(--verdict-yes-bg);
-    color: var(--verdict-yes);
-  }
-
-  .tally-no {
-    background: var(--verdict-no-bg);
-    color: var(--verdict-no);
-    background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgb(0 0 0 / 6%) 4px 6px);
-  }
-
-  .tally-other {
-    background: var(--verdict-other-bg);
-    color: var(--verdict-other);
-    background-image: repeating-linear-gradient(-45deg, transparent 0 4px, rgb(0 0 0 / 6%) 4px 6px);
-  }
-
-  .tally-key {
-    margin: 0;
-    font-size: var(--step--1);
-    color: var(--muted);
-  }
-
-  .card-facts {
-    display: grid;
-    gap: var(--space-3xs);
-    margin: var(--space-2xs) 0 0;
-    font-size: var(--step--1);
-  }
-
-  .card-facts div {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-s);
-    padding-top: var(--space-3xs);
-    border-top: var(--hairline) solid var(--rule);
-  }
-
-  .card-facts dt {
-    color: var(--muted);
-  }
-
-  .card-facts dd {
-    margin: 0;
-    font-weight: 600;
-    text-align: right;
-  }
-
-  .card-movers {
-    margin: var(--space-2xs) 0 0;
-    font-size: var(--step--1);
-  }
-
-  .framing-home {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-    gap: var(--space-l);
-    align-items: start;
-    margin-top: var(--space-2xl);
-    padding: var(--space-l) 0;
-    border-top: 3px solid var(--text-strong);
-    border-bottom: var(--hairline) solid var(--rule);
-  }
-
-  .framing-home h2 {
-    margin-top: 0;
-  }
-
-  .framing-figure {
-    font-family: var(--font-display);
-    font-size: var(--step-4);
-    font-weight: 600;
-    color: var(--text-strong);
-    line-height: 1;
-    margin: 0 0 var(--space-2xs);
-  }
-
-  .framing-of {
-    font-size: var(--step-1);
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  .framing-caption {
-    max-width: var(--measure);
-    color: var(--muted);
-  }
-
-  .movers .strong {
-    font-weight: 600;
-    color: var(--text-strong);
-  }
-
-  .reports {
-    margin-top: var(--space-2xl);
-  }
-
-  .report-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .report-list li + li {
-    margin-top: var(--space-m);
-    padding-top: var(--space-m);
-    border-top: var(--hairline) solid var(--rule);
-  }
-
-  .report-list a {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-  }
-
-  .report-list p {
-    margin: var(--space-3xs) 0 0;
-  }
-
-  .archive-links {
-    margin-top: var(--space-l);
-    font-size: var(--step--1);
+  .empty {
+    padding-block: var(--space-2xl);
   }
 </style>

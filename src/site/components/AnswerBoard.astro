@@ -1,0 +1,1062 @@
+---
+/**
+ * The answer board: the models answer the question in front of you.
+ *
+ * Every sample in a run carries the time its call took and the time to its
+ * first token, so a week's data can be replayed. With JavaScript, each row
+ * starts thinking, its clock runs, and its word lands at the moment it
+ * actually did — scaled by the speed control — then the tally fills in.
+ * Then the framing switch: tell the models the answer, and watch which ones
+ * flip.
+ *
+ * Without JavaScript the board is the control arm, fully rendered, with the
+ * latency bars drawn to scale. Nothing here is invented: every word is the
+ * majority sample verbatim and every bar is a recorded duration.
+ */
+import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
+import { getModelEntry, getQuestionResult } from '../lib/data.ts'
+import { routes } from '../lib/urls.ts'
+import type { BenchmarkRun, ModelResult, Verdict } from '../../schema/run.ts'
+import type { QuestionEntry } from '../../schema/questions.ts'
+
+interface Props {
+  run: BenchmarkRun
+  questions: QuestionEntry[]
+  /** Rendered as the page's h1 when true; otherwise an h2. */
+  headline?: boolean
+}
+
+const { run, questions, headline = true } = Astro.props
+
+interface Row {
+  key: string
+  name: string
+  vendor: string
+  text: string | null
+  verdict: Verdict | null
+  totalMs: number | null
+  ttfbMs: number | null
+  thinking: number | null
+  agree: number
+  n: number
+  error: string | null
+}
+
+/** The word a model landed on: the majority sample, verbatim. */
+function rowFor(result: ModelResult): Row {
+  const majority = result.aggregate.verdict
+  const sample = result.samples.find((s) => s.verdict === majority) ?? result.samples[0] ?? null
+  return {
+    key: `${result.provider}/${result.modelId}`,
+    name: result.displayName,
+    vendor: getModelEntry(result.provider, result.modelId)?.vendor ?? result.provider,
+    text: sample?.text.trim() ?? null,
+    verdict: majority,
+    totalMs: result.aggregate.totalMs?.median ?? null,
+    ttfbMs: result.aggregate.ttfbMs?.median ?? null,
+    thinking: sample?.usage.reasoningTokens ?? null,
+    agree: result.samples.filter((s) => s.verdict === majority).length,
+    n: result.samples.length,
+    error: result.status === 'error' ? (result.error?.category ?? 'unavailable') : null,
+  }
+}
+
+const asked = questions.filter((q) => run.results.some((cell) => cell.questionId === q.id))
+const first = asked[0]
+const conditions = run.conditions
+
+/** Every cell the board can show, keyed by question and condition. */
+const cells: Record<string, { prompt: string; system: string | null; rows: Row[] }> = {}
+for (const question of asked) {
+  for (const condition of conditions) {
+    const cell = getQuestionResult(run, question.id, condition.id)
+    if (!cell) continue
+    cells[`${question.id}|${condition.id}`] = {
+      prompt: cell.prompt,
+      system: cell.systemPrompt,
+      rows: cell.models.map(rowFor),
+    }
+  }
+}
+
+const initial = first ? cells[`${first.id}|${CONTROL_CONDITION_ID}`] : undefined
+const slowest = Math.max(
+  1,
+  ...Object.values(cells).flatMap((c) => c.rows.map((r) => r.totalMs ?? 0)),
+)
+
+const payload = JSON.stringify({
+  questions: asked.map((q) => ({ id: q.id, subject: q.subject, text: q.text })),
+  conditions: conditions.map((c) => ({ id: c.id, label: c.label })),
+  cells,
+  slowest,
+})
+
+const VERDICT_WORD: Record<Verdict, string> = {
+  yes: 'said yes',
+  no: 'said no',
+  other: 'hedged',
+}
+
+/** Framing switch labels, in plain words rather than registry labels. */
+const framingLabel = (id: string, label: string, subject: string) =>
+  id === CONTROL_CONDITION_ID
+    ? 'Just ask'
+    : id === 'asserted'
+      ? `Tell them ${subject} is a sandwich`
+      : id === 'denied'
+        ? `Tell them ${subject} is not a sandwich`
+        : label
+
+const formatMs = (ms: number | null) =>
+  ms === null ? '—' : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`
+
+/** The control tally, for the server-rendered state. */
+const initialCounts: Record<Verdict, number> = { yes: 0, no: 0, other: 0 }
+for (const row of initial?.rows ?? []) if (row.verdict) initialCounts[row.verdict] += 1
+const initialTally = (['yes', 'no', 'other'] as const)
+  .filter((v) => initialCounts[v] > 0)
+  .map((v) => [v, initialCounts[v]] as const)
+
+const Heading = headline ? 'h1' : 'h2'
+---
+
+{
+  first && initial && (
+    <section class="board" data-board aria-labelledby="board-question">
+      <script type="application/json" data-board-data set:html={payload} />
+
+      <div class="board-head">
+        <nav class="subjects" aria-label="Question" data-subjects hidden>
+          {asked.map((q) => (
+            <button
+              type="button"
+              data-question={q.id}
+              aria-pressed={q.id === first.id ? 'true' : 'false'}
+            >
+              {q.subject.replace(/^an? /, '')}
+            </button>
+          ))}
+        </nav>
+
+        <p class="kicker">Every week, the largest AI models are asked one question</p>
+        <Heading id="board-question" class="question">
+          <span data-question-text>{first.text.replace(/ One word answer\.$/, '')}</span>
+        </Heading>
+        <p class="instruction">
+          <span>One word answer.</span>
+          <span class="system" data-system hidden>
+            <span class="system-label">System prompt</span> <q data-system-text />
+          </span>
+        </p>
+      </div>
+
+      <div class="controls" data-controls hidden>
+        <div class="framings" role="group" aria-label="Framing">
+          {conditions.map((c) => (
+            <button
+              type="button"
+              data-condition={c.id}
+              aria-pressed={c.id === CONTROL_CONDITION_ID ? 'true' : 'false'}
+              class:list={['framing', `framing-${c.id}`]}
+            >
+              <span data-framing-label>{framingLabel(c.id, c.label, first.subject)}</span>
+            </button>
+          ))}
+        </div>
+        <div class="playback">
+          <button type="button" class="replay" data-replay>
+            Ask again
+          </button>
+          <button type="button" class="speed" data-speed aria-pressed="false">
+            Real time
+          </button>
+        </div>
+      </div>
+
+      <ol class="rows" data-rows>
+        {initial.rows.map((row) => (
+          <li
+            class:list={['row', row.error && 'row-error']}
+            data-row={row.key}
+            data-verdict={row.verdict ?? 'none'}
+          >
+            <div class="who">
+              <span class="name">{row.name}</span>
+              <span class="vendor">{row.vendor}</span>
+            </div>
+            <div class="answer" data-answer>
+              <span class="word" data-word>
+                {row.error ? 'no answer' : (row.text ?? '—')}
+              </span>
+              <span class="stamp" data-stamp aria-hidden="true" />
+              <span class="thinking" data-thinking aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+            </div>
+            <div class="timing">
+              <span class="bar" aria-hidden="true">
+                <i
+                  class="bar-total"
+                  data-bar-total
+                  style={`width:${row.totalMs ? Math.max(1, (row.totalMs / slowest) * 100) : 0}%`}
+                />
+                <i
+                  class="bar-ttfb"
+                  data-bar-ttfb
+                  style={`width:${row.ttfbMs ? Math.max(0.5, (row.ttfbMs / slowest) * 100) : 0}%`}
+                />
+              </span>
+              <span class="ms tabular" data-ms>
+                {row.error ? row.error.replace('_', ' ') : formatMs(row.totalMs)}
+              </span>
+              <span class="detail" data-detail>
+                {row.error
+                  ? ''
+                  : `${row.thinking ? `${row.thinking} thinking tokens · ` : ''}${
+                      row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''
+                    }`}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div class="tally" data-tally role="status" aria-live="polite">
+        {initialTally.map(([v, count]) => (
+          <span class:list={['tally-item', `tally-${v}`]}>
+            <b class="tabular">{count}</b> {VERDICT_WORD[v]}
+          </span>
+        ))}
+      </div>
+
+      <p class="board-foot">
+        <span data-edition>
+          Recorded {run.isoWeek.replace(/^(\d+)-W(\d+)$/, 'week $2, $1')}
+          {run.isMock && ' from sample fixtures'}. Bars are real durations; words are verbatim.
+        </span>
+        <a href={routes.report(first.id)} data-report-link>
+          Full report →
+        </a>
+      </p>
+    </section>
+  )
+}
+
+<script>
+  /**
+   * The replay and the framing switch. Everything below reads the JSON the
+   * page already carries; nothing is fetched. With this script absent the
+   * board is the control arm, already rendered.
+   */
+  interface Row {
+    key: string
+    name: string
+    vendor: string
+    text: string | null
+    verdict: 'yes' | 'no' | 'other' | null
+    totalMs: number | null
+    ttfbMs: number | null
+    thinking: number | null
+    agree: number
+    n: number
+    error: string | null
+  }
+  interface Cell {
+    prompt: string
+    system: string | null
+    rows: Row[]
+  }
+  interface Data {
+    questions: Array<{ id: string; subject: string; text: string }>
+    conditions: Array<{ id: string; label: string }>
+    cells: Record<string, Cell>
+    slowest: number
+  }
+
+  const root = document.querySelector<HTMLElement>('[data-board]')
+  const dataNode = root?.querySelector<HTMLScriptElement>('[data-board-data]')
+
+  if (root && dataNode) {
+    const data = JSON.parse(dataNode.textContent ?? '{}') as Data
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)
+    const all = <T extends HTMLElement>(sel: string) => Array.from(root.querySelectorAll<T>(sel))
+
+    const rowsList = q<HTMLOListElement>('[data-rows]')!
+    const tally = q('[data-tally]')!
+    const questionText = q('[data-question-text]')!
+    const systemWrap = q('[data-system]')!
+    const systemText = q('[data-system-text]')!
+    const reportLink = q<HTMLAnchorElement>('[data-report-link]')!
+    const speedButton = q<HTMLButtonElement>('[data-speed]')!
+
+    let questionId = data.questions[0]!.id
+    let conditionId = data.conditions[0]!.id
+    let realTime = false
+    let timers: number[] = []
+    let generation = 0
+
+    const cellFor = (qid: string, cid: string) => data.cells[`${qid}|${cid}`]
+    const subjectOf = (qid: string) => data.questions.find((x) => x.id === qid)!.subject
+
+    const formatMs = (ms: number | null) =>
+      ms === null ? '—' : ms < 1000 ? `${Math.round(ms)} ms` : `${(ms / 1000).toFixed(1)} s`
+
+    const WORD = { yes: 'said yes', no: 'said no', other: 'hedged' } as const
+
+    /** The replay speed: real time, or compressed so the slowest lands in ~4 s. */
+    const factor = () => (realTime ? 1 : Math.max(1, data.slowest / 4000))
+
+    function clearTimers() {
+      for (const t of timers) window.clearTimeout(t)
+      timers = []
+    }
+
+    function renderTally(rows: Row[], previous?: Row[]) {
+      const counts = { yes: 0, no: 0, other: 0 }
+      for (const row of rows) if (row.verdict) counts[row.verdict] += 1
+      const parts = (['yes', 'no', 'other'] as const)
+        .filter((v) => counts[v] > 0)
+        .map(
+          (v) =>
+            `<span class="tally-item tally-${v}"><b class="tabular">${counts[v]}</b> ${WORD[v]}</span>`,
+        )
+      if (previous) {
+        const flipped = rows.filter((row) => {
+          const before = previous.find((p) => p.key === row.key)
+          return before?.verdict && row.verdict && before.verdict !== row.verdict
+        }).length
+        parts.push(
+          `<span class="tally-item tally-flipped"><b class="tabular">${flipped}</b> changed their mind</span>`,
+        )
+      }
+      tally.innerHTML = parts.join('')
+      tally.classList.remove('tally-in')
+      void tally.offsetWidth
+      tally.classList.add('tally-in')
+    }
+
+    /** Fill a row's markup from a cell entry. */
+    function paint(li: HTMLElement, row: Row) {
+      li.dataset.verdict = row.verdict ?? 'none'
+      li.classList.toggle('row-error', Boolean(row.error))
+      li.querySelector('[data-word]')!.textContent = row.error ? 'no answer' : (row.text ?? '—')
+      const total = li.querySelector<HTMLElement>('[data-bar-total]')!
+      const ttfb = li.querySelector<HTMLElement>('[data-bar-ttfb]')!
+      total.style.width = row.totalMs ? `${Math.max(1, (row.totalMs / data.slowest) * 100)}%` : '0'
+      ttfb.style.width = row.ttfbMs ? `${Math.max(0.5, (row.ttfbMs / data.slowest) * 100)}%` : '0'
+      li.querySelector('[data-ms]')!.textContent = row.error
+        ? row.error.replace('_', ' ')
+        : formatMs(row.totalMs)
+      li.querySelector('[data-detail]')!.textContent = row.error
+        ? ''
+        : `${row.thinking ? `${row.thinking} thinking tokens · ` : ''}${row.n > 1 ? `${row.agree} of ${row.n} runs agreed` : ''}`
+    }
+
+    /** Ensure the list has one <li> per row in the cell, reusing what exists. */
+    function syncRows(rows: Row[]): HTMLElement[] {
+      const existing = new Map(all<HTMLElement>('[data-row]').map((li) => [li.dataset.row!, li]))
+      const template = existing.values().next().value as HTMLElement
+      const out: HTMLElement[] = []
+      for (const row of rows) {
+        let li = existing.get(row.key)
+        if (!li) {
+          li = template.cloneNode(true) as HTMLElement
+          li.dataset.row = row.key
+          li.querySelector('.name')!.textContent = row.name
+          li.querySelector('.vendor')!.textContent = row.vendor
+          rowsList.append(li)
+        }
+        existing.delete(row.key)
+        out.push(li)
+        rowsList.append(li)
+      }
+      for (const orphan of existing.values()) orphan.remove()
+      return out
+    }
+
+    /** Replay the control arm for the current question: think, then land. */
+    function replay() {
+      clearTimers()
+      generation += 1
+      const mine = generation
+      const cell = cellFor(questionId, conditionId)
+      if (!cell) return
+      const lis = syncRows(cell.rows)
+      root.classList.add('replaying')
+      tally.innerHTML = ''
+
+      lis.forEach((li, index) => {
+        const row = cell.rows[index]!
+        paint(li, row)
+        if (reduced || row.error || row.totalMs === null) {
+          li.classList.remove('thinking', 'first-token', 'landed', 'flip')
+          li.classList.add('landed')
+          return
+        }
+        li.classList.remove('landed', 'first-token', 'flip')
+        li.classList.add('thinking')
+        const ms = li.querySelector<HTMLElement>('[data-ms]')!
+        const started = performance.now()
+        const speed = factor()
+        const tick = () => {
+          if (generation !== mine || !li.classList.contains('thinking')) return
+          const elapsed = (performance.now() - started) * speed
+          ms.textContent = formatMs(Math.min(elapsed, row.totalMs!))
+          requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+        if (row.ttfbMs !== null) {
+          timers.push(
+            window.setTimeout(() => {
+              if (generation === mine) li.classList.add('first-token')
+            }, row.ttfbMs / speed),
+          )
+        }
+        timers.push(
+          window.setTimeout(() => {
+            if (generation !== mine) return
+            li.classList.remove('thinking')
+            li.classList.add('landed')
+            ms.textContent = formatMs(row.totalMs)
+          }, row.totalMs / speed),
+        )
+      })
+
+      const longest = Math.max(0, ...cell.rows.map((r) => (r.error ? 0 : (r.totalMs ?? 0))))
+      timers.push(
+        window.setTimeout(
+          () => {
+            if (generation !== mine) return
+            root.classList.remove('replaying')
+            renderTally(cell.rows)
+          },
+          reduced ? 0 : longest / factor() + 150,
+        ),
+      )
+    }
+
+    /** Switch framing: flip the words that changed, hold the ones that did not. */
+    function setFraming(next: string) {
+      const from = cellFor(questionId, conditionId)
+      const to = cellFor(questionId, next)
+      if (!to || !from) return
+      clearTimers()
+      generation += 1
+      root.classList.remove('replaying')
+      conditionId = next
+      for (const button of all<HTMLButtonElement>('[data-condition]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.condition === next))
+      }
+      systemWrap.hidden = !to.system
+      systemText.textContent = to.system ?? ''
+
+      const lis = syncRows(to.rows)
+      lis.forEach((li, index) => {
+        const row = to.rows[index]!
+        const before = from.rows.find((r) => r.key === row.key)
+        const changed = Boolean(before?.verdict && row.verdict && before.verdict !== row.verdict)
+        li.classList.remove('thinking', 'first-token')
+        li.classList.add('landed')
+        const apply = () => {
+          paint(li, row)
+          li.classList.toggle('flipped', changed)
+        }
+        if (changed && !reduced) {
+          li.classList.remove('flip')
+          void li.offsetWidth
+          li.classList.add('flip')
+          timers.push(window.setTimeout(apply, 220))
+        } else {
+          li.classList.remove('flip', 'flipped')
+          apply()
+          li.classList.toggle('flipped', changed)
+        }
+      })
+      renderTally(to.rows, next === data.conditions[0]!.id ? undefined : from.rows)
+    }
+
+    function setQuestion(next: string) {
+      questionId = next
+      conditionId = data.conditions[0]!.id
+      for (const button of all<HTMLButtonElement>('[data-question]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.question === next))
+      }
+      for (const button of all<HTMLButtonElement>('[data-condition]')) {
+        button.setAttribute('aria-pressed', String(button.dataset.condition === conditionId))
+        const label = button.querySelector('[data-framing-label]')!
+        const subject = subjectOf(next)
+        label.textContent =
+          button.dataset.condition === 'asserted'
+            ? `Tell them ${subject} is a sandwich`
+            : button.dataset.condition === 'denied'
+              ? `Tell them ${subject} is not a sandwich`
+              : label.textContent
+      }
+      const question = data.questions.find((x) => x.id === next)!
+      questionText.textContent = question.text.replace(/ One word answer\.$/, '')
+      systemWrap.hidden = true
+      reportLink.href = reportLink.href.replace(/reports\/[^/]+\//, `reports/${next}/`)
+      for (const li of all('[data-row]')) li.classList.remove('flipped', 'flip')
+      replay()
+    }
+
+    for (const button of all<HTMLButtonElement>('[data-question]')) {
+      button.addEventListener('click', () => setQuestion(button.dataset.question!))
+    }
+    for (const button of all<HTMLButtonElement>('[data-condition]')) {
+      button.addEventListener('click', () => setFraming(button.dataset.condition!))
+    }
+    q('[data-replay]')!.addEventListener('click', () => {
+      for (const li of all('[data-row]')) li.classList.remove('flipped', 'flip')
+      setFraming(data.conditions[0]!.id)
+      replay()
+    })
+    speedButton.addEventListener('click', () => {
+      realTime = !realTime
+      speedButton.setAttribute('aria-pressed', String(realTime))
+      speedButton.textContent = realTime ? 'Real time: on' : 'Real time'
+    })
+
+    // Reveal the controls only once they can work.
+    q('[data-controls]')!.hidden = false
+    q('[data-subjects]')!.hidden = data.questions.length < 2
+
+    // The opening act.
+    replay()
+  }
+</script>
+
+<style>
+  .board {
+    margin-block: 0 var(--space-2xl);
+  }
+
+  /*
+   * The hero band bleeds to the viewport edges: navy ground, white question,
+   * teal instruction. It is the first thing on the page and it should feel
+   * like a curtain going up.
+   */
+  .board-head {
+    --hero-text: #ffffff;
+    --hero-muted: #b6bdd6;
+    margin-inline: calc(50% - 50vw);
+    padding: var(--space-xl) max(var(--space-m), calc(50vw - var(--content-width) / 2))
+      var(--space-2xl);
+    background:
+      radial-gradient(60% 80% at 100% 0%, rgb(108 65 240 / 35%) 0%, transparent 60%),
+      linear-gradient(135deg, #000b45 0%, #001769 55%, #120c3f 100%);
+    color: var(--hero-text);
+    margin-bottom: var(--space-l);
+  }
+
+  .kicker {
+    font-size: var(--step-0);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-fill);
+    margin: 0 0 var(--space-s);
+  }
+
+  .question {
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+    margin: 0 0 var(--space-m);
+    max-width: 12ch;
+    color: var(--hero-text);
+    text-wrap: balance;
+  }
+
+  .instruction {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    align-items: baseline;
+    font-family: var(--font-text);
+    font-style: italic;
+    font-size: var(--step-2);
+    color: var(--hero-muted);
+    margin: 0;
+  }
+
+  .system {
+    font-size: var(--step-1);
+    font-style: normal;
+    color: #001769;
+    padding: var(--space-3xs) var(--space-s);
+    background: var(--accent-fill);
+    border-radius: var(--radius-sm);
+  }
+
+  .system-label {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: var(--space-2xs);
+  }
+
+  .subjects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-l);
+  }
+
+  .subjects button,
+  .framing,
+  .replay,
+  .speed {
+    font: inherit;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    font-size: var(--step--1);
+    letter-spacing: 0.01em;
+    padding: var(--space-2xs) var(--space-s);
+    border: 2px solid var(--text-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-strong);
+    cursor: pointer;
+    transition:
+      background 150ms var(--ease-out),
+      color 150ms var(--ease-out),
+      transform 150ms var(--ease-out);
+  }
+
+  .subjects button:hover,
+  .framing:hover,
+  .replay:hover,
+  .speed:hover {
+    transform: translateY(-1px);
+  }
+
+  .subjects button[aria-pressed='true'],
+  .framing[aria-pressed='true'],
+  .speed[aria-pressed='true'] {
+    background: var(--text-strong);
+    color: var(--bg);
+  }
+
+  .framing-asserted[aria-pressed='true'] {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+    color: #001769;
+  }
+
+  .framing-denied[aria-pressed='true'] {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #001769;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-bottom: var(--space-m);
+  }
+
+  .framings,
+  .playback {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .replay,
+  .speed {
+    border-style: dashed;
+    font-weight: 600;
+  }
+
+  /* The question tabs sit on the navy band, so they take the band's ink. */
+  .board-head .subjects button {
+    border-color: rgb(255 255 255 / 55%);
+    color: var(--hero-text);
+    background: transparent;
+  }
+
+  .board-head .subjects button[aria-pressed='true'] {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+    color: #001769;
+  }
+
+  /* --- Rows --------------------------------------------------------------- */
+
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 2px solid var(--text-strong);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(9rem, 1.2fr) minmax(8rem, 1fr) minmax(10rem, 2fr);
+    gap: var(--space-s);
+    align-items: center;
+    padding: var(--space-s) 0;
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .who {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-strong);
+  }
+
+  .vendor {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* The word. */
+  .answer {
+    position: relative;
+    min-height: 2.6em;
+    display: flex;
+    align-items: center;
+    perspective: 600px;
+  }
+
+  .word {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    padding: 0.15em 0.5em;
+    border-radius: var(--radius);
+    color: var(--text-strong);
+    background: var(--surface-sunken);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transform-origin: left center;
+  }
+
+  .row[data-verdict='yes'] .word {
+    background: var(--verdict-yes-bg);
+    color: var(--verdict-yes);
+  }
+
+  .row[data-verdict='no'] .word {
+    background: var(--verdict-no-bg);
+    color: var(--verdict-no);
+  }
+
+  .row[data-verdict='other'] .word {
+    background: var(--verdict-other-bg);
+    color: var(--verdict-other);
+    font-size: var(--step-1);
+    white-space: normal;
+  }
+
+  .row-error .word {
+    background: transparent;
+    color: var(--faint);
+    font-size: var(--step-0);
+    font-style: italic;
+    font-weight: 400;
+    padding-left: 0;
+  }
+
+  .thinking {
+    display: none;
+    gap: 0.3em;
+    align-items: center;
+  }
+
+  .thinking i {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: var(--faint);
+    animation: blink 1s infinite;
+  }
+
+  .thinking i:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .thinking i:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .row.thinking .word {
+    display: none;
+  }
+
+  .row.thinking .thinking {
+    display: flex;
+  }
+
+  .row.thinking.first-token .thinking i {
+    background: var(--accent-fill);
+  }
+
+  .row.landed .word {
+    animation: land 500ms var(--ease-pop);
+  }
+
+  .row.flip .word {
+    animation: flip 440ms var(--ease-out);
+  }
+
+  .stamp {
+    display: none;
+    margin-left: var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    border: 2px solid currentcolor;
+    padding: 0.1em 0.4em;
+    border-radius: var(--radius);
+    transform: rotate(-6deg);
+  }
+
+  .row.flipped .stamp {
+    display: inline-block;
+    animation: stamp 350ms var(--ease-pop);
+  }
+
+  .row.flipped .stamp::before {
+    content: 'flipped';
+  }
+
+  /* Timing. */
+  .timing {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-s);
+    align-items: center;
+  }
+
+  .bar {
+    position: relative;
+    display: block;
+    height: 0.75rem;
+    background: var(--surface-sunken);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .bar i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+
+  .bar-total {
+    background: var(--text-strong);
+    opacity: 0.25;
+  }
+
+  .bar-ttfb {
+    background: var(--accent-fill);
+  }
+
+  .row.thinking .bar i {
+    transform-origin: left;
+    animation: grow 1s linear infinite;
+  }
+
+  .ms {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--text-strong);
+    min-width: 4.5ch;
+    text-align: right;
+  }
+
+  .detail {
+    grid-column: 1 / -1;
+    font-size: var(--step--1);
+    color: var(--muted);
+    min-height: 1.4em;
+  }
+
+  .row.thinking .detail {
+    visibility: hidden;
+  }
+
+  /* Tally. */
+  .tally {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s) var(--space-l);
+    align-items: baseline;
+    padding: var(--space-m) 0;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    min-height: 3.5rem;
+  }
+
+  .tally-item b {
+    font-size: var(--step-4);
+    font-weight: 700;
+    line-height: 1;
+    margin-right: 0.15em;
+  }
+
+  .tally-yes {
+    color: var(--verdict-yes);
+  }
+
+  .tally-no {
+    color: var(--verdict-no);
+  }
+
+  .tally-other {
+    color: var(--verdict-other);
+  }
+
+  .tally-flipped {
+    color: var(--text-strong);
+  }
+
+  .tally-flipped b {
+    color: var(--accent);
+  }
+
+  .tally-in .tally-item {
+    animation: rise 500ms var(--ease-out) backwards;
+  }
+
+  .tally-in .tally-item:nth-child(2) {
+    animation-delay: 100ms;
+  }
+
+  .tally-in .tally-item:nth-child(3) {
+    animation-delay: 200ms;
+  }
+
+  .tally-in .tally-item:nth-child(4) {
+    animation-delay: 300ms;
+  }
+
+  .board-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .board-foot a {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  @keyframes blink {
+    0%,
+    80%,
+    100% {
+      opacity: 0.25;
+    }
+    40% {
+      opacity: 1;
+    }
+  }
+
+  /* Transform only: a fading word would momentarily fail contrast. */
+  @keyframes land {
+    0% {
+      transform: scale(0.4) translateY(0.4em);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes flip {
+    0% {
+      transform: rotateX(0);
+    }
+    50% {
+      transform: rotateX(90deg);
+    }
+    100% {
+      transform: rotateX(0);
+    }
+  }
+
+  @keyframes stamp {
+    0% {
+      transform: rotate(-6deg) scale(2.2);
+    }
+    100% {
+      transform: rotate(-6deg) scale(1);
+    }
+  }
+
+  @keyframes rise {
+    0% {
+      transform: translateY(0.6em);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes grow {
+    0% {
+      transform: scaleX(0.96);
+    }
+    50% {
+      transform: scaleX(1);
+    }
+    100% {
+      transform: scaleX(0.96);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row.landed .word,
+    .row.flip .word,
+    .row.flipped .stamp,
+    .tally-in .tally-item,
+    .thinking i,
+    .row.thinking .bar i {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    .row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .timing {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

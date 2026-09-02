@@ -44,11 +44,30 @@ h5,
 h6 {
   font-family: var(--font-display);
   color: var(--text-strong);
-  font-weight: 600;
+  font-weight: 800;
   line-height: var(--leading-tight);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   margin: 0 0 var(--space-s);
+}
+
+/*
+ * Interface text — navigation, controls, labels, tables, figures — is set in
+ * the sans. Running prose stays in the serif. Numbers in a table read better
+ * in Montserrat's tabular figures than in a text face.
+ */
+button,
+input,
+select,
+label,
+nav,
+table,
+figcaption,
+dt,
+.kicker,
+.tabular,
+.metric {
+  font-family: var(--font-ui);
 }
 
 h1 {

@@ -61,6 +61,14 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
 
+    {/* The En Dash faces: Montserrat for headings and interface, Merriweather for prose. */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400..900;1,400..900&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&display=swap"
+    />
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
@@ -115,8 +123,10 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
     <header class="masthead">
       <div class="container masthead-inner">
         <a class="wordmark" href={routes.home()}>
+          <span class="brand" aria-label="En Dash">
+            <span class="brand-en">en</span><span class="brand-dash">DASH</span>
+          </span>
           <span class="wordmark-name">Sandwich Classification Benchmark</span>
-          <span class="wordmark-sub">Independent cross-vendor AI research</span>
         </a>
 
         <div class="masthead-controls">
@@ -136,7 +146,7 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
           <ThemeToggle />
         </div>
       </div>
-      <div class="rule-double"></div>
+      <div class="brand-line"></div>
     </header>
 
     <main id="main" class="container">
@@ -169,8 +179,10 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
           </p>
         </div>
         <p class="footer-note">
-          A research programme of no consequence whatsoever, published weekly. The questions are
-          silly on purpose; the measurement is not. See <a href={routes.about()}>About</a>.
+          An <a href="https://endash.us">En Dash Consulting</a> research programme of no consequence whatsoever,
+          published weekly. The questions are silly on purpose; the measurement is not. See <a
+            href={routes.about()}>About</a
+          >.
         </p>
       </div>
     </footer>
@@ -192,27 +204,45 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
   }
 
   .wordmark {
-    display: block;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-s);
     text-decoration: none;
     color: inherit;
   }
 
-  .wordmark-name {
-    display: block;
-    font-family: var(--font-display);
-    font-size: var(--step-1);
-    font-weight: 600;
-    letter-spacing: -0.01em;
+  /* The En Dash mark: "en" carrying the dash, "DASH" in italic. */
+  .brand {
+    font-family: var(--font-text);
+    font-weight: 900;
+    font-size: var(--step-2);
+    letter-spacing: -0.02em;
     color: var(--text-strong);
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  .wordmark-sub {
-    display: block;
+  .brand-en {
+    border-bottom: 4px solid var(--accent-fill);
+    padding-bottom: 0.05em;
+  }
+
+  .brand-dash {
+    font-style: italic;
+  }
+
+  .wordmark-name {
+    font-family: var(--font-display);
     font-size: var(--step--1);
-    color: var(--muted);
-    letter-spacing: 0.08em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-top: var(--space-3xs);
+    color: var(--muted);
+  }
+
+  .brand-line {
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-fill) 0%, #7bffea 100%);
   }
 
   .masthead-controls {
@@ -246,8 +276,12 @@ const isCurrent = (href: string) => (href.replace(/\/+$/, '') || '/') === curren
   /* The current page is marked by weight and a rule, not by colour alone. */
   .nav-list a[aria-current='page'] {
     color: var(--text-strong);
+    font-weight: 700;
+    border-bottom-color: var(--accent-fill);
+  }
+
+  .nav-list {
     font-weight: 600;
-    border-bottom-color: var(--accent);
   }
 
   main {
