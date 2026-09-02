@@ -5,9 +5,9 @@
       "isoWeek": "2026-W36",
       "editionKey": "2026-W36",
       "path": "data/runs/2026-W36.json",
-      "runId": "9707a0d5-d9f7-4332-b0d7-0a3fdd7ad825",
-      "startedAt": "2026-09-02T02:44:43.013Z",
-      "finishedAt": "2026-09-02T02:52:27.081Z",
+      "runId": "f2621d33-00f3-48bb-9759-1ab2407c3045",
+      "startedAt": "2026-09-02T16:36:10.281Z",
+      "finishedAt": "2026-09-02T16:42:42.086Z",
       "isMock": false,
       "questionIds": [
         "hot-dog",
@@ -27,8 +27,8 @@
           "okCount": 11,
           "errorCount": 0,
           "verdicts": {
-            "yes": 6,
-            "no": 5,
+            "yes": 5,
+            "no": 6,
             "other": 0
           }
         },
