@@ -172,22 +172,23 @@ file that implements it.
 
 ## Repository layout
 
-| Path               | What lives there                                                                  |
-| ------------------ | --------------------------------------------------------------------------------- |
-| `questions.json`   | The questions, their framings, and the copy the site derives from them            |
-| `models.json`      | The models: provider, id, pricing, and whether each is enabled                    |
-| `src/providers/`   | One adapter per vendor, no Node imports, credentials by injection                 |
-| `src/runner/`      | Asks every model every question under every framing; classifies and aggregates    |
-| `src/schema/`      | Zod schemas for runs, questions, models, conditions; the data contract            |
-| `src/data/`        | Reading, migrating and indexing `data/runs/`                                      |
-| `src/cli/`         | The `bench` command: `run`, `smoke`, `record`, `providers`, `init`                |
-| `src/site/`        | The Astro site: pages, components, styles, and the SEO and prose helpers          |
-| `data/runs/`       | One JSON file per edition; superseded editions kept under `superseded/`           |
-| `scripts/`         | Build-time renderers (OG cards, PDFs, screenshots) and the audit scripts          |
-| `tests/`           | Vitest suites, including the ones that build the site and drive it in a browser   |
-| `docs/`            | Tutorial, provider setup, self-hosting, DNS, data schema, accessibility           |
-| `proxy/`           | A Cloudflare Worker for the deferred "run your own" page; not deployed by default |
-| `.rex/`, `.hench/` | Product requirements and work records kept by [n-dx](https://n-dx.dev)            |
+| Path               | What lives there                                                                   |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `site.json`        | The site's name, publisher, repository and contact route: a fork changes this file |
+| `questions.json`   | The questions, their framings, and the copy the site derives from them             |
+| `models.json`      | The models: provider, id, pricing, and whether each is enabled                     |
+| `src/providers/`   | One adapter per vendor, no Node imports, credentials by injection                  |
+| `src/runner/`      | Asks every model every question under every framing; classifies and aggregates     |
+| `src/schema/`      | Zod schemas for runs, questions, models, conditions; the data contract             |
+| `src/data/`        | Reading, migrating and indexing `data/runs/`                                       |
+| `src/cli/`         | The `bench` command: `run`, `smoke`, `record`, `providers`, `init`                 |
+| `src/site/`        | The Astro site: pages, components, styles, and the SEO and prose helpers           |
+| `data/runs/`       | One JSON file per edition; superseded editions kept under `superseded/`            |
+| `scripts/`         | Build-time renderers (OG cards, PDFs, screenshots) and the audit scripts           |
+| `tests/`           | Vitest suites, including the ones that build the site and drive it in a browser    |
+| `docs/`            | Tutorial, provider setup, self-hosting, DNS, data schema, accessibility            |
+| `proxy/`           | A Cloudflare Worker for the deferred "run your own" page; not deployed by default  |
+| `.rex/`, `.hench/` | Product requirements and work records kept by [n-dx](https://n-dx.dev)             |
 
 ## Adding a provider
 

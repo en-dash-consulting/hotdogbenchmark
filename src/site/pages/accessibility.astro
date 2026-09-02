@@ -5,6 +5,7 @@
  * honest about the gap between automated checks and a person with a screen
  * reader.
  */
+import { getSite } from '../lib/data.ts'
 import Base from '../layouts/Base.astro'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
@@ -13,7 +14,7 @@ const CHECKED = '2026-09-02'
 
 <Base
   title="Accessibility"
-  description="What the Hotdog Benchmark site aims for in accessibility, what has been checked, and how to report a problem."
+  description={`What the ${getSite().name} site aims for in accessibility, what has been checked, and how to report a problem.`}
 >
   <div class="prose">
     <h1>Accessibility</h1>

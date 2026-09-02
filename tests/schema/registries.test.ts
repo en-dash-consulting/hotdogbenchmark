@@ -10,7 +10,9 @@ import {
   loadModelsRegistry,
   loadQuestions,
   loadQuestionsRegistry,
+  loadSiteRegistry,
 } from '../../src/data/registries.ts'
+import { defaultSiteRegistry, preparedBy, siteNameCaps } from '../../src/schema/site.ts'
 import { PROVIDER_IDS } from '../../src/env.ts'
 
 const questionsRegistry = loadQuestionsRegistry()
@@ -224,5 +226,36 @@ describe('enabledModels and findModel', () => {
   it('finds an entry by provider and model id', () => {
     expect(findModel(modelsRegistry, 'anthropic', 'claude-opus-5')?.vendor).toBe('Anthropic')
     expect(findModel(modelsRegistry, 'anthropic', 'nope')).toBeUndefined()
+  })
+})
+
+describe('the committed site.json', () => {
+  const site = loadSiteRegistry()
+
+  it('names the site, its publisher and its repository', () => {
+    expect(siteNameCaps(site)).toBe('HOTDOG BENCHMARK')
+    expect(preparedBy(site)).toBe('Hotdog Benchmark, an En Dash research program')
+    expect(site.repository).toBe('https://github.com/en-dash-consulting/hotdogbenchmark')
+    expect(site.publisher.url).toBe('https://endash.us')
+  })
+
+  it('configures the En Dash contact route for the ask-a-question block', () => {
+    expect(site.contact?.messageField).toBe('contactMessage')
+    expect(site.contact?.params.contactSource).toBe('hotdogbenchmark-lol')
+  })
+})
+
+describe('defaultSiteRegistry', () => {
+  it('names a fork after its question and points it at its own repository', () => {
+    const site = defaultSiteRegistry({
+      subject: 'a burrito',
+      repository: 'https://github.com/someone/burritos',
+    })
+    expect(site.name).toBe('Burrito Benchmark')
+    expect(site.wordmark).toEqual(['Burrito', 'Benchmark'])
+    expect(site.repository).toBe('https://github.com/someone/burritos')
+    expect(site.contact).toBeNull()
+    expect(site.more).toBeNull()
+    expect(site.credits).toEqual([])
   })
 })

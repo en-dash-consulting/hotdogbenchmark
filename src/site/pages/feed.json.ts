@@ -5,7 +5,8 @@
  * subscriber sees the result without opening the page.
  */
 import type { APIRoute } from 'astro'
-import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion, getQuestions, getSite } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 import { formatEdition } from '../lib/format.ts'
 import { consensusOf, feedDescription } from '../lib/prose.ts'
 
@@ -41,7 +42,7 @@ export const GET: APIRoute = ({ site }) => {
     JSON.stringify(
       {
         version: 'https://jsonfeed.org/version/1.1',
-        title: 'HOTDOG BENCHMARK',
+        title: siteNameCaps(getSite()),
         home_page_url: url(''),
         feed_url: url('feed.json'),
         description: feedDescription(getQuestions()),

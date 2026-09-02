@@ -92,7 +92,7 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
 /** Kept as a string so the formatter cannot fold the line breaks out of a <pre>. */
 const QUICKSTART = [
   `git clone ${REPO_URL}.git`,
-  'cd hotdogbenchmark && npm install',
+  `cd ${REPO_URL.split('/').at(-1)} && npm install`,
   'npm run bench -- run --mock --out tmp/mock-run.json',
   'npm run dev',
 ].join('\n')

@@ -1,0 +1,33 @@
+{
+  "$schema": "./src/schema/site.ts",
+  "name": "Hotdog Benchmark",
+  "wordmark": ["Hotdog", "Benchmark"],
+  "shortName": "Hotdog Bench",
+  "byline": "an En Dash research program",
+  "publisher": { "name": "En Dash Consulting", "url": "https://endash.us" },
+  "repository": "https://github.com/en-dash-consulting/hotdogbenchmark",
+  "mark": { "src": "brand/endash-square.svg", "alt": "En Dash" },
+  "footerNote": "An En Dash Consulting research program of no consequence whatsoever, published weekly. The questions are silly on purpose; the measurement is not.",
+  "credits": [
+    {
+      "label": "n-dx",
+      "href": "https://n-dx.dev",
+      "description": "our AI-powered development toolkit"
+    }
+  ],
+  "more": {
+    "lead": "More from En Dash, free and no API key:",
+    "links": [
+      { "label": "Learn LangGraph", "href": "https://endash.us/apps/learn-langgraph" },
+      { "label": "Learn LangChain", "href": "https://endash.us/apps/learn-langchain" },
+      { "label": "Learn AgentCore", "href": "https://endash.us/apps/learn-agentcore" }
+    ]
+  },
+  "contact": {
+    "url": "https://endash.us/",
+    "params": { "showContact": "true", "contactSource": "hotdogbenchmark-lol" },
+    "messageField": "contactMessage",
+    "titleField": "contactTitle",
+    "title": "Submit a question to the Hotdog Benchmark"
+  }
+}

@@ -20,11 +20,14 @@ import { formatDate, formatEdition } from './format.ts'
 import { consensusOf, questionHeadline } from './prose.ts'
 import { questionShifts } from './sensitivity.ts'
 import { REPO_URL } from './urls.ts'
+import { getSite } from './data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 
 /** Search engines show about this much of a description before cutting it. */
 export const DESCRIPTION_LIMIT = 160
 
-const SITE_NAME = 'HOTDOG BENCHMARK'
+const SITE_NAME = siteNameCaps(getSite())
+const PUBLISHER = { '@type': 'Organization', ...getSite().publisher }
 
 /**
  * Keep a description under the limit, cutting at a word boundary. The
@@ -352,7 +355,7 @@ export function editionDatasetJsonLd(
     datePublished: run.finishedAt,
     license: 'https://opensource.org/license/mit',
     isAccessibleForFree: true,
-    creator: { '@type': 'Organization', name: 'En Dash Consulting', url: 'https://endash.us' },
+    creator: PUBLISHER,
     distribution: {
       '@type': 'DataDownload',
       encodingFormat: 'application/json',
@@ -398,10 +401,10 @@ export function webSiteJsonLd(origin: URL, description: string): object {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'HOTDOG BENCHMARK',
+    name: SITE_NAME,
     url: origin.href,
     description,
     inLanguage: 'en',
-    publisher: { '@type': 'Organization', name: 'En Dash Consulting', url: 'https://endash.us' },
+    publisher: PUBLISHER,
   }
 }

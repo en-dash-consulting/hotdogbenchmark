@@ -34,7 +34,7 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | [A question pipeline in the registry: proposed, scheduled, live, with credit, rendered as "Up next"](./a-question-pipeline-in-the-4f41ea.md) | pending |
 | [Framing-arm pages become a comparison against the control, not a second report](./framing-arm-pages-become-a-6bc0e9.md) | completed |
 | [Next edition and subscribe: a weekly publication that says when it publishes next](./next-edition-and-subscribe-a-d630bc.md) | pending |
-| [One question switcher, one archive, and no page that points at where things used to be](./one-question-switcher-one-23da64.md) | in_progress |
+| [One question switcher, one archive, and no page that points at where things used to be](./one-question-switcher-one-23da64.md) | completed |
 | [Phone defects a reader sees today, and the two gate gaps that let them through](./phone-defects-a-reader-sees-ff2cbe.md) | completed |
 | [Report diet: every model once, and no chart that cannot separate anything](./report-diet-every-model-once-46579d.md) | completed |
-| [site.json: the name, byline, repository and contact route come from a file, so a fork is a fork](./site-json-the-name-byline-c32f52.md) | pending |
+| [site.json: the name, byline, repository and contact route come from a file, so a fork is a fork](./site-json-the-name-byline-c32f52.md) | in_progress |

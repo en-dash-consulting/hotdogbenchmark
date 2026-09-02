@@ -15,7 +15,7 @@
  * which is why the site-wide budget check excludes it.
  */
 import Base from '../../layouts/Base.astro'
-import { getModels } from '../../lib/data.ts'
+import { getModels, getSite } from '../../lib/data.ts'
 import { REPO_URL, RUN_YOUR_OWN_ENABLED, routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -33,7 +33,7 @@ const models = getModels()
 
 <Base
   title="Run your own"
-  description="Run the Hotdog Benchmark on your own question, with your own provider keys."
+  description={`Run the ${getSite().name} on your own question, with your own provider keys.`}
 >
   <div class="prose">
     <h1>Run your own benchmark</h1>
@@ -102,7 +102,7 @@ npm run bench -- run</code></pre>
 
     <div class="identity-row">
       <p id="identity" class="muted">Checking sign-in…</p>
-      <button type="button" id="sign-in" hidden>Sign in with En Dash</button>
+      <button type="button" id="sign-in" hidden>Sign in with {getSite().publisher.name}</button>
       <button type="button" id="sign-out" hidden>Sign out</button>
     </div>
 

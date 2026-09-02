@@ -18,6 +18,7 @@ solved in the smallest honest way and documented.
 
 | Path               | Purpose                                                                          |
 | ------------------ | -------------------------------------------------------------------------------- |
+| `site.json`        | The site's name, publisher, repository and contact route; a fork is a fork here  |
 | `questions.json`   | Questions, framings' claims and denials, and the copy the site derives from them |
 | `models.json`      | Models with provider, id, pricing, docs reference, and an `enabled` switch       |
 | `src/providers/`   | One adapter per vendor; `fetch` and credentials injected; no Node imports        |

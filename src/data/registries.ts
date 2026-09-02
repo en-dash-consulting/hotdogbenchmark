@@ -1,5 +1,5 @@
 /**
- * Reading the three registries off disk.
+ * Reading the four registries off disk.
  *
  * The schemas in `src/schema/` are pure so they can run anywhere; this module
  * is the Node-only edge that turns files into validated objects. The runner CLI
@@ -25,6 +25,7 @@ import {
   type ConditionEntry,
   type ConditionsRegistry,
 } from '../schema/conditions.ts'
+import { parseSiteRegistry, type SiteRegistry } from '../schema/site.ts'
 
 /**
  * The repository root, found by walking up from the working directory to the
@@ -95,4 +96,10 @@ export function loadConditionsRegistry(root: string = REPO_ROOT): ConditionsRegi
 /** The enabled conditions, control first. This is what the runner runs. */
 export function loadConditions(root: string = REPO_ROOT): ConditionEntry[] {
   return enabledConditions(loadConditionsRegistry(root))
+}
+
+/** Load and validate `site.json`: the name, publisher and repository the site is built for. */
+export function loadSiteRegistry(root: string = REPO_ROOT): SiteRegistry {
+  const path = root + 'site.json'
+  return parseSiteRegistry(readJson(path), path)
 }

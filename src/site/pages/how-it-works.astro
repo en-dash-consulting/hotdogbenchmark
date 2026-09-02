@@ -7,6 +7,7 @@
  * missing marker fails the build rather than producing a page that describes
  * code that no longer exists.
  */
+import { getSite } from '../lib/data.ts'
 import Base from '../layouts/Base.astro'
 import { excerpt } from '../lib/excerpt.ts'
 import { sourceUrl, routes } from '../lib/urls.ts'
@@ -60,7 +61,7 @@ const STEPS = [
 
 <Base
   title="How it works"
-  description="The pipeline behind the Hotdog Benchmark, from question registry to published report."
+  description={`The pipeline behind the ${getSite().name}, from question registry to published report.`}
 >
   <div class="prose">
     <h1>How it works</h1>

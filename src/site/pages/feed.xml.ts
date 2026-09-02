@@ -2,7 +2,8 @@
  * RSS of weekly editions, for readers that do not speak JSON Feed.
  */
 import type { APIRoute } from 'astro'
-import { getAllRuns, getModelResults, getQuestion, getQuestions } from '../lib/data.ts'
+import { getAllRuns, getModelResults, getQuestion, getQuestions, getSite } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 import { formatEdition } from '../lib/format.ts'
 import { feedDescription } from '../lib/prose.ts'
 
@@ -44,7 +45,7 @@ export const GET: APIRoute = ({ site }) => {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     '  <channel>',
-    '    <title>HOTDOG BENCHMARK</title>',
+    `    <title>${escape(siteNameCaps(getSite()))}</title>`,
     `    <link>${escape(url(''))}</link>`,
     `    <description>${escape(feedDescription(getQuestions()))}</description>`,
     '    <language>en</language>',

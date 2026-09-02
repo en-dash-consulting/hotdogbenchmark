@@ -9,7 +9,8 @@
  * it below.
  */
 import '../styles/global.css'
-import { getLatestRun } from '../lib/data.ts'
+import { getLatestRun, getSite } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 import { formatDate, formatEdition } from '../lib/format.ts'
 import { REPO_URL, RUN_YOUR_OWN_ENABLED, href, routes } from '../lib/urls.ts'
 import ThemeToggle from '../components/ThemeToggle.astro'
@@ -49,14 +50,9 @@ const jsonLdBlocks = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).m
   JSON.stringify(block).replace(/</g, '\\u003c'),
 )
 
-/** The En Dash learning apps: free, no API key, same tab. */
-const LEARNING_APPS = [
-  { href: 'https://endash.us/apps/learn-langgraph', label: 'Learn LangGraph' },
-  { href: 'https://endash.us/apps/learn-langchain', label: 'Learn LangChain' },
-  { href: 'https://endash.us/apps/learn-agentcore', label: 'Learn AgentCore' },
-]
-
-const SITE_NAME = 'HOTDOG BENCHMARK'
+/** Who publishes this, what it is called, and where its code lives: site.json. */
+const site = getSite()
+const SITE_NAME = siteNameCaps(site)
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
@@ -138,9 +134,9 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="theme-color" content="#001769" />
 
-    {/* The En Dash square, the same icon set the other En Dash properties use. */}
+    {/* The publisher's mark, from site.json; the same icon set as its other properties. */}
     <link rel="icon" href={href('favicon.ico')} sizes="any" />
-    <link rel="icon" type="image/svg+xml" href={href('brand/endash-square.svg')} />
+    <link rel="icon" type="image/svg+xml" href={href(site.mark.src)} />
     <link rel="apple-touch-icon" sizes="180x180" href={href('apple-touch-icon.png')} />
     <link rel="manifest" href={href('manifest.webmanifest')} />
     <link rel="canonical" href={canonical} />
@@ -160,7 +156,7 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
     }
 
     {
-      /* The En Dash faces, self-hosted and preloaded: no third-party request,
+      /* The type, self-hosted and preloaded: no third-party request,
          and the two upright files are in flight before the stylesheet asks
          for them. font-display: optional means a font that has not arrived by
          first paint is skipped for that page view rather than swapped in
@@ -232,14 +228,13 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
         <a class="wordmark" href={routes.home()}>
           <img
             class="brand-mark"
-            src={href('brand/endash-square.svg')}
-            alt="En Dash"
+            src={href(site.mark.src)}
+            alt={site.mark.alt}
             width="44"
             height="44"
           />
           <span class="wordmark-name">
-            <span class="wordmark-line">Hotdog</span>
-            <span class="wordmark-line">Benchmark</span>
+            {site.wordmark.map((line) => <span class="wordmark-line">{line}</span>)}
           </span>
         </a>
 
@@ -290,27 +285,32 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
             <a href={routes.methodology()}>Methodology</a>
             <span aria-hidden="true"> · </span>
             <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
-            <span aria-hidden="true"> · </span>
-            <a href="https://n-dx.dev">Built with n-dx</a>
+            {
+              site.credits.map((credit) => (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <a href={credit.href}>Built with {credit.label}</a>
+                </>
+              ))
+            }
           </p>
         </div>
         <p class="footer-note">
-          An <a href="https://endash.us">En Dash Consulting</a> research program of no consequence whatsoever,
-          published weekly. The questions are silly on purpose; the measurement is not. See <a
-            href={routes.about()}>About</a
-          >.
+          {site.footerNote} See <a href={routes.about()}>About</a>.
         </p>
-        <p class="footer-apps">
-          More from En Dash, free and no API key:{' '}
-          {
-            LEARNING_APPS.map((app, index) => (
-              <>
-                {index > 0 && <span aria-hidden="true"> · </span>}
-                <a href={app.href}>{app.label}</a>
-              </>
-            ))
-          }
-        </p>
+        {
+          site.more && (
+            <p class="footer-apps">
+              {site.more.lead}{' '}
+              {site.more.links.map((link, index) => (
+                <>
+                  {index > 0 && <span aria-hidden="true"> · </span>}
+                  <a href={link.href}>{link.label}</a>
+                </>
+              ))}
+            </p>
+          )
+        }
       </div>
     </footer>
   </body>

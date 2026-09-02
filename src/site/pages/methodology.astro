@@ -12,7 +12,7 @@ import { SCORE_DEFINITIONS } from '../lib/scores.ts'
 import { SENSITIVITY_DEFINITION } from '../lib/sensitivity.ts'
 import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
 import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../../schema/conditions.ts'
-import { getConditionsRegistry, getModels, getQuestions } from '../lib/data.ts'
+import { getConditionsRegistry, getModels, getQuestions, getSite } from '../lib/data.ts'
 import { questionHeadline } from '../lib/prose.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
@@ -48,7 +48,7 @@ const contested = exampleQuestion
 
 <Base
   title="Methodology and caveats"
-  description="How the Hotdog Benchmark is conducted, what it measures, and what it does not."
+  description={`How the ${getSite().name} is conducted, what it measures, and what it does not.`}
 >
   <div class="prose">
     <h1>How it is measured</h1>

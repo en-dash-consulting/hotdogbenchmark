@@ -10,6 +10,8 @@
  * hardcoded root-relative link.
  */
 
+import { loadSiteRegistry, REPO_ROOT } from '../../data/registries.ts'
+
 /** Astro's configured base path, always with a trailing slash. */
 const BASE: string = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
@@ -60,8 +62,8 @@ export function profileAnchor(model: { provider: string; modelId: string }): str
   return `profile-${model.provider}-${model.modelId}`.replace(/[^a-zA-Z0-9-]/g, '-')
 }
 
-/** The GitHub repository this site is built from. */
-export const REPO_URL = 'https://github.com/en-dash-consulting/hotdogbenchmark'
+/** The GitHub repository this site is built from, from site.json. */
+export const REPO_URL: string = loadSiteRegistry(REPO_ROOT).repository
 
 /** Deep link to a source file, so the site can point at the code it describes. */
 export function sourceUrl(path: string, ref = 'main'): string {

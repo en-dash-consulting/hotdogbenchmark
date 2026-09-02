@@ -11,6 +11,8 @@
  * actually serious about.
  */
 import { documentReference, formatDate, formatEdition } from '../../lib/format.ts'
+import { getSite } from '../../lib/data.ts'
+import { preparedBy } from '../../../schema/site.ts'
 import type { BenchmarkRun, RunCondition } from '../../../schema/run.ts'
 import type { QuestionEntry } from '../../../schema/questions.ts'
 
@@ -38,10 +40,11 @@ const {
   pdfHref = null,
 } = Astro.props
 const asked = questionText ?? question.text
+const site = getSite()
 ---
 
 <header class="report-masthead">
-  <p class="kicker">Hotdog Benchmark</p>
+  <p class="kicker">{site.name}</p>
   <h1>{question.reportTitle}</h1>
 
   <dl class="meta">
@@ -55,7 +58,7 @@ const asked = questionText ?? question.text
     </div>
     <div>
       <dt>Prepared by</dt>
-      <dd>Hotdog Benchmark, an En Dash research program</dd>
+      <dd>{preparedBy(site)}</dd>
     </div>
     <div>
       <dt>Document</dt>

@@ -33,7 +33,9 @@ import {
   type ConditionEntry,
   type ConditionsRegistry,
 } from '../schema/conditions.ts'
+import { execFileSync } from 'node:child_process'
 import { loadConditionsRegistry, loadModels, REPO_ROOT } from '../data/registries.ts'
+import { defaultSiteRegistry, siteRegistrySchema, type SiteRegistry } from '../schema/site.ts'
 import { writeManifest } from '../data/index.ts'
 import { RUNS_DIR } from '../data/paths.ts'
 import { FIXTURE_DIR } from './mock-fixtures.ts'
@@ -57,6 +59,16 @@ export interface InitOptions {
   denyTemplate?: string
   /** False writes the control condition alone. */
   framings: boolean
+  /**
+   * The site's own name, byline, publisher and repository, for site.json.
+   * Absent, the name comes from the first subject and the repository from
+   * the git remote, and the fork stops calling itself by the upstream's name.
+   */
+  siteName?: string
+  byline?: string
+  publisherName?: string
+  publisherUrl?: string
+  repository?: string
   /** Allow real editions (isMock: false) to be removed. */
   force: boolean
   /** Skip the confirmation prompt. */
@@ -78,6 +90,10 @@ Run with no --question from a terminal to be prompted instead.
   --assert <template> System prompt for the asserted arm; "{subject}" is filled per question
   --deny <template>   System prompt for the denied arm
   --no-framings       Write the control condition only
+  --site-name <text>  The site's name; default is "<Subject> Benchmark"
+  --byline <text>     Follows the name on reports; default "an independent benchmark"
+  --publisher <name>  Who publishes it, with --publisher-url; default is the repository
+  --repository <url>  The GitHub repository; default is the git remote named origin
   --force             Also remove real editions (isMock: false) under data/runs/
   --yes               Skip the confirmation prompt
   --dry-run           Print what would change and write nothing`
@@ -121,6 +137,7 @@ export function withOneWordSuffix(text: string): string {
 interface InitPlan {
   questions: QuestionsRegistry
   conditions: ConditionsRegistry
+  site: SiteRegistry
   /** Ids of questions whose text had the suffix appended, so the output can say so. */
   suffixed: string[]
   /** Repository-relative paths that will be removed. */
@@ -244,10 +261,14 @@ function buildPlan(root: string, options: InitOptions): InitPlan | null {
     return null
   }
 
+  const site = buildSite(root, options, questionsResult.data.questions[0]!)
+  if (site === null) return null
+
   const runs = scanRuns(root)
   return {
     questions: questionsResult.data,
     conditions: conditionsResult.data,
+    site,
     suffixed,
     fixtures: listFixtures(root),
     mockRuns: runs.mock,
@@ -294,6 +315,60 @@ function buildConditions(
     conditionRecord(framing(DENIED_ID, 'Denied', denyTemplate, 'denies the claim')),
   )
   return conditions
+}
+
+/**
+ * The site registry: named after the question, pointing at this repository.
+ *
+ * A fork is a copy of the upstream's site.json until this runs, and a fork
+ * that keeps calling itself the Hotdog Benchmark by En Dash, with a front page
+ * telling visitors to clone the upstream, is the one thing forkability is
+ * for. So the defaults are the fork's own: the name from the subject, the
+ * repository from the git remote, the publisher nobody in particular. Flags
+ * override each; the mark, credits, contact and footer are the neutral
+ * defaults unless the current file already differs from the upstream's.
+ */
+function buildSite(root: string, options: InitOptions, first: QuestionEntry): SiteRegistry | null {
+  const repository =
+    options.repository ?? repositoryFromGit(root) ?? 'https://github.com/your-org/your-benchmark'
+  const fresh = defaultSiteRegistry({ subject: first.subject, repository })
+  const name = options.siteName ?? fresh.name
+  const words = name.split(/\s+/).filter(Boolean)
+  const candidate = {
+    $schema: './src/schema/site.ts',
+    ...fresh,
+    name,
+    wordmark: words.length > 1 ? [words.slice(0, -1).join(' '), words.at(-1)!] : [name],
+    shortName: name.length <= 12 ? name : (words[0] ?? name).slice(0, 12),
+    byline: options.byline ?? fresh.byline,
+    publisher: {
+      name: options.publisherName ?? fresh.publisher.name,
+      url: options.publisherUrl ?? (options.publisherName ? repository : fresh.publisher.url),
+    },
+    repository,
+    mark: { src: fresh.mark.src, alt: name },
+  }
+  const result = siteRegistrySchema.safeParse(candidate)
+  if (!result.success) {
+    console.error(`site.json would not validate:\n${formatIssues(result.error.issues)}`)
+    return null
+  }
+  return result.data
+}
+
+/** The GitHub repository behind the git remote named origin, as an https URL, or null. */
+function repositoryFromGit(root: string): string | null {
+  try {
+    const remote = execFileSync('git', ['config', '--get', 'remote.origin.url'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+    const match = /github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?$/.exec(remote)
+    return match ? `https://github.com/${match[1]}/${match[2]}` : null
+  } catch {
+    return null
+  }
 }
 
 /** A condition in the key order the file uses, with no undefined fields. */
@@ -377,6 +452,10 @@ function printPlan(plan: InitPlan, force: boolean): void {
     console.log(`  Appended "${ONE_WORD_SUFFIX}" to: ${plan.suffixed.join(', ')}`)
   }
 
+  console.log(
+    `\nSite: ${plan.site.name}, ${plan.site.byline}; published by ${plan.site.publisher.name}; ${plan.site.repository}`,
+  )
+
   const { conditions } = plan.conditions
   console.log(`\nConditions (${conditions.length}): ${conditions.map((c) => c.id).join(', ')}`)
   for (const condition of conditions) {
@@ -414,8 +493,10 @@ function printPlan(plan: InitPlan, force: boolean): void {
 function apply(root: string, plan: InitPlan, force: boolean): number {
   writeFileSync(join(root, 'questions.json'), JSON.stringify(plan.questions, null, 2) + '\n')
   writeFileSync(join(root, 'conditions.json'), JSON.stringify(plan.conditions, null, 2) + '\n')
+  writeFileSync(join(root, 'site.json'), JSON.stringify(plan.site, null, 2) + '\n')
   console.log('Wrote questions.json')
   console.log('Wrote conditions.json')
+  console.log('Wrote site.json')
 
   const removed = [...plan.fixtures, ...plan.mockRuns, ...(force ? plan.realRuns : [])]
   for (const path of removed) unlinkSync(join(root, path))

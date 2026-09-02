@@ -8,7 +8,8 @@
  */
 import type { APIRoute } from 'astro'
 import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
-import { getAllRuns, getLatestRun, getModels, getQuestions } from '../lib/data.ts'
+import { getAllRuns, getLatestRun, getModels, getQuestions, getSite } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 import { formatDate, formatDuration, formatEdition } from '../lib/format.ts'
 import { executiveSummary, keyFindings, questionHeadline } from '../lib/prose.ts'
 import { flippedNames, tallyPhrase } from '../lib/seo.ts'
@@ -24,7 +25,7 @@ export const GET: APIRoute = ({ site }) => {
   const runs = getAllRuns()
   const lines: string[] = []
 
-  lines.push('# HOTDOG BENCHMARK, in full')
+  lines.push(`# ${siteNameCaps(getSite())}, in full`)
   lines.push('')
   lines.push(
     `Every week ${models.length} AI models are asked "${questions[0]?.text ?? 'Is a hot dog a sandwich? One word answer.'}" and similar questions, under three framings: asked plainly, told the answer is yes, told the answer is no. This file carries every answer from the latest edition. The site is ${url('')}; the map of its pages is ${url('llms.txt')}; the raw JSON and the code are at ${REPO_URL} (MIT).`,

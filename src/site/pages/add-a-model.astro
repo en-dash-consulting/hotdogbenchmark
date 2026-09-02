@@ -7,7 +7,7 @@
  * back to the exact files.
  */
 import Base from '../layouts/Base.astro'
-import { getModels } from '../lib/data.ts'
+import { getModels, getSite } from '../lib/data.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
 const models = getModels()
@@ -16,7 +16,7 @@ const providerCount = new Set(models.map((model) => model.provider)).size
 
 <Base
   title="Add a model"
-  description="How to add a model or a whole new provider to the Hotdog Benchmark."
+  description={`How to add a model or a whole new provider to the ${getSite().name}.`}
 >
   <div class="prose">
     <h1>Add a model</h1>
