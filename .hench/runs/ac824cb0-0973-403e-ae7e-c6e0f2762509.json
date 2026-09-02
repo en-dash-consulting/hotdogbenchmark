@@ -1,0 +1,28 @@
+{
+  "id": "ac824cb0-0973-403e-ae7e-c6e0f2762509",
+  "taskId": "58a30379-8953-4b95-a808-5c6167549bcb",
+  "taskTitle": "Complete the launch checklist and tag v1.0.0",
+  "startedAt": "2026-09-02T12:40:00-04:00",
+  "finishedAt": "2026-09-02T17:27:49.718Z",
+  "status": "completed",
+  "turns": 34,
+  "summary": "Changelog cut, version bumped, checklist rewritten; Nick tagged v1.0.0, published the release, and set the social preview",
+  "tokenUsage": {
+    "input": 2660,
+    "output": 35474,
+    "cacheCreationInput": 62493,
+    "cacheReadInput": 18185506
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 2660,
+    "output": 35474,
+    "cached": 18247999,
+    "total": 18286133
+  }
+}

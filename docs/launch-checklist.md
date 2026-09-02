@@ -4,11 +4,6 @@ The state of the launch as of 2026-09-02. Everything below the first section is 
 
 ## Still to do
 
-- [ ] Tag `v1.0.0` and publish the release, using the 1.0.0 section of `CHANGELOG.md` as the
-      notes: `git tag -a v1.0.0 -m "First edition" && git push --tags`, then
-      `gh release create v1.0.0 --notes-file CHANGELOG.md`.
-- [ ] Re-upload the social preview from <https://hotdogbenchmark.lol/og/default.png>, which now
-      carries the En Dash square.
 - [ ] Register the property with search-ops: `robots.txt`, `sitemap.xml`, `llms.txt` and the
       IndexNow key file are live.
 - [ ] Fund DeepSeek and add a Together key, then re-enable those models in `models.json` and
@@ -30,9 +25,10 @@ The state of the launch as of 2026-09-02. Everything below the first section is 
       commit its edition; deletion and force-push protection stay on
 - [x] First workflow-produced edition (Week 36, 2026) committed by the bot and published
 - [x] `LICENSE` (MIT, 2026), `SECURITY.md` with a working contact, `.well-known/security.txt`
-- [x] `CHANGELOG.md` cut for 1.0.0
+- [x] `CHANGELOG.md` cut for 1.0.0; `v1.0.0` tagged and released on 2026-09-02
 - [x] README with badges, live link, screenshots, quickstart, and the repository layout
-- [x] OpenGraph cards per page, generated at build; `docs/launch-post.md` drafted
+- [x] OpenGraph cards per page, generated at build, and the social preview set from the
+      default card; `docs/launch-post.md` drafted
 - [x] CI green: lint, typecheck, unit and browser tests, data validation, site build, axe in
       four modes, responsive audit at seven widths, Lighthouse at 100 in every category
 
