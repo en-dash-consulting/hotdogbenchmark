@@ -182,15 +182,18 @@ page without the backend promises your visitors something you cannot deliver.
 
 ## Optional: a custom domain
 
-1. Add a `CNAME` file at the repository root containing your domain, e.g. `bench.example.com`.
-2. Point a `CNAME` DNS record at `<your-username>.github.io`.
+1. Put your domain in `public/CNAME`, e.g. `bench.example.com` (one line, no scheme). The
+   build copies it to the root of the site, which is where GitHub Pages looks for it.
+2. Point DNS at GitHub Pages: a `CNAME` record for a subdomain at `<your-username>.github.io`,
+   or the four `A` and four `AAAA` records for an apex. The exact records and the verification
+   commands are in [`launch-dns-and-hosting.md`](launch-dns-and-hosting.md).
 3. **Settings → Pages → Custom domain**, enter the domain, and enable **Enforce HTTPS**.
-4. Add a repository _variable_ (not a secret) named `SITE_URL` with the full origin, e.g.
-   `https://bench.example.com`.
 
-That last step matters: without `SITE_URL` the build assumes a project-page base path of
-`/<repo-name>/` and every internal link on your custom domain gets that prefix, producing 404s
-everywhere while the local build looks perfect.
+That is all: when `public/CNAME` exists the build sets the canonical origin to
+`https://<that domain>` and the base path to `/`, so canonicals, the sitemap and the feeds
+carry your host. Without it the build assumes a project-page base path of `/<repo-name>/`, which
+is right for `<your-username>.github.io/<repo-name>/` and wrong for a custom domain. A `SITE_URL`
+repository variable still overrides both if you serve the site from somewhere else entirely.
 
 ---
 
