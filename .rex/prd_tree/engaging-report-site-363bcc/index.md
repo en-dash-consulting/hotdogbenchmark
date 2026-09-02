@@ -27,4 +27,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | [Framing sensitivity over time on the history page](./framing-sensitivity-over-time-a4b0ea.md) | pending |
 | [Hover and focus detail on every chart without JavaScript](./hover-and-focus-detail-on-every-07b92a.md) | pending |
 | [Reasoning made visible: show thinking as a phase, a cost, and a variable](./reasoning-made-visible-show-67daa7.md) | completed |
-| [Replay the edition: an animated timeline of the week's calls, from recorded timings](./replay-the-edition-an-animated-127d59.md) | pending |
+| [Replay the edition: an animated timeline of the week's calls, from recorded timings](./replay-the-edition-an-animated-127d59.md) | completed |

@@ -19,3 +19,11 @@ description: "The history pages are empty because the archive has one edition, a
 lastModified: "2026-09-02T03:23:15.630Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---
+
+## Children
+
+| Title | Status |
+|-------|--------|
+| [A history page that says something with one edition: spread across samples and models](./a-history-page-that-says-1ef3a2.md) | pending |
+| [Edition cadence option: weekly by default, daily for forks that want a denser record](./edition-cadence-option-weekly-bfcd69.md) | pending |
+| [Keep every run: superseded editions move aside instead of being deleted](./keep-every-run-superseded-a3313a.md) | completed |

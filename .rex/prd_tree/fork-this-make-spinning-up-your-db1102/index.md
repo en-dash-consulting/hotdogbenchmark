@@ -19,3 +19,13 @@ description: "The point of the repository is that anyone can clone it, swap the 
 lastModified: "2026-09-02T03:23:25.631Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---
+
+## Children
+
+| Title | Status |
+|-------|--------|
+| [bench init: swap the questions and framings interactively and clear stale fixtures](./bench-init-swap-the-questions-63d31b.md) | pending |
+| [CONTRIBUTING sections and issue templates for adding a provider, a model, and a question](./contributing-sections-and-issue-57ade3.md) | pending |
+| [docs/fork-this.md: clone to deployed site with your own question, start to finish](./docs-fork-this-md-clone-to-820d0a.md) | pending |
+| [Fork-me section on the front page](./fork-me-section-on-the-front-page-8dbc7b.md) | completed |
+| [Site copy driven by the registries, so a non-sandwich question set renders correctly](./site-copy-driven-by-the-76c385.md) | pending |
