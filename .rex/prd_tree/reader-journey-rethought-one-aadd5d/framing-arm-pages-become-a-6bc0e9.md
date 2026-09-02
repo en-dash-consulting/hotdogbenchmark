@@ -2,7 +2,7 @@
 id: "6bc0e93a-4028-47a0-9ef2-00bf5dcd2d7d"
 level: "feature"
 title: "Framing-arm pages become a comparison against the control, not a second report"
-status: "pending"
+status: "in_progress"
 priority: "medium"
 tags:
   - "site"
@@ -10,12 +10,13 @@ tags:
   - "conditions"
   - "seo"
 source: "UX review 2026-09-02"
+startedAt: "2026-09-02T21:51:18.194Z"
 acceptanceCriteria:
   - "An arm page renders no quadrant, standings, scorecards or profiles; it renders the arm's KPI tiles beside the control's and a per-model comparison with verbatim answers"
   - "The condition nav and the arm's title, description and OG card are unchanged"
   - "The build test for the arm pages is updated and the launch word floor still passes for them"
   - "A decision on keeping or folding the arm pages is recorded on this item with the measured heights"
 description: "/reports/hot-dog/asserted/ and /denied/ re-render the whole report (quadrant, leaderboard, scorecards, profiles, data table) under the arm. The composite score is verdict-agnostic, so the standings under a framing are nearly the control's standings, and the page itself says the control is the canonical document. Nine full report pages for three reports, each with its own OG card and sitemap entry, splitting the crawl signal and the reader's attention.\n\n**After.** An arm page is the diff: its masthead with the system prompt as sent, the KPI tiles for the arm beside the control's (two columns, one row), then one table per model of control verdict, arm verdict, moved or held, the verbatim answer under each, and the latency and token change. Nothing that would be identical to the control is repeated. The condition nav stays. The arm page keeps its URL, title, description and OG card, because those already exist and the asserted and denied framings are legitimate search queries, but its canonical is itself and its content is now different enough to deserve indexing.\n\nIf after the report diet the comparison fits comfortably on the canonical report under the framing section, drop the arm pages and redirect them with the 404 page's pattern; that is the smaller site and the better one. Decide by measuring the canonical report's height with the comparison inlined."
-lastModified: "2026-09-02T20:42:32.382Z"
+lastModified: "2026-09-02T21:51:18.206Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

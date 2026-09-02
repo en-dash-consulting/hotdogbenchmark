@@ -1,0 +1,417 @@
+---
+/**
+ * One framing arm against the control: what the system prompt did.
+ *
+ * An arm page used to re-render the whole report under the arm. The
+ * composite score is verdict-agnostic, so those standings were nearly the
+ * control's standings, and the page said so itself. This is the diff
+ * instead: the field's position under each, then one row per model with its
+ * verdict and verbatim answer under both, whether it moved, and how much
+ * longer or shorter the answer took. Nothing that would be identical to the
+ * control is repeated.
+ */
+import VerdictBadge from './VerdictBadge.astro'
+import { CONTROL_CONDITION_ID } from '../../../schema/conditions.ts'
+import { formatDuration, formatEdition, formatInteger, NOT_REPORTED } from '../../lib/format.ts'
+import { consensusOf } from '../../lib/prose.ts'
+import { tallyPhrase } from '../../lib/seo.ts'
+import {
+  framingShiftUnder,
+  modelsInRun,
+  replayedFromControl,
+  resultIn,
+  verdictShift,
+} from '../../lib/sensitivity.ts'
+import type { BenchmarkRun, ModelResult, RunCondition } from '../../../schema/run.ts'
+import type { QuestionEntry } from '../../../schema/questions.ts'
+import { routes } from '../../lib/urls.ts'
+
+interface Props {
+  run: BenchmarkRun
+  question: QuestionEntry
+  condition: RunCondition
+  systemPrompt: string | null
+}
+
+const { run, question, condition, systemPrompt } = Astro.props
+
+const controlResults =
+  run.results.find(
+    (cell) => cell.questionId === question.id && cell.conditionId === CONTROL_CONDITION_ID,
+  )?.models ?? []
+const armResults =
+  run.results.find((cell) => cell.questionId === question.id && cell.conditionId === condition.id)
+    ?.models ?? []
+
+const answering = (results: ModelResult[]) => results.filter((r) => r.samples.length > 0)
+const medianOf = (entries: ModelResult[], pick: (r: ModelResult) => number | null | undefined) => {
+  const values = entries.map(pick).filter((v): v is number => v != null)
+  if (values.length === 0) return null
+  const sorted = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!
+}
+
+/** What a model said, and how consistently, in one arm. */
+function said(result: ModelResult | null): { text: string; agreement: string } | null {
+  if (!result || result.samples.length === 0 || replayedFromControl(result)) return null
+  const majority = result.aggregate.verdict
+  const agreeing = result.samples.filter((s) => s.verdict === majority).length
+  const first = result.samples.find((s) => s.verdict === majority) ?? result.samples[0]!
+  return {
+    text: first.text.trim(),
+    agreement:
+      result.samples.length === 1 ? 'single sample' : `${agreeing} of ${result.samples.length}`,
+  }
+}
+
+/** "+1.2 s", "−300 ms", or "same": the arm's median against the control's. */
+function delta(
+  control: number | null | undefined,
+  treated: number | null | undefined,
+  format: (value: number) => string,
+): { text: string; direction: 'up' | 'down' | 'flat' | 'none' } {
+  if (control == null || treated == null) return { text: NOT_REPORTED, direction: 'none' }
+  const difference = treated - control
+  if (Math.abs(difference) < 1e-9) return { text: 'same', direction: 'flat' }
+  return {
+    text: `${difference > 0 ? '+' : '−'}${format(Math.abs(difference))}`,
+    direction: difference > 0 ? 'up' : 'down',
+  }
+}
+
+const rows = modelsInRun(run)
+  .map((model) => {
+    const control = resultIn(run, question.id, CONTROL_CONDITION_ID, model)
+    const treated = resultIn(run, question.id, condition.id, model)
+    if (!control && !treated) return null
+    const shift = verdictShift(control, treated)
+    return {
+      model,
+      control,
+      treated,
+      shift,
+      label: framingShiftUnder(shift).label,
+      saidControl: said(control),
+      saidTreated: said(treated),
+      latency: delta(
+        control?.aggregate.totalMs?.median,
+        treated?.aggregate.totalMs?.median,
+        formatDuration,
+      ),
+      tokens: delta(
+        control?.aggregate.outputTokens?.median,
+        treated?.aggregate.outputTokens?.median,
+        (v) => formatInteger(v),
+      ),
+    }
+  })
+  .filter((row): row is NonNullable<typeof row> => row !== null)
+
+const comparable = rows.filter((row) => row.shift.status !== 'incomparable')
+const moved = comparable.filter((row) => row.shift.status === 'moved')
+const held = comparable.length - moved.length
+
+const controlConsensus = consensusOf(controlResults)
+const armConsensus = consensusOf(armResults)
+const POSITION = { yes: 'Affirmative', no: 'Negative', other: 'Non-committal' } as const
+
+const pairs = [
+  {
+    label: 'Consensus position',
+    control: controlConsensus.verdict ? POSITION[controlConsensus.verdict] : 'None',
+    arm: armConsensus.verdict ? POSITION[armConsensus.verdict] : 'None',
+    controlSub: tallyPhrase(controlResults),
+    armSub: tallyPhrase(armResults),
+  },
+  {
+    label: 'Median latency',
+    control: formatDuration(
+      medianOf(answering(controlResults), (r) => r.aggregate.totalMs?.median),
+    ),
+    arm: formatDuration(medianOf(answering(armResults), (r) => r.aggregate.totalMs?.median)),
+    controlSub: null,
+    armSub: null,
+  },
+  {
+    label: 'Median output tokens',
+    control: formatInteger(
+      medianOf(answering(controlResults), (r) => r.aggregate.outputTokens?.median),
+    ),
+    arm: formatInteger(medianOf(answering(armResults), (r) => r.aggregate.outputTokens?.median)),
+    controlSub: null,
+    armSub: null,
+  },
+]
+
+const armLabel = condition.label.toLowerCase()
+---
+
+<section aria-labelledby="arm-heading" class="arm">
+  <h2 id="arm-heading">What the {armLabel} framing did</h2>
+  <p class="arm-lede">
+    {
+      systemPrompt ? (
+        <>
+          Every model was told <q>{systemPrompt}</q> as a system prompt, then asked the question.
+        </>
+      ) : (
+        <>Every model was asked under the {armLabel} framing.</>
+      )
+    }{' '}
+    Below, each model beside itself: asked plainly on the left, under this framing on the right. Changing
+    position is not worse than holding it; the{' '}
+    <a href={`${routes.methodology()}#sensitivity`}>methodology</a> grades neither.
+  </p>
+
+  <ul class="arm-kpis">
+    <li class="kpi kpi-lead">
+      <p class="kpi-label">Held vs. control</p>
+      <p class="kpi-value tabular">
+        {held}
+        <span class="kpi-of">of {comparable.length}</span>
+      </p>
+      <p class="kpi-sub">
+        {
+          comparable.length === 0
+            ? 'no comparable models'
+            : `kept their answer; ${moved.length} moved`
+        }
+      </p>
+    </li>
+    {
+      pairs.map((pair) => (
+        <li class="kpi kpi-pair">
+          <p class="kpi-label">{pair.label}</p>
+          <dl class="pair">
+            <div>
+              <dt>Asked plainly</dt>
+              <dd class="tabular">{pair.control}</dd>
+              {pair.controlSub && <dd class="pair-sub">{pair.controlSub}</dd>}
+            </div>
+            <div>
+              <dt>{condition.label}</dt>
+              <dd class="tabular">{pair.arm}</dd>
+              {pair.armSub && <dd class="pair-sub">{pair.armSub}</dd>}
+            </div>
+          </dl>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="table-scroll table-stack" tabindex="0" role="region" aria-label="Comparison table">
+    <table role="table" class="arm-table">
+      <caption>
+        Each model asked plainly and under the {armLabel} framing, {question.subject},{' '}
+        {formatEdition(run.isoWeek)}
+      </caption>
+      <thead>
+        <tr role="row">
+          <th scope="col" role="columnheader">Model</th>
+          <th scope="col" role="columnheader">Asked plainly</th>
+          <th scope="col" role="columnheader">{condition.label}</th>
+          <th scope="col" role="columnheader">vs. control</th>
+          <th scope="col" role="columnheader" class="numeric">Latency</th>
+          <th scope="col" role="columnheader" class="numeric">Output tokens</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr role="row" class:list={[row.shift.status === 'moved' && 'row-moved']}>
+              <th scope="row" role="rowheader">
+                {row.model.displayName}
+              </th>
+              <td role="cell" data-label="Asked plainly">
+                <VerdictBadge verdict={row.control?.aggregate.verdict ?? null} />
+                {row.saidControl ? (
+                  <span class="said">
+                    <q>{row.saidControl.text}</q>
+                    <span class="agreement">{row.saidControl.agreement}</span>
+                  </span>
+                ) : (
+                  <span class="said muted">no usable response</span>
+                )}
+              </td>
+              <td role="cell" data-label={condition.label}>
+                {replayedFromControl(row.treated) ? (
+                  <span class="said muted">not recorded under this framing</span>
+                ) : (
+                  <>
+                    <VerdictBadge verdict={row.treated?.aggregate.verdict ?? null} />
+                    {row.saidTreated ? (
+                      <span class="said">
+                        <q>{row.saidTreated.text}</q>
+                        <span class="agreement">{row.saidTreated.agreement}</span>
+                      </span>
+                    ) : (
+                      <span class="said muted">no usable response</span>
+                    )}
+                  </>
+                )}
+              </td>
+              <td role="cell" class:list={['shift', row.shift.status]} data-label="vs. control">
+                {row.label}
+              </td>
+              <td
+                role="cell"
+                class:list={['numeric', 'delta', row.latency.direction]}
+                data-label="Latency"
+              >
+                {row.latency.text}
+              </td>
+              <td
+                role="cell"
+                class:list={['numeric', 'delta', row.tokens.direction]}
+                data-label="Output tokens"
+              >
+                {row.tokens.text}
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="footnote">
+    Each cell shows the majority answer, verbatim, and how many of the samples agreed with it.
+    Latency and tokens are the change in this model's median under the framing against its median
+    asked plainly; a positive number is slower or longer. The full standings, quadrant and vendor
+    profiles are on the <a href={routes.report(question.id)}>canonical report</a>, which this page
+    does not repeat.
+  </p>
+</section>
+
+<style>
+  .arm {
+    margin-block: var(--space-xl);
+  }
+
+  .arm-lede {
+    max-width: var(--measure);
+    color: var(--muted);
+  }
+
+  .arm-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+    gap: var(--space-s);
+    list-style: none;
+    margin: var(--space-m) 0 var(--space-l);
+    padding: 0;
+  }
+
+  .kpi {
+    padding: var(--space-s);
+    background: var(--surface);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .kpi-label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 600;
+    color: var(--text-strong);
+    margin: 0;
+    line-height: var(--leading-tight);
+  }
+
+  .kpi-of {
+    font-size: var(--step-0);
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .kpi-sub {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin: var(--space-3xs) 0 0;
+  }
+
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .pair dt {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-bottom: var(--space-3xs);
+  }
+
+  .pair dd {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 600;
+    color: var(--text-strong);
+    line-height: var(--leading-tight);
+  }
+
+  .pair .pair-sub {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: var(--space-3xs);
+  }
+
+  .arm-table th[scope='row'] {
+    min-width: 11rem;
+  }
+
+  .said {
+    display: block;
+    margin-top: var(--space-3xs);
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    color: var(--text);
+    max-width: 22rem;
+  }
+
+  .said q {
+    quotes: '“' '”';
+  }
+
+  .agreement {
+    margin-left: var(--space-2xs);
+    color: var(--faint);
+    font-family: var(--font-ui);
+    font-size: 0.8em;
+  }
+
+  /* The word does the work; the weight is a second, redundant cue. */
+  .shift.moved {
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .row-moved th {
+    border-left: 3px solid var(--accent);
+    padding-left: var(--space-2xs);
+  }
+
+  .delta.flat,
+  .delta.none {
+    color: var(--faint);
+  }
+
+  .footnote {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-2xs);
+    max-width: var(--measure);
+  }
+</style>

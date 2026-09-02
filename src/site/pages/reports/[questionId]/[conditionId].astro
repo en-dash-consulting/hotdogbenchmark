@@ -1,35 +1,21 @@
 ---
 /**
- * One question's report under one non-control framing, for the latest edition.
+ * One question under one non-control framing, for the latest edition: the
+ * comparison against the control.
  *
- * The same components as the canonical report, fed the arm's cells instead of
- * the control's, under a masthead that says which framing this is and shows
- * the system prompt that produced it. The control report is the canonical
- * document; this page exists so a reader can see the whole field under a
- * framing rather than only the verdict cells the comparison shows.
+ * The control report is the canonical document. This page is the diff: the
+ * masthead with the system prompt as sent, the field's position under each,
+ * then every model beside itself with its verbatim answers, whether it moved,
+ * and what the framing cost in time and tokens. It does not repeat the
+ * quadrant, the standings or the profiles, which are the control's and would
+ * be nearly identical here.
  */
 import Base from '../../../layouts/Base.astro'
 import Masthead from '../../../components/report/Masthead.astro'
-import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
-import KpiTiles from '../../../components/report/KpiTiles.astro'
-import VendorCard from '../../../components/report/VendorCard.astro'
-import Standings from '../../../components/report/Standings.astro'
-import Quadrant from '../../../components/report/Quadrant.astro'
+import ArmComparison from '../../../components/report/ArmComparison.astro'
 import ConditionNav from '../../../components/report/ConditionNav.astro'
-import {
-  getLatestRun,
-  getModelResults,
-  getPreviousRun,
-  getQuestionResult,
-  getQuestions,
-} from '../../../lib/data.ts'
-import {
-  framingColumnUnder,
-  treatedConditions,
-  verdictShift,
-  resultIn,
-} from '../../../lib/sensitivity.ts'
-import { CONTROL_CONDITION_ID } from '../../../../schema/conditions.ts'
+import { getLatestRun, getQuestionResult, getQuestions } from '../../../lib/data.ts'
+import { treatedConditions } from '../../../lib/sensitivity.ts'
 import { formatEdition } from '../../../lib/format.ts'
 import { breadcrumbJsonLd, framingDescription } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
@@ -48,29 +34,8 @@ export function getStaticPaths() {
 }
 
 const { question, condition, run } = Astro.props
-/** "Sandwich Certainty Quadrant" for the shipped claim; the noun comes from the registry. */
-const noun = (question.claim ?? 'is a sandwich').split(' ').at(-1) ?? 'sandwich'
-const quadrantTitle = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} Certainty Quadrant`
 const cell = getQuestionResult(run, question.id, condition.id)!
 const results = cell.models
-const previous = getPreviousRun(run.isoWeek)
-const previousResults = previous ? getModelResults(previous, question.id, condition.id) : null
-// This page is one arm, so the comparison worth putting at the top is against
-// the control: which models this system prompt actually moved.
-const framingColumn = framingColumnUnder(run, question.id, condition.id)
-const shifts = results.map((result) =>
-  verdictShift(resultIn(run, question.id, CONTROL_CONDITION_ID, result), result),
-)
-const comparable = shifts.filter((shift) => shift.status !== 'incomparable')
-const framingTile =
-  comparable.length > 0
-    ? {
-        held: comparable.filter((shift) => shift.status === 'held').length,
-        comparable: comparable.length,
-        label: 'Held vs. control',
-        sub: `unmoved by the ${condition.label.toLowerCase()} system prompt`,
-      }
-    : null
 ---
 
 <Base
@@ -99,53 +64,17 @@ const framingTile =
         No model produced data under this framing in the {formatEdition(run.isoWeek)} edition.
       </p>
     ) : (
-      <>
-        <KpiTiles results={results} previous={previousResults} framing={framingTile} />
-        <ExecutiveSummary subject={question.subject} results={results} />
-
-        <p class="compare-link">
-          The comparison against the control, with every model's verbatim answer under each framing,
-          is on the <a href={`${routes.report(question.id)}#framing-heading`}>canonical report</a>.
-        </p>
-
-        <Quadrant results={results} title={quadrantTitle} />
-
-        <Standings
-          results={results}
-          previous={previousResults}
-          framing={framingColumn}
-          caption={`Vendor standings under the ${condition.label.toLowerCase()} framing — ${formatEdition(run.isoWeek)} edition`}
-        />
-
-        <section aria-labelledby="profiles-heading">
-          <h2 id="profiles-heading">Vendor profiles</h2>
-          <div class="profile-grid">
-            {results.map((result) => (
-              <VendorCard result={result} peers={results} />
-            ))}
-          </div>
-        </section>
-      </>
+      <ArmComparison
+        run={run}
+        question={question}
+        condition={condition}
+        systemPrompt={cell.systemPrompt}
+      />
     )
   }
 </Base>
 
 <style>
-  .profile-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
-    gap: var(--space-s);
-  }
-
-  .compare-link {
-    max-width: var(--measure);
-    padding: var(--space-s);
-    background: var(--surface);
-    border-left: 3px solid var(--accent);
-    font-size: var(--step--1);
-    margin-bottom: var(--space-xl);
-  }
-
   .empty {
     padding: var(--space-l);
     background: var(--surface);
