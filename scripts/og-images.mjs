@@ -155,10 +155,7 @@ function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize
     }
     .head { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
     .kicker { font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: #7bffea; font-weight: 700; }
-    .brand { display: flex; align-items: center; gap: 14px; }
-    .logo { width: 56px; height: 56px; flex: none; }
-    .brand-name { font-size: 22px; font-weight: 800; letter-spacing: .02em; color: #ffffff; }
-    .brand-name span { color: #7bffea; }
+    .logo { width: 64px; height: 64px; flex: none; }
     .rule { height: 4px; background: linear-gradient(90deg, #7bffea 0%, #1fd5c0 100%); margin: 18px 0 36px; }
     h1 {
       font-family: Montserrat, Georgia, "Times New Roman", serif; font-size: ${titleSize}px; line-height: 1.04;
@@ -181,7 +178,7 @@ function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize
     <div>
       <div class="head">
         <p class="kicker">${esc(kicker)}</p>
-        <div class="brand">${LOGO}<p class="brand-name">en<span>&ndash;</span>dash</p></div>
+        ${LOGO}
       </div>
       <div class="rule"></div>
       <h1>${esc(title)}</h1>
