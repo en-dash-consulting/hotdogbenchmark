@@ -20,6 +20,7 @@
  *
  * Usage: node scripts/og-images.mjs
  */
+import { readFileSync } from 'node:fs'
 import { mkdir, readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { chromium } from 'playwright'
@@ -138,6 +139,11 @@ const headline = (question) => question.text.replace(/\s*One word answer\.$/, ''
  * The card, as a self-contained document. Navy ground, teal rule, the site's
  * display face when the machine has it and a serif fallback when it does not.
  */
+/** The En Dash square, inlined so the card needs no network. */
+const LOGO = readFileSync(new URL('../public/brand/endash-square.svg', import.meta.url), 'utf8')
+  .replace(/<\?xml[^>]*>/, '')
+  .replace('<svg ', '<svg class="logo" ')
+
 function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize = 76 }) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     * { box-sizing: border-box; margin: 0; }
@@ -147,7 +153,12 @@ function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize
       background: linear-gradient(135deg, #000b45 0%, #001769 100%); color: #ffffff;
       font-family: Montserrat, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+    .head { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
     .kicker { font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: #7bffea; font-weight: 700; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .logo { width: 56px; height: 56px; flex: none; }
+    .brand-name { font-size: 22px; font-weight: 800; letter-spacing: .02em; color: #ffffff; }
+    .brand-name span { color: #7bffea; }
     .rule { height: 4px; background: linear-gradient(90deg, #7bffea 0%, #1fd5c0 100%); margin: 18px 0 36px; }
     h1 {
       font-family: Montserrat, Georgia, "Times New Roman", serif; font-size: ${titleSize}px; line-height: 1.04;
@@ -168,7 +179,10 @@ function card({ kicker, title, quote, lines, edition, verdict, detail, titleSize
     .verdict-detail { font-size: 24px; color: #d5d9ee; margin-top: 6px; }
   </style></head><body>
     <div>
-      <p class="kicker">${esc(kicker)}</p>
+      <div class="head">
+        <p class="kicker">${esc(kicker)}</p>
+        <div class="brand">${LOGO}<p class="brand-name">en<span>&ndash;</span>dash</p></div>
+      </div>
       <div class="rule"></div>
       <h1>${esc(title)}</h1>
       ${quote ? `<p class="quote">&ldquo;${esc(quote)}&rdquo;</p>` : ''}
