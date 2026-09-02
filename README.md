@@ -105,6 +105,13 @@ You do not need to. [`docs/self-hosting.md`](docs/self-hosting.md) takes you fro
 site in about fifteen minutes: enable Pages, add secrets, done. A scheduled GitHub Action runs the
 benchmark, commits the data, and redeploys the site.
 
+### Asking your own question
+
+[`docs/fork-this.md`](docs/fork-this.md) is the longer walkthrough: fork, replace
+`questions.json`, rewrite the framings, record fixtures, run a real edition, and deploy it. The
+running example is "Is a burrito a sandwich?" because the point is that the hot dog is
+replaceable.
+
 ---
 
 ## How it works
@@ -144,6 +151,7 @@ file that implements it.
 | -------------------------------------------------- | ---------------------------------------------------- |
 | [Tutorial](docs/tutorial/)                         | Build a benchmark like this, in eight steps          |
 | [Self-hosting](docs/self-hosting.md)               | Fork to live site in fifteen minutes                 |
+| [Fork this](docs/fork-this.md)                     | Fork to live site asking your own question           |
 | [Providers](docs/providers.md)                     | Keys, free tiers, rate limits, real costs            |
 | [Data schema](docs/data-schema.md)                 | Every field, its units, and why it may be null       |
 | [Usage normalization](docs/usage-normalization.md) | Why token counts are not comparable across vendors   |

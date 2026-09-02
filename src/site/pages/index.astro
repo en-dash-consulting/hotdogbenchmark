@@ -10,7 +10,7 @@ import AnswerBoard from '../components/AnswerBoard.astro'
 import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
-import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
+import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
 
 const questions = getQuestions()
@@ -122,12 +122,13 @@ const QUICKSTART = [
                     <th scope="row">{row.model.displayName}</th>
                     {row.verdicts.map((cell) => (
                       <td>
-                        <span
+                        <a
                           class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
-                          title={cell.ok ? undefined : 'no data'}
+                          href={`${routes.report(cell.question.id)}#${profileAnchor(row.model)}`}
+                          title={`${row.model.displayName} on ${cell.question.subject}: ${cell.verdict ?? 'no data'}. Open its profile in the report.`}
                         >
                           {cell.verdict ? GLYPH[cell.verdict] : '—'}
-                        </span>
+                        </a>
                       </td>
                     ))}
                   </tr>
@@ -351,8 +352,18 @@ const QUICKSTART = [
     transition: transform 150ms var(--ease-pop);
   }
 
-  tr:hover .dot {
+  .dot {
+    text-decoration: none;
+  }
+
+  tr:hover .dot,
+  .dot:focus-visible {
     transform: scale(1.08);
+  }
+
+  .dot:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .dot-yes {

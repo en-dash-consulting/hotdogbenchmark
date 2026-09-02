@@ -9,6 +9,9 @@ cents per week. Local runs are for development, not operation.
 
 Total setup time is about fifteen minutes, most of it spent creating API keys.
 
+If you want the site to ask a different question rather than the hot dog one,
+[`fork-this.md`](fork-this.md) walks the whole path, from `questions.json` to a deployed report.
+
 ---
 
 ## 1. Fork the repository
@@ -140,7 +143,7 @@ a different shape, change the suffix in `src/schema/questions.ts` and update the
 to match.
 
 Each additional question multiplies the weekly cost by the number of models times the sample
-count. With ten models at three samples and three conditions, one more question is 90 more API calls a week — 30 for the control alone.
+count. With eleven models at three samples and three conditions, one more question is 99 more API calls a week, 33 for the control alone.
 
 ## Optional: the "Run your own" page
 

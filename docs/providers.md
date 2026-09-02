@@ -24,14 +24,14 @@ is 3 conditions × 3 questions × 7 models × 3 samples = **189 calls a week, ro
 $0.55 a month.** Still cents, but three times the cents, and the methodology page says so to
 readers as well.
 
-| Measure                                  | Value                                                   |
-| ---------------------------------------- | ------------------------------------------------------- |
-| Calls per week, control only             | 63 (3 questions × 7 models × 3 samples)                 |
-| Calls per week, all three conditions     | 189 (3 conditions × 3 questions × 7 models × 3 samples) |
-| Measured cost, control only, 5 providers | **$0.037** for 43 samples                               |
-| Projected weekly, all 7, control only    | **≈ $0.04**                                             |
-| Projected weekly, all 7, all conditions  | **≈ $0.12**                                             |
-| Projected monthly, all conditions        | **≈ $0.55**                                             |
+| Measure                                    | Value                                                    |
+| ------------------------------------------ | -------------------------------------------------------- |
+| Calls per week, control only               | 63 (3 questions × 7 models × 3 samples)                  |
+| Calls per week, all three conditions       | 297 (3 conditions × 3 questions × 11 models × 3 samples) |
+| Measured cost, control only, 5 providers   | **$0.037** for 43 samples                                |
+| Projected weekly, all 7, control only      | **≈ $0.04**                                              |
+| Measured weekly, 11 models, all conditions | **$0.25** (2026-09-01, 297 samples)                      |
+| Projected monthly, all conditions          | **≈ $1.10**                                              |
 
 **A fork does not have to pay for the conditions.** Set `enabled: false` on every condition but
 `control` in `conditions.json`, or pass `--conditions control` to `bench run` (the workflow's

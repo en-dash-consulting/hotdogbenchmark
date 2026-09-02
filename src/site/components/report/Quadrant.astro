@@ -19,6 +19,7 @@
 import ChartFrame from '../charts/ChartFrame.astro'
 import { plotArea, round, scaleLinear } from '../../lib/scale.ts'
 import { scoreModels } from '../../lib/scores.ts'
+import { profileAnchor } from '../../lib/urls.ts'
 import type { ModelResult } from '../../../schema/run.ts'
 
 interface Props {
@@ -130,8 +131,13 @@ const summary =
 
     {
       points.map((point) => (
-        <g>
-          <circle cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
+        <a class="mark" href={`#${profileAnchor(point.entry.result)}`}>
+          <title>
+            {point.entry.result.displayName}: decisiveness {point.entry.decisiveness.toFixed(2)},
+            efficiency {point.entry.efficiency.toFixed(2)}, composite{' '}
+            {point.entry.composite.toFixed(2)}. Jump to its profile.
+          </title>
+          <circle class="mark-dot" cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
           <text
             x={point.anchor === 'end' ? point.x - 8 : point.x + 8}
             y={point.labelY}
@@ -140,7 +146,7 @@ const summary =
           >
             {point.entry.result.displayName}
           </text>
-        </g>
+        </a>
       ))
     }
 
@@ -208,6 +214,34 @@ const summary =
   .point-label {
     font-size: 12px;
     fill: var(--text-strong);
+  }
+
+  /* Marks are links: hover or focus grows the dot and underlines the label. */
+  .mark {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .mark-dot {
+    transition: r 150ms var(--ease-pop);
+  }
+
+  .mark:hover .mark-dot,
+  .mark:focus-visible .mark-dot {
+    r: 8;
+    stroke: var(--accent-fill);
+    stroke-width: 3;
+  }
+
+  .mark:hover .point-label,
+  .mark:focus-visible .point-label {
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
+  .mark:focus-visible .mark-dot {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
   }
 
   .axis-title {

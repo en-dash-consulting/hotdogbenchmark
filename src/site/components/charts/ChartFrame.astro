@@ -5,8 +5,9 @@
  * Provides the two things that make a build-time SVG chart accessible, so no
  * individual chart has to remember them:
  *
- *   1. `role="img"` with an `aria-label` that states what the chart shows in
- *      words. A screen reader gets the finding, not a list of coordinates.
+ *   1. A labeled group whose `aria-label` states what the chart shows in
+ *      words, so a screen reader gets the finding first. It is a group rather
+ *      than an image because the marks inside are links to the evidence.
  *   2. A real data table containing the same numbers, in a `<details>` so it is
  *      available to everyone rather than hidden from sighted users. "Chart plus
  *      hidden table" is the pattern that survives contact with reality — people
@@ -28,7 +29,14 @@ const { title, summary, caption } = Astro.props
 <figure class="chart-frame">
   <figcaption class="chart-title">{title}</figcaption>
 
-  <div class="chart-canvas" role="img" aria-label={summary}>
+  {
+    /*
+    A group, not an image: the marks inside are links, and an image role would
+    hide them from assistive technology. The label still states the finding
+    before a screen reader walks the marks.
+  */
+  }
+  <div class="chart-canvas" role="group" aria-label={summary}>
     <slot />
   </div>
 

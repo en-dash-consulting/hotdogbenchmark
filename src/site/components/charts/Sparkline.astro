@@ -85,8 +85,16 @@ const summary =
         role="img"
         aria-label={summary}
       >
-        <path d={path} fill="none" stroke={color} stroke-width="1.5" stroke-linejoin="round" />
-        {last && <circle cx={last.x} cy={last.y} r="2.5" fill={color} />}
+        <title>{summary}</title>
+        <path
+          class="spark-path"
+          d={path}
+          fill="none"
+          stroke={color}
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+        {last && <circle class="spark-dot" cx={last.x} cy={last.y} r="2.5" fill={color} />}
       </svg>
     ) : (
       <p class="sparkline-empty">No data</p>
@@ -127,6 +135,16 @@ const summary =
 </div>
 
 <style>
+  .sparkline:hover .spark-path,
+  .sparkline:focus-within .spark-path {
+    stroke-width: 2.5;
+  }
+
+  .sparkline:hover .spark-dot,
+  .sparkline:focus-within .spark-dot {
+    r: 4;
+  }
+
   .sparkline {
     padding: var(--space-2xs);
     background: var(--surface);

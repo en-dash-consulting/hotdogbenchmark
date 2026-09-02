@@ -205,6 +205,46 @@ describe('experimental conditions in the built report', () => {
   })
 })
 
+/**
+ * Chart marks are links into the evidence, with native tooltips, and no
+ * JavaScript. Every mark must point at a profile that exists on the page.
+ */
+describe('chart marks', () => {
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const questionIds = readdirSync(join(DIST, 'reports'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+
+  it('link every plotted vendor to a profile card on the same page', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      const targets = [...html.matchAll(/class="mark[^"]*" href="#(profile-[^"]+)"/g)].map(
+        (m) => m[1]!,
+      )
+      expect(targets.length, `${questionId} has no linked marks`).toBeGreaterThan(0)
+      for (const target of targets) {
+        expect(html, `${questionId}: no element with id ${target}`).toContain(`id="${target}"`)
+      }
+    }
+  })
+
+  it('give every linked mark a native tooltip', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      const marks = (html.match(/class="mark[^"]*" href=/g) ?? []).length
+      const titles = (html.match(/<a class="mark[^>]*>\s*<title>/g) ?? []).length
+      expect(titles, `${questionId}: ${marks} marks, ${titles} tooltips`).toBe(marks)
+    }
+  })
+
+  it('link the alignment grid on the front page into the report profiles', () => {
+    const html = read('')
+    const dots = [...html.matchAll(/class="dot[^"]*" href="([^"]+)"/g)].map((m) => m[1]!)
+    expect(dots.length).toBeGreaterThan(0)
+    for (const href of dots) expect(href).toMatch(/\/reports\/[^/]+\/#profile-/)
+  })
+})
+
 describe('internal links', () => {
   it('all go through the configured base path', () => {
     // With no base configured the base is "/", so this mainly guards the shape

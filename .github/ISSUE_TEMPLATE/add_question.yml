@@ -1,0 +1,76 @@
+name: Add a question
+description: Propose a question for the models to answer every week.
+labels: ['add-question']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A question is one entry in `questions.json`. The fields below map onto that entry
+        one to one, so a complete issue is most of a pull request. You are very welcome to
+        open the pull request yourself; see
+        [CONTRIBUTING.md](../../blob/main/CONTRIBUTING.md#adding-a-question).
+
+        A new question does not have to be about sandwiches, but the shipped framings in
+        `conditions.json` are. If yours has a different shape, say so in the last field.
+
+  - type: input
+    id: text
+    attributes:
+      label: The question, exactly as the models would receive it
+      description: >
+        Must end with "One word answer." That suffix is what makes the one-word compliance
+        metric mean anything, and the schema rejects a question without it.
+      placeholder: Is a burrito a sandwich? One word answer.
+    validations:
+      required: true
+
+  - type: input
+    id: subject
+    attributes:
+      label: Subject
+      description: >
+        The thing being asked about, lowercase, with its article, so it drops into a sentence.
+        The framings use it: "{subject} is a sandwich." becomes "A burrito is a sandwich."
+      placeholder: a burrito
+    validations:
+      required: true
+
+  - type: input
+    id: slug
+    attributes:
+      label: Proposed id
+      description: >
+        A lowercase slug, letters, digits and single dashes. It appears in URLs and run files,
+        and with dashes read as spaces it must appear in the question text.
+      placeholder: burrito
+    validations:
+      required: true
+
+  - type: input
+    id: report-title
+    attributes:
+      label: Report title
+      description: The heading of the question's report page. Short, and its own.
+      placeholder: The Burrito Question
+    validations:
+      required: true
+
+  - type: input
+    id: tagline
+    attributes:
+      label: Tagline
+      description: One line under the title saying what makes this question worth asking.
+      placeholder: Bread on all sides. Massachusetts said no in 2006.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it interesting?
+      description: >
+        What do you expect the models to disagree about, and what would a framing arm show?
+        Every question costs models times framings times samples calls a week, so it has to
+        earn its place.
+    validations:
+      required: true

@@ -14,6 +14,7 @@
 import ChartFrame from './ChartFrame.astro'
 import { formatPercent } from '../../lib/format.ts'
 import { round } from '../../lib/scale.ts'
+import { profileAnchor } from '../../lib/urls.ts'
 import type { ModelSensitivity } from '../../lib/sensitivity.ts'
 import type { RunCondition } from '../../../schema/run.ts'
 
@@ -117,7 +118,18 @@ const summary =
 
     {
       rows.map((row) => (
-        <g>
+        <a class="mark" href={`#${profileAnchor(row.entry.model)}`}>
+          <title>
+            {row.entry.model.displayName}:{' '}
+            {row.bars
+              .map((bar) =>
+                bar.score?.score == null
+                  ? `${bar.condition.label} not comparable`
+                  : `${bar.condition.label} ${formatPercent(bar.score.score)}`,
+              )
+              .join(', ')}
+            . Jump to its profile.
+          </title>
           <text
             x={LABEL_WIDTH - 10}
             y={round(row.y + groupHeight / 2 + 4)}
@@ -154,7 +166,7 @@ const summary =
               )}
             </g>
           ))}
-        </g>
+        </a>
       ))
     }
   </svg>
@@ -217,6 +229,28 @@ const summary =
   .model-label {
     font-size: 12px;
     fill: var(--text-strong);
+  }
+
+  .mark {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .mark:hover .model-label,
+  .mark:focus-visible .model-label {
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
+  .mark:hover rect,
+  .mark:focus-visible rect {
+    stroke: var(--text-strong);
+    stroke-width: 2;
+  }
+
+  .mark:focus-visible .model-label {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
   }
 
   .value-label {

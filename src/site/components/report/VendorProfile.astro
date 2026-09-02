@@ -19,6 +19,7 @@ import {
   NOT_REPORTED,
 } from '../../lib/format.ts'
 import { getModelEntry } from '../../lib/data.ts'
+import { profileAnchor } from '../../lib/urls.ts'
 import type { ModelResult } from '../../../schema/run.ts'
 
 interface Props {
@@ -57,7 +58,11 @@ const metrics: Array<{ label: string; value: string; note?: string }> = [
 ]
 ---
 
-<article class:list={['profile', result.status === 'error' && 'profile-error']}>
+<article
+  id={profileAnchor(result)}
+  class:list={['profile', result.status === 'error' && 'profile-error']}
+  tabindex="-1"
+>
   <div class="profile-head">
     <div>
       <p class="vendor">{entry?.vendor ?? result.provider}</p>
@@ -109,6 +114,11 @@ const metrics: Array<{ label: string; value: string; note?: string }> = [
 </article>
 
 <style>
+  .profile:target {
+    outline: 3px solid var(--accent-fill);
+    outline-offset: 4px;
+  }
+
   .profile {
     padding: var(--space-m);
     background: var(--surface);

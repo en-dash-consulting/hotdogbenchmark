@@ -51,6 +51,14 @@ export const RUN_YOUR_OWN_ENABLED: boolean =
   import.meta.env.RUN_YOUR_OWN_ENABLED === 'true' ||
   import.meta.env.PUBLIC_RUN_YOUR_OWN_ENABLED === 'true'
 
+/**
+ * The in-page anchor of a vendor's profile card, so a chart mark can link to
+ * the evidence for the number it plots.
+ */
+export function profileAnchor(model: { provider: string; modelId: string }): string {
+  return `profile-${model.provider}-${model.modelId}`.replace(/[^a-zA-Z0-9-]/g, '-')
+}
+
 /** The GitHub repository this site is built from. */
 export const REPO_URL = 'https://github.com/endash/hotdogbenchmark'
 

@@ -73,7 +73,13 @@ const tableId = `radar-${result.provider}-${result.modelId}`.replace(/[^a-zA-Z0-
       {
         keys.map((key, index) => {
           const point = polarPoint(CENTER, RADIUS * axes[key], index, keys.length)
-          return <circle cx={point.x} cy={point.y} r="2.5" fill="var(--chart-1)" />
+          return (
+            <circle class="radar-dot" cx={point.x} cy={point.y} r="2.5" fill="var(--chart-1)">
+              <title>
+                {RADAR_AXIS_LABELS[key]}: {formatPercent(axes[key])}
+              </title>
+            </circle>
+          )
         })
       }
     </svg>
@@ -119,6 +125,16 @@ const tableId = `radar-${result.provider}-${result.modelId}`.replace(/[^a-zA-Z0-
 
   .scorecard svg {
     flex: 0 0 auto;
+  }
+
+  .radar-dot {
+    transition: r 150ms var(--ease-pop);
+  }
+
+  .radar-dot:hover {
+    r: 5;
+    stroke: var(--accent-fill);
+    stroke-width: 2;
   }
 
   .scorecard-axes {

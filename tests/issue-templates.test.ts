@@ -16,9 +16,10 @@ const forms = readdirSync(templateDir)
   .map((file) => ({ file, form: parse(readFileSync(templateDir + file, 'utf8')) }))
 
 describe('issue form templates', () => {
-  it('ships the three planned forms', () => {
+  it('ships the four planned forms', () => {
     expect(forms.map((f) => f.file).sort()).toEqual([
       'add_model_or_provider.yml',
+      'add_question.yml',
       'bug_report.yml',
       'weird_answer.yml',
     ])
@@ -56,7 +57,16 @@ describe('add-a-model template', () => {
   const ids = new Set(form.body.map((e: { id?: string }) => e.id))
 
   it('captures everything models.json needs before the entry can be trusted', () => {
-    for (const field of ['provider', 'model-id', 'docs-url', 'pricing-url']) {
+    for (const field of [
+      'provider',
+      'vendor',
+      'model-id',
+      'display-name',
+      'docs-url',
+      'input-price',
+      'output-price',
+      'pricing-url',
+    ]) {
       expect(ids, `missing field: ${field}`).toContain(field)
     }
   })
@@ -64,6 +74,22 @@ describe('add-a-model template', () => {
   it('asks about streaming and usage reporting', () => {
     expect(ids).toContain('streaming')
     expect(ids).toContain('usage-reporting')
+  })
+})
+
+describe('add-a-question template', () => {
+  const form = forms.find((f) => f.file === 'add_question.yml')!.form
+  const ids = new Set(form.body.map((e: { id?: string }) => e.id))
+
+  it('captures every field a questions.json entry needs', () => {
+    for (const field of ['text', 'subject', 'slug', 'report-title', 'tagline', 'why']) {
+      expect(ids, `missing field: ${field}`).toContain(field)
+    }
+  })
+
+  it('tells the reporter the question must end with the one-word suffix', () => {
+    const text = form.body.find((e: { id?: string }) => e.id === 'text')
+    expect(text.attributes.description).toContain('One word answer.')
   })
 })
 

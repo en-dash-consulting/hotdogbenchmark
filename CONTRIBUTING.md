@@ -57,52 +57,73 @@ All four run in CI on every pull request. There is no separate formatting step t
 
 ## Adding a question
 
-Questions live in `questions.json` at the repository root. Add an entry:
+**File:** `questions.json`. **Verify:** `npm run bench -- run --dry-run`.
+
+The question does not have to be about sandwiches. The shipped framings in `conditions.json`
+are, so a question of a different shape means rewriting those templates too (see
+[`docs/fork-this.md`](docs/fork-this.md), step 4). Add an entry:
 
 ```json
 {
-  "id": "grilled-cheese",
-  "subject": "a grilled cheese",
-  "text": "Is a grilled cheese a sandwich? One word answer.",
-  "reportTitle": "Sandwich Classification Benchmark: Grilled Cheese Edition",
+  "id": "burrito",
+  "subject": "a burrito",
+  "text": "Is a burrito a sandwich? One word answer.",
+  "reportTitle": "The Burrito Question",
+  "tagline": "Bread on all sides. Massachusetts said no in 2006.",
   "enabled": true
 }
 ```
 
-Two rules the schema enforces: ids are unique, and every `text` ends with `One word answer.`
-so the methodology page can state the prompt template once and have it be true.
+Three rules. The schema enforces two: ids are unique, and every `text` ends with
+`One word answer.` so the methodology page can state the prompt template once and have it be
+true. Mock mode enforces the third: the `id`, with dashes read as spaces, must appear in `text`,
+because that is how the replayer matches a prompt to a recorded answer.
 
-Adding a question increases the weekly cost **linearly** — every enabled model answers every
-enabled question, three times. With seven models at three samples, one more question is 21 more
-API calls per week. The prompts are tiny, so this is cents, but it is not free.
+Recorded fixtures do not know about a new question. Record it per provider and model with
+`npm run bench:record -- --provider <id> [--model <modelId>]` so `--mock` can show it. The dry
+run prints the plan, the rendered framings and the total call count without calling anything.
+
+Adding a question increases the weekly cost **linearly**: every enabled model answers every
+enabled question under every enabled framing, three times. With eleven models, three framings
+and three samples, one more question is 99 more API calls a week. The prompts are tiny, so this
+is cents, but it is not free.
 
 ## Adding a model
 
-Edit `models.json`. Verify the model ID against the provider's current documentation — do not
-guess it, and record the `docsUrl` you verified it against. Fill in `pricing` with an `asOf`
-date, then:
+**File:** `models.json`. **Verify:** `npm run bench:smoke -- --provider <id> --model <modelId>`.
 
-```sh
-npm run bench:smoke -- --provider <id>   # one live call, prints text, usage, timing
-```
+Copy a sibling entry for the same provider. Read the model id from the provider's live
+model-listing endpoint where one exists rather than from prose docs, and record the page you
+verified it against in `docsUrl`. Fill in `pricing` with an `asOf` date. Then run the smoke
+command above: one live call that prints text, usage and timing, and tells you immediately
+whether the id, the key and the adapter all work.
+
+Then record its fixture so mock mode can replay it:
+`npm run bench:record -- --provider <id> --model <modelId>`. A provider's first model keeps the
+plain `tests/fixtures/responses/<provider>.json`; further models get
+`<provider>--<model-slug>.json`.
 
 ## Adding a provider
+
+**File:** `src/providers/<provider>.ts`. **Verify:** `npm run bench:smoke -- --provider <provider>`.
 
 Adapters are one file each and deliberately small. The Anthropic adapter is the reference
 implementation; start by reading it.
 
-1. Copy `src/providers/anthropic.ts` to `src/providers/<vendor>.ts`.
+1. Copy `src/providers/anthropic.ts` to `src/providers/<provider>.ts`.
 2. Implement `complete()` against the vendor's HTTP API. Use `fetchWithPolicy` from
    `src/providers/http.ts` for timeout and retry behavior rather than calling `fetch` directly.
 3. Map the vendor's usage payload onto the shared `Usage` shape and add your row to
    `docs/usage-normalization.md`, including whether reasoning tokens are counted inside output
    tokens for that vendor.
-4. Record fixtures for success, a 429, and a malformed body:
-   `npm run bench:record -- --provider <id>`. Keys are redacted on capture; a test scans
+4. Register the adapter with one `registerAdapter(...)` line in `src/providers/all.ts`, and add
+   its key variable to `CREDENTIAL_ENV_VARS` in `src/providers/registry.ts`. Mirror the variable
+   in `.env.example` and in the `env` block of `.github/workflows/benchmark.yml`, which lists
+   every secret explicitly.
+5. Add the model to `models.json` with `"provider": "<provider>"`.
+6. Record fixtures for success, a 429, and a malformed body:
+   `npm run bench:record -- --provider <provider>`. Keys are redacted on capture; a test scans
    fixtures for key-shaped strings.
-5. Register the adapter in `src/providers/registry.ts` and add its key variable to
-   `src/env.ts` and `.env.example`.
-6. Add the model to `models.json`.
 
 **Two constraints the linter enforces**, because they are what let the same adapters run in a
 browser later: no `node:` imports and no `process.env` anywhere under `src/providers` or

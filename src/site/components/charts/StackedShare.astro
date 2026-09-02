@@ -10,6 +10,7 @@
 import ChartFrame from './ChartFrame.astro'
 import { bandCenters, bandWidth, plotArea, round } from '../../lib/scale.ts'
 import { formatEdition } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
 import type { Verdict } from '../../../schema/run.ts'
 
 interface Point {
@@ -103,7 +104,14 @@ const summary =
 
     {
       bars.map((bar) => (
-        <g>
+        <a class="mark" href={routes.run(bar.isoWeek)}>
+          <title>
+            {formatEdition(bar.isoWeek)}:{' '}
+            {bar.segments
+              .map((segment) => `${segment.count} ${segment.label.toLowerCase()}`)
+              .join(', ')}
+            . Open the edition.
+          </title>
           {bar.segments.map(
             (segment) =>
               segment.height > 0 && (
@@ -136,7 +144,7 @@ const summary =
           >
             {bar.isoWeek.replace(/^\d{4}-/, '')}
           </text>
-        </g>
+        </a>
       ))
     }
 
@@ -197,6 +205,24 @@ const summary =
     font-size: 11px;
     fill: var(--chart-axis);
     font-variant-numeric: tabular-nums;
+  }
+
+  .mark {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .mark:hover rect,
+  .mark:focus-visible rect {
+    stroke: var(--text-strong);
+    stroke-width: 2;
+  }
+
+  .mark:hover .axis-label,
+  .mark:focus-visible .axis-label {
+    fill: var(--text-strong);
+    font-weight: 700;
+    text-decoration: underline;
   }
 
   .axis-title {
