@@ -73,6 +73,11 @@ export function createGeminiAdapter(policy: Partial<RetryPolicy> = {}): Provider
               'content-type': 'application/json',
             },
             body: JSON.stringify({
+              // Gemini's system prompt is a contents-shaped object rather than
+              // a bare string: parts, not text.
+              ...(request.systemPrompt === undefined
+                ? {}
+                : { systemInstruction: { parts: [{ text: request.systemPrompt }] } }),
               contents: [{ role: 'user', parts: [{ text: request.prompt }] }],
               generationConfig: {
                 maxOutputTokens: request.maxOutputTokens,

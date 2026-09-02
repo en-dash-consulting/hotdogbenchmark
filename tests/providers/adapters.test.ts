@@ -258,6 +258,85 @@ describe.each(CASES)('the $id adapter', (testCase) => {
   })
 })
 
+/**
+ * Where each vendor expects a system prompt. One extractor per dialect: the
+ * point of the table is that four of the seven share the last one.
+ */
+const SYSTEM_PROMPT_FIELD: Record<string, (body: Record<string, unknown>) => unknown> = {
+  anthropic: (body) => body.system,
+  openai: (body) => body.instructions,
+  gemini: (body) =>
+    (body.systemInstruction as { parts?: Array<{ text?: string }> } | undefined)?.parts?.[0]?.text,
+  xai: leadingSystemMessage,
+  mistral: leadingSystemMessage,
+  deepseek: leadingSystemMessage,
+  'llama-hosted': leadingSystemMessage,
+}
+
+function leadingSystemMessage(body: Record<string, unknown>): unknown {
+  const [first] = body.messages as Array<{ role: string; content: string }>
+  return first?.role === 'system' ? first.content : undefined
+}
+
+const SYSTEM_PROMPT = 'A hot dog is a sandwich.'
+
+describe.each(CASES)('the $id adapter and the system prompt', (testCase) => {
+  const success = () => sseResponse(wireFixture(`${testCase.dir}/success.sse`))
+  const locate = SYSTEM_PROMPT_FIELD[testCase.id]!
+
+  it("lands it in this vendor's own field", async () => {
+    const fetch = fetchReturning(success)
+    await testCase.adapter.complete(
+      {
+        modelId: testCase.modelId,
+        prompt: PROMPT,
+        maxOutputTokens: 16,
+        systemPrompt: SYSTEM_PROMPT,
+      },
+      wireContext(fetch),
+    )
+    expect(locate(sentBody(fetch.calls))).toBe(SYSTEM_PROMPT)
+  })
+
+  it('never smuggles it into the user message', async () => {
+    const fetch = fetchReturning(success)
+    await testCase.adapter.complete(
+      {
+        modelId: testCase.modelId,
+        prompt: PROMPT,
+        maxOutputTokens: 16,
+        systemPrompt: SYSTEM_PROMPT,
+      },
+      wireContext(fetch),
+    )
+    const body = JSON.stringify(sentBody(fetch.calls))
+    // The prompt is present exactly once, as the user turn, and the system
+    // prompt is not concatenated onto it.
+    expect(body).not.toContain(`${SYSTEM_PROMPT} ${PROMPT}`)
+    expect(body).not.toContain(`${SYSTEM_PROMPT}\n${PROMPT}`)
+  })
+
+  it('sends a byte-identical body when no system prompt is set', async () => {
+    // This is what makes the control condition provably the measurement
+    // earlier editions took: the request without a system prompt is the
+    // request as it was before the field existed.
+    const before = fetchReturning(success)
+    await testCase.adapter.complete(
+      { modelId: testCase.modelId, prompt: PROMPT, maxOutputTokens: 16 },
+      wireContext(before),
+    )
+    const after = fetchReturning(success)
+    await testCase.adapter.complete(
+      { modelId: testCase.modelId, prompt: PROMPT, maxOutputTokens: 16, systemPrompt: undefined },
+      wireContext(after),
+    )
+    expect(String(after.calls[0]?.init.body)).toBe(String(before.calls[0]?.init.body))
+    expect(locate(sentBody(before.calls))).toBeUndefined()
+    // And the body carries no trace of a system slot at all.
+    expect(String(before.calls[0]?.init.body)).not.toMatch(/system/i)
+  })
+})
+
 describe('adapters that cannot interpret a 200', () => {
   it.each(
     CASES.filter((c) => c.dir !== 'gemini').map((c) => ({

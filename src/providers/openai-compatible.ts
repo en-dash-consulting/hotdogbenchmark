@@ -98,7 +98,15 @@ export function createOpenAiCompatibleAdapter(options: OpenAiCompatibleOptions):
             },
             body: JSON.stringify({
               model: request.modelId,
-              messages: [{ role: 'user', content: request.prompt }],
+              // The chat-completions dialect carries a system prompt as the
+              // first message. Handled here once, so four adapters get it for
+              // free and none of them can do it differently.
+              messages: [
+                ...(request.systemPrompt === undefined
+                  ? []
+                  : [{ role: 'system', content: request.systemPrompt }]),
+                { role: 'user', content: request.prompt },
+              ],
               max_tokens: request.maxOutputTokens,
               stream: true,
               // Without this, a streamed OpenAI-style response carries no usage

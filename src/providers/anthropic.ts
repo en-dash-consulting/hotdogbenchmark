@@ -73,6 +73,9 @@ export function createAnthropicAdapter(policy: Partial<RetryPolicy> = {}): Provi
             body: JSON.stringify({
               model: request.modelId,
               max_tokens: request.maxOutputTokens,
+              // Anthropic takes the system prompt as a top-level field, not as
+              // a message with role "system" — that role does not exist here.
+              ...(request.systemPrompt === undefined ? {} : { system: request.systemPrompt }),
               messages: [{ role: 'user', content: request.prompt }],
               // Streaming is what makes ttfbMs measurable. Without it there is
               // no "first token" to observe — only a complete response.

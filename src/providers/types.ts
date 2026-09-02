@@ -37,8 +37,26 @@ import type { ErrorCategory } from '../schema/run.ts'
 export interface CompleteRequest {
   /** The literal model identifier for this vendor, straight from `models.json`. */
   modelId: string
-  /** The full prompt. This benchmark sends one short user message and no system prompt. */
+  /** The full user message. Under the control condition this is the question text alone. */
   prompt: string
+  /**
+   * A system prompt, when the experimental condition has one.
+   *
+   * Every vendor supports this and no two do it the same way, which is why it
+   * is a field here rather than a message the runner could build itself:
+   *
+   *   - Anthropic takes a top-level `system` string on the Messages request.
+   *   - OpenAI's Responses API takes `instructions`.
+   *   - Gemini takes `systemInstruction`, shaped like a `contents` entry.
+   *   - The OpenAI-compatible dialect (xAI, Mistral, DeepSeek, Together) takes
+   *     a leading message with `role: "system"`.
+   *
+   * **When undefined, the request body must be byte-identical to what it was
+   * before this field existed.** That is what makes the control condition
+   * provably the same measurement earlier editions took, and it is asserted
+   * by a test per adapter.
+   */
+  systemPrompt?: string
   /**
    * Upper bound on generated tokens.
    *

@@ -65,6 +65,9 @@ export function createOpenAiAdapter(policy: Partial<RetryPolicy> = {}): Provider
             body: JSON.stringify({
               model: request.modelId,
               input: request.prompt,
+              // The Responses API calls the system prompt `instructions`; the
+              // chat-completions `role: "system"` message is the older dialect.
+              ...(request.systemPrompt === undefined ? {} : { instructions: request.systemPrompt }),
               // The Responses API caps generated tokens under a different name
               // than chat completions did.
               max_output_tokens: request.maxOutputTokens,

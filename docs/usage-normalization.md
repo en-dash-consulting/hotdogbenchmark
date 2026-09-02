@@ -52,15 +52,31 @@ efficient for free.
 been made yet — replace it with a real capture via `npm run bench:record -- --provider <id>` and
 change the status.
 
-| Provider                 | Status                  | Input                | Output                 | Total                | Reasoning                                    | Cached input                          | Reasoning inside output?                                                    | Streams (ttfb)? |
-| ------------------------ | ----------------------- | -------------------- | ---------------------- | -------------------- | -------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------- | --------------- |
-| Anthropic                | **Verified 2026-09-02** | `input_tokens`       | `output_tokens`        | derived              | `output_tokens_details.thinking_tokens`      | `cache_read_input_tokens`             | **Yes** — 42 output of which 38 thinking, for the answer "No."              | Yes             |
-| OpenAI                   | **Verified 2026-09-02** | `usage.input_tokens` | `usage.output_tokens`  | `usage.total_tokens` | `output_tokens_details.reasoning_tokens`     | `input_tokens_details.cached_tokens`  | **Yes** — 17 + 23 = 40, the reported total, and 15 of the 23 were reasoning | Yes             |
-| Google Gemini            | **Verified 2026-09-02** | `promptTokenCount`   | `candidatesTokenCount` | `totalTokenCount`    | `thoughtsTokenCount`                         | `cachedContentTokenCount`             | **No** — 12 + 2 + 310 = 324, the reported total                             | Yes             |
-| xAI                      | **Verified 2026-09-01** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_tokens_details.cached_tokens` | **No** — see below                                                          | Yes             |
-| Mistral                  | **Verified 2026-09-02** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | `prompt_tokens_details.cached_tokens` | n/a                                                                         | Yes             |
-| DeepSeek                 | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_cache_hit_tokens`             | **No** — total exceeds prompt + completion                                  | Yes             |
-| Meta Llama (Together AI) | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                         | Yes             |
+| Provider                 | Status                  | Input                | Output                 | Total                | Reasoning                                    | Cached input                          | Reasoning inside output?                                                    | Streams (ttfb)? | System prompt via                |
+| ------------------------ | ----------------------- | -------------------- | ---------------------- | -------------------- | -------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------- | --------------- | -------------------------------- |
+| Anthropic                | **Verified 2026-09-02** | `input_tokens`       | `output_tokens`        | derived              | `output_tokens_details.thinking_tokens`      | `cache_read_input_tokens`             | **Yes** — 42 output of which 38 thinking, for the answer "No."              | Yes             | top-level `system`               |
+| OpenAI                   | **Verified 2026-09-02** | `usage.input_tokens` | `usage.output_tokens`  | `usage.total_tokens` | `output_tokens_details.reasoning_tokens`     | `input_tokens_details.cached_tokens`  | **Yes** — 17 + 23 = 40, the reported total, and 15 of the 23 were reasoning | Yes             | `instructions`                   |
+| Google Gemini            | **Verified 2026-09-02** | `promptTokenCount`   | `candidatesTokenCount` | `totalTokenCount`    | `thoughtsTokenCount`                         | `cachedContentTokenCount`             | **No** — 12 + 2 + 310 = 324, the reported total                             | Yes             | `systemInstruction.parts[].text` |
+| xAI                      | **Verified 2026-09-01** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_tokens_details.cached_tokens` | **No** — see below                                                          | Yes             | leading `role: "system"` message |
+| Mistral                  | **Verified 2026-09-02** | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | `prompt_tokens_details.cached_tokens` | n/a                                                                         | Yes             | leading `role: "system"` message |
+| DeepSeek                 | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | `completion_tokens_details.reasoning_tokens` | `prompt_cache_hit_tokens`             | **No** — total exceeds prompt + completion                                  | Yes             | leading `role: "system"` message |
+| Meta Llama (Together AI) | Documented              | `prompt_tokens`      | `completion_tokens`    | `total_tokens`       | — (not reported)                             | — (not reported)                      | n/a                                                                         | Yes             | leading `role: "system"` message |
+
+### The system prompt column
+
+Experimental conditions (`conditions.json`) send a system prompt under some arms. Every vendor
+supports one; no two do it the same way, which is the whole reason the column exists:
+
+- **Anthropic** — a top-level `system` string on the Messages request. There is no
+  `role: "system"` message in this API; sending one is an error.
+- **OpenAI (Responses API)** — the `instructions` field.
+- **Gemini** — `systemInstruction`, shaped like a `contents` entry (`parts`, not a bare string).
+- **OpenAI-compatible** (xAI, Mistral, DeepSeek, Together) — a leading `{ role: "system" }`
+  message, handled once in `src/providers/openai-compatible.ts`.
+
+Under the control condition no system prompt is sent, and each adapter has a test asserting the
+request body is then **byte-identical** to what it sent before the field existed. That is what
+makes the control arm the same measurement earlier editions took.
 
 ### What verifying these live actually changed
 
