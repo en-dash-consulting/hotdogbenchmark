@@ -1,0 +1,20 @@
+---
+id: "127d599d-004d-482b-952e-0e33bb896ee8"
+level: "feature"
+title: "Replay the edition: an animated timeline of the week's calls, from recorded timings"
+status: "pending"
+priority: "medium"
+tags:
+  - "site"
+  - "engagement"
+  - "dataviz"
+source: "ndx-work session 2026-09-01"
+acceptanceCriteria:
+  - "A build-time SVG timeline per edition with a data-table alternative and an aria-label summary, no JavaScript required to read it"
+  - "Playback (play/pause/scrub, keyboard operable) is a vanilla island that only reads data attributes already in the page"
+  - "prefers-reduced-motion disables autoplay and shows the completed timeline"
+  - "Axe-clean in both themes; the island fits inside the JavaScript budget"
+description: "Every sample records startedAt, ttfbMs and totalMs, which is enough to replay the run: a build-time SVG Gantt of the edition (one lane per vendor, one bar per call, first-token marks) that a small island can animate as a scrubbable playback at 10-30x speed, revealing each verbatim answer as its call completes. It makes latency, time-to-first-token and reasoning delay visceral in a way a median cannot. Static form: the Gantt as a plain SVG with a data table. Animation respects prefers-reduced-motion by defaulting to the finished state."
+lastModified: "2026-09-02T01:41:01.169Z"
+lastModifiedBy: "Nick Daniel <nick@endash.us>"
+---

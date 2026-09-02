@@ -1,0 +1,28 @@
+{
+  "id": "2d40dc0a-8047-4d05-b8db-21ce00f2e904",
+  "taskId": "fc24ca3a-e003-41a3-a6bd-896cf9d23795",
+  "taskTitle": "Cross-condition comparison in the report",
+  "startedAt": "2026-09-01T21:26:52-04:00",
+  "finishedAt": "2026-09-02T01:56:38.099Z",
+  "status": "completed",
+  "turns": 101,
+  "summary": "Framing Sensitivity section (matrix, verbatim answers, sensitivity chart), per-framing report pages, new front page, methodology definition, first real three-condition edition",
+  "tokenUsage": {
+    "input": 8567,
+    "output": 248910,
+    "cacheCreationInput": 313598,
+    "cacheReadInput": 42680826
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 8567,
+    "output": 248910,
+    "cached": 42994424,
+    "total": 43251901
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "872d78ef-e732-4443-a1bd-712c90dd3920",
+  "taskId": "aca81e46-57cf-419b-8b1c-0fda1414a8bd",
+  "taskTitle": "Condition registry and schema version 2",
+  "startedAt": "2026-09-01T21:12:13-04:00",
+  "finishedAt": "2026-09-02T01:18:22.852Z",
+  "status": "completed",
+  "turns": 29,
+  "summary": "conditions.json registry, SCHEMA_VERSION 2 with conditionId/prompt/systemPrompt per cell, v1 migration on read, docs and tests",
+  "tokenUsage": {
+    "input": 2875,
+    "output": 79817,
+    "cacheCreationInput": 143215,
+    "cacheReadInput": 8428694
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 2875,
+    "output": 79817,
+    "cached": 8571909,
+    "total": 8654601
+  }
+}

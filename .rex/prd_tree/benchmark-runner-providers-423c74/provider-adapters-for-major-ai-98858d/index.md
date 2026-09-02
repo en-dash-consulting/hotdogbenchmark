@@ -32,4 +32,4 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 | [Implement Mistral adapter](./implement-mistral-adapter-df48d7.md) | completed |
 | [Implement OpenAI adapter](./implement-openai-adapter-7e7bc1.md) | completed |
 | [Implement xAI Grok adapter](./implement-xai-grok-adapter-7f2ec4.md) | completed |
-| [Verify the remaining two adapters with live smoke calls](./verify-the-remaining-two-f63063.md) | in_progress |
+| [Verify the remaining two adapters with live smoke calls](./verify-the-remaining-two-f63063.md) | blocked |

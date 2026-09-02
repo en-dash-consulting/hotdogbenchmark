@@ -1,0 +1,20 @@
+---
+id: "fdf106e6-d888-4abb-a43f-6410d0cada49"
+level: "feature"
+title: "Framing explorer: focus one vendor across the matrix, chart, and verbatim answers"
+status: "pending"
+priority: "high"
+tags:
+  - "site"
+  - "engagement"
+source: "ndx-work session 2026-09-01"
+acceptanceCriteria:
+  - "Selecting a vendor highlights its matrix row, its chart bars, and opens its verbatim details, using aria-pressed/aria-current so the state is announced"
+  - "A moved/held/all filter hides rows with the hidden attribute and updates a live-region count, mirroring the results-table pattern"
+  - "State round-trips through the URL hash and restores on load"
+  - "The island is under 3 KB gzipped and the site stays under the 30 KB budget"
+  - "With scripts disabled the section renders unchanged, verified by a build-output test that the controls are hidden in the markup"
+description: "A small vanilla island on the report page, in the style of the existing results-table enhancement: choosing a vendor (click or keyboard on its row in the position-by-framing table, or its bar in the sensitivity chart) highlights that vendor everywhere in the Framing Sensitivity section, opens its verbatim <details>, and dims the rest. A filter toggles between all vendors, those that moved, and those that held. The selection is written to the URL hash so a view can be shared, and restored on load. With JavaScript absent the section is exactly what it is today."
+lastModified: "2026-09-02T01:40:52.850Z"
+lastModifiedBy: "Nick Daniel <nick@endash.us>"
+---

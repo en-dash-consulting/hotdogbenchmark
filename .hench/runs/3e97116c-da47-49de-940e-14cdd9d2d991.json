@@ -1,0 +1,28 @@
+{
+  "id": "3e97116c-da47-49de-940e-14cdd9d2d991",
+  "taskId": "f5ff807a-8c63-4eb5-a377-90d70513c3ae",
+  "taskTitle": "Runner and CLI support for the condition matrix",
+  "startedAt": "2026-09-01T21:19:31-04:00",
+  "finishedAt": "2026-09-02T01:26:52.709Z",
+  "status": "completed",
+  "turns": 31,
+  "summary": "condition x question x model matrix in runBenchmark, --conditions and dry-run matrix in the CLI, per-condition mock fixtures and recorder, workflow input",
+  "tokenUsage": {
+    "input": 2726,
+    "output": 71902,
+    "cacheCreationInput": 97411,
+    "cacheReadInput": 10562026
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 2726,
+    "output": 71902,
+    "cached": 10659437,
+    "total": 10734065
+  }
+}

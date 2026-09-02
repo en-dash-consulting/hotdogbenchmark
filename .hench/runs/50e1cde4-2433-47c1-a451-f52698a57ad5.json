@@ -1,0 +1,28 @@
+{
+  "id": "50e1cde4-2433-47c1-a451-f52698a57ad5",
+  "taskId": "afc8d03e-cd7c-4e09-9175-3e8856815452",
+  "taskTitle": "System prompt support across all seven adapters",
+  "startedAt": "2026-09-01T21:18:02-04:00",
+  "finishedAt": "2026-09-02T01:19:31.937Z",
+  "status": "completed",
+  "turns": 10,
+  "summary": "systemPrompt on CompleteRequest mapped to system/instructions/systemInstruction/leading system message; byte-identical-when-unset tests; docs column",
+  "tokenUsage": {
+    "input": 650,
+    "output": 19008,
+    "cacheCreationInput": 36338,
+    "cacheReadInput": 3133377
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 650,
+    "output": 19008,
+    "cached": 3169715,
+    "total": 3189373
+  }
+}
