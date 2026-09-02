@@ -2,7 +2,7 @@
 id: "58a30379-8953-4b95-a808-5c6167549bcb"
 level: "task"
 title: "Complete the launch checklist and tag v1.0.0"
-status: "blocked"
+status: "in_progress"
 priority: "low"
 tags:
   - "launch"
@@ -12,11 +12,12 @@ blockedBy:
   - "12aeae0d-1828-41b0-b922-6dd5d79a31d6"
   - "529abef7-8430-4df0-9e05-3af109a9272e"
 source: "ndx-capture"
+startedAt: "2026-09-02T16:46:19.585Z"
 acceptanceCriteria:
   - "Repository description, topics, and social preview are set and README badges and live link resolve"
   - "CHANGELOG.md, tag v1.0.0, and a GitHub release with notes exist"
   - "Dependabot configuration for npm and github-actions is committed and docs/launch-post.md is drafted"
-description: "Set the repository description, topics (llm, benchmark, ai, astro, github-pages, tutorial, hotdog), and social preview image (reuse the OG image). Confirm README badges and live link, LICENSE year, and that SECURITY.md contact works. Write CHANGELOG.md for 1.0.0, tag v1.0.0, publish a GitHub release with notes summarizing what the project is and how to fork it, and draft a short launch post (docs/launch-post.md) for sharing. Enable Dependabot for npm and GitHub Actions so the tutorial repo stays current."
-lastModified: "2026-09-01T23:22:18.282Z"
+description: "Everything except the tag is done as of 2026-09-02: repository description, homepage and ten topics set; social preview uploaded (re-upload from https://hotdogbenchmark.lol/og/default.png now that the cards carry the En Dash square); README badges and live link resolve; Dependabot configured and its first six PRs merged; docs/launch-post.md drafted; the first workflow-produced edition is live. Remaining: cut the CHANGELOG 1.0.0 section, bump package.json to 1.0.0, then `git tag -a v1.0.0` and `gh release create v1.0.0 --notes-file CHANGELOG.md`. The tag is Nick's to push."
+lastModified: "2026-09-02T16:46:19.599Z"
 lastModifiedBy: "Nick Daniel <nick@endash.us>"
 ---

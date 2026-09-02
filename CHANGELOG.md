@@ -10,6 +10,41 @@ where the public surface is the **data schema**, not the TypeScript API.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [1.0.0] — 2026-09-02
+
+The first edition produced by the scheduled workflow itself, published at
+<https://hotdogbenchmark.lol>: eleven models from five vendors, three
+questions, three framings, committed by the bot and deployed without a hand
+on it. Everything below was built between 0.1.0 and this tag.
+
+### Added, at launch
+
+- **The site.** A replay of the week's answers with real durations and the
+  thinking phase shown, a framing switch that flips the words that changed, an
+  alignment grid, a reports landing page with one card per question, and
+  week-by-week history with consistency, latency spread and run-over-run
+  changes. En Dash brand throughout, Montserrat and Merriweather self-hosted
+  and preloaded.
+- **Accessibility and reflow gates.** axe in light, dark, forced-colors and
+  reduced-motion modes; a responsive audit at seven widths for overflow,
+  pointer targets, focus obscured by the masthead and WCAG text spacing; a
+  keyboard audit; a contrast test over the token file; data tables that stack
+  into labeled cards on a phone; the answer board as a tablist and radio group
+  with one live region. All in CI.
+- **Crawlability.** A single `sitemap.xml` with the data date of each page,
+  `robots.txt` naming the AI crawlers, `llms.txt` and a full-text
+  `llms-full.txt`, per-page titles, descriptions and OpenGraph cards, FAQPage,
+  Dataset, SoftwareSourceCode, BreadcrumbList and WebSite JSON-LD, a real 404,
+  `security.txt`, the IndexNow key, and a build test that keeps every claim
+  true. Lighthouse holds all four categories at 100.
+- **Launch plumbing.** Custom domain with one canonical host, analytics only
+  when `PUBLIC_GA_MEASUREMENT_ID` is set at build, the En Dash icon set, a DNS
+  and hosting runbook with a traffic plan, and `bench init` for forks.
+- **Eleven models**, with the ones whose accounts are unfunded or unkeyed
+  disabled in `models.json` rather than deleted.
+
 ### Added
 
 - **Experimental conditions.** Every question is now asked under every enabled
@@ -108,27 +143,18 @@ where the public surface is the **data schema**, not the TypeScript API.
 - **Cost figures in `docs/providers.md` are now measured** rather than
   estimated: ~$0.04/week, ~$0.18/month for all seven.
 
-### Pending before 1.0.0
+### Still open at 1.0.0
 
-- **Two adapters still unverified**, both blocked on account state rather than
-  code: DeepSeek's key authenticates but the account has no credit (402
-  Insufficient Balance), and no `TOGETHER_API_KEY` is set. DeepSeek's
-  `prompt_cache_hit_tokens` mapping is the only vendor-specific override in the
-  shared helper and has never run against a real response — treat it as suspect.
-- **The repository has no git remote.** Nothing is pushed. Pages is not enabled,
-  the description/topics/social preview are unset, and the README badges and
-  live link therefore do not resolve. See
-  [`docs/launch-checklist.md`](docs/launch-checklist.md).
-- **The real run was produced locally, not by `benchmark.yml`.** The scheduled
-  workflow has never executed. Running it once via `workflow_dispatch` is what
-  actually proves the automation.
-- **No screen-reader pass.** See
-  [`docs/a11y-checklist.md`](docs/a11y-checklist.md) for the seven specific
-  questions a person needs to answer.
-- **The proxy has never run against a real En Dash identity provider.** All 45
-  of its tests use a mocked IdP.
-- **Do not tag v1.0.0** until the above is resolved — specifically until a
-  workflow-produced run is published on a live site.
+- **DeepSeek and Together are disabled**, both on account state rather than
+  code: DeepSeek's key authenticates but the account has no credit, and no
+  `TOGETHER_API_KEY` is set. DeepSeek's `prompt_cache_hit_tokens` mapping has
+  never run against a real response. Gemini is disabled until its free-tier
+  quota is replaced with a funded key.
+- **No screen-reader pass.** The automated gates are clean; a person with
+  VoiceOver and NVDA has not yet been through it. See
+  [`docs/a11y-checklist.md`](docs/a11y-checklist.md).
+- **The proxy** for the deferred "run your own" page has never run against a
+  real identity provider and is off by default.
 
 ## [0.1.0] — 2026-09-01
 
@@ -204,5 +230,6 @@ The whole pipeline, end to end, with sample data.
 - Zero axe violations across every page in both themes.
 - 835 tests.
 
-[Unreleased]: https://github.com/en-dash-consulting/hotdogbenchmark/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/en-dash-consulting/hotdogbenchmark/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/en-dash-consulting/hotdogbenchmark/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/en-dash-consulting/hotdogbenchmark/releases/tag/v0.1.0

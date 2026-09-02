@@ -1,6 +1,6 @@
 {
   "name": "hotdogbenchmark",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "A weekly cross-provider LLM benchmark that asks every major model whether a hot dog is a sandwich, and publishes the results as a straight-faced industry analyst report.",

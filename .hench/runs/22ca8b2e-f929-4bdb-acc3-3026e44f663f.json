@@ -1,0 +1,28 @@
+{
+  "id": "22ca8b2e-f929-4bdb-acc3-3026e44f663f",
+  "taskId": "348e1746-9565-4b38-8dd6-db4b0646c06d",
+  "taskTitle": "Publish a workflow-produced run and verify the live site",
+  "startedAt": "2026-09-02T11:00:00-04:00",
+  "finishedAt": "2026-09-02T16:46:21.506Z",
+  "status": "completed",
+  "turns": 112,
+  "summary": "Pushed to en-dash-consulting/hotdogbenchmark, secrets and ruleset resolved by Nick, benchmark.yml committed 2026-W36 as the bot, deploy published it; Dependabot PRs merged; CI green",
+  "tokenUsage": {
+    "input": 10828,
+    "output": 128005,
+    "cacheCreationInput": 210353,
+    "cacheReadInput": 55528682
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 10828,
+    "output": 128005,
+    "cached": 55739035,
+    "total": 55877868
+  }
+}
