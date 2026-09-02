@@ -356,7 +356,9 @@ export function editionDatasetJsonLd(
     distribution: {
       '@type': 'DataDownload',
       encodingFormat: 'application/json',
-      contentUrl: `${REPO_URL}/blob/main/${runFilePath(run)}`,
+      // The raw file, not the GitHub page around it: the encoding says JSON,
+      // so the URL must serve JSON.
+      contentUrl: `${REPO_URL.replace('https://github.com/', 'https://raw.githubusercontent.com/')}/main/${runFilePath(run)}`,
     },
   }
 }
