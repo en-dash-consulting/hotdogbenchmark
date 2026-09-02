@@ -1,0 +1,28 @@
+{
+  "id": "5811d4b1-6e27-4349-8f3b-da66dd6ee58f",
+  "taskId": "57ade3dd-0163-4813-82ac-0e88d6eee2b4",
+  "taskTitle": "CONTRIBUTING recipes and issue templates",
+  "startedAt": "2026-09-01T23:49:29-04:00",
+  "finishedAt": "2026-09-02T03:57:19.456Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Delegated: provider/model/question sections, add_question.yml, test updates",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

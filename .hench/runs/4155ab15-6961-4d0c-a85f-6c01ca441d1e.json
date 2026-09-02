@@ -1,0 +1,28 @@
+{
+  "id": "4155ab15-6961-4d0c-a85f-6c01ca441d1e",
+  "taskId": "970483ef-c4ab-4c52-8f00-25fb17e98781",
+  "taskTitle": "ndx-capture: hotdogbenchmark.lol launch epic",
+  "startedAt": "2026-09-02T00:10:44-04:00",
+  "finishedAt": "2026-09-02T04:12:40.470Z",
+  "status": "completed",
+  "turns": 14,
+  "summary": "Captured the launch brief part A as an epic with seven features and one task: domain, content floor, crawl files, titles/descriptions/OG, structured data, real 404, En Dash footer line, GA4 (blocked on ID)",
+  "tokenUsage": {
+    "input": 732,
+    "output": 48280,
+    "cacheCreationInput": 45791,
+    "cacheReadInput": 12759263
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 732,
+    "output": 48280,
+    "cached": 12805054,
+    "total": 12854066
+  }
+}

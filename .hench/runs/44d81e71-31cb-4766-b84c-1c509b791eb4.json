@@ -1,0 +1,28 @@
+{
+  "id": "44d81e71-31cb-4766-b84c-1c509b791eb4",
+  "taskId": "820d0a97-5879-40d7-bfb5-724dbc35d9d8",
+  "taskTitle": "docs/fork-this.md walkthrough",
+  "startedAt": "2026-09-01T23:49:29-04:00",
+  "finishedAt": "2026-09-02T03:57:19.253Z",
+  "status": "completed",
+  "turns": 0,
+  "summary": "Delegated: fork walkthrough, README and self-hosting links",
+  "tokenUsage": {
+    "input": 0,
+    "output": 0,
+    "cacheCreationInput": 0,
+    "cacheReadInput": 0
+  },
+  "toolCalls": [],
+  "model": "sonnet",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "cached": 0,
+    "total": 0
+  }
+}

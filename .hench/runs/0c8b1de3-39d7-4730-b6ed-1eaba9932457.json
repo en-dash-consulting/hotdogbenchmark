@@ -1,0 +1,28 @@
+{
+  "id": "0c8b1de3-39d7-4730-b6ed-1eaba9932457",
+  "taskId": "fdf106e6-d888-4abb-a43f-6410d0cada49",
+  "taskTitle": "Framing explorer",
+  "startedAt": "2026-09-01T23:57:19-04:00",
+  "finishedAt": "2026-09-02T04:02:15.450Z",
+  "status": "completed",
+  "turns": 13,
+  "summary": "Vendor focus across matrix, chart and verbatim answers; moved/held filter; hash state; 4.4 KB total site JS",
+  "tokenUsage": {
+    "input": 1246,
+    "output": 26188,
+    "cacheCreationInput": 39963,
+    "cacheReadInput": 11121334
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 1246,
+    "output": 26188,
+    "cached": 11161297,
+    "total": 11188731
+  }
+}

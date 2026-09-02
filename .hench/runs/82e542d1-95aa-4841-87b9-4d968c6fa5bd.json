@@ -1,0 +1,28 @@
+{
+  "id": "82e542d1-95aa-4841-87b9-4d968c6fa5bd",
+  "taskId": "07b92abb-177a-499c-a082-9daf7a43119a",
+  "taskTitle": "Hover and focus detail on every chart without JavaScript",
+  "startedAt": "2026-09-01T23:49:29-04:00",
+  "finishedAt": "2026-09-02T03:57:19.052Z",
+  "status": "completed",
+  "turns": 37,
+  "summary": "Chart marks are links with native tooltips and CSS emphasis; chart frames are labeled groups; build tests",
+  "tokenUsage": {
+    "input": 3161,
+    "output": 117571,
+    "cacheCreationInput": 131464,
+    "cacheReadInput": 30598447
+  },
+  "toolCalls": [],
+  "model": "claude-fable-5-1",
+  "invocationContext": "api",
+  "assisted": true,
+  "actor": "Nick Daniel <nick@endash.us>",
+  "host": "NickBook-Pro.local",
+  "tokens": {
+    "input": 3161,
+    "output": 117571,
+    "cached": 30729911,
+    "total": 30850643
+  }
+}
