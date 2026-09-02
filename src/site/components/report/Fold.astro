@@ -1,0 +1,130 @@
+---
+/**
+ * A section that folds on a phone and lies flat on a desk.
+ *
+ * On a narrow screen the standings and the roster are each a `<details>`
+ * with a one-line summary, so a reader gets the headline and the framing
+ * story in the first two screens and opens the eleven-card roster by choice.
+ * On a wide screen the same section is plain: the summary is hidden and the
+ * content is forced visible through `::details-content`, so nothing is
+ * behind a click. No script either way.
+ *
+ * Two headings are rendered, one for each state, and only one is ever in the
+ * accessibility tree: the summary's on a phone, the section's on a desk.
+ * Browsers without `::details-content` keep the phone behavior everywhere,
+ * which is a working control rather than a hidden section.
+ */
+interface Props {
+  id: string
+  title: string
+  /** One line under the title in the folded state: what is inside, in numbers. */
+  hint: string
+  headingLevel?: 'h2' | 'h3'
+}
+
+const { id, title, hint, headingLevel = 'h2' } = Astro.props
+const Heading = headingLevel
+---
+
+<section class="fold-section" aria-labelledby={id}>
+  <Heading id={id} class="fold-heading">{title}</Heading>
+  <details class="fold">
+    <summary class="fold-summary">
+      <Heading class="fold-summary-title">{title}</Heading>
+      <span class="fold-hint">{hint}</span>
+    </summary>
+    <div class="fold-body">
+      <slot />
+    </div>
+  </details>
+</section>
+
+<style>
+  .fold-section {
+    margin-block: var(--space-xl);
+  }
+
+  .fold-heading {
+    display: none;
+  }
+
+  .fold-summary {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3xs) var(--space-s);
+    min-height: 2.75rem;
+    padding: var(--space-s) 0;
+    border-top: 3px solid var(--text-strong);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .fold-summary {
+    list-style: none;
+  }
+
+  .fold-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .fold-summary::before {
+    content: '+';
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--accent);
+    width: 1.25em;
+  }
+
+  .fold[open] .fold-summary::before {
+    content: '−';
+  }
+
+  .fold-summary-title {
+    display: inline;
+    margin: 0;
+    font-size: var(--step-2);
+  }
+
+  .fold-hint {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .fold[open] .fold-summary {
+    margin-bottom: var(--space-s);
+  }
+
+  @media (min-width: 48rem) {
+    @supports selector(::details-content) {
+      .fold-heading {
+        display: block;
+      }
+
+      .fold-summary {
+        display: none;
+      }
+
+      .fold::details-content {
+        content-visibility: visible;
+        display: block;
+      }
+    }
+  }
+
+  @media print {
+    .fold-heading {
+      display: block;
+    }
+
+    .fold-summary {
+      display: none;
+    }
+
+    .fold::details-content {
+      content-visibility: visible;
+      display: block;
+    }
+  }
+</style>

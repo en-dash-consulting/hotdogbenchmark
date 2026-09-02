@@ -11,8 +11,9 @@ import Base from '../../../layouts/Base.astro'
 import Masthead from '../../../components/report/Masthead.astro'
 import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../../components/report/KpiTiles.astro'
-import VendorProfile from '../../../components/report/VendorProfile.astro'
-import ResultsTable from '../../../components/report/ResultsTable.astro'
+import VendorCard from '../../../components/report/VendorCard.astro'
+import Standings from '../../../components/report/Standings.astro'
+import Fold from '../../../components/report/Fold.astro'
 import FramingSensitivity from '../../../components/report/FramingSensitivity.astro'
 import {
   getAllRuns,
@@ -23,7 +24,7 @@ import {
 } from '../../../lib/data.ts'
 import { framingColumnAcross, questionFieldShift } from '../../../lib/sensitivity.ts'
 import { formatEdition } from '../../../lib/format.ts'
-import { archivedQuestionDescription, breadcrumbJsonLd } from '../../../lib/seo.ts'
+import { archivedQuestionDescription, breadcrumbJsonLd, count } from '../../../lib/seo.ts'
 import { routes } from '../../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -39,6 +40,7 @@ export function getStaticPaths() {
 
 const { run, question } = Astro.props
 const results = getModelResults(run, question.id)
+const answering = results.filter((result) => result.samples.length > 0)
 const previous = getPreviousRun(run.isoWeek)
 const previousResults = previous ? getModelResults(previous, question.id) : null
 const askedText = getQuestionTextInRun(run, question.id)
@@ -61,7 +63,7 @@ const framingTile =
   description={archivedQuestionDescription(run, question)}
   jsonLd={breadcrumbJsonLd(Astro.site ?? new URL('http://localhost:4321'), [
     { name: 'Home', path: routes.home() },
-    { name: 'Every edition', path: routes.runs() },
+    { name: 'Editions', path: routes.runs() },
     { name: `${formatEdition(run.isoWeek)} edition`, path: routes.run(run.isoWeek) },
     { name: question.reportTitle, path: routes.runQuestion(run.isoWeek, question.id) },
   ])}
@@ -72,24 +74,34 @@ const framingTile =
 
   <FramingSensitivity run={run} question={question} />
 
-  <section aria-labelledby="profiles-heading">
-    <h2 id="profiles-heading">Vendor profiles</h2>
-    <div class="profile-grid">
-      {results.map((result) => <VendorProfile result={result} />)}
-    </div>
-  </section>
+  <Fold
+    id="standings-heading"
+    title="Vendor standings"
+    hint={`${count(answering.length, 'model')} ranked by composite score, with latency, tokens and cost`}
+  >
+    <Standings
+      results={results}
+      previous={previousResults}
+      caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
+      framing={framingColumn}
+    />
+  </Fold>
 
-  <ResultsTable
-    results={results}
-    caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
-    framing={framingColumn}
-  />
+  <Fold
+    id="profiles-heading"
+    title="Vendor profiles"
+    hint="One card per model: the verbatim answer, the shape of its numbers, and what they cost"
+  >
+    <div class="profile-grid">
+      {results.map((result) => <VendorCard result={result} peers={results} />)}
+    </div>
+  </Fold>
 </Base>
 
 <style>
   .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
     gap: var(--space-s);
   }
 </style>

@@ -1,85 +1,97 @@
 ---
 /**
- * The same data as the profile cards, as a semantic table.
+ * The standings: one table that is both the leaderboard and the data table.
  *
- * **It is fully readable with JavaScript disabled**, sorted by composite score
- * descending. The script below is an enhancement: it adds click-to-sort with
- * aria-sort, filtering by provider and verdict with a live-region count, and
- * URL-hash state so a view can be shared. Nothing it adds is required to read
- * the data.
+ * Rank and movement on the left, the observations on the right, every model
+ * once. A column whose value is identical for every model this edition is
+ * left out and mentioned under the table instead; a column of 1.00s is not a
+ * column, it is a sentence.
  *
- * The enhancement is deliberately vanilla and tiny. A framework here would cost
- * more than every other byte of JavaScript on the site combined.
+ * **Fully readable with JavaScript disabled**, ordered by composite score.
+ * The script is an enhancement: click-to-sort with aria-sort, filtering by
+ * vendor and verdict with a live-region count, and URL-hash state so a view
+ * can be shared. Nothing it adds is required to read the data.
  */
 import VerdictBadge from './VerdictBadge.astro'
+import { MOVEMENT_GLYPH, MOVEMENT_LABEL, rankWithDeltas } from '../../lib/rank.ts'
 import { formatDuration, formatInteger, formatPercent, formatUsd } from '../../lib/format.ts'
-import { scoreModels } from '../../lib/scores.ts'
+import { uniformMeasures } from '../../lib/scores.ts'
 import { getModelEntry } from '../../lib/data.ts'
-import { routes } from '../../lib/urls.ts'
+import { profileAnchor, routes } from '../../lib/urls.ts'
 import { modelKey } from '../../lib/sensitivity.ts'
 import type { FramingShift } from '../../lib/sensitivity.ts'
 import type { ModelResult } from '../../../schema/run.ts'
 
 interface Props {
   results: ModelResult[]
+  previous?: ModelResult[] | null
   caption: string
   /**
-   * The framing column, when the edition ran more than the control.
-   *
-   * Passed in rather than derived here because its meaning depends on the
-   * page: the canonical report compares each model against every arm, and an
-   * arm's own page compares that arm against the control. The column is
-   * omitted entirely when there is nothing to compare, which is what a
-   * control-only edition or a fork with one condition produces.
+   * The framing column, when the edition ran more than the control. Passed in
+   * because its meaning depends on the page: the canonical report compares
+   * each model against every arm; an arm's own page compares that arm against
+   * the control. Omitted when there is nothing to compare.
    */
   framing?: { label: string; cells: Record<string, FramingShift> } | null
 }
 
-const { results, caption, framing = null } = Astro.props
+const { results, previous = null, caption, framing = null } = Astro.props
 
-// Default order is composite score descending — a defensible order that does
-// not depend on JavaScript having run.
-const rows = scoreModels(results)
-  .sort((a, b) => b.composite - a.composite)
-  .map((scored) => ({
-    ...scored,
-    vendor:
-      getModelEntry(scored.result.provider, scored.result.modelId)?.vendor ??
-      scored.result.provider,
-  }))
+const ranked = rankWithDeltas(results, previous).map((entry) => ({
+  ...entry,
+  vendor:
+    getModelEntry(entry.result.provider, entry.result.modelId)?.vendor ?? entry.result.provider,
+}))
+const hasPrior = Boolean(previous && previous.length > 0)
+const uniform = uniformMeasures(results)
 
+/** The columns this edition earns. Uniform measures are not columns. */
 const COLUMNS = [
+  { key: 'rank', label: 'Rank', type: 'number' },
+  ...(hasPrior ? [{ key: 'movement', label: 'Movement', type: 'text' }] : []),
   { key: 'model', label: 'Model', type: 'text' },
-  { key: 'vendor', label: 'Vendor', type: 'text' },
-  { key: 'verdict', label: 'Verdict', type: 'text' },
-  // Sorts on the number of arms the model moved under, not on the cell text,
-  // so one click brings every model that changed its mind to the top.
-  ...(framing ? ([{ key: 'framing', label: framing.label, type: 'number' }] as const) : []),
-  { key: 'decisiveness', label: 'Decisiveness', type: 'number' },
-  { key: 'efficiency', label: 'Efficiency', type: 'number' },
+  { key: 'verdict', label: 'Position', type: 'text' },
+  ...(framing ? [{ key: 'framing', label: framing.label, type: 'number' }] : []),
+  ...(uniform.decisiveness ? [] : [{ key: 'decisiveness', label: 'Decisiveness', type: 'number' }]),
+  ...(uniform.efficiency ? [] : [{ key: 'efficiency', label: 'Efficiency', type: 'number' }]),
   { key: 'latency', label: 'Median latency', type: 'number' },
   { key: 'tokens', label: 'Output tokens', type: 'number' },
-  { key: 'oneWord', label: 'One word', type: 'number' },
+  ...(uniform.compliance ? [] : [{ key: 'oneWord', label: 'One word', type: 'number' }]),
   { key: 'cost', label: 'Cost est.', type: 'number' },
   { key: 'composite', label: 'Composite', type: 'number' },
 ] as const
+
+const show = (key: string) => COLUMNS.some((column) => column.key === key)
 
 /** This model's framing cell, or a placeholder when the column is not shown. */
 const shiftFor = (result: ModelResult): FramingShift =>
   framing?.cells[modelKey(result)] ?? { label: '—', moved: 0, comparable: 0 }
 
-const providers = [...new Set(rows.map((row) => row.vendor))].sort()
+const vendors = [...new Set(ranked.map((row) => row.vendor))].sort()
+
+/** What the table leaves out, in one sentence each. */
+const omitted: string[] = []
+if (uniform.decisiveness)
+  omitted.push(
+    `Every model scored ${uniform.values.decisiveness!.toFixed(2)} on decisiveness, so that column is not shown.`,
+  )
+if (uniform.efficiency)
+  omitted.push(
+    `Every model scored ${uniform.values.efficiency!.toFixed(2)} on efficiency, so that column is not shown.`,
+  )
+if (uniform.compliance)
+  omitted.push(
+    `Every model answered in one word ${formatPercent(uniform.values.compliance)} of the time, so that column is not shown.`,
+  )
 ---
 
-<section aria-labelledby="table-heading" class="results-table" data-results-table>
-  <h2 id="table-heading">Data table</h2>
-
+<div class="standings" data-results-table>
   <div class="controls" data-controls hidden>
     <div class="control">
       <label for="filter-vendor">Vendor</label>
       <select id="filter-vendor" data-filter="vendor">
         <option value="">All vendors</option>
-        {providers.map((vendor) => <option value={vendor}>{vendor}</option>)}
+        {vendors.map((vendor) => <option value={vendor}>{vendor}</option>)}
       </select>
     </div>
     <div class="control">
@@ -96,7 +108,7 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     <p class="status" role="status" data-status></p>
   </div>
 
-  <div class="table-scroll table-stack" tabindex="0" role="region" aria-label="Results table">
+  <div class="table-scroll table-stack" tabindex="0" role="region" aria-label="Standings table">
     <table role="table">
       <caption>{caption}</caption>
       <thead>
@@ -118,61 +130,83 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
       </thead>
       <tbody>
         {
-          rows.map((row) => {
-            const a = row.result.aggregate
+          ranked.map((entry) => {
+            const a = entry.result.aggregate
             return (
               <tr
                 role="row"
-                data-vendor={row.vendor}
+                data-rank={entry.rank}
+                data-movement={entry.movement}
+                data-vendor={entry.vendor}
                 data-verdict={a.verdict ?? 'none'}
-                data-model={row.result.displayName}
-                data-decisiveness={row.decisiveness}
-                data-efficiency={row.efficiency}
+                data-model={entry.result.displayName}
+                data-decisiveness={entry.decisiveness}
+                data-efficiency={entry.efficiency}
                 data-latency={a.totalMs?.median ?? ''}
                 data-tokens={a.outputTokens?.median ?? ''}
-                data-framing={framing ? shiftFor(row.result).moved : ''}
+                data-framing={framing ? shiftFor(entry.result).moved : ''}
                 data-one-word={a.followedInstructionRate ?? ''}
                 data-cost={a.costEstimateUsd ?? ''}
-                data-composite={row.composite}
+                data-composite={entry.composite}
               >
-                <th scope="row" role="rowheader">
-                  {row.result.displayName}
-                </th>
-                <td role="cell" data-label="Vendor">
-                  {row.vendor}
+                <td role="cell" class="numeric rank" data-label="Rank">
+                  {entry.rank}
                 </td>
-                <td role="cell" data-label="Verdict">
+                {hasPrior && (
+                  <td role="cell" class:list={['movement', entry.movement]} data-label="Movement">
+                    {MOVEMENT_GLYPH[entry.movement] && (
+                      <span aria-hidden="true">{MOVEMENT_GLYPH[entry.movement]}</span>
+                    )}
+                    <span>
+                      {entry.delta !== null && entry.delta !== 0
+                        ? `${MOVEMENT_LABEL[entry.movement]} ${Math.abs(entry.delta)}`
+                        : MOVEMENT_LABEL[entry.movement]}
+                    </span>
+                  </td>
+                )}
+                <th scope="row" role="rowheader">
+                  <a class="model-link" href={`#${profileAnchor(entry.result)}`}>
+                    {entry.result.displayName}
+                  </a>
+                </th>
+                <td role="cell" data-label="Position">
                   <VerdictBadge verdict={a.verdict} />
                 </td>
                 {framing && (
                   <td
                     role="cell"
-                    class:list={['framing-cell', shiftFor(row.result).moved > 0 && 'moved']}
+                    class:list={['framing-cell', shiftFor(entry.result).moved > 0 && 'moved']}
                     data-label={framing.label}
                   >
-                    {shiftFor(row.result).label}
+                    {shiftFor(entry.result).label}
                   </td>
                 )}
-                <td role="cell" class="numeric" data-label="Decisiveness">
-                  {row.decisiveness.toFixed(2)}
-                </td>
-                <td role="cell" class="numeric" data-label="Efficiency">
-                  {row.efficiency.toFixed(2)}
-                </td>
+                {show('decisiveness') && (
+                  <td role="cell" class="numeric" data-label="Decisiveness">
+                    {entry.decisiveness.toFixed(2)}
+                  </td>
+                )}
+                {show('efficiency') && (
+                  <td role="cell" class="numeric" data-label="Efficiency">
+                    {entry.efficiency.toFixed(2)}
+                  </td>
+                )}
                 <td role="cell" class="numeric" data-label="Median latency">
                   {formatDuration(a.totalMs?.median)}
                 </td>
                 <td role="cell" class="numeric" data-label="Output tokens">
                   {formatInteger(a.outputTokens?.median)}
                 </td>
-                <td role="cell" class="numeric" data-label="One word">
-                  {formatPercent(a.followedInstructionRate)}
-                </td>
+                {show('oneWord') && (
+                  <td role="cell" class="numeric" data-label="One word">
+                    {formatPercent(a.followedInstructionRate)}
+                  </td>
+                )}
                 <td role="cell" class="numeric" data-label="Cost est.">
                   {formatUsd(a.costEstimateUsd)}
                 </td>
-                <td role="cell" class="numeric" data-label="Composite">
-                  {row.composite.toFixed(2)}
+                <td role="cell" class="numeric composite" data-label="Composite">
+                  {entry.composite.toFixed(2)}
                 </td>
               </tr>
             )
@@ -183,9 +217,15 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
   </div>
 
   <p class="footnote">
-    Rows are ordered by composite score. Decisiveness, efficiency and the composite score are
-    defined on the <a href={routes.methodology()}>methodology page</a>; they are constructed
-    measures, not observations.{' '}
+    Ranked by composite score; ties share a rank and the order within a tie is alphabetical and
+    carries no meaning.{' '}
+    {
+      hasPrior
+        ? 'Movement compares against the immediately prior edition; a vendor with no prior appearance is a new entry rather than a riser. '
+        : ''
+    }
+    Decisiveness, efficiency and the composite are constructed measures, not observations, defined on
+    the <a href={routes.methodology()}>methodology page</a>.{' '}
     {
       framing && (
         <>
@@ -196,8 +236,9 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
         </>
       )
     }
+    {omitted.length > 0 && <> {omitted.join(' ')}</>}
   </p>
-</section>
+</div>
 
 <script>
   // Progressive enhancement only. Everything below is additive: with this
@@ -287,7 +328,8 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
           sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'
         } else {
           sortKey = key
-          sortDirection = th.dataset.type === 'number' ? 'desc' : 'asc'
+          // Rank reads best ascending; every other number, descending.
+          sortDirection = th.dataset.type === 'number' && key !== 'rank' ? 'desc' : 'asc'
         }
         apply()
       }
@@ -325,10 +367,6 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
 </script>
 
 <style>
-  .results-table {
-    margin-block: var(--space-xl);
-  }
-
   .controls {
     display: flex;
     flex-wrap: wrap;
@@ -374,6 +412,49 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     color: var(--muted);
   }
 
+  .rank {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .composite {
+    font-weight: 600;
+  }
+
+  /* Names get room before numbers do: a wrapped name doubles every row. */
+  th[data-column='model'] {
+    min-width: 13rem;
+  }
+
+  .model-link {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .model-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Stays a table cell: display: flex on a <td> takes the border-bottom with
+     it and misaligns the row the moment a neighbor wraps. */
+  .movement {
+    white-space: nowrap;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .movement > span + span {
+    margin-left: var(--space-3xs);
+  }
+
+  .movement.up {
+    color: var(--verdict-yes);
+  }
+
+  .movement.down {
+    color: var(--verdict-no);
+  }
+
   /* The word does the work; the weight is a second, redundant cue. Nothing
      here is color-only, so the column reads in forced-colors mode too. */
   .framing-cell.moved {
@@ -404,5 +485,6 @@ const providers = [...new Set(rows.map((row) => row.vendor))].sort()
     font-size: var(--step--1);
     color: var(--muted);
     margin-top: var(--space-2xs);
+    max-width: var(--measure);
   }
 </style>

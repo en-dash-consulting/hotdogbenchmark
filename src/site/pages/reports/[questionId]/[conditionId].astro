@@ -12,11 +12,9 @@ import Base from '../../../layouts/Base.astro'
 import Masthead from '../../../components/report/Masthead.astro'
 import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../../components/report/KpiTiles.astro'
-import VendorProfile from '../../../components/report/VendorProfile.astro'
-import ResultsTable from '../../../components/report/ResultsTable.astro'
+import VendorCard from '../../../components/report/VendorCard.astro'
+import Standings from '../../../components/report/Standings.astro'
 import Quadrant from '../../../components/report/Quadrant.astro'
-import Leaderboard from '../../../components/report/Leaderboard.astro'
-import Scorecard from '../../../components/report/Scorecard.astro'
 import ConditionNav from '../../../components/report/ConditionNav.astro'
 import {
   getLatestRun,
@@ -112,37 +110,21 @@ const framingTile =
 
         <Quadrant results={results} title={quadrantTitle} />
 
-        <Leaderboard
+        <Standings
           results={results}
           previous={previousResults}
+          framing={framingColumn}
           caption={`Vendor standings under the ${condition.label.toLowerCase()} framing — ${formatEdition(run.isoWeek)} edition`}
         />
-
-        <section aria-labelledby="scorecards-heading">
-          <h2 id="scorecards-heading">Vendor scorecards</h2>
-          <div class="scorecard-grid">
-            {results
-              .filter((result) => result.samples.length > 0)
-              .map((result) => (
-                <Scorecard result={result} peers={results} />
-              ))}
-          </div>
-        </section>
 
         <section aria-labelledby="profiles-heading">
           <h2 id="profiles-heading">Vendor profiles</h2>
           <div class="profile-grid">
             {results.map((result) => (
-              <VendorProfile result={result} />
+              <VendorCard result={result} peers={results} />
             ))}
           </div>
         </section>
-
-        <ResultsTable
-          results={results}
-          framing={framingColumn}
-          caption={`${question.reportTitle} — ${condition.label} framing — ${formatEdition(run.isoWeek)} edition`}
-        />
       </>
     )
   }
@@ -151,15 +133,8 @@ const framingTile =
 <style>
   .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
     gap: var(--space-s);
-  }
-
-  .scorecard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
-    gap: var(--space-s);
-    margin-bottom: var(--space-xl);
   }
 
   .compare-link {

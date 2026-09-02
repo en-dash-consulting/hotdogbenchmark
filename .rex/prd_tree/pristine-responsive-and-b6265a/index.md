@@ -29,6 +29,6 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 |-------|--------|
 | [CI gates that hold the responsive and accessibility bar](./ci-gates-that-hold-the-cb0c74.md) | completed |
 | [Keyboard and screen-reader experience of the answer board and framing switch](./keyboard-and-screen-reader-eb149b.md) | completed |
-| [Manual screen-reader, voice-control and touch pass, written up](./manual-screen-reader-voice-c44e7b.md) | blocked |
+| [Manual screen-reader, voice-control and touch pass, written up](./manual-screen-reader-voice-c44e7b.md) | pending |
 | [Responsive audit and reflow of every page from 320px to 1920px](./responsive-audit-and-reflow-of-105fe0.md) | completed |
 | [WCAG 2.2 criteria without an automated check: focus not obscured, target size, forced colors, text spacing](./wcag-2-2-criteria-without-an-b4b675.md) | completed |

@@ -100,7 +100,6 @@
 
   tr,
   .profile,
-  .scorecard,
   .kpi,
   figure,
   blockquote {
@@ -122,7 +121,6 @@
 
   /* Charts sized to the printed column rather than the screen. */
   .chart-canvas svg,
-  .scorecard svg,
   svg {
     max-width: 100%;
     height: auto;
@@ -157,7 +155,6 @@
   }
 
   .profile-grid,
-  .scorecard-grid,
   .spark-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -173,7 +170,6 @@
      browsers do not print backgrounds by default. */
   .kpi,
   .profile,
-  .scorecard,
   .research-question {
     border: 0.5pt solid #a9b1bd;
     background: transparent;

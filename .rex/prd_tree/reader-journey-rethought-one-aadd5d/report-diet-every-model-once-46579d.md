@@ -1,0 +1,26 @@
+---
+id: "46579d70-9212-4d3a-a1ff-be228136db1f"
+level: "feature"
+title: "Report diet: every model once, and no chart that cannot separate anything"
+status: "in_progress"
+priority: "high"
+tags:
+  - "site"
+  - "reports"
+  - "design"
+  - "dataviz"
+  - "responsive"
+source: "UX review 2026-09-02"
+startedAt: "2026-09-02T21:21:52.727Z"
+acceptanceCriteria:
+  - "The canonical report shows each model in exactly two places, the standings table and its vendor card, plus the verbatim evidence list"
+  - "The Week 36 report is under 6,000 px at 1280 wide and under 12,000 px at 390 wide, asserted by a build test with the numbers in the test"
+  - "The leaderboard and data table are one table, and the sort and filter enhancement works on it with scripts and is a plain table without"
+  - "A measure with zero variance across the field is not plotted on the quadrant or the radar and the page says so in one sentence, with a unit test over a fixture where decisiveness is uniform and one where it is not"
+  - "On phones the standings and the roster are each collapsible with a native details element and no JavaScript"
+  - "The PDF link is in the masthead area and the print stylesheet still renders the whole report"
+  - "axe in four modes, the responsive audit, the keyboard audit and the budget stay green"
+description: "The canonical report at /reports/hot-dog/ is 11,780 px tall at 1280 wide and 27,711 px at 390. It shows the eleven models in the framing matrix, the verbatim list, the edition-wide sensitivity bars, the quadrant, the leaderboard, eleven scorecards, eleven vendor profiles and the data table. On a phone the stacked leaderboard, scorecards, profiles and table become four consecutive runs of eleven cards, the same numbers each time. The analyst-report structure is the joke and should stay; the joke does not need the field restated six times.\n\n**The shape after.** A report has one comparison and one roster:\n\n- *Comparison*: KPI tiles, executive summary, framing sensitivity (its matrix and edition bars), and one standings table that is the leaderboard and the data table merged: rank, model, position, framing shift, latency, tokens, cost, one-word compliance. The results-table enhancement (sort, filter) moves onto it. The quadrant stays as the one chart, above the standings.\n- *Roster*: one section per vendor that is the scorecard and the profile merged: the verbatim answer, the verdict, the radar, the metrics list, the cost. Eleven cards instead of twenty-two, each carrying the profile anchor the chart marks link to.\n- *Evidence*: the verbatim-under-every-framing list stays where it is, behind `<details>`.\n\nOn phones the roster and the standings each collapse behind a `<details>` per section with a one-line summary (no JavaScript), so a reader gets the summary and the framing story on the first two screens and opens the rest by choice. The PDF link moves up beside the masthead, where the print edition of a research note is offered.\n\n**Variance-aware charts.** This edition every model scores decisiveness 1.00. The quadrant therefore plots eleven points along its top edge with overlapping numbers, every radar is the same pentagon, and the standings carry a column of 1.00s. A chart that cannot separate anything is not a chart. Rule: when a plotted measure is identical across the field, the chart drops that axis and says so in one sentence (\"Every model was fully decisive this edition; the chart shows efficiency alone\"), the radar omits the spoke, and the column collapses to a note. The measure stays in the data table alternative and in the methodology. Apply the same rule to the alignment grid's agreement row (100% columns) and the sway bars.\n\nThe archive question page under /runs/ reuses the same components and shrinks with them."
+lastModified: "2026-09-02T21:21:52.741Z"
+lastModifiedBy: "Nick Daniel <nick@endash.us>"
+---

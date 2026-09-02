@@ -26,10 +26,10 @@ lastModifiedBy: "Nick Daniel <nick@endash.us>"
 
 | Title | Status |
 |-------|--------|
-| [Ask-a-question input on the site, routing to the En Dash contact form or a prefilled GitHub issue](./ask-a-question-input-on-the-328249.md) | pending |
+| [Ask-a-question input on the site: stays on the site, GitHub first, the En Dash contact route as a configured option](./ask-a-question-input-on-the-328249.md) | pending |
 | [bench init: swap the questions and framings interactively and clear stale fixtures](./bench-init-swap-the-questions-63d31b.md) | completed |
 | [CONTRIBUTING sections and issue templates for adding a provider, a model, and a question](./contributing-sections-and-issue-57ade3.md) | completed |
-| [Credit the people who send questions, and make each one shareable](./credit-the-people-who-send-d69903.md) | pending |
 | [docs/fork-this.md: clone to deployed site with your own question, start to finish](./docs-fork-this-md-clone-to-820d0a.md) | completed |
 | [Fork-me section on the front page](./fork-me-section-on-the-front-page-8dbc7b.md) | completed |
+| [Share affordance and credit copy for contributed questions](./share-affordance-and-credit-d69903.md) | pending |
 | [Site copy driven by the registries, so a non-sandwich question set renders correctly](./site-copy-driven-by-the-76c385.md) | completed |

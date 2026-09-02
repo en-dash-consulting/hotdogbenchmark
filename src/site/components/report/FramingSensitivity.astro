@@ -333,13 +333,21 @@ const comparableCount = fieldShift.comparable
         })}
       </ul>
 
-      <h3>Across every question this edition</h3>
-      <SensitivityBars
-        entries={edition}
-        conditions={arms}
-        title="Framing sensitivity by vendor"
-        caption="Share of questions in this edition on which a model's majority verdict under a framing differed from its verdict under the control. Questions where either arm produced no verdict are excluded. Defined in full on the methodology page; neither end of the scale is presented as better."
-      />
+      {/* Edition-wide, so identical on every report this week: context, one click away. */}
+      <details class="edition-wide">
+        <summary>
+          <h3>Across every question this edition</h3>
+          <span class="edition-wide-hint">
+            Every vendor's framing sensitivity over all {run.questions.length} questions
+          </span>
+        </summary>
+        <SensitivityBars
+          entries={edition}
+          conditions={arms}
+          title="Framing sensitivity by vendor"
+          caption="Share of questions in this edition on which a model's majority verdict under a framing differed from its verdict under the control. Questions where either arm produced no verdict are excluded. Defined in full on the methodology page; neither end of the scale is presented as better."
+        />
+      </details>
     </section>
   )
 }
@@ -749,7 +757,9 @@ const comparableCount = fieldShift.comparable
     display: flex;
     justify-content: space-between;
     gap: var(--space-s);
-    padding: var(--space-s) 0;
+    padding: var(--space-2xs) 0;
+    min-height: 2.75rem;
+    align-items: center;
     cursor: pointer;
     list-style: none;
   }
@@ -845,5 +855,54 @@ const comparableCount = fieldShift.comparable
     margin: var(--space-2xs) 0 0;
     font-size: var(--step--1);
     color: var(--muted);
+  }
+  .edition-wide {
+    margin-top: var(--space-l);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .edition-wide summary {
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3xs) var(--space-s);
+    min-height: 2.75rem;
+    padding: var(--space-s) 0;
+  }
+
+  .edition-wide summary h3 {
+    display: inline;
+    margin: 0;
+  }
+
+  .edition-wide summary {
+    list-style: none;
+  }
+
+  .edition-wide summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .edition-wide summary::before {
+    content: '+';
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--accent);
+    width: 1.25em;
+  }
+
+  .edition-wide[open] summary::before {
+    content: '−';
+  }
+
+  .edition-wide-hint {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .edition-wide[open] summary {
+    margin-bottom: var(--space-s);
   }
 </style>
