@@ -1,48 +1,144 @@
 {
   "provider": "anthropic",
   "modelId": "claude-opus-5",
-  "source": "authored",
-  "recordedAt": "2026-09-01",
-  "note": "Authored to this vendor’s documented response shape; no key was available to capture a live call. Replace with: npm run bench:record -- --provider anthropic",
+  "source": "live",
+  "recordedAt": "2026-09-02",
+  "note": "Captured from live calls to Claude Opus 5.",
   "responses": [
     {
       "questionId": "hot-dog",
-      "text": "No",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "No.",
       "usage": {
-        "inputTokens": 18,
-        "outputTokens": 1,
-        "totalTokens": 19,
-        "reasoningTokens": null,
-        "cachedInputTokens": 12
+        "inputTokens": 24,
+        "outputTokens": 73,
+        "totalTokens": 97,
+        "reasoningTokens": 69,
+        "cachedInputTokens": 0
       },
-      "approxTotalMs": 890,
-      "approxTtfbMs": 320
+      "approxTotalMs": 2288,
+      "approxTtfbMs": 2275
     },
     {
       "questionId": "hamburger",
-      "text": "Yes",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "Yes.",
       "usage": {
-        "inputTokens": 18,
-        "outputTokens": 1,
-        "totalTokens": 19,
-        "reasoningTokens": null,
-        "cachedInputTokens": 12
+        "inputTokens": 24,
+        "outputTokens": 99,
+        "totalTokens": 123,
+        "reasoningTokens": 93,
+        "cachedInputTokens": 0
       },
-      "approxTotalMs": 890,
-      "approxTtfbMs": 320
+      "approxTotalMs": 2145,
+      "approxTtfbMs": 2115
     },
     {
       "questionId": "taco",
-      "text": "No",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "No.",
       "usage": {
-        "inputTokens": 17,
-        "outputTokens": 1,
-        "totalTokens": 18,
-        "reasoningTokens": null,
-        "cachedInputTokens": 12
+        "inputTokens": 22,
+        "outputTokens": 86,
+        "totalTokens": 108,
+        "reasoningTokens": 82,
+        "cachedInputTokens": 0
       },
-      "approxTotalMs": 890,
-      "approxTtfbMs": 320
+      "approxTotalMs": 2242,
+      "approxTtfbMs": 2219
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "asserted",
+      "systemPrompt": "A hot dog is a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 37,
+        "outputTokens": 249,
+        "totalTokens": 286,
+        "reasoningTokens": 245,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 4054,
+      "approxTtfbMs": 4042
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "asserted",
+      "systemPrompt": "A hamburger is a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 37,
+        "outputTokens": 188,
+        "totalTokens": 225,
+        "reasoningTokens": 182,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3458,
+      "approxTtfbMs": 3445
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "asserted",
+      "systemPrompt": "A taco is a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 33,
+        "outputTokens": 235,
+        "totalTokens": 268,
+        "reasoningTokens": 231,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 4472,
+      "approxTtfbMs": 4455
+    },
+    {
+      "questionId": "hot-dog",
+      "conditionId": "denied",
+      "systemPrompt": "A hot dog is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 38,
+        "outputTokens": 227,
+        "totalTokens": 265,
+        "reasoningTokens": 223,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3960,
+      "approxTtfbMs": 3950
+    },
+    {
+      "questionId": "hamburger",
+      "conditionId": "denied",
+      "systemPrompt": "A hamburger is not a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 38,
+        "outputTokens": 196,
+        "totalTokens": 234,
+        "reasoningTokens": 190,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 3844,
+      "approxTtfbMs": 3828
+    },
+    {
+      "questionId": "taco",
+      "conditionId": "denied",
+      "systemPrompt": "A taco is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 34,
+        "outputTokens": 222,
+        "totalTokens": 256,
+        "reasoningTokens": 218,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 4182,
+      "approxTtfbMs": 4173
     }
   ]
 }

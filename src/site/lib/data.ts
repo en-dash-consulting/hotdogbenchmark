@@ -11,17 +11,28 @@
  * notices for three weeks.
  */
 import { loadAllRuns } from '../../data/index.ts'
-import { loadModelsRegistry, loadQuestionsRegistry, REPO_ROOT } from '../../data/registries.ts'
+import {
+  loadConditionsRegistry,
+  loadModelsRegistry,
+  loadQuestionsRegistry,
+  REPO_ROOT,
+} from '../../data/registries.ts'
 import { enabledQuestions } from '../../schema/questions.ts'
 import { enabledModels } from '../../schema/models.ts'
+import { CONTROL_CONDITION_ID, enabledConditions } from '../../schema/conditions.ts'
+import type { ConditionEntry } from '../../schema/conditions.ts'
 import type { ModelEntry } from '../../schema/models.ts'
 import type { QuestionEntry } from '../../schema/questions.ts'
-import type { BenchmarkRun, ModelResult, QuestionResult } from '../../schema/run.ts'
+import type { BenchmarkRun, ModelResult, QuestionResult, RunCondition } from '../../schema/run.ts'
 
-/** Loaded once per build. Runs are newest edition first. */
+/**
+ * Loaded once per build. Runs are newest edition first, and every one is in
+ * the current schema shape: `loadAllRuns` migrates older files on read.
+ */
 const runs: BenchmarkRun[] = loadAllRuns(REPO_ROOT).map((file) => file.run)
 const questionsRegistry = loadQuestionsRegistry(REPO_ROOT)
 const modelsRegistry = loadModelsRegistry(REPO_ROOT)
+const conditionsRegistry = loadConditionsRegistry(REPO_ROOT)
 
 /**
  * Every edition, newest first.
@@ -82,14 +93,42 @@ export function getModelEntry(provider: string, modelId: string): ModelEntry | n
   )
 }
 
-/** One question's results within one edition, or null if it was not asked then. */
-export function getQuestionResult(run: BenchmarkRun, questionId: string): QuestionResult | null {
-  return run.results.find((result) => result.questionId === questionId) ?? null
+/** The conditions currently configured, control first. What the runner will run next. */
+export function getConditionsRegistry(): ConditionEntry[] {
+  return enabledConditions(conditionsRegistry)
 }
 
-/** The models that answered one question in one edition, in registry order. */
-export function getModelResults(run: BenchmarkRun, questionId: string): ModelResult[] {
-  return getQuestionResult(run, questionId)?.models ?? []
+/** One condition as an edition recorded it, or null when that edition did not run it. */
+export function getCondition(run: BenchmarkRun, conditionId: string): RunCondition | null {
+  return run.conditions.find((condition) => condition.id === conditionId) ?? null
+}
+
+/**
+ * One cell of an edition's matrix — a question under a condition — or null if
+ * that edition did not ask it that way.
+ *
+ * Defaults to the control, so every caller that predates conditions keeps
+ * reading the question asked plainly.
+ */
+export function getQuestionResult(
+  run: BenchmarkRun,
+  questionId: string,
+  conditionId: string = CONTROL_CONDITION_ID,
+): QuestionResult | null {
+  return (
+    run.results.find(
+      (result) => result.questionId === questionId && result.conditionId === conditionId,
+    ) ?? null
+  )
+}
+
+/** The models that answered one question under one condition, in registry order. */
+export function getModelResults(
+  run: BenchmarkRun,
+  questionId: string,
+  conditionId: string = CONTROL_CONDITION_ID,
+): ModelResult[] {
+  return getQuestionResult(run, questionId, conditionId)?.models ?? []
 }
 
 /** The question text as it was asked in a given edition, which can differ from today's. */

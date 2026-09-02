@@ -117,6 +117,94 @@ describe('every built page', () => {
   })
 })
 
+/**
+ * The framing-sensitivity views exist exactly when the latest edition ran
+ * more than the control. Read the data rather than assuming, so this test is
+ * right both before and after the first multi-condition edition lands.
+ */
+describe('experimental conditions in the built report', () => {
+  const runs = readdirSync(join(ROOT, 'data/runs'))
+    .filter((name) => name.endsWith('.json'))
+    .sort()
+    .reverse()
+  const latest = runs[0]
+    ? (JSON.parse(readFileSync(join(ROOT, 'data/runs', runs[0]), 'utf8')) as {
+        conditions?: Array<{ id: string }>
+        questions: Array<{ id: string }>
+      })
+    : null
+  // A version-1 file has no conditions array and migrates to the control alone.
+  const conditionIds = latest?.conditions?.map((c) => c.id) ?? ['control']
+  const treated = conditionIds.filter((id) => id !== 'control')
+  const questionIds = latest?.questions.map((q) => q.id) ?? []
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+
+  it('renders the comparison on every report page, or on none, according to the data', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      if (treated.length > 0) {
+        expect(html, `${questionId} lacks the framing section`).toContain('Framing sensitivity')
+        expect(html).toContain('Position by framing')
+        expect(html).toContain('verbatim')
+      } else {
+        expect(html, `${questionId} shows an empty comparison`).not.toContain('framing-heading')
+      }
+    }
+  })
+
+  it('emits one full report per non-control framing, and none when there are none', () => {
+    for (const questionId of questionIds) {
+      for (const conditionId of treated) {
+        const path = join(DIST, 'reports', questionId, conditionId, 'index.html')
+        expect(existsSync(path), `${questionId}/${conditionId} was not built`).toBe(true)
+        const html = readFileSync(path, 'utf8')
+        expect(html).toContain('framing')
+        expect(html).toContain('System prompt')
+      }
+      if (treated.length === 0) {
+        const dirs = readdirSync(join(DIST, 'reports', questionId), { withFileTypes: true })
+          .filter((entry) => entry.isDirectory())
+          .map((entry) => entry.name)
+        expect(dirs).toEqual([])
+      }
+    }
+  })
+
+  it('ships the comparison with no client JavaScript of its own', () => {
+    // The comparison is HTML, SVG and a <details> element. The scripts a
+    // report page carries — the theme bootstrap, the theme toggle and the
+    // results table's progressive enhancement — all predate conditions, so
+    // the report page must have exactly as many as a page without one.
+    if (treated.length === 0) return
+    const baseline = (read('about').match(/<script[^>]*>/g) ?? []).length
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      const start = html.indexOf('id="framing-heading"')
+      const end = html.indexOf('Sandwich Certainty Quadrant', start)
+      expect(start, `${questionId} has no framing section`).toBeGreaterThan(-1)
+      expect(html.slice(start, end)).not.toMatch(/<script/)
+      const scripts = (html.match(/<script[^>]*>/g) ?? []).length
+      // The results table enhancement is the one extra script a report has.
+      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 1)
+    }
+  })
+
+  it('defines the sensitivity measure on the methodology page from the shared constant', () => {
+    const html = read('methodology')
+    expect(html).toContain('Framing sensitivity')
+    expect(html).toContain('neither robustness nor compliance')
+    expect(html).toContain('conditions.json')
+  })
+
+  it('gives every sensitivity chart a data-table alternative', () => {
+    for (const questionId of questionIds) {
+      if (treated.length === 0) continue
+      const html = read(`reports/${questionId}`)
+      expect(html).toContain('Framing sensitivity by vendor — data')
+    }
+  })
+})
+
 describe('internal links', () => {
   it('all go through the configured base path', () => {
     // With no base configured the base is "/", so this mainly guards the shape

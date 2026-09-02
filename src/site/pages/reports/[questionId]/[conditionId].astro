@@ -1,0 +1,147 @@
+---
+/**
+ * One question's report under one non-control framing, for the latest edition.
+ *
+ * The same components as the canonical report, fed the arm's cells instead of
+ * the control's, under a masthead that says which framing this is and shows
+ * the system prompt that produced it. The control report is the canonical
+ * document; this page exists so a reader can see the whole field under a
+ * framing rather than only the verdict cells the comparison shows.
+ */
+import Base from '../../../layouts/Base.astro'
+import Masthead from '../../../components/report/Masthead.astro'
+import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
+import KpiTiles from '../../../components/report/KpiTiles.astro'
+import VendorProfile from '../../../components/report/VendorProfile.astro'
+import ResultsTable from '../../../components/report/ResultsTable.astro'
+import Quadrant from '../../../components/report/Quadrant.astro'
+import Leaderboard from '../../../components/report/Leaderboard.astro'
+import Scorecard from '../../../components/report/Scorecard.astro'
+import ConditionNav from '../../../components/report/ConditionNav.astro'
+import {
+  getLatestRun,
+  getModelResults,
+  getPreviousRun,
+  getQuestionResult,
+  getQuestions,
+} from '../../../lib/data.ts'
+import { treatedConditions } from '../../../lib/sensitivity.ts'
+import { formatEdition } from '../../../lib/format.ts'
+import { routes } from '../../../lib/urls.ts'
+
+export function getStaticPaths() {
+  const run = getLatestRun()
+  if (!run) return []
+  return getQuestions().flatMap((question) =>
+    treatedConditions(run)
+      .filter((condition) => getQuestionResult(run, question.id, condition.id) !== null)
+      .map((condition) => ({
+        params: { questionId: question.id, conditionId: condition.id },
+        props: { question, condition, run },
+      })),
+  )
+}
+
+const { question, condition, run } = Astro.props
+const cell = getQuestionResult(run, question.id, condition.id)!
+const results = cell.models
+const previous = getPreviousRun(run.isoWeek)
+const previousResults = previous ? getModelResults(previous, question.id, condition.id) : null
+---
+
+<Base
+  title={`${question.reportTitle} — ${condition.label} framing`}
+  ogImage={question.id}
+  description={`How leading AI models classify ${question.subject} when told ${cell.systemPrompt ? `"${cell.systemPrompt}"` : 'nothing'}. ${formatEdition(run.isoWeek)} edition, ${condition.label.toLowerCase()} framing.`}
+>
+  <ConditionNav run={run} questionId={question.id} current={condition.id} />
+  <Masthead
+    question={question}
+    run={run}
+    questionText={cell.prompt}
+    condition={condition}
+    systemPrompt={cell.systemPrompt}
+  />
+
+  {
+    results.length === 0 ? (
+      <p class="empty">
+        No model produced data under this framing in the {formatEdition(run.isoWeek)} edition.
+      </p>
+    ) : (
+      <>
+        <KpiTiles results={results} previous={previousResults} />
+        <ExecutiveSummary subject={question.subject} results={results} />
+
+        <p class="compare-link">
+          The comparison against the control, with every model's verbatim answer under each framing,
+          is on the <a href={`${routes.report(question.id)}#framing-heading`}>canonical report</a>.
+        </p>
+
+        <Quadrant results={results} title="Sandwich Certainty Quadrant" />
+
+        <Leaderboard
+          results={results}
+          previous={previousResults}
+          caption={`Vendor standings under the ${condition.label.toLowerCase()} framing — ${formatEdition(run.isoWeek)} edition`}
+        />
+
+        <section aria-labelledby="scorecards-heading">
+          <h2 id="scorecards-heading">Vendor scorecards</h2>
+          <div class="scorecard-grid">
+            {results
+              .filter((result) => result.samples.length > 0)
+              .map((result) => (
+                <Scorecard result={result} peers={results} />
+              ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="profiles-heading">
+          <h2 id="profiles-heading">Vendor profiles</h2>
+          <div class="profile-grid">
+            {results.map((result) => (
+              <VendorProfile result={result} />
+            ))}
+          </div>
+        </section>
+
+        <ResultsTable
+          results={results}
+          caption={`${question.reportTitle} — ${condition.label} framing — ${formatEdition(run.isoWeek)} edition`}
+        />
+      </>
+    )
+  }
+</Base>
+
+<style>
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-s);
+  }
+
+  .scorecard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-s);
+    margin-bottom: var(--space-xl);
+  }
+
+  .compare-link {
+    max-width: var(--measure);
+    padding: var(--space-s);
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    font-size: var(--step--1);
+    margin-bottom: var(--space-xl);
+  }
+
+  .empty {
+    padding: var(--space-l);
+    background: var(--surface);
+    border-left: 3px solid var(--rule-strong);
+    color: var(--muted);
+  }
+</style>

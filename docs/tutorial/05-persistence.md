@@ -9,13 +9,41 @@ the data format is the part you should design most carefully and change least of
 ## Version the schema from the first commit
 
 ```ts
-export const SCHEMA_VERSION = 1
+export const SCHEMA_VERSION = 2
 ```
 
 Every run file records the version it was written under. This costs one integer now and is the
 only thing that will let you render a two-year-old edition after the shape has moved on.
 
 You will not do this retroactively. Do it on day one.
+
+### What the first bump looked like
+
+This repository started at version 1 and is now at 2, and the bump is worth reading because it is
+exactly the case the version field was put there for. Version 2 added experimental conditions:
+every result gained a `conditionId`, every run gained a `conditions` array, and each cell records
+the exact `prompt` and `systemPrompt` sent. Every committed version-1 file would have stopped
+validating.
+
+The rules that made it painless, all in [`src/schema/run.ts`](../../src/schema/run.ts) and
+[`src/data/migrate.ts`](../../src/data/migrate.ts):
+
+- **Keep the old schema.** `benchmarkRunV1Schema` still exists, so a version-1 file is validated
+  against the rules it was written under, not the current ones.
+- **Migrate on read, never on disk.** `parseBenchmarkRun()` reads the declared version, validates
+  against that generation, and converts in memory. The archive stays byte-identical to what was
+  published. Nothing ever rewrites history.
+- **Make the migration a fact, not a guess.** A version-1 run asked each question plainly with no
+  system prompt, which is precisely the definition of the `control` condition. The migration
+  assigns every old result to it. That is what those runs were.
+- **Freeze a real old file as a test fixture.**
+  [`tests/fixtures/runs/example-v1.json`](../../tests/fixtures/runs/example-v1.json) is never
+  regenerated. Its whole value is that it is exactly what a version-1 runner wrote.
+- **Refuse what you do not understand.** A file declaring version 3 fails with "update your
+  checkout" rather than being parsed optimistically.
+
+The version-1 edition in `data/runs/` renders today as the control arm of a later edition, with no
+comparison section, because there is nothing to compare. That is the payoff.
 
 ## Name files after the period, not the timestamp
 

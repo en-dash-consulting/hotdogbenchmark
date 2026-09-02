@@ -11,8 +11,9 @@
  * contrast is the entire joke, and it only works if the prose plays it
  * completely straight.
  */
-import type { ModelResult, Verdict } from '../../schema/run.ts'
+import type { BenchmarkRun, ModelResult, Verdict } from '../../schema/run.ts'
 import { scoreModels } from './scores.ts'
+import { questionShifts, treatedConditions } from './sensitivity.ts'
 
 /** How a verdict is written in running prose. */
 const VERDICT_NOUN: Record<Verdict, string> = {
@@ -291,4 +292,71 @@ export function vendorVerdictLine(result: ModelResult, peers: ModelResult[]): st
     return 'Fast and economical, but declines to commit to a firm classification. Throughput over conviction.'
   }
   return 'Neither decisive nor notably efficient this period. Buyers should monitor subsequent editions before drawing conclusions.'
+}
+
+/** How a verdict is written as a position: "a negative position". */
+const VERDICT_POSITION: Record<Verdict, string> = {
+  yes: 'affirmative',
+  no: 'negative',
+  other: 'non-committal',
+}
+
+/**
+ * The framing-sensitivity paragraph for one question.
+ *
+ * One sentence per non-control arm saying who moved and from what to what,
+ * then one on who held. Written so that neither moving nor holding reads as
+ * the better outcome — the methodology page makes that explicit, and this
+ * prose must not undercut it.
+ */
+export function framingSummary(run: BenchmarkRun, questionId: string, subject: string): string {
+  const rows = questionShifts(run, questionId)
+  const arms = treatedConditions(run)
+  if (arms.length === 0) return ''
+
+  const sentences: string[] = []
+
+  for (const arm of arms) {
+    const cells = rows
+      .map((row) => ({ row, cell: row.cells.find((c) => c.condition.id === arm.id)! }))
+      .filter(({ cell }) => cell.shift.status !== 'incomparable')
+    if (cells.length === 0) {
+      sentences.push(
+        `Under the ${arm.label.toLowerCase()} framing no model could be compared against its control position.`,
+      )
+      continue
+    }
+    const moved = cells.filter(({ cell }) => cell.shift.status === 'moved')
+    if (moved.length === 0) {
+      sentences.push(
+        `Under the ${arm.label.toLowerCase()} framing, all ${cells.length} comparable models retained their control position on ${subject}.`,
+      )
+      continue
+    }
+    const described = moved.map(
+      ({ row, cell }) =>
+        `${row.model.displayName} (${VERDICT_POSITION[cell.shift.from!]} to ${VERDICT_POSITION[cell.shift.to!]})`,
+    )
+    sentences.push(
+      `Under the ${arm.label.toLowerCase()} framing, ${moved.length} of ${cells.length} comparable models revised their classification of ${subject}: ${list(described)}.`,
+    )
+  }
+
+  const comparable = rows.filter((row) =>
+    row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+  )
+  const held = comparable.filter((row) => !row.movedAnywhere)
+  if (comparable.length > 0) {
+    if (held.length === comparable.length) {
+      sentences.push('No evaluated model changed its position under any framing.')
+    } else if (held.length > 0) {
+      sentences.push(
+        `${list(held.map((row) => row.model.displayName))} ${held.length === 1 ? 'held its' : 'held their'} position under every framing.`,
+      )
+    } else {
+      sentences.push('Every comparable model changed its position under at least one framing.')
+    }
+  }
+
+  return sentences.join(' ')
 }

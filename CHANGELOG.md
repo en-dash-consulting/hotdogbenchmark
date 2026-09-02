@@ -10,6 +10,52 @@ where the public surface is the **data schema**, not the TypeScript API.
 
 ## [Unreleased]
 
+### Added
+
+- **Experimental conditions.** Every question is now asked under every enabled
+  entry in a third registry, `conditions.json`: the `control` (no system
+  prompt), `asserted` (a system prompt stating "A hot dog is a sandwich.") and
+  `denied` (its negation). Templates take `{subject}`, so the taco question is
+  told about tacos. The run matrix is condition × question × model × samples;
+  the weekly cost triples to roughly $0.12, and a fork can pass
+  `--conditions control` or disable the arms to keep the old 63-call run.
+- **Schema version 2.** Each result cell carries `conditionId` and the exact
+  `prompt` and `systemPrompt` sent; a run records its `conditions`. Version-1
+  files are validated against the version-1 rules and migrated in memory on
+  read (`src/data/migrate.ts`), so the committed archive is never rewritten. A
+  frozen version-1 fixture proves it.
+- **System prompts through every vendor's own mechanism** — Anthropic's
+  top-level `system`, OpenAI's Responses `instructions`, Gemini's
+  `systemInstruction`, and a leading `role: "system"` message for the four
+  OpenAI-compatible adapters. Each adapter has a test asserting the body is
+  byte-identical when no system prompt is set, so the control arm is provably
+  the measurement earlier editions took.
+- **Framing sensitivity in the report.** Each report gains a position-by-framing
+  matrix marking the models that moved, the verbatim answer every model gave
+  under every framing behind a `<details>`, the arms as actually sent, and an
+  edition-wide sensitivity chart with a data-table alternative — all build-time
+  HTML and SVG, no client JavaScript. Each non-control arm also has a full
+  report page of its own. The measure is defined once in
+  `src/site/lib/sensitivity.ts` and rendered on the methodology page from that
+  constant, which states that neither robustness nor compliance is treated as
+  better.
+- **A front page that says something.** The home page now shows each
+  question's consensus, tally and latency, and the edition's framing-sensitivity
+  headline with a per-vendor table.
+- `bench run --conditions <ids>`, a `conditions` input on the weekly workflow,
+  `--dry-run` printing the full matrix and call count, and `bench:record`
+  capturing every condition so mock mode replays real recorded sensitivity.
+
+### Changed
+
+- Mock fixtures for Anthropic, OpenAI, xAI and Mistral are now live captures
+  under all three conditions. Gemini's stayed authored: its free-tier quota was
+  exhausted during recording. DeepSeek and Together remain authored, blocked on
+  account state.
+- `bench:record` uses the runner's 1024-token output cap rather than 64, the
+  same bug the runner had; a reasoning model given too little room records an
+  empty answer.
+
 ### Done since 0.1.0
 
 - **The first real benchmark run is committed.** `data/runs/2026-W36.json` is

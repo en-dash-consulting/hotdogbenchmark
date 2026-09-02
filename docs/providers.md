@@ -14,16 +14,40 @@ npm run bench -- run --mock
 
 ## The short version on cost
 
-**Measured, not estimated.** A real run on 2026-09-02 across five providers cost **$0.037** for 43
-samples. Projected to all seven providers at the full 63 calls a week: roughly **$0.04 a week, or
-$0.18 a month.**
+**Measured, not estimated.** A real control-only run on 2026-09-02 across five providers cost
+**$0.037** for 43 samples. Projected to all seven providers at 63 control calls a week: roughly
+**$0.04 a week, or $0.18 a month.**
 
-| Measure                                | Value                                   |
-| -------------------------------------- | --------------------------------------- |
-| Calls per week                         | 63 (3 questions x 7 models x 3 samples) |
-| Measured cost, 5 providers, 43 samples | **$0.037**                              |
-| Projected weekly, all 7                | **≈ $0.04**                             |
-| Projected monthly                      | **≈ $0.18**                             |
+**Experimental conditions multiply that linearly.** Every question is asked under every enabled
+condition in `conditions.json` — three as shipped (control, asserted, denied) — so the full matrix
+is 3 conditions × 3 questions × 7 models × 3 samples = **189 calls a week, roughly $0.12 a week or
+$0.55 a month.** Still cents, but three times the cents, and the methodology page says so to
+readers as well.
+
+| Measure                                  | Value                                                   |
+| ---------------------------------------- | ------------------------------------------------------- |
+| Calls per week, control only             | 63 (3 questions × 7 models × 3 samples)                 |
+| Calls per week, all three conditions     | 189 (3 conditions × 3 questions × 7 models × 3 samples) |
+| Measured cost, control only, 5 providers | **$0.037** for 43 samples                               |
+| Projected weekly, all 7, control only    | **≈ $0.04**                                             |
+| Projected weekly, all 7, all conditions  | **≈ $0.12**                                             |
+| Projected monthly, all conditions        | **≈ $0.55**                                             |
+
+**A fork does not have to pay for the conditions.** Set `enabled: false` on every condition but
+`control` in `conditions.json`, or pass `--conditions control` to `bench run` (the workflow's
+`conditions` input does the same), and the run is exactly the 63-call benchmark it was before
+conditions existed. The control cannot be disabled — every other arm is measured against it.
+
+### What the conditions are
+
+| Condition  | System prompt sent             | Purpose                                                         |
+| ---------- | ------------------------------ | --------------------------------------------------------------- |
+| `control`  | none                           | The baseline. What every edition before schema version 2 asked. |
+| `asserted` | `A hot dog is a sandwich.`     | Does the model adopt an affirmative premise stated as fact?     |
+| `denied`   | `A hot dog is not a sandwich.` | The mirror, so suggestibility is measured in both directions.   |
+
+The `{subject}` in each template is rendered per question, so the taco question is told about
+tacos, not hot dogs. The exact string sent is recorded on every cell of the run file.
 
 ### Where the money actually goes
 
@@ -222,7 +246,8 @@ questions:
 node -e "
 const models = require('./models.json').models.filter(m => m.enabled)
 const questions = require('./questions.json').questions.filter(q => q.enabled)
-const calls = questions.length * 3
+const conditions = require('./conditions.json').conditions.filter(c => c.enabled)
+const calls = conditions.length * questions.length * 3
 for (const m of models) {
   const low  = calls * (15 * m.pricing.inputUsdPerMTok / 1e6 + 3 * m.pricing.outputUsdPerMTok / 1e6)
   const high = calls * (700 * m.pricing.inputUsdPerMTok / 1e6 + 700 * m.pricing.outputUsdPerMTok / 1e6)

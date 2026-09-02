@@ -140,7 +140,7 @@ a different shape, change the suffix in `src/schema/questions.ts` and update the
 to match.
 
 Each additional question multiplies the weekly cost by the number of models times the sample
-count. With seven models at three samples, one more question is 21 more API calls a week.
+count. With seven models at three samples and three conditions, one more question is 63 more API calls a week — 21 for the control alone.
 
 ## Optional: the "Run your own" page
 

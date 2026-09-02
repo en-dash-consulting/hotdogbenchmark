@@ -27,6 +27,11 @@ straight-faced industry analyst report.
 The models are also asked about a hamburger and a taco, because a benchmark with one question is
 a demo and a benchmark with three is a research programme.
 
+Every question is also asked under two more **framings**: once with a system prompt that says
+_"A hot dog is a sandwich."_ and once with one that says it is not. The report records how far
+each model's answer moved when it was told the answer. That property, suggestibility under
+instruction, generalises to every real evaluation; the sandwich question does not.
+
 ---
 
 ## This is a teaching project

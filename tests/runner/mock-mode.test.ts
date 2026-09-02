@@ -71,9 +71,16 @@ describe('the recorded response fixtures', () => {
 describe('createMockAdapter', () => {
   const adapter = () => createMockAdapter('anthropic', { fixtures, speed: 0 })
 
+  /** The control recording for a question, straight from the fixture file. */
+  const recorded = (provider: string, questionId: string) =>
+    fixtures
+      .get(provider)!
+      .responses.find((r) => r.questionId === questionId && (r.systemPrompt ?? null) === null)!
+
   it('replays the recorded answer for a question', async () => {
     const result = await adapter().complete(REQUEST, fakeContext())
-    expect(result.text).toBe('No')
+    expect(result.text).toBe(recorded('anthropic', 'hot-dog').text)
+    expect(result.text).toMatch(/^No\b/)
     expect(result.usage.inputTokens).toBeGreaterThan(0)
     expect(result.timing.totalMs).toBeGreaterThan(0)
   })
@@ -83,7 +90,8 @@ describe('createMockAdapter', () => {
       { ...REQUEST, prompt: 'Is a hamburger a sandwich? One word answer.' },
       fakeContext(),
     )
-    expect(hamburger.text).toBe('Yes')
+    expect(hamburger.text).toBe(recorded('anthropic', 'hamburger').text)
+    expect(hamburger.text).toMatch(/^Yes\b/)
   })
 
   it('marks the result as mock so nothing downstream can mistake it for real', async () => {
@@ -166,11 +174,25 @@ describe('createMockAdapter', () => {
     // A fixture captured before conditions existed still runs under every
     // arm; it just cannot show sensitivity, and the result admits that.
     const result = await adapter().complete(
+      { ...REQUEST, systemPrompt: 'Nobody recorded this system prompt.' },
+      fakeContext(),
+    )
+    expect(result.text).toBe(recorded('anthropic', 'hot-dog').text)
+    expect(result.raw).toMatchObject({ mock: true, replayedFrom: 'control' })
+  })
+
+  it('replays real recorded sensitivity for a provider whose fixture has every arm', async () => {
+    // Mistral's live capture adopted both framings; the mock must show that
+    // rather than the control answer three times.
+    const mistral = createMockAdapter('mistral', { fixtures, speed: 0 })
+    const control = await mistral.complete(REQUEST, fakeContext())
+    const asserted = await mistral.complete(
       { ...REQUEST, systemPrompt: 'A hot dog is a sandwich.' },
       fakeContext(),
     )
-    expect(result.text).toBe('No')
-    expect(result.raw).toMatchObject({ mock: true, replayedFrom: 'control' })
+    expect(control.text).toMatch(/^No\b/)
+    expect(asserted.text).toMatch(/^Yes\b/)
+    expect(asserted.raw).not.toHaveProperty('replayedFrom')
   })
 
   it('preserves the null-versus-zero distinction from the recording', async () => {

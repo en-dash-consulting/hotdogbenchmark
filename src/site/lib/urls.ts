@@ -31,6 +31,8 @@ export const routes = {
   historyForQuestion: (questionId: string) => href(`history/${questionId}/`),
   runs: () => href('runs/'),
   report: (questionId: string) => href(`reports/${questionId}/`),
+  reportCondition: (questionId: string, conditionId: string) =>
+    href(`reports/${questionId}/${conditionId}/`),
   run: (isoWeek: string) => href(`runs/${isoWeek}/`),
   runQuestion: (isoWeek: string, questionId: string) => href(`runs/${isoWeek}/${questionId}/`),
   runYourOwn: () => href('run/'),

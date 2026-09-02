@@ -1,0 +1,569 @@
+---
+/**
+ * The Framing Sensitivity section: what happened to each vendor's position
+ * when the question was asked under a system prompt that stated the answer.
+ *
+ * Three views of the same cells, from headline to evidence:
+ *
+ *   1. The prose summary and the arms as actually sent for this question.
+ *   2. A position matrix — every model's verdict under every arm, with the
+ *      ones that moved marked by a word as well as a fill, so the table reads
+ *      without colour.
+ *   3. The verbatim answers, per model, per arm, behind a `<details>` each.
+ *      This is the evidence: a reader can see the exact words a model used
+ *      under each framing without a line of client JavaScript.
+ *
+ * The edition-wide chart at the end applies the measure across every
+ * question, since a single question can only ever score 0 or 1.
+ *
+ * Renders nothing at all when the edition ran only the control.
+ */
+import VerdictBadge from './VerdictBadge.astro'
+import SensitivityBars from '../charts/SensitivityBars.astro'
+import { framingSummary } from '../../lib/prose.ts'
+import {
+  editionSensitivity,
+  hasConditions,
+  questionShifts,
+  treatedConditions,
+} from '../../lib/sensitivity.ts'
+import { getQuestionResult } from '../../lib/data.ts'
+import { formatPercent } from '../../lib/format.ts'
+import { routes } from '../../lib/urls.ts'
+import type { BenchmarkRun, ModelResult } from '../../../schema/run.ts'
+import type { QuestionEntry } from '../../../schema/questions.ts'
+
+interface Props {
+  run: BenchmarkRun
+  question: QuestionEntry
+}
+
+const { run, question } = Astro.props
+
+const enabled = hasConditions(run)
+const arms = enabled ? treatedConditions(run) : []
+const rows = enabled ? questionShifts(run, question.id) : []
+const summary = enabled ? framingSummary(run, question.id, question.subject) : ''
+const edition = enabled ? editionSensitivity(run) : []
+
+/** The system prompt as actually sent for this question under an arm. */
+const promptFor = (conditionId: string) =>
+  getQuestionResult(run, question.id, conditionId)?.systemPrompt ?? null
+
+/** What a model said, and how consistently, in one arm. */
+function said(result: ModelResult | null): { text: string; agreement: string } | null {
+  if (!result || result.samples.length === 0) return null
+  const majority = result.aggregate.verdict
+  const agreeing = result.samples.filter((s) => s.verdict === majority).length
+  const first = result.samples.find((s) => s.verdict === majority) ?? result.samples[0]!
+  return {
+    text: first.text,
+    agreement:
+      result.samples.length === 1
+        ? 'single sample'
+        : `${agreeing} of ${result.samples.length} samples`,
+  }
+}
+
+const movedCount = rows.filter((row) => row.movedAnywhere).length
+const comparableCount = rows.filter((row) =>
+  row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+).length
+---
+
+{
+  enabled && (
+    <section aria-labelledby="framing-heading" class="framing">
+      <h2 id="framing-heading">Framing sensitivity</h2>
+      <p class="framing-lede">
+        Each model was also asked with a system prompt that stated an answer as fact. This section
+        records how far its position moved.{' '}
+        <strong>Neither moving nor holding is the better outcome</strong>: one is compliance, the
+        other is robustness, and this research cannot adjudicate between them.
+      </p>
+
+      <ul class="framing-kpis">
+        <li>
+          <p class="kpi-label">Changed position</p>
+          <p class="kpi-value tabular">
+            {movedCount} <span class="kpi-of">of {comparableCount}</span>
+          </p>
+          <p class="kpi-sub">comparable models, under at least one framing</p>
+        </li>
+        {arms.map((arm) => {
+          const moved = rows.filter(
+            (row) => row.cells.find((c) => c.condition.id === arm.id)?.shift.status === 'moved',
+          ).length
+          const comparable = rows.filter(
+            (row) =>
+              row.cells.find((c) => c.condition.id === arm.id)?.shift.status !== 'incomparable',
+          ).length
+          return (
+            <li>
+              <p class="kpi-label">Moved when {arm.label.toLowerCase()}</p>
+              <p class="kpi-value tabular">
+                {moved} <span class="kpi-of">of {comparable}</span>
+              </p>
+              <p class="kpi-sub">
+                {comparable === 0 ? 'no comparable models' : formatPercent(moved / comparable)}
+              </p>
+            </li>
+          )
+        })}
+      </ul>
+
+      <p class="framing-summary">{summary}</p>
+
+      <h3>The framings, as sent</h3>
+      <dl class="arms">
+        {arms.map((arm) => (
+          <div class="arm">
+            <dt>
+              {arm.label}
+              <a class="arm-link" href={routes.reportCondition(question.id, arm.id)}>
+                full report under this framing →
+              </a>
+            </dt>
+            <dd>
+              {promptFor(arm.id) ? (
+                <p class="arm-prompt">
+                  <span class="arm-prompt-label">System prompt</span>
+                  <q>{promptFor(arm.id)}</q>
+                </p>
+              ) : (
+                <p class="arm-prompt muted">No system prompt.</p>
+              )}
+              <p class="arm-description">{arm.description}</p>
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      <h3>Position by framing</h3>
+      <div class="table-scroll">
+        <table class="shift-table">
+          <caption>
+            Each model's majority verdict on {question.subject} under the control and under each
+            framing. Cells that differ from the control are marked.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Vendor</th>
+              <th scope="col">Control</th>
+              {arms.map((arm) => (
+                <th scope="col">{arm.label}</th>
+              ))}
+              <th scope="col">Assessment</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => {
+              const movedUnder = row.cells
+                .filter((c) => c.shift.status === 'moved')
+                .map((c) => c.condition.label.toLowerCase())
+              const comparable = row.cells.some((c) => c.shift.status !== 'incomparable')
+              return (
+                <tr class:list={[row.movedAnywhere && 'row-moved']}>
+                  <th scope="row">{row.model.displayName}</th>
+                  <td>
+                    <VerdictBadge verdict={row.control?.aggregate.verdict ?? null} />
+                  </td>
+                  {row.cells.map((cell) => (
+                    <td class:list={['shift-cell', cell.shift.status]}>
+                      <VerdictBadge verdict={cell.result?.aggregate.verdict ?? null} />
+                      {cell.shift.status === 'moved' && <span class="shift-mark">moved</span>}
+                    </td>
+                  ))}
+                  <td class="assessment">
+                    {!comparable
+                      ? 'Not comparable'
+                      : movedUnder.length === 0
+                        ? 'Held under every framing'
+                        : `Moved when ${movedUnder.join(' and ')}`}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <h3>What each vendor said, verbatim</h3>
+      <p class="muted verbatim-note">
+        The response each model gave under each framing, quoted exactly. Where samples disagreed,
+        the answer shown is one that matched the majority verdict, and the agreement is stated.
+      </p>
+      <ul class="verbatim-list">
+        {rows.map((row) => {
+          const control = said(row.control)
+          return (
+            <li>
+              <details class="verbatim">
+                <summary>
+                  <span class="verbatim-name">{row.model.displayName}</span>
+                  <span class="verbatim-status">
+                    {row.movedAnywhere
+                      ? 'changed position'
+                      : row.cells.some((c) => c.shift.status !== 'incomparable')
+                        ? 'held position'
+                        : 'not comparable'}
+                  </span>
+                </summary>
+                <dl class="verbatim-body">
+                  <div class="verbatim-row">
+                    <dt>
+                      Control <span class="verbatim-context">no system prompt</span>
+                    </dt>
+                    <dd>
+                      {control ? (
+                        <>
+                          <blockquote class="answer">
+                            <p>{control.text}</p>
+                          </blockquote>
+                          <p class="verbatim-meta">
+                            <VerdictBadge verdict={row.control?.aggregate.verdict ?? null} />
+                            <span>{control.agreement}</span>
+                          </p>
+                        </>
+                      ) : (
+                        <p class="verbatim-meta muted">No usable response.</p>
+                      )}
+                    </dd>
+                  </div>
+                  {row.cells.map((cell) => {
+                    const answer = said(cell.result)
+                    return (
+                      <div class:list={['verbatim-row', cell.shift.status]}>
+                        <dt>
+                          {cell.condition.label}{' '}
+                          {promptFor(cell.condition.id) && (
+                            <span class="verbatim-context">
+                              told <q>{promptFor(cell.condition.id)}</q>
+                            </span>
+                          )}
+                        </dt>
+                        <dd>
+                          {answer ? (
+                            <>
+                              <blockquote class="answer">
+                                <p>{answer.text}</p>
+                              </blockquote>
+                              <p class="verbatim-meta">
+                                <VerdictBadge verdict={cell.result?.aggregate.verdict ?? null} />
+                                <span>{answer.agreement}</span>
+                                {cell.shift.status === 'moved' && (
+                                  <span class="shift-mark">moved from control</span>
+                                )}
+                              </p>
+                            </>
+                          ) : (
+                            <p class="verbatim-meta muted">No usable response.</p>
+                          )}
+                        </dd>
+                      </div>
+                    )
+                  })}
+                </dl>
+              </details>
+            </li>
+          )
+        })}
+      </ul>
+
+      <h3>Across every question this edition</h3>
+      <SensitivityBars
+        entries={edition}
+        conditions={arms}
+        title="Framing sensitivity by vendor"
+        caption="Share of questions in this edition on which a model's majority verdict under a framing differed from its verdict under the control. Questions where either arm produced no verdict are excluded. Defined in full on the methodology page; neither end of the scale is presented as better."
+      />
+    </section>
+  )
+}
+
+<style>
+  .framing {
+    margin-block: var(--space-xl);
+    padding-top: var(--space-l);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .framing h3 {
+    margin-top: var(--space-l);
+  }
+
+  .framing-lede {
+    max-width: var(--measure);
+    font-size: var(--step-0);
+    color: var(--muted);
+  }
+
+  .framing-lede strong {
+    color: var(--text-strong);
+  }
+
+  .framing-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    gap: var(--space-s);
+    list-style: none;
+    margin: var(--space-m) 0;
+    padding: 0;
+  }
+
+  .framing-kpis li {
+    padding: var(--space-s);
+    background: var(--surface);
+    border-top: 3px solid var(--accent);
+  }
+
+  .kpi-label {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .kpi-value {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    font-weight: 600;
+    color: var(--text-strong);
+    margin: 0;
+    line-height: var(--leading-tight);
+  }
+
+  .kpi-of {
+    font-size: var(--step-0);
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .kpi-sub {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin: var(--space-3xs) 0 0;
+  }
+
+  .framing-summary {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+  }
+
+  .arms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .arm {
+    padding: var(--space-s) var(--space-m);
+    background: var(--surface);
+    border-left: 3px solid var(--text-strong);
+  }
+
+  .arm dt {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    font-size: var(--step-1);
+  }
+
+  .arm-link {
+    font-family: var(--font-text);
+    font-weight: 400;
+    font-size: var(--step--1);
+  }
+
+  .arm dd {
+    margin: var(--space-2xs) 0 0;
+  }
+
+  .arm-prompt {
+    margin: 0 0 var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--text-strong);
+  }
+
+  .arm-prompt-label {
+    display: block;
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .arm-description {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .shift-table caption {
+    text-align: left;
+    caption-side: bottom;
+    font-size: var(--step--1);
+    color: var(--muted);
+    padding-top: var(--space-2xs);
+  }
+
+  .shift-cell {
+    white-space: nowrap;
+  }
+
+  .shift-cell.moved {
+    background: var(--surface-sunken);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  /*
+   * The word, not the colour, is the marker. The accent lives on the cell's
+   * inset rule; the text itself stays at full contrast on the sunken surface,
+   * where the accent falls short of AA at this size.
+   */
+  .shift-mark {
+    display: inline-block;
+    margin-left: var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-strong);
+  }
+
+  .row-moved th {
+    color: var(--text-strong);
+  }
+
+  .assessment {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .verbatim-note {
+    max-width: var(--measure);
+    font-size: var(--step--1);
+  }
+
+  .verbatim-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .verbatim {
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .verbatim summary {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: var(--space-s) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .verbatim summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .verbatim summary::before {
+    content: '+';
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--muted);
+    margin-right: var(--space-2xs);
+  }
+
+  .verbatim[open] summary::before {
+    content: '−';
+  }
+
+  .verbatim summary:hover .verbatim-name {
+    text-decoration: underline;
+  }
+
+  .verbatim-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    flex: 1;
+  }
+
+  .verbatim-status {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .verbatim-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: var(--space-s);
+    margin: 0 0 var(--space-m);
+  }
+
+  .verbatim-row {
+    padding: var(--space-s);
+    background: var(--surface);
+    border-top: var(--hairline) solid var(--rule-strong);
+  }
+
+  .verbatim-row.moved {
+    border-top: 3px solid var(--accent);
+  }
+
+  .verbatim-row dt {
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .verbatim-context {
+    display: block;
+    font-weight: 400;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .verbatim-row dd {
+    margin: 0;
+  }
+
+  .answer {
+    margin: 0;
+    padding: var(--space-2xs) var(--space-s);
+    border-left: 3px solid var(--rule-strong);
+    background: var(--surface-sunken);
+  }
+
+  .answer p {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--text-strong);
+    overflow-wrap: anywhere;
+  }
+
+  .verbatim-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+</style>

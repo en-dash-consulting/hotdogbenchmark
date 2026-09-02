@@ -9,13 +9,20 @@
 import Base from '../layouts/Base.astro'
 import { HEDGE_WORDS, NO_WORDS, YES_WORDS } from '../../runner/analyze.ts'
 import { SCORE_DEFINITIONS } from '../lib/scores.ts'
+import { SENSITIVITY_DEFINITION } from '../lib/sensitivity.ts'
 import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
-import { getModels, getQuestions } from '../lib/data.ts'
+import { renderSystemPrompt } from '../../schema/conditions.ts'
+import { getConditionsRegistry, getModels, getQuestions } from '../lib/data.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
 const questions = getQuestions()
 const models = getModels()
+const conditions = getConditionsRegistry()
 const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
+
+const callsPerWeek = conditions.length * questions.length * models.length * DEFAULT_SAMPLES
+const controlOnlyCalls = questions.length * models.length * DEFAULT_SAMPLES
+const exampleQuestion = questions[0]
 ---
 
 <Base
@@ -58,15 +65,97 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
     <h2 id="parameters">2. Model parameters</h2>
 
     <p>
-      Each model receives the question as a single user message with no system prompt. Maximum
-      output is capped at {DEFAULT_MAX_OUTPUT_TOKENS} tokens — enough for a model to demonstrate that
-      it is ignoring the instruction, and bounded enough that doing so costs a known amount.
+      Under the control condition each model receives the question as a single user message with no
+      system prompt. Maximum output is capped at {DEFAULT_MAX_OUTPUT_TOKENS} tokens — enough for a model
+      to demonstrate that it is ignoring the instruction, and bounded enough that doing so costs a known
+      amount.
     </p>
 
     <p>
       <strong>Temperature is not set.</strong> Pinning it to zero across several vendors would not make
       them comparable, because they implement it differently, and it would suppress exactly the week-to-week
       variation this research exists to observe.
+    </p>
+
+    <h2 id="conditions">2a. Experimental conditions</h2>
+
+    <p>
+      Every question is asked under {conditions.length} named <strong>conditions</strong>: the
+      control, and arms whose system prompt states an answer as fact before the question is put. The
+      research interest is not the answer under any one arm but the distance between them — how far
+      a model's position moves when the framing moves. That property generalises to every real
+      evaluation; the sandwich question does not.
+    </p>
+
+    <dl class="conditions">
+      {
+        conditions.map((condition) => (
+          <div>
+            <dt>
+              {condition.label}
+              <span class="range">({condition.id})</span>
+            </dt>
+            <dd>
+              <p>{condition.description}</p>
+              {condition.systemPrompt && exampleQuestion && (
+                <p class="formula">
+                  System prompt, as sent for {exampleQuestion.subject}:{' '}
+                  <code>{renderSystemPrompt(condition, exampleQuestion)}</code>
+                </p>
+              )}
+              {condition.temperature !== null && (
+                <p class="formula">
+                  Temperature: <code>{condition.temperature}</code>
+                </p>
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p>
+      Conditions are defined in <a href={sourceUrl('conditions.json')}
+        ><code>conditions.json</code></a
+      >
+      and this list is rendered from it. The control must come first and must add nothing: it is the question
+      asked plainly, which is also exactly what every edition before conditions existed asked, so those
+      editions remain comparable with the control arm of later ones.
+    </p>
+
+    <p>
+      <strong>This multiplies the cost of collection.</strong>
+      {conditions.length} conditions ×{' '}
+      {questions.length} questions × {models.length} models × {DEFAULT_SAMPLES} samples is{' '}
+      {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone. Every arm other
+      than the control can be disabled in the registry, so a fork that does not want the extra spend is
+      not made to incur it.
+    </p>
+
+    <h3 id="sensitivity">Framing sensitivity</h3>
+
+    <dl class="scores">
+      <div>
+        <dt>
+          {SENSITIVITY_DEFINITION.name}
+          <span class="range">({SENSITIVITY_DEFINITION.range})</span>
+        </dt>
+        <dd>
+          <p class="formula">
+            <code>{SENSITIVITY_DEFINITION.formula}</code>
+          </p>
+          <p>{SENSITIVITY_DEFINITION.note}</p>
+        </dd>
+      </div>
+    </dl>
+
+    <p>
+      To state it once more, plainly: <strong
+        >neither robustness nor compliance is treated as better</strong
+      >. A model that answers <q>No</q> after being told <q>A hot dog is a sandwich</q>
+      has ignored a false premise, which is a virtue in some settings. A model that answers
+      <q>Yes</q> has followed an explicit instruction from its operator, which is a virtue in others.
+      This research records the movement and declines to grade it.
     </p>
 
     <h2 id="sampling">3. Sampling and aggregation</h2>
@@ -321,9 +410,21 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
     color: var(--muted);
   }
 
-  .scores > div {
+  .scores > div,
+  .conditions > div {
     padding: var(--space-s) 0;
     border-top: var(--hairline) solid var(--rule);
+  }
+
+  .conditions dt {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-strong);
+    font-size: var(--step-1);
+  }
+
+  .conditions dd {
+    margin: var(--space-2xs) 0 0;
   }
 
   .scores dt {

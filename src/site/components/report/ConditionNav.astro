@@ -1,0 +1,93 @@
+---
+/**
+ * The switch between the arms of one question's report.
+ *
+ * The control report lives at the question's canonical URL; each other arm
+ * has its own page underneath it. Rendered only when the edition ran more
+ * than the control, so an edition with one arm has no switch to a page that
+ * does not exist.
+ */
+import { CONTROL_CONDITION_ID } from '../../../schema/conditions.ts'
+import { routes } from '../../lib/urls.ts'
+import type { BenchmarkRun } from '../../../schema/run.ts'
+
+interface Props {
+  run: BenchmarkRun
+  questionId: string
+  current: string
+}
+
+const { run, questionId, current } = Astro.props
+---
+
+{
+  run.conditions.length > 1 && (
+    <nav class="condition-nav" aria-label="Condition">
+      <span class="condition-nav-label">Condition</span>
+      <ul>
+        {run.conditions.map((condition) => (
+          <li>
+            <a
+              href={
+                condition.id === CONTROL_CONDITION_ID
+                  ? routes.report(questionId)
+                  : routes.reportCondition(questionId, condition.id)
+              }
+              aria-current={condition.id === current ? 'page' : undefined}
+            >
+              {condition.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .condition-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-s);
+    margin-bottom: var(--space-m);
+    font-size: var(--step--1);
+  }
+
+  .condition-nav-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .condition-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .condition-nav a {
+    display: inline-block;
+    padding: var(--space-3xs) var(--space-xs);
+    border: var(--hairline) solid var(--rule-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .condition-nav a:hover {
+    color: var(--text-strong);
+    border-color: var(--text-strong);
+  }
+
+  /* The current arm is marked by weight and fill, not by colour alone. */
+  .condition-nav a[aria-current='page'] {
+    font-weight: 600;
+    color: var(--on-primary);
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+</style>

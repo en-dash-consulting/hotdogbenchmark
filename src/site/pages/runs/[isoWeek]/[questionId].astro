@@ -13,6 +13,7 @@ import ExecutiveSummary from '../../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../../components/report/KpiTiles.astro'
 import VendorProfile from '../../../components/report/VendorProfile.astro'
 import ResultsTable from '../../../components/report/ResultsTable.astro'
+import FramingSensitivity from '../../../components/report/FramingSensitivity.astro'
 import {
   getAllRuns,
   getModelResults,
@@ -48,6 +49,8 @@ const askedText = getQuestionTextInRun(run, question.id)
   <Masthead question={question} run={run} archived questionText={askedText ?? question.text} />
   <KpiTiles results={results} previous={previousResults} />
   <ExecutiveSummary subject={question.subject} results={results} />
+
+  <FramingSensitivity run={run} question={question} />
 
   <section aria-labelledby="profiles-heading">
     <h2 id="profiles-heading">Vendor profiles</h2>

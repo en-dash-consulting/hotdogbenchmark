@@ -1,54 +1,480 @@
 ---
+/**
+ * The front page: the latest edition at a glance.
+ *
+ * A reader should leave this page knowing three things without clicking:
+ * where the field stands on each question, how much of that depended on how
+ * the question was asked, and where to go for the evidence. Everything here
+ * is derived from the same numbers the report pages show, so it cannot
+ * disagree with them.
+ */
 import Base from '../layouts/Base.astro'
-import { getLatestRun, getQuestions, hasData } from '../lib/data.ts'
-import { formatEdition } from '../lib/format.ts'
+import VerdictBadge from '../components/report/VerdictBadge.astro'
+import { getAllRuns, getLatestRun, getModelResults, getQuestions, hasData } from '../lib/data.ts'
+import { formatDate, formatDuration, formatEdition, formatPercent } from '../lib/format.ts'
+import { consensusOf } from '../lib/prose.ts'
+import {
+  editionSensitivity,
+  fieldSensitivity,
+  hasConditions,
+  questionShifts,
+  treatedConditions,
+} from '../lib/sensitivity.ts'
 import { routes } from '../lib/urls.ts'
+import type { ModelResult, Verdict } from '../../schema/run.ts'
 
 const questions = getQuestions()
 const latest = getLatestRun()
+const editions = getAllRuns().length
+
+const POSITION: Record<Verdict, string> = {
+  yes: 'Affirmative',
+  no: 'Negative',
+  other: 'Non-committal',
+}
+
+const medianLatency = (results: ModelResult[]): number | null => {
+  const values = results
+    .map((r) => r.aggregate.totalMs?.median)
+    .filter((v): v is number => v != null)
+    .sort((a, b) => a - b)
+  if (values.length === 0) return null
+  const mid = Math.floor(values.length / 2)
+  return values.length % 2 === 0 ? (values[mid - 1]! + values[mid]!) / 2 : values[mid]!
+}
+
+/** One card per question: the field's position and how much of it survived reframing. */
+const cards = latest
+  ? questions
+      .filter((question) => latest.results.some((cell) => cell.questionId === question.id))
+      .map((question) => {
+        const results = getModelResults(latest, question.id)
+        const answering = results.filter((r) => r.samples.length > 0)
+        const consensus = consensusOf(results)
+        const tally: Record<Verdict, number> = { yes: 0, no: 0, other: 0 }
+        for (const model of answering)
+          if (model.aggregate.verdict) tally[model.aggregate.verdict] += 1
+        const shifts = hasConditions(latest) ? questionShifts(latest, question.id) : []
+        const comparable = shifts.filter((row) =>
+          row.cells.some((cell) => cell.shift.status !== 'incomparable'),
+        )
+        const moved = comparable.filter((row) => row.movedAnywhere)
+        return {
+          question,
+          answering: answering.length,
+          unavailable: results.length - answering.length,
+          consensus,
+          tally,
+          latency: medianLatency(answering),
+          moved: moved.map((row) => row.model.displayName),
+          comparable: comparable.length,
+        }
+      })
+  : []
+
+const modelCount = latest
+  ? new Set(latest.results.flatMap((cell) => cell.models.map((m) => `${m.provider}/${m.modelId}`)))
+      .size
+  : 0
+
+const field = latest && hasConditions(latest) ? fieldSensitivity(latest) : null
+const arms = latest ? treatedConditions(latest) : []
+const movers = latest
+  ? editionSensitivity(latest)
+      .filter((entry) => entry.overall.comparable > 0)
+      .sort((a, b) => (b.overall.score ?? 0) - (a.overall.score ?? 0))
+  : []
 ---
 
 <Base
   title="Sandwich Classification Benchmark"
-  description="A weekly cross-vendor evaluation of how leading AI models classify contested sandwich cases."
+  description="A weekly cross-vendor evaluation of how leading AI models classify contested sandwich cases, and how far their answers move when told the answer."
   bareTitle
 >
-  <h1>Sandwich Classification Benchmark</h1>
+  <header class="hero">
+    <p class="kicker">Weekly cross-vendor evaluation</p>
+    <h1>Sandwich Classification Benchmark</h1>
+    {
+      hasData() && latest ? (
+        <p class="lede">
+          {formatEdition(latest.isoWeek)} edition, published {formatDate(latest.finishedAt)}.{' '}
+          {cards.length} research question{cards.length === 1 ? '' : 's'} put to {modelCount} model
+          {modelCount === 1 ? '' : 's'}
+          {arms.length > 0 && <> under {latest.conditions.length} framings</>}, sampled{' '}
+          {latest.results[0]?.models[0]?.samples.length ?? 0} times each.
+          {latest.isMock && <strong class="mock"> Sample data.</strong>}
+        </p>
+      ) : (
+        <p class="lede">No editions have been published yet.</p>
+      )
+    }
+  </header>
 
   {
-    hasData() && latest ? (
-      <p class="lede">
-        {formatEdition(latest.isoWeek)} edition. {questions.length} research questions evaluated
-        across the leading commercial models.
-      </p>
-    ) : (
-      <p class="lede">No editions have been published yet.</p>
+    latest && cards.length > 0 && (
+      <section aria-labelledby="glance-heading" class="glance">
+        <h2 id="glance-heading">The field at a glance</h2>
+        <ul class="card-grid">
+          {cards.map((card) => (
+            <li class="card">
+              <p class="card-subject">{card.question.subject}</p>
+              <h3>
+                <a href={routes.report(card.question.id)}>{card.question.reportTitle}</a>
+              </h3>
+              <p class="card-question">
+                <q>{card.question.text}</q>
+              </p>
+
+              <div class="card-verdict">
+                <VerdictBadge verdict={card.consensus.verdict} size="large" />
+                <p class="card-verdict-note">
+                  {card.consensus.verdict
+                    ? card.consensus.unanimous
+                      ? `Unanimous across ${card.consensus.total} models`
+                      : `${card.consensus.count} of ${card.consensus.total} models (${formatPercent(card.consensus.share)})`
+                    : `Field divided across ${card.consensus.total} models`}
+                </p>
+              </div>
+
+              <div
+                class="tally"
+                role="img"
+                aria-label={`${card.tally.yes} affirmative, ${card.tally.no} negative, ${card.tally.other} non-committal`}
+              >
+                {(['yes', 'no', 'other'] as const).map(
+                  (verdict) =>
+                    card.tally[verdict] > 0 && (
+                      <span
+                        class:list={['tally-segment', `tally-${verdict}`]}
+                        style={`flex-grow: ${card.tally[verdict]}`}
+                      >
+                        {card.tally[verdict]}
+                      </span>
+                    ),
+                )}
+              </div>
+              <p class="tally-key">
+                {(['yes', 'no', 'other'] as const)
+                  .filter((verdict) => card.tally[verdict] > 0)
+                  .map((verdict) => `${card.tally[verdict]} ${POSITION[verdict].toLowerCase()}`)
+                  .join(' · ')}
+                {card.unavailable > 0 && ` · ${card.unavailable} unavailable`}
+              </p>
+
+              <dl class="card-facts">
+                <div>
+                  <dt>Median latency</dt>
+                  <dd class="tabular">{formatDuration(card.latency)}</dd>
+                </div>
+                {arms.length > 0 && (
+                  <div>
+                    <dt>Changed position when told the answer</dt>
+                    <dd class="tabular">
+                      {card.comparable === 0
+                        ? 'not comparable'
+                        : `${card.moved.length} of ${card.comparable}`}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+              {card.moved.length > 0 && (
+                <p class="card-movers">
+                  {card.moved.join(', ')} moved.{' '}
+                  <a href={`${routes.report(card.question.id)}#framing-heading`}>
+                    See what they said →
+                  </a>
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
     )
   }
 
-  <ul class="report-list">
-    {
-      questions.map((question) => (
-        <li>
-          <a href={routes.report(question.id)}>{question.reportTitle}</a>
-          <p class="muted">{question.text}</p>
-        </li>
-      ))
-    }
-  </ul>
+  {
+    latest && field && (
+      <section aria-labelledby="framing-home-heading" class="framing-home">
+        <div class="framing-home-headline">
+          <h2 id="framing-home-heading">Framing sensitivity</h2>
+          <p class="framing-figure tabular">
+            {field.moved} <span class="framing-of">of {field.comparable}</span>
+          </p>
+          <p class="framing-caption">
+            models changed at least one answer this edition when a system prompt stated the answer
+            as fact — {arms.map((arm) => arm.label.toLowerCase()).join(' or ')}. Neither moving nor
+            holding is graded as better; the{' '}
+            <a href={`${routes.methodology()}#sensitivity`}>methodology</a> says why.
+          </p>
+        </div>
+        <div class="table-scroll">
+          <table class="movers">
+            <caption class="visually-hidden">Framing sensitivity by vendor, this edition</caption>
+            <thead>
+              <tr>
+                <th scope="col">Vendor</th>
+                {arms.map((arm) => (
+                  <th scope="col" class="numeric">
+                    {arm.label}
+                  </th>
+                ))}
+                <th scope="col" class="numeric">
+                  Overall
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {movers.map((entry) => (
+                <tr>
+                  <th scope="row">{entry.model.displayName}</th>
+                  {entry.byCondition.map(({ score }) => (
+                    <td class="numeric">
+                      {score.score === null ? '—' : `${score.moved} of ${score.comparable}`}
+                    </td>
+                  ))}
+                  <td class="numeric strong">
+                    {entry.overall.score === null ? '—' : formatPercent(entry.overall.score)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )
+  }
+
+  <section aria-labelledby="reports-heading" class="reports">
+    <h2 id="reports-heading">Reports</h2>
+    <ul class="report-list">
+      {
+        questions.map((question) => (
+          <li>
+            <a href={routes.report(question.id)}>{question.reportTitle}</a>
+            <p class="muted">{question.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="archive-links">
+      <a href={routes.history()}>History and trends</a>
+      <span aria-hidden="true"> · </span>
+      <a href={routes.runs()}>
+        {editions === 1 ? 'The archive (one edition)' : `The archive (${editions} editions)`}
+      </a>
+      <span aria-hidden="true"> · </span>
+      <a href={routes.howItWorks()}>How it works</a>
+    </p>
+  </section>
 </Base>
 
 <style>
+  .hero {
+    margin-bottom: var(--space-xl);
+  }
+
+  .kicker {
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin: 0 0 var(--space-2xs);
+  }
+
   .lede {
     font-size: var(--step-1);
     color: var(--muted);
     max-width: var(--measure);
   }
 
+  .mock {
+    color: var(--accent);
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-s);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    background: var(--surface);
+    border-top: 3px solid var(--text-strong);
+  }
+
+  .card-subject {
+    margin: 0;
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .card h3 {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+
+  .card h3 a {
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .card h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .card-question {
+    margin: 0 0 var(--space-2xs);
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+
+  .card-verdict {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-s);
+    margin-top: var(--space-2xs);
+  }
+
+  .card-verdict-note {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  /*
+   * The tally bar. Each segment is a flex item grown by its count, labelled
+   * with the count, and hatched by verdict, so it reads without colour.
+   */
+  .tally {
+    display: flex;
+    height: 1.5rem;
+    margin-top: var(--space-2xs);
+    border: var(--hairline) solid var(--rule-strong);
+    overflow: hidden;
+  }
+
+  .tally-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-basis: 0;
+    min-width: 1.5rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tally-yes {
+    background: var(--verdict-yes-bg);
+    color: var(--verdict-yes);
+  }
+
+  .tally-no {
+    background: var(--verdict-no-bg);
+    color: var(--verdict-no);
+    background-image: repeating-linear-gradient(45deg, transparent 0 4px, rgb(0 0 0 / 6%) 4px 6px);
+  }
+
+  .tally-other {
+    background: var(--verdict-other-bg);
+    color: var(--verdict-other);
+    background-image: repeating-linear-gradient(-45deg, transparent 0 4px, rgb(0 0 0 / 6%) 4px 6px);
+  }
+
+  .tally-key {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .card-facts {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+  }
+
+  .card-facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-top: var(--space-3xs);
+    border-top: var(--hairline) solid var(--rule);
+  }
+
+  .card-facts dt {
+    color: var(--muted);
+  }
+
+  .card-facts dd {
+    margin: 0;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .card-movers {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--step--1);
+  }
+
+  .framing-home {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+    gap: var(--space-l);
+    align-items: start;
+    margin-top: var(--space-2xl);
+    padding: var(--space-l) 0;
+    border-top: 3px solid var(--text-strong);
+    border-bottom: var(--hairline) solid var(--rule);
+  }
+
+  .framing-home h2 {
+    margin-top: 0;
+  }
+
+  .framing-figure {
+    font-family: var(--font-display);
+    font-size: var(--step-4);
+    font-weight: 600;
+    color: var(--text-strong);
+    line-height: 1;
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .framing-of {
+    font-size: var(--step-1);
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .framing-caption {
+    max-width: var(--measure);
+    color: var(--muted);
+  }
+
+  .movers .strong {
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .reports {
+    margin-top: var(--space-2xl);
+  }
+
   .report-list {
     list-style: none;
     padding: 0;
-    margin-top: var(--space-xl);
+    margin: 0;
   }
 
   .report-list li + li {
@@ -64,5 +490,10 @@ const latest = getLatestRun()
 
   .report-list p {
     margin: var(--space-3xs) 0 0;
+  }
+
+  .archive-links {
+    margin-top: var(--space-l);
+    font-size: var(--step--1);
   }
 </style>
