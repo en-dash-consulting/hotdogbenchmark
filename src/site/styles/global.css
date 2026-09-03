@@ -72,6 +72,9 @@ dt,
 
 h1 {
   font-size: var(--step-4);
+  /* A one-word title at the largest size can outgrow a 320px screen once
+     WCAG text spacing is applied; breaking the word beats overflowing. */
+  overflow-wrap: anywhere;
 }
 h2 {
   font-size: var(--step-3);
