@@ -35,6 +35,42 @@
       "notes": "The boundary case. A 2006 Massachusetts court ruling on whether a burrito is a sandwich makes this the only question here with case law."
     },
     {
+      "id": "grilled-cheese",
+      "subject": "a grilled cheese",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
+      "text": "Is a grilled cheese a sandwich? One word answer.",
+      "reportTitle": "The Grilled Cheese Case",
+      "tagline": "Two slices, one filling, a pan. If this is not a sandwich nothing is.",
+      "enabled": true,
+      "status": "live",
+      "notes": "A second control question; expected unanimous, which makes any dissent the story."
+    },
+    {
+      "id": "wrap",
+      "subject": "a wrap",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
+      "text": "Is a wrap a sandwich? One word answer.",
+      "reportTitle": "The Wrap Question",
+      "tagline": "One piece of bread, rolled. The structural cousin of the hot dog.",
+      "enabled": true,
+      "status": "live",
+      "notes": "Structurally contested like the hot dog: one piece of bread, closed on itself."
+    },
+    {
+      "id": "tuna-melt",
+      "subject": "a tuna melt",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
+      "text": "Is a tuna melt a sandwich? One word answer.",
+      "reportTitle": "The Tuna Melt Inquiry",
+      "tagline": "Open-faced and grilled. Where does the top slice go?",
+      "enabled": true,
+      "status": "live",
+      "notes": "Often served open-faced, which is the interesting part."
+    },
+    {
       "id": "burrito",
       "subject": "a burrito",
       "claim": "is a sandwich",

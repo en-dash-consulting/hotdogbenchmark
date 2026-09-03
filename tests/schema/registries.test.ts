@@ -27,8 +27,15 @@ describe('the committed questions.json', () => {
     expect(questionsRegistrySchema.safeParse(questionsRegistry).success).toBe(true)
   })
 
-  it('ships the hot dog, hamburger and taco questions, enabled and in that order', () => {
-    expect(loadQuestions().map((q) => q.id)).toEqual(['hot-dog', 'hamburger', 'taco'])
+  it('ships the founding three, then the three that joined in Week 36, live and in that order', () => {
+    expect(loadQuestions().map((q) => q.id)).toEqual([
+      'hot-dog',
+      'hamburger',
+      'taco',
+      'grilled-cheese',
+      'wrap',
+      'tuna-melt',
+    ])
   })
 
   it('asks the exact one-word-answer prompt for each', () => {
@@ -36,6 +43,9 @@ describe('the committed questions.json', () => {
       'Is a hot dog a sandwich? One word answer.',
       'Is a hamburger a sandwich? One word answer.',
       'Is a taco a sandwich? One word answer.',
+      'Is a grilled cheese a sandwich? One word answer.',
+      'Is a wrap a sandwich? One word answer.',
+      'Is a tuna melt a sandwich? One word answer.',
     ])
   })
 
@@ -112,7 +122,10 @@ describe('enabledQuestions', () => {
   it('filters to enabled entries and preserves file order', () => {
     const registry = structuredClone(questionsRegistry) as any
     registry.questions[1].enabled = false
-    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(['hot-dog', 'taco'])
+    const expected = loadQuestions()
+      .map((q) => q.id)
+      .filter((id) => id !== 'hamburger')
+    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(expected)
   })
 })
 

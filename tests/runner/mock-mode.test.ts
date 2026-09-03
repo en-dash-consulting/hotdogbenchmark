@@ -21,6 +21,13 @@ import { fakeContext } from '../helpers/fake-adapter.ts'
 const ROOT = fileURLToPath(new URL('../../', import.meta.url))
 const fixtures = loadMockFixtures(ROOT)
 
+/** How many questions the runner asks: enabled and live, from the registry. */
+const LIVE_QUESTIONS = (
+  JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
+    questions: Array<{ enabled: boolean; status?: string }>
+  }
+).questions.filter((q) => q.enabled && (q.status ?? 'live') === 'live').length
+
 const REQUEST = {
   modelId: 'any-model',
   prompt: 'Is a hot dog a sandwich? One word answer.',
@@ -60,7 +67,16 @@ describe('the recorded response fixtures', () => {
     const enabled = questions.questions
       .filter((q) => q.enabled && (q.status ?? 'live') === 'live')
       .map((q) => q.id)
+    const models = JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
+      models: Array<{ provider: string; modelId: string; enabled: boolean }>
+    }
+    const running = new Set(
+      models.models.filter((m) => m.enabled).map((m) => fixtureKey(m.provider, m.modelId)),
+    )
     for (const [provider, fixture] of fixtures) {
+      // A disabled model's recording is allowed to predate a question; it is
+      // not asked, so mock mode never needs its answer.
+      if (!running.has(fixtureKey(fixture.provider, fixture.modelId))) continue
       const recorded = fixture.responses.map((r) => r.questionId)
       for (const id of enabled) {
         expect(recorded, `${provider} has no recorded answer for ${id}`).toContain(id)
@@ -305,7 +321,7 @@ describe('bench run --mock end to end, with no API keys', () => {
     const parsed = benchmarkRunSchema.safeParse(run)
     expect(parsed.success, JSON.stringify(parsed.error?.issues)).toBe(true)
     expect(run.isMock).toBe(true)
-    expect(run.questions).toHaveLength(3)
+    expect(run.questions).toHaveLength(LIVE_QUESTIONS)
     expect(run.results[0].models.length).toBeGreaterThan(0)
   })
 
@@ -390,7 +406,7 @@ describe('bench run --mock end to end, with no API keys', () => {
     }
     const enabled = conditions.conditions.filter((c) => c.enabled).map((c) => c.id)
     expect(run.conditions.map((c: { id: string }) => c.id)).toEqual(enabled)
-    expect(run.results).toHaveLength(enabled.length * 3)
+    expect(run.results).toHaveLength(enabled.length * LIVE_QUESTIONS)
     const asserted = run.results.find(
       (r: { conditionId: string; questionId: string }) =>
         r.conditionId === 'asserted' && r.questionId === 'taco',
@@ -414,7 +430,7 @@ describe('bench run --mock end to end, with no API keys', () => {
       readFileSync(join(cwd, 'data/runs', readdirSync(join(cwd, 'data/runs'))[0]!), 'utf8'),
     )
     expect(run.conditions.map((c: { id: string }) => c.id)).toEqual(['control'])
-    expect(run.results).toHaveLength(3)
+    expect(run.results).toHaveLength(LIVE_QUESTIONS)
   })
 
   it('prints the full matrix and the total call count in dry-run mode', () => {
@@ -428,9 +444,9 @@ describe('bench run --mock end to end, with no API keys', () => {
       }
     ).models.filter((m) => m.enabled).length
     expect(output).toContain(
-      `Matrix:       3 conditions x 3 questions x ${enabledModels} models x 2 samples`,
+      `Matrix:       3 conditions x ${LIVE_QUESTIONS} questions x ${enabledModels} models x 2 samples`,
     )
-    expect(output).toContain(`Total calls:  ${3 * 3 * enabledModels * 2}`)
+    expect(output).toContain(`Total calls:  ${3 * LIVE_QUESTIONS * enabledModels * 2}`)
   })
 
   it('refuses to overwrite a real edition with mock data, unless --out says where', () => {

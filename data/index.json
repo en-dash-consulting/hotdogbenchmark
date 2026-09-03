@@ -5,14 +5,17 @@
       "isoWeek": "2026-W36",
       "editionKey": "2026-W36",
       "path": "data/runs/2026-W36.json",
-      "runId": "2c060151-fd88-4f79-af67-26fdd4969e28",
-      "startedAt": "2026-09-03T03:01:14.271Z",
-      "finishedAt": "2026-09-03T03:08:26.515Z",
+      "runId": "c4a16030-49f5-4866-831d-20aa827320aa",
+      "startedAt": "2026-09-03T04:15:49.842Z",
+      "finishedAt": "2026-09-03T04:32:56.637Z",
       "isMock": false,
       "questionIds": [
         "hot-dog",
         "hamburger",
-        "taco"
+        "taco",
+        "grilled-cheese",
+        "wrap",
+        "tuna-melt"
       ],
       "conditionIds": [
         "control",
@@ -27,8 +30,8 @@
           "okCount": 12,
           "errorCount": 0,
           "verdicts": {
-            "yes": 5,
-            "no": 7,
+            "yes": 7,
+            "no": 5,
             "other": 0
           }
         },
@@ -51,6 +54,39 @@
           "verdicts": {
             "yes": 1,
             "no": 11,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "grilled-cheese",
+          "conditionId": "control",
+          "okCount": 12,
+          "errorCount": 0,
+          "verdicts": {
+            "yes": 12,
+            "no": 0,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "wrap",
+          "conditionId": "control",
+          "okCount": 12,
+          "errorCount": 0,
+          "verdicts": {
+            "yes": 6,
+            "no": 6,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "tuna-melt",
+          "conditionId": "control",
+          "okCount": 12,
+          "errorCount": 0,
+          "verdicts": {
+            "yes": 12,
+            "no": 0,
             "other": 0
           }
         }
