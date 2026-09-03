@@ -32,7 +32,9 @@ const MIME: Record<string, string> = {
  * The budget scales with the field: every model is one standings row and one
  * card. Eleven models measured 8,049 px at 1280 and 7,380 at 390; twelve,
  * 8,715 and 7,881. The base covers the masthead, summary, framing section and
- * chart, and the per-model slice covers a row and a third of a card row.
+ * chart, and the per-model slice covers a row and a third of a card row. The
+ * Linux runner lays text out a little taller than a Mac (8,047 at 390 for
+ * twelve models against 7,881 locally), so the phone base carries that slack.
  */
 const modelCount = (
   JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
@@ -40,7 +42,7 @@ const modelCount = (
   }
 ).models.filter((m) => m.enabled).length
 const DESKTOP_BUDGET = 4200 + 400 * modelCount
-const PHONE_BUDGET = 5000 + 250 * modelCount
+const PHONE_BUDGET = 5500 + 250 * modelCount
 
 const questions = (
   JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
