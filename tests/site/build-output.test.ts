@@ -841,3 +841,19 @@ describe('navigation after the consolidation', () => {
     expect(home).toContain('class="handoff-line"')
   })
 })
+
+describe('outbound links', () => {
+  it('open in a new tab and sever the opener, everywhere', () => {
+    for (const page of pages) {
+      const origin = /<link rel="canonical" href="(https?:\/\/[^/]+)/.exec(page.html)?.[1] ?? ''
+      const body = page.html.replace(/<head>[\s\S]*?<\/head>/, '')
+      for (const match of body.matchAll(/<a\b[^>]*>/g)) {
+        const tag = match[0]
+        const href = /href="([^"]+)"/.exec(tag)?.[1] ?? ''
+        if (!/^https?:\/\//.test(href) || (origin && href.startsWith(origin))) continue
+        expect(tag, `${page.path}: ${tag.slice(0, 80)}`).toMatch(/target="_blank"/)
+        expect(tag, `${page.path}: ${tag.slice(0, 80)}`).toMatch(/rel="[^"]*noopener/)
+      }
+    }
+  })
+})

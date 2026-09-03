@@ -73,7 +73,7 @@ const credit = creditLine(question)
             {question.contributor?.url ? (
               <>
                 Sent in by{' '}
-                <a href={question.contributor.url} rel="nofollow noopener">
+                <a target="_blank" href={question.contributor.url} rel="nofollow noopener">
                   {question.contributor.name}
                 </a>
               </>

@@ -261,7 +261,13 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
             </ul>
           </nav>
           <div class="masthead-actions">
-            <a class="github-link" href={REPO_URL} title="Source on GitHub">
+            <a
+              target="_blank"
+              rel="noopener"
+              class="github-link"
+              href={REPO_URL}
+              title="Source on GitHub"
+            >
               <span class="visually-hidden">Source on GitHub: fork it, clone it</span>
               <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
                 <path
@@ -299,11 +305,11 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
             }
           </p>
           <p class="footer-links">
-            <a href={REPO_URL}>Source on GitHub</a>
+            <a target="_blank" rel="noopener" href={REPO_URL}>Source on GitHub</a>
             <span aria-hidden="true"> · </span>
             <a href={routes.methodology()}>Methodology</a>
             <span aria-hidden="true"> · </span>
-            <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
+            <a target="_blank" rel="noopener" href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
             <span aria-hidden="true"> · </span>
             <a href={routes.feedRss()} type="application/rss+xml" rel="alternate"> RSS </a>
             <span aria-hidden="true"> · </span>
@@ -312,7 +318,9 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
               site.credits.map((credit) => (
                 <>
                   <span aria-hidden="true"> · </span>
-                  <a href={credit.href}>Built with {credit.label}</a>
+                  <a target="_blank" rel="noopener" href={credit.href}>
+                    Built with {credit.label}
+                  </a>
                 </>
               ))
             }
@@ -328,7 +336,9 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
               {site.more.links.map((link, index) => (
                 <>
                   {index > 0 && <span aria-hidden="true"> · </span>}
-                  <a href={link.href}>{link.label}</a>
+                  <a target="_blank" rel="noopener" href={link.href}>
+                    {link.label}
+                  </a>
                 </>
               ))}
             </p>

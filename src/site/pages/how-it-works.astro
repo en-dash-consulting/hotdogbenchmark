@@ -151,7 +151,7 @@ const STEPS = [
           <h2>{step.title}</h2>
           <p>{step.body}</p>
           <p class="step-file">
-            <a href={sourceUrl(step.file)}>
+            <a target="_blank" rel="noopener" href={sourceUrl(step.file)}>
               <code>{step.file}</code>
             </a>
           </p>
@@ -173,8 +173,9 @@ const STEPS = [
   <pre tabindex="0"><code>{adapterInterface}</code></pre>
 
   <p class="excerpt-source">
-    From <a href={sourceUrl('src/providers/types.ts')}><code>src/providers/types.ts</code></a>, read
-    from source when this page was built.
+    From <a target="_blank" rel="noopener" href={sourceUrl('src/providers/types.ts')}
+      ><code>src/providers/types.ts</code></a
+    >, read from source when this page was built.
   </p>
 
   <div class="prose">
@@ -196,7 +197,7 @@ const STEPS = [
   <pre tabindex="0"><code>{anthropicStream}</code></pre>
 
   <p class="excerpt-source">
-    From <a href={sourceUrl('src/providers/anthropic.ts')}
+    From <a target="_blank" rel="noopener" href={sourceUrl('src/providers/anthropic.ts')}
       ><code>src/providers/anthropic.ts</code></a
     >.
   </p>

@@ -86,17 +86,20 @@ const howLine = `${times.charAt(0).toUpperCase()}${times.slice(1)} times each${
       One run per week, filed by ISO week and kept forever. Re-running a week replaces that week's
       edition and keeps the old one under <code>superseded/</code>. No vendor is asked, sponsors
       this, or sees it first. The code, the raw data, and the methodology are all{' '}
-      <a href={REPO_URL}>on GitHub</a>.
+      <a target="_blank" rel="noopener" href={REPO_URL}>on GitHub</a>.
     </p>
 
     <h2>Who</h2>
 
     <p>
-      A <a href={site.publisher.url}>{site.publisher.name}</a> project
+      A <a target="_blank" rel="noopener" href={site.publisher.url}>{site.publisher.name}</a> project
       {
         site.credits.map((credit) => (
           <>
-            , planned and built with <a href={credit.href}>{credit.label}</a>
+            , planned and built with{' '}
+            <a target="_blank" rel="noopener" href={credit.href}>
+              {credit.label}
+            </a>
             {credit.description && <>, {credit.description}</>}
           </>
         ))

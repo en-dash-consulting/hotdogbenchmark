@@ -64,8 +64,9 @@ const CHECKED = '2026-09-02'
       A person has not yet gone through the site with a screen reader. Automated checks prove the
       absence of known defects; they do not prove the site is pleasant to use with VoiceOver or
       NVDA. The open questions are listed in{' '}
-      <a href={sourceUrl('docs/a11y-checklist.md')}>the accessibility checklist</a>, and this page
-      will say when that pass has happened.
+      <a target="_blank" rel="noopener" href={sourceUrl('docs/a11y-checklist.md')}
+        >the accessibility checklist</a
+      >, and this page will say when that pass has happened.
     </p>
 
     <h2>Known limits</h2>
@@ -81,9 +82,9 @@ const CHECKED = '2026-09-02'
     <h2>Report a problem</h2>
 
     <p>
-      Open an issue at <a href={`${REPO_URL}/issues`}>{REPO_URL.replace('https://', '')}/issues</a>{
-        ' '
-      }
+      Open an issue at <a target="_blank" rel="noopener" href={`${REPO_URL}/issues`}
+        >{REPO_URL.replace('https://', '')}/issues</a
+      >{' '}
       with the page, what you used (browser, assistive technology), and what happened. Accessibility bugs
       are treated as bugs, not requests.
     </p>
