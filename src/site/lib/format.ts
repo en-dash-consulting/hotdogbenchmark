@@ -87,6 +87,27 @@ export function formatShortDate(iso: string): string {
   }).format(date)
 }
 
+/**
+ * When a set of runs happened, as one phrase: "on September 2, 2026" for
+ * runs on one day, "on September 2 and September 3, 2026" across days.
+ *
+ * Same-day runs collapse to the date once. Four runs on one afternoon used to
+ * print the date four times, which reads as a bug rather than as a fact.
+ */
+export function describeRunDates(isoTimestamps: string[]): string {
+  const dates = [...new Set(isoTimestamps.map(formatDate))]
+  if (dates.length === 0) return ''
+  if (dates.length === 1) return `on ${dates[0]}`
+  const years = new Set(dates.map((date) => date.slice(-4)))
+  // "September 2 and September 3, 2026": the year once when it is shared.
+  const parts =
+    years.size === 1
+      ? dates.map((date, i) => (i < dates.length - 1 ? date.slice(0, -6) : date))
+      : dates
+  if (parts.length === 2) return `on ${parts[0]} and ${parts[1]}`
+  return `on ${parts.slice(0, -1).join(', ')}, and ${parts.at(-1)}`
+}
+
 /** The document reference number printed on a report masthead. */
 export function documentReference(runId: string, questionId: string): string {
   const short = runId.replace(/-/g, '').slice(0, 8).toUpperCase()

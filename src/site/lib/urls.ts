@@ -1,7 +1,7 @@
 /**
  * Internal links.
  *
- * GitHub Pages serves this site under `/<repo>/`, so a hand-written `/history/`
+ * GitHub Pages serves this site under `/<repo>/`, so a hand-written `/runs/`
  * works locally and 404s in production. Every internal href goes through
  * `href()`, which prefixes Astro's configured base.
  *
@@ -9,6 +9,8 @@
  * until deployment, so there is a build test asserting no page contains a
  * hardcoded root-relative link.
  */
+
+import { loadSiteRegistry, REPO_ROOT } from '../../data/registries.ts'
 
 /** Astro's configured base path, always with a trailing slash. */
 const BASE: string = import.meta.env.BASE_URL.endsWith('/')
@@ -28,7 +30,6 @@ export const routes = {
   methodology: () => href('methodology/'),
   howItWorks: () => href('how-it-works/'),
   addAModel: () => href('add-a-model/'),
-  history: () => href('history/'),
   historyForQuestion: (questionId: string) => href(`history/${questionId}/`),
   runs: () => href('runs/'),
   reports: () => href('reports/'),
@@ -61,8 +62,8 @@ export function profileAnchor(model: { provider: string; modelId: string }): str
   return `profile-${model.provider}-${model.modelId}`.replace(/[^a-zA-Z0-9-]/g, '-')
 }
 
-/** The GitHub repository this site is built from. */
-export const REPO_URL = 'https://github.com/en-dash-consulting/hotdogbenchmark'
+/** The GitHub repository this site is built from, from site.json. */
+export const REPO_URL: string = loadSiteRegistry(REPO_ROOT).repository
 
 /** Deep link to a source file, so the site can point at the code it describes. */
 export function sourceUrl(path: string, ref = 'main'): string {

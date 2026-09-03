@@ -75,6 +75,13 @@ describe('add-a-model template', () => {
     expect(ids).toContain('streaming')
     expect(ids).toContain('usage-reporting')
   })
+
+  it('requires the kind and the model id and nothing else', () => {
+    const required = form.body
+      .filter((e: { validations?: { required?: boolean } }) => e.validations?.required)
+      .map((e: { id: string }) => e.id)
+    expect(required).toEqual(['kind', 'model-id'])
+  })
 })
 
 describe('add-a-question template', () => {
@@ -90,6 +97,23 @@ describe('add-a-question template', () => {
   it('tells the reporter the question must end with the one-word suffix', () => {
     const text = form.body.find((e: { id?: string }) => e.id === 'text')
     expect(text.attributes.description).toContain('One word answer.')
+  })
+
+  it('requires the question and nothing else', () => {
+    const required = form.body
+      .filter((e: { validations?: { required?: boolean } }) => e.validations?.required)
+      .map((e: { id: string }) => e.id)
+    expect(required).toEqual(['text'])
+  })
+
+  it('asks how to credit the submitter, offers an opt-out, and says what happens next', () => {
+    for (const field of ['credit-name', 'credit-url', 'credit-opt-out']) {
+      expect(ids, `missing field: ${field}`).toContain(field)
+    }
+    const intro = form.body.find((e: { type: string }) => e.type === 'markdown')
+    expect(intro.attributes.value).toMatch(/proposed/)
+    expect(intro.attributes.value).toMatch(/Up next/)
+    expect(form.description).not.toMatch(/every week/)
   })
 })
 

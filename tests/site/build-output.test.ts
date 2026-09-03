@@ -252,8 +252,9 @@ describe('experimental conditions in the built report', () => {
 
   it('renders the comparison complete without JavaScript, and ships only the explorer on top', () => {
     // The comparison is HTML, SVG and <details>. The explorer island is the
-    // one script the section adds, and the results table the one the page
-    // adds; both reveal their controls only after they have run.
+    // one script the section adds; the standings table and the masthead's
+    // copy-link button are the two the page adds. All three reveal their
+    // controls only after they have run.
     if (treated.length === 0) return
     // A JSON-LD block is data in a script element, not a script; it is not
     // counted on either side.
@@ -265,7 +266,7 @@ describe('experimental conditions in the built report', () => {
       const start = html.indexOf('id="framing-heading"')
       expect(start, `${questionId} has no framing section`).toBeGreaterThan(-1)
       const scripts = scriptCount(html)
-      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 2)
+      expect(scripts, `${questionId} ships ${scripts} scripts`).toBe(baseline + 3)
     }
   })
 
@@ -642,13 +643,19 @@ describe('SEO and social metadata', () => {
 
 describe('the reports landing page', () => {
   const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const mainNav = (html: string) =>
+    html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
   // The page renders enabled questions only, and framing links only for the
   // framings the latest edition actually ran, so the test derives both the
   // same way rather than assuming names.
   const registry = JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-    questions: Array<{ id: string; enabled?: boolean }>
+    questions: Array<{ id: string; text: string; enabled?: boolean; status?: string }>
   }
-  const questionIds = registry.questions.filter((q) => q.enabled !== false).map((q) => q.id)
+  // Proposed and retired questions have no report; only live ones do.
+  const questionIds = registry.questions
+    .filter((q) => q.enabled !== false && (q.status ?? 'live') === 'live')
+    .map((q) => q.id)
   const runFiles = readdirSync(join(ROOT, 'data/runs'))
     .filter((name) => name.endsWith('.json'))
     .sort()
@@ -691,9 +698,162 @@ describe('the reports landing page', () => {
     expect(html).toMatch(/Week \d+, \d{4}/)
   })
 
+  it('offers an ask-a-question form that works with scripts off and stays on site with them', () => {
+    const html = read('reports')
+    // A real label, a real form: the floor is a GET to the issue form with the
+    // question in its text field, on the repository site.json names.
+    expect(html).toMatch(/<label for="ask-text"[^>]*>Your question<\/label>/)
+    expect(html).toMatch(
+      /<form class="ask-form" method="get" action="https:\/\/github\.com\/[^/]+\/[^/"]+\/issues\/new"/,
+    )
+    expect(html).toMatch(/<input type="hidden" name="template" value="add_question\.yml"/)
+    expect(html).toMatch(/<input id="ask-text" name="text" type="text" required/)
+    expect(html).toContain('One word answer.')
+    expect(html).toMatch(/issues\/new\?template=add_question\.yml"[^>]*data-ask-github/)
+    expect(html).toMatch(/issues\/new\?template=add_model_or_provider\.yml/)
+    // The shipped site configures the publisher's contact route.
+    expect(html).toMatch(
+      /href="https:\/\/endash\.us\/\?[^"]*contactMessage=[^"]*"[^>]*data-ask-contact/,
+    )
+    expect(html).toContain('Up next')
+    // The home page carries the block itself, and the nav offers it as the one action.
+    const home = read('')
+    expect(home).toContain('id="ask"')
+    expect(mainNav(home)).toContain('>Ask a question<')
+  })
+
+  it('gives every report a share address as text, with the copy button hidden until scripts run', () => {
+    for (const questionId of questionIds) {
+      const html = read(`reports/${questionId}`)
+      expect(html, `${questionId} lacks the share address`).toMatch(
+        new RegExp(
+          `<a class="share-url[^"]*" href="https?://[^"]+/reports/${questionId}/"[^>]*data-share-url`,
+        ),
+      )
+      expect(html).toMatch(
+        /<button type="button" class="share-copy[^"]*" data-share-copy[^>]*hidden/,
+      )
+    }
+  })
+
+  it('renders the Up next section exactly when a question is proposed', () => {
+    const html = read('reports')
+    const proposed = registry.questions.filter((q) => q.status === 'proposed')
+    if (proposed.length === 0) {
+      expect(html).not.toContain('id="up-next-heading"')
+    } else {
+      expect(html).toContain('id="up-next-heading"')
+      for (const question of proposed) {
+        const headline = question.text.replace(/\s*One word answer\.$/, '')
+        expect(html, `${question.id} is not up next`).toContain(headline)
+      }
+    }
+  })
+
   it('is where the home page hands off to', () => {
     const home = read('')
     expect(home).toContain('href="/reports/"')
     expect(home).not.toContain('class="tile"')
+  })
+})
+
+/**
+ * One archive, one switcher, and no page that points at where things used
+ * to be. The reports index was once the home page and the history index was
+ * once the archive; copy that still says so sends a reader to the wrong
+ * place, and this is the check that stops it coming back.
+ */
+describe('navigation after the consolidation', () => {
+  const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const mainNav = (html: string) =>
+    html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
+  it('has Editions in the primary nav and no History', () => {
+    const nav = mainNav(read(''))
+    expect(nav).toContain('>Editions<')
+    expect(nav).not.toContain('>History<')
+  })
+
+  it('builds no history index: the editions page is the one archive', () => {
+    expect(existsSync(join(DIST, 'history', 'index.html'))).toBe(false)
+  })
+
+  it('marks Editions current on the editions pages and on every week-by-week page', () => {
+    const under = pages.filter((page) => /^\/(runs|history)\//.test(page.path))
+    expect(under.length).toBeGreaterThan(1)
+    for (const page of under) {
+      const current = mainNav(page.html).match(
+        /<a href="([^"]*)" aria-current="page"[^>]*>([^<]*)</,
+      )
+      expect(current?.[2]?.trim(), `${page.path} does not mark Editions current`).toBe('Editions')
+    }
+  })
+
+  it('renders the question switcher on every report, arm and history page', () => {
+    const targets = pages.filter((page) =>
+      /^\/(reports\/[^/]+\/(?:[^/]+\/)?|history\/[^/]+\/)index\.html$/.test(page.path),
+    )
+    expect(targets.length).toBeGreaterThan(2)
+    for (const page of targets) {
+      expect(page.html, `${page.path} lacks the switcher`).toMatch(
+        /<nav class="question-switcher[^"]*"[^>]*aria-label="Question"/,
+      )
+      expect(page.html, `${page.path} marks no question current`).toMatch(
+        /question-switcher[\s\S]*?aria-current="page"/,
+      )
+    }
+  })
+
+  it('never links "the archive" or "home page" to somewhere the thing is not', () => {
+    for (const page of pages) {
+      for (const match of page.html.matchAll(/<a href="([^"]+)"[^>]*>([^<]*)<\/a>/g)) {
+        const [, href, text] = match
+        const label = text!.trim().toLowerCase()
+        if (/archive|editions/.test(label) && !/report/.test(label)) {
+          expect(href, `${page.path}: "${text!.trim()}" links ${href}`).toMatch(/\/runs\/$/)
+        }
+        if (label === 'home page') {
+          expect(href, `${page.path}: "home page" links ${href}`).toBe('/')
+        }
+      }
+    }
+  })
+
+  it('says on every page when the next edition lands and how to subscribe', () => {
+    for (const page of pages) {
+      if (page.path === '/404.html') continue
+      expect(page.html, `${page.path} lacks the next-edition line`).toMatch(
+        /Next edition: [A-Z][a-z]+day, [A-Z][a-z]+ \d+\.|was due [A-Z][a-z]+day, [A-Z][a-z]+ \d+ and is running late/,
+      )
+      expect(page.html, `${page.path} lacks the RSS link`).toMatch(
+        /<a href="[^"]*feed\.xml" type="application\/rss\+xml" rel="alternate"[^>]*>/,
+      )
+      expect(page.html, `${page.path} lacks the JSON feed link`).toMatch(
+        /<a href="[^"]*feed\.json" type="application\/json" rel="alternate"[^>]*>/,
+      )
+    }
+  })
+
+  it('has exactly one dark call-to-action block on the home page', () => {
+    const home = read('')
+    expect(home).not.toContain('class="handoff"')
+    expect((home.match(/class="fork"/g) ?? []).length).toBe(1)
+    expect(home).toContain('class="handoff-line"')
+  })
+})
+
+describe('outbound links', () => {
+  it('open in a new tab and sever the opener, everywhere', () => {
+    for (const page of pages) {
+      const origin = /<link rel="canonical" href="(https?:\/\/[^/]+)/.exec(page.html)?.[1] ?? ''
+      const body = page.html.replace(/<head>[\s\S]*?<\/head>/, '')
+      for (const match of body.matchAll(/<a\b[^>]*>/g)) {
+        const tag = match[0]
+        const href = /href="([^"]+)"/.exec(tag)?.[1] ?? ''
+        if (!/^https?:\/\//.test(href) || (origin && href.startsWith(origin))) continue
+        expect(tag, `${page.path}: ${tag.slice(0, 80)}`).toMatch(/target="_blank"/)
+        expect(tag, `${page.path}: ${tag.slice(0, 80)}`).toMatch(/rel="[^"]*noopener/)
+      }
+    }
   })
 })

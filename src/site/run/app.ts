@@ -225,6 +225,8 @@ if (root) {
             text,
             reportTitle: 'Unofficial run',
             enabled: true,
+            status: 'live',
+            cadence: 'every',
           },
         ],
         models: selected,

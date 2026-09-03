@@ -7,6 +7,7 @@
  */
 import Base from '../layouts/Base.astro'
 import AnswerBoard from '../components/AnswerBoard.astro'
+import AskQuestion from '../components/AskQuestion.astro'
 import {
   getAllRuns,
   getLatestRun,
@@ -16,9 +17,10 @@ import {
   hasData,
 } from '../lib/data.ts'
 import { formatDate, formatEdition, formatPercent } from '../lib/format.ts'
-import { consensusOf, questionHeadline } from '../lib/prose.ts'
+import { questionHeadline } from '../lib/prose.ts'
 import { count, faqPageJsonLd, homeDescription, homeTitle, webSiteJsonLd } from '../lib/seo.ts'
 import { editionSensitivity, hasConditions, modelsInRun } from '../lib/sensitivity.ts'
+import { twinPairs, twinsWorthShowing } from '../lib/twins.ts'
 import { REPO_URL, profileAnchor, routes, sourceUrl } from '../lib/urls.ts'
 import type { Verdict } from '../../schema/run.ts'
 
@@ -67,19 +69,17 @@ const agreement = asked.map((question) => {
   return { question, share: total ? top / total : 0, total, counts }
 })
 
-/** Pairs of models that gave the same verdict on every shared question. */
-const twins: Array<[string, string]> = []
-for (let a = 0; a < grid.length; a += 1) {
-  for (let b = a + 1; b < grid.length; b += 1) {
-    const shared = grid[a]!.verdicts.filter((v, i) => v.verdict && grid[b]!.verdicts[i]!.verdict)
-    if (
-      shared.length >= 2 &&
-      shared.every((v, i) => v.verdict === grid[b]!.verdicts[grid[a]!.verdicts.indexOf(v)]!.verdict)
-    ) {
-      twins.push([grid[a]!.model.displayName, grid[b]!.model.displayName])
-    }
-  }
-}
+/**
+ * Pairs of models that gave the same verdict on every shared question, shown
+ * only when that is selective: with three questions most pairs agree.
+ */
+const twins = twinPairs(
+  grid.map((row) => ({
+    name: row.model.displayName,
+    verdicts: row.verdicts.map((v) => v.verdict),
+  })),
+)
+const showTwins = twinsWorthShowing(twins.length, grid.length, asked.length)
 
 const sensitivity =
   latest && hasConditions(latest)
@@ -93,7 +93,7 @@ const GLYPH: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hmm' }
 /** Kept as a string so the formatter cannot fold the line breaks out of a <pre>. */
 const QUICKSTART = [
   `git clone ${REPO_URL}.git`,
-  'cd hotdogbenchmark && npm install',
+  `cd ${REPO_URL.split('/').at(-1)} && npm install`,
   'npm run bench -- run --mock --out tmp/mock-run.json',
   'npm run dev',
 ].join('\n')
@@ -124,47 +124,52 @@ const QUICKSTART = [
               <thead>
                 <tr>
                   <th scope="col">
-                    <span class="visually-hidden">Model</span>
+                    <span class="visually-hidden">Question</span>
                   </th>
-                  {asked.map((q) => (
+                  {grid.map((row) => (
                     <th scope="col">
-                      <a href={routes.report(q.id)}>{q.subject.replace(/^an? /, '')}</a>
+                      <span class="model-head">{row.model.displayName}</span>
                     </th>
                   ))}
+                  <th scope="col" class="agree-head">
+                    Agree
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {grid.map((row) => (
+                {asked.map((question, qi) => (
                   <tr>
-                    <th scope="row">{row.model.displayName}</th>
-                    {row.verdicts.map((cell) => (
-                      <td>
-                        <a
-                          class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
-                          href={`${routes.report(cell.question.id)}#${profileAnchor(row.model)}`}
-                          title={`${row.model.displayName} on ${cell.question.subject}: ${cell.verdict ?? 'no data'}. Open its profile in the report.`}
-                        >
-                          {cell.verdict ? GLYPH[cell.verdict] : '—'}
-                        </a>
-                      </td>
-                    ))}
+                    <th scope="row">
+                      <a href={routes.report(question.id)}>
+                        {question.subject.replace(/^an? /, '')}
+                      </a>
+                    </th>
+                    {grid.map((row) => {
+                      const cell = row.verdicts[qi]!
+                      return (
+                        <td>
+                          <a
+                            class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
+                            href={`${routes.report(question.id)}#${profileAnchor(row.model)}`}
+                            title={`${row.model.displayName} on ${question.subject}: ${cell.verdict ?? 'no data'}. Open its profile in the report.`}
+                          >
+                            {cell.verdict ? GLYPH[cell.verdict] : '—'}
+                          </a>
+                        </td>
+                      )
+                    })}
+                    <td>
+                      <span class="agree tabular">
+                        {agreement[qi]!.total ? formatPercent(agreement[qi]!.share) : '—'}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr>
-                  <th scope="row">Agreement</th>
-                  {agreement.map((a) => (
-                    <td>
-                      <span class="agree tabular">{a.total ? formatPercent(a.share) : '—'}</span>
-                    </td>
-                  ))}
-                </tr>
-              </tfoot>
             </table>
           </div>
 
-          {twins.length > 0 && (
+          {showTwins && (
             <p class="twins">
               Thinking alike:{' '}
               {twins
@@ -172,6 +177,18 @@ const QUICKSTART = [
                 .map((pair) => pair.join(' & '))
                 .join(' · ')}
               {twins.length > 3 && ` · and ${twins.length - 3} more pairs`}
+            </p>
+          )}
+
+          {asked.length > 0 && (
+            <p class="handoff-line">
+              <a class="handoff-cta" href={routes.reports()}>
+                Read the {count(asked.length, 'report')} →
+              </a>
+              <span class="handoff-note">
+                One straight-faced analyst report per question: standings, the certainty quadrant,
+                every verbatim answer under every framing, and a PDF for each.
+              </span>
             </p>
           )}
         </section>
@@ -206,40 +223,9 @@ const QUICKSTART = [
           </section>
         )}
 
-        <section class="reports" aria-labelledby="reports-heading">
-          {asked.length > 0 ? (
-            <>
-              <div class="minds-head">
-                <p class="eyebrow">The full reports</p>
-                <h2 id="reports-heading">One straight-faced analyst report per question.</h2>
-              </div>
-              <div class="handoff">
-                <ul class="handoff-list">
-                  {asked.map((q) => {
-                    const verdict = consensusOf(getModelResults(latest, q.id)).verdict
-                    return (
-                      <li>
-                        <span class="handoff-q">{questionHeadline(q)}</span>
-                        <span class="handoff-v">{verdict ? GLYPH[verdict] : '—'}</span>
-                      </li>
-                    )
-                  })}
-                </ul>
-                <div class="handoff-copy">
-                  <p>
-                    Leaderboards, the certainty quadrant, every verbatim answer under every framing,
-                    and a PDF for each. {formatEdition(latest.isoWeek)} edition.
-                  </p>
-                  <a class="handoff-cta" href={routes.reports()}>
-                    Read the {count(asked.length, 'report')} →
-                  </a>
-                  <a class="handoff-more" href={routes.methodology()}>
-                    How it is measured
-                  </a>
-                </div>
-              </div>
-            </>
-          ) : null}
+        <AskQuestion />
+
+        <section class="reports" aria-labelledby="fork-heading">
           <div class="fork">
             <div class="fork-copy">
               <p class="eyebrow">Open source</p>
@@ -250,13 +236,22 @@ const QUICKSTART = [
                 cross-framing analysis for cents. Pull requests welcome.
               </p>
               <p class="fork-links">
-                <a href={REPO_URL}>GitHub</a>
+                <a target="_blank" rel="noopener" href={REPO_URL}>
+                  GitHub
+                </a>
                 <span aria-hidden="true"> · </span>
-                <a href={sourceUrl('docs/self-hosting.md')}>Self-hosting</a>
+                <a target="_blank" rel="noopener" href={sourceUrl('docs/self-hosting.md')}>
+                  Self-hosting
+                </a>
                 <span aria-hidden="true"> · </span>
                 <a href={routes.addAModel()}>Add a model</a>
                 <span aria-hidden="true"> · </span>
-                <a href={sourceUrl('CONTRIBUTING.md')}>Contributing</a>
+                <a target="_blank" rel="noopener" href={sourceUrl('CONTRIBUTING.md')}>
+                  Contributing
+                </a>
+              </p>
+              <p class="fork-ask">
+                Have a question the models should get? <a href="#ask">Send it in</a>.
               </p>
             </div>
             <pre
@@ -269,9 +264,8 @@ const QUICKSTART = [
 
           <p class="edition-line">
             {formatEdition(latest.isoWeek)} · published {formatDate(latest.finishedAt)} ·{' '}
-            <a href={routes.history()}>history</a> ·{' '}
             <a href={routes.runs()}>
-              {editions === 1 ? 'one edition' : `${editions} editions`} in the archive
+              {editions === 1 ? 'one edition' : `${editions} editions`} so far
             </a>
             {latest.isMock && <strong class="mock"> · sample data</strong>}
           </p>
@@ -326,20 +320,57 @@ const QUICKSTART = [
     min-width: min(100%, 40rem);
   }
 
+  /* Tight cells: twelve columns of answers have to fit a desk without a scrollbar. */
   .align-grid th,
   .align-grid td {
     border: 0;
-    padding: var(--space-2xs) var(--space-s);
+    padding: var(--space-2xs) var(--space-3xs);
     text-align: center;
     vertical-align: middle;
   }
 
+  /* Models across the top, questions down the side: the questions are what
+     grow, and rows scroll while columns do not. */
+  /* Model names stand on end, so twelve of them fit above twelve columns of
+     answers without the table growing a scrollbar at desk widths. */
   .align-grid thead th {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    white-space: normal;
+    vertical-align: bottom;
+    padding-bottom: var(--space-2xs);
+  }
+
+  .model-head {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    max-height: 9rem;
+    line-height: 1.1;
+    text-align: left;
+  }
+
+  .agree-head {
+    vertical-align: bottom;
+  }
+
+  .align-grid tbody th a {
     font-family: var(--font-display);
     font-size: var(--step-1);
     font-weight: 800;
     text-transform: capitalize;
     letter-spacing: -0.02em;
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .align-grid tbody th a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-fill);
+    text-decoration-thickness: 3px;
   }
 
   .align-grid thead th a {
@@ -517,59 +548,15 @@ const QUICKSTART = [
     }
   }
 
-  /* --- Report tiles -------------------------------------------------------- */
-  .reports {
-    margin-block: var(--space-3xl);
-  }
-
-  .handoff {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
-    gap: var(--space-l);
-    align-items: center;
-    padding: var(--space-l);
-    border-radius: var(--radius);
-    background: linear-gradient(135deg, #000b45 0%, #001769 100%);
-    color: #ffffff;
-    box-shadow: var(--shadow-sm, var(--shadow-subtle));
-  }
-
-  .handoff-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-2xs);
-  }
-
-  .handoff-list li {
+  /* --- The hand-off line ------------------------------------------------- */
+  .handoff-line {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--space-s);
-    padding: var(--space-2xs) 0;
-    border-bottom: 1px solid rgb(255 255 255 / 18%);
-  }
-
-  .handoff-q {
-    font-family: var(--font-display);
-    font-size: var(--step-1);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
-  }
-
-  .handoff-v {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    font-weight: 800;
-    color: var(--accent-fill);
-  }
-
-  .handoff-copy p {
-    font-family: var(--font-text);
-    margin: 0 0 var(--space-m);
-    opacity: 0.85;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
+    margin: var(--space-l) 0 0;
+    padding-top: var(--space-m);
+    border-top: 3px solid var(--text-strong);
   }
 
   .handoff-cta {
@@ -578,15 +565,22 @@ const QUICKSTART = [
     min-height: 2.75rem;
     padding: var(--space-2xs) var(--space-m);
     border-radius: 999px;
-    background: var(--accent-fill);
-    color: #001769;
+    background: var(--primary);
+    color: var(--on-primary);
     font-family: var(--font-ui);
     font-weight: 700;
     text-decoration: none;
   }
 
   .handoff-cta:hover {
-    background: #ffffff;
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  .handoff-note {
+    font-family: var(--font-text);
+    color: var(--muted);
+    max-width: 48ch;
   }
 
   @media (forced-colors: active) {
@@ -598,14 +592,8 @@ const QUICKSTART = [
     }
   }
 
-  .handoff-more {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-    margin-left: var(--space-m);
-    color: #ffffff;
-    font-family: var(--font-ui);
-    font-weight: 700;
+  .reports {
+    margin-block: var(--space-3xl);
   }
 
   .fork {
@@ -613,7 +601,6 @@ const QUICKSTART = [
     grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
     gap: var(--space-l);
     align-items: center;
-    margin-top: var(--space-2xl);
     padding: var(--space-xl);
     border-radius: var(--radius);
     background: linear-gradient(135deg, #000b45 0%, #120c3f 100%);
@@ -633,6 +620,17 @@ const QUICKSTART = [
   .fork-copy p {
     color: #d5d9ee;
     max-width: 48ch;
+  }
+
+  .fork-ask {
+    color: #d5d9ee;
+    margin: var(--space-s) 0 0;
+  }
+
+  .fork-ask a {
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-weight: 700;
   }
 
   .fork-links a {

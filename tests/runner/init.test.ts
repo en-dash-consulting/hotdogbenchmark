@@ -75,6 +75,7 @@ describe('bench init end to end', () => {
       'questions.json',
       'models.json',
       'conditions.json',
+      'site.json',
       'package.json',
     ]) {
       const target = join(root, entry)
@@ -166,6 +167,47 @@ describe('bench init end to end', () => {
     expect(output).toContain('npm run bench:record -- --provider anthropic')
     expect(output).toContain('npm run bench -- run --mock --out tmp/mock-run.json')
     expect(output).toContain('npm run dev')
+  })
+
+  it('writes a site.json named after the question, not after the upstream', () => {
+    const cwd = setUp()
+    runCli(cwd, [
+      'init',
+      ...BURRITO,
+      '--repository',
+      'https://github.com/someone/burritos',
+      '--yes',
+    ])
+    const site = readJson(join(cwd, 'site.json'))
+    expect(site.name).toBe('Burrito Benchmark')
+    expect(site.repository).toBe('https://github.com/someone/burritos')
+    expect(site.byline).not.toMatch(/En Dash/)
+    expect(site.contact).toBeNull()
+    expect(JSON.stringify(site)).not.toMatch(/hotdog|endash/i)
+  })
+
+  it('takes the site name, byline and publisher from flags', () => {
+    const cwd = setUp()
+    runCli(cwd, [
+      'init',
+      ...BURRITO,
+      '--site-name',
+      'The Wrap Report',
+      '--byline',
+      'a Taqueria Labs publication',
+      '--publisher',
+      'Taqueria Labs',
+      '--publisher-url',
+      'https://taqueria.example',
+      '--repository',
+      'https://github.com/taqueria/wraps',
+      '--yes',
+    ])
+    const site = readJson(join(cwd, 'site.json'))
+    expect(site.name).toBe('The Wrap Report')
+    expect(site.wordmark).toEqual(['The Wrap', 'Report'])
+    expect(site.publisher).toEqual({ name: 'Taqueria Labs', url: 'https://taqueria.example' })
+    expect(site.byline).toBe('a Taqueria Labs publication')
   })
 
   it('removes real editions only with --force', () => {

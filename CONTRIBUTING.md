@@ -92,6 +92,12 @@ Recorded fixtures do not know about a new question. Record it per provider and m
 `npm run bench:record -- --provider <id> [--model <modelId>]` so `--mock` can show it. The dry
 run prints the plan, the rendered framings and the total call count without calling anything.
 
+A question has a `status`: `proposed` (accepted, shown on the site under "Up next", not yet
+asked), `live` (asked in every edition) or `retired` (kept for the archive, asked no more). A
+new question lands as `proposed`; a maintainer switches it live. `contributor` records who sent
+it in and whether they want the credit; without it the question is uncredited, and with
+`"credit": false` it stays that way. `cadence` is `every` unless the bill says otherwise.
+
 Adding a question increases the weekly cost **linearly**: every enabled model answers every
 enabled question under every enabled framing, three times. With eleven models, three framings
 and three samples, one more question is 99 more API calls a week. The prompts are tiny, so this

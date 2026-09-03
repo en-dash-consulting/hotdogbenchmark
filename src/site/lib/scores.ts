@@ -173,6 +173,68 @@ function invertedNormal(value: number, population: number[]): number {
   return clamp01(1 - (value - min) / (max - min))
 }
 
+/**
+ * Which constructed measures are identical across every model that answered.
+ *
+ * A column of 1.00s, a radar spoke every model maxes, or a chart axis with
+ * every point on the same line tells the reader nothing, and drawing it
+ * anyway suggests a difference the data does not contain. The report drops
+ * such a measure from the chart and says so in a sentence; the value stays in
+ * the data tables and the methodology.
+ */
+export interface UniformMeasures {
+  decisiveness: boolean
+  efficiency: boolean
+  compliance: boolean
+  /** Radar axes whose value is the same for every answering model. */
+  radar: Set<keyof RadarAxes>
+  /** The shared value of each uniform measure, for the sentence that explains its absence. */
+  values: Partial<Record<'decisiveness' | 'efficiency' | 'compliance', number>>
+}
+
+export function uniformMeasures(results: ModelResult[]): UniformMeasures {
+  const answering = results.filter((result) => result.samples.length > 0)
+  const scored = scoreModels(answering)
+  const same = (values: number[]) =>
+    values.length > 1 && values.every((value) => Math.abs(value - values[0]!) < 1e-9)
+
+  const decisivenessValues = scored.map((entry) => entry.decisiveness)
+  const efficiencyValues = scored.map((entry) => entry.efficiency)
+  const complianceValues = answering.map((result) => result.aggregate.followedInstructionRate ?? 0)
+
+  const radar = new Set<keyof RadarAxes>()
+  const axes = answering.map((result) => radarAxes(result, answering))
+  for (const key of Object.keys(RADAR_AXIS_LABELS) as Array<keyof RadarAxes>) {
+    if (same(axes.map((entry) => entry[key]))) radar.add(key)
+  }
+
+  const uniform: UniformMeasures = {
+    decisiveness: same(decisivenessValues),
+    efficiency: same(efficiencyValues),
+    compliance: same(complianceValues),
+    radar,
+    values: {},
+  }
+  if (uniform.decisiveness) uniform.values.decisiveness = decisivenessValues[0]
+  if (uniform.efficiency) uniform.values.efficiency = efficiencyValues[0]
+  if (uniform.compliance) uniform.values.compliance = complianceValues[0]
+  return uniform
+}
+
+/**
+ * The sentence that stands in for a measure the chart does not plot:
+ * "Every model scored 1.00 on decisiveness this edition, so it is not
+ * plotted." Empty when nothing is uniform.
+ */
+export function uniformNote(uniform: UniformMeasures): string {
+  const parts: string[] = []
+  if (uniform.decisiveness) parts.push(`${uniform.values.decisiveness!.toFixed(2)} on decisiveness`)
+  if (uniform.efficiency) parts.push(`${uniform.values.efficiency!.toFixed(2)} on efficiency`)
+  if (parts.length === 0) return ''
+  const list = parts.length === 1 ? parts[0]! : `${parts[0]} and ${parts[1]}`
+  return `Every model scored ${list} this edition, so ${parts.length === 1 ? 'it is' : 'they are'} not plotted: a chart that cannot separate anything is not a chart.`
+}
+
 function isNumber(value: number | null | undefined): value is number {
   return typeof value === 'number' && Number.isFinite(value)
 }

@@ -13,6 +13,7 @@
  * latency bars drawn to scale. Nothing here is invented: every word is the
  * majority sample verbatim and every bar is a recorded duration.
  */
+import QuestionSwitcher from './QuestionSwitcher.astro'
 import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
 import { getModelEntry, getQuestionResult } from '../lib/data.ts'
 import { framingLabel, questionHeadline } from '../lib/prose.ts'
@@ -139,21 +140,14 @@ const Heading = headline ? 'h1' : 'h2'
       <script type="application/json" data-board-data set:html={payload} />
 
       <div class="board-head">
-        <div class="subjects" role="tablist" aria-label="Question" data-subjects hidden>
-          {asked.map((q) => (
-            <button
-              type="button"
-              role="tab"
-              id={`board-tab-${q.id}`}
-              aria-controls="board-panel"
-              data-question={q.id}
-              aria-selected={q.id === first.id ? 'true' : 'false'}
-              tabindex={q.id === first.id ? 0 : -1}
-            >
-              {q.subject.replace(/^an? /, '')}
-            </button>
-          ))}
-        </div>
+        <QuestionSwitcher
+          mode="tabs"
+          tone="hero"
+          questions={asked}
+          current={first.id}
+          controls="board-panel"
+          moreHref={routes.reports()}
+        />
 
         <p class="kicker">Every week, the largest AI models are asked the question:</p>
         <Heading id="board-question" class="question">
@@ -259,7 +253,7 @@ const Heading = headline ? 'h1' : 'h2'
           spent it reasoning; the rest is answering.
         </span>
         <a href={routes.report(first.id)} data-report-link>
-          Full report →
+          Read the report →
         </a>
       </p>
     </section>
@@ -740,14 +734,6 @@ const Heading = headline ? 'h1' : 'h2'
     margin-right: var(--space-2xs);
   }
 
-  .subjects {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-    margin-bottom: var(--space-l);
-  }
-
-  .subjects button,
   .framing,
   .replay {
     font: inherit;
@@ -767,13 +753,11 @@ const Heading = headline ? 'h1' : 'h2'
       transform 150ms var(--ease-out);
   }
 
-  .subjects button:hover,
   .framing:hover,
   .replay:hover {
     transform: translateY(-1px);
   }
 
-  .subjects button[aria-selected='true'],
   .framing[aria-checked='true'] {
     background: var(--text-strong);
     color: var(--bg);
@@ -792,12 +776,11 @@ const Heading = headline ? 'h1' : 'h2'
   }
 
   /*
-   * The question tabs and the framing controls need the script, so they ship
-   * hidden. They keep their space while hidden: the board must not grow by a
-   * row of buttons the moment the script wakes up, which would push every
-   * section below it down mid-read.
+   * The framing controls need the script, so they ship hidden. They keep
+   * their space while hidden: the board must not grow by a row of buttons the
+   * moment the script wakes up, which would push every section below it down
+   * mid-read.
    */
-  .subjects[hidden],
   .controls[hidden] {
     display: flex;
     visibility: hidden;
@@ -821,19 +804,6 @@ const Heading = headline ? 'h1' : 'h2'
   .replay {
     border-style: dashed;
     font-weight: 600;
-  }
-
-  /* The question tabs sit on the navy band, so they take the band's ink. */
-  .board-head .subjects button {
-    border-color: rgb(255 255 255 / 55%);
-    color: var(--hero-text);
-    background: transparent;
-  }
-
-  .board-head .subjects button[aria-selected='true'] {
-    background: var(--accent-fill);
-    border-color: var(--accent-fill);
-    color: #001769;
   }
 
   /* --- Rows --------------------------------------------------------------- */
@@ -874,12 +844,16 @@ const Heading = headline ? 'h1' : 'h2'
     color: var(--muted);
   }
 
-  /* The word. */
+  /* The word. It wraps before it clips: the reasoning tag drops under it on a
+     narrow row rather than eating its space, and no ellipsis is ever drawn
+     over the one word the site exists to show. */
   .answer {
     position: relative;
     min-height: 2.6em;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    row-gap: var(--space-3xs);
     perspective: 600px;
   }
 
@@ -895,9 +869,7 @@ const Heading = headline ? 'h1' : 'h2'
     color: var(--text-strong);
     background: var(--surface-sunken);
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     transform-origin: left center;
   }
 
@@ -915,7 +887,6 @@ const Heading = headline ? 'h1' : 'h2'
     background: var(--verdict-other-bg);
     color: var(--verdict-other);
     font-size: var(--step-1);
-    white-space: normal;
   }
 
   .row-error .word {
@@ -1232,7 +1203,6 @@ const Heading = headline ? 'h1' : 'h2'
 
   @media (max-width: 48rem) {
     /* Touch targets: 44px on phones, where the fingers are. */
-    .subjects button,
     .framing,
     .replay {
       min-height: 2.75rem;

@@ -72,6 +72,9 @@ dt,
 
 h1 {
   font-size: var(--step-4);
+  /* A one-word title at the largest size can outgrow a 320px screen once
+     WCAG text spacing is applied; breaking the word beats overflowing. */
+  overflow-wrap: anywhere;
 }
 h2 {
   font-size: var(--step-3);
@@ -323,7 +326,7 @@ svg {
   .subjects button,
   .replay,
   .explorer button,
-  .question-switch a,
+  .question-switcher a,
   .nav-list a,
   .handoff,
   .kpi,
@@ -342,8 +345,9 @@ svg {
   .subjects button,
   .replay,
   .explorer button,
-  .question-switch a,
+  .question-switcher a,
   .theme-toggle,
+  .github-link,
   .condition-nav a,
   .tag-reasoning,
   .dot,

@@ -527,6 +527,8 @@ const HOT_DOG: QuestionEntry = {
   text: 'Is a hot dog a sandwich? One word answer.',
   reportTitle: 'The Hot Dog Question',
   enabled: true,
+  status: 'live',
+  cadence: 'every',
 }
 const BURRITO: QuestionEntry = {
   id: 'burrito',
@@ -536,6 +538,8 @@ const BURRITO: QuestionEntry = {
   text: 'Is a burrito a wrap? One word answer.',
   reportTitle: 'The Burrito Question',
   enabled: true,
+  status: 'live',
+  cadence: 'every',
 }
 /** A question whose registry entry says nothing about what it claims. */
 const BARE: QuestionEntry = {
@@ -544,6 +548,8 @@ const BARE: QuestionEntry = {
   text: 'Is cereal a soup? One word answer.',
   reportTitle: 'The Cereal Question',
   enabled: true,
+  status: 'live',
+  cadence: 'every',
 }
 
 const CONTROL: RunCondition = {

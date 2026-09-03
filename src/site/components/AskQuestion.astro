@@ -1,0 +1,400 @@
+---
+/**
+ * Ask the models something: the way a reader sends a question in.
+ *
+ * Lead with an input, not with links. The visitor types their question
+ * before choosing anything, and both routes carry their words.
+ *
+ * With scripts off the form is a plain GET to the repository's add-a-question
+ * issue form, the primary route because it exists for every fork, with the
+ * typed question in the form's text field. With scripts, submit stays on the
+ * page: the question gets its "One word answer." suffix, the exact prompt
+ * shows, and both destinations (the issue form, and the publisher's contact
+ * route when site.json configures one) are prefilled and offered together.
+ *
+ * What happens next is said plainly: an accepted question appears under
+ * "Up next" with the sender's credit if they want one, then joins an edition.
+ */
+import { getQuestions, getSite } from '../lib/data.ts'
+import { ONE_WORD_SUFFIX } from '../../schema/questions.ts'
+import { addModelUrl, contactUrl, issueFields, issueUrl } from '../lib/contribute.ts'
+import { questionHeadline } from '../lib/prose.ts'
+
+const site = getSite()
+const example = getQuestions()[0]
+const placeholder = example ? questionHeadline(example) : 'Is a burrito a sandwich?'
+const previewDefault = example ? example.text : `${placeholder} ${ONE_WORD_SUFFIX}`
+const hidden = issueFields('')
+const contact = site.contact
+const payload = JSON.stringify({
+  repository: site.repository,
+  siteName: site.name,
+  suffix: ONE_WORD_SUFFIX,
+  contact,
+})
+---
+
+<section class="ask" id="ask" aria-labelledby="ask-heading" data-ask>
+  <script type="application/json" data-ask-config set:html={payload} />
+  <p class="eyebrow">Submit your own question</p>
+  <h2 id="ask-heading">Ask the models something.</h2>
+  <p class="ask-lede">
+    Send it in. An accepted question appears here under <strong>Up next</strong>, credited to you if
+    you want, then joins an edition and gets its own report. Every question is asked the same way,
+    so it ends with <q>{ONE_WORD_SUFFIX}</q>; we add that if you leave it off.
+  </p>
+
+  <form
+    class="ask-form"
+    method="get"
+    action={`${site.repository}/issues/new`}
+    target="_blank"
+    data-ask-form
+  >
+    <input type="hidden" name="template" value={hidden.template} />
+    <label for="ask-text">Your question</label>
+    <div class="ask-row">
+      <input
+        id="ask-text"
+        name="text"
+        type="text"
+        required
+        autocomplete="off"
+        placeholder={placeholder}
+        data-ask-text
+      />
+      <button type="submit" data-ask-submit>Send it in</button>
+    </div>
+    <p class="ask-preview">
+      <span class="ask-preview-label">Sent as</span>{' '}
+      <output for="ask-text" data-ask-preview>{previewDefault}</output>
+    </p>
+  </form>
+
+  <div class="ask-routes" data-ask-routes>
+    <p class="ask-routes-lead" data-ask-routes-lead>Where it goes:</p>
+    <ul>
+      <li>
+        <a
+          target="_blank"
+          rel="noopener"
+          class="ask-route ask-route-github"
+          href={issueUrl(site.repository, '')}
+          data-ask-github
+        >
+          <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+            ></path>
+          </svg>
+          Open it as a GitHub issue
+        </a>
+        <span class="ask-route-note">the question goes into the form, ready to file</span>
+      </li>
+      {
+        contact && (
+          <li>
+            <a
+              target="_blank"
+              rel="noopener"
+              class="ask-route"
+              href={contactUrl(contact, '', site.name)}
+              data-ask-contact
+            >
+              Send it to {site.publisher.name}
+            </a>
+            <span class="ask-route-note">
+              a contact form with your question in it; leave an email address to hear when it goes
+              live
+            </span>
+          </li>
+        )
+      }
+      <li>
+        <a
+          target="_blank"
+          rel="noopener"
+          class="ask-route ask-route-quiet"
+          href={addModelUrl(site.repository)}
+        >
+          Suggest a model instead
+        </a>
+        <span class="ask-route-note">the add-a-model form asks for what the registry needs</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<script>
+  /**
+   * Keeps the routes in step with the question and holds the visitor on the
+   * page when they press Enter. Without this the form is a plain GET to the
+   * GitHub issue form with the question in its text field.
+   */
+  const root = document.querySelector<HTMLElement>('[data-ask]')
+  const configNode = root?.querySelector<HTMLScriptElement>('[data-ask-config]')
+  if (root && configNode) {
+    const config = JSON.parse(configNode.textContent ?? '{}') as {
+      repository: string
+      siteName: string
+      suffix: string
+      contact: {
+        url: string
+        params: Record<string, string>
+        messageField: string
+        titleField: string
+        title: string
+      } | null
+    }
+    const form = root.querySelector<HTMLFormElement>('[data-ask-form]')!
+    const input = root.querySelector<HTMLInputElement>('[data-ask-text]')!
+    const preview = root.querySelector<HTMLElement>('[data-ask-preview]')!
+    const github = root.querySelector<HTMLAnchorElement>('[data-ask-github]')!
+    const contact = root.querySelector<HTMLAnchorElement>('[data-ask-contact]')
+    const lead = root.querySelector<HTMLElement>('[data-ask-routes-lead]')!
+    const fallback = preview.textContent ?? ''
+
+    const asPrompt = (text: string) => {
+      const trimmed = text.trim().replace(/\s+/g, ' ')
+      if (!trimmed) return ''
+      return trimmed.endsWith(config.suffix) ? trimmed : `${trimmed} ${config.suffix}`
+    }
+    const guessSubject = (text: string) => {
+      const match = /^(?:is|are)\s+(an?\s+[a-z][a-z' -]*?|[a-z][a-z' -]*?)\s+(?:an?|the)\s+/i.exec(
+        text.trim(),
+      )
+      return match ? match[1]!.trim().toLowerCase() : null
+    }
+
+    function sync() {
+      const prompt = asPrompt(input.value)
+      preview.textContent = prompt || fallback
+      const fields = new URLSearchParams({ template: 'add_question.yml' })
+      if (prompt) fields.set('text', prompt)
+      const subject = guessSubject(prompt)
+      if (subject) {
+        fields.set('subject', subject)
+        fields.set(
+          'slug',
+          subject
+            .replace(/^(an?|the)\s+/, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, ''),
+        )
+      }
+      github.href = `${config.repository}/issues/new?${fields.toString()}`
+      if (contact && config.contact) {
+        const params = new URLSearchParams(config.contact.params)
+        params.set(config.contact.titleField, config.contact.title)
+        params.set(
+          config.contact.messageField,
+          [
+            `Question for the ${config.siteName}:`,
+            prompt || '(your question here)',
+            '',
+            `Subject, as it reads in a sentence: ${subject ?? '(e.g. "a burrito")'}`,
+            'Why it is worth asking:',
+            'Credit me as (or say "no credit"):',
+            'Email me when it goes live at:',
+          ].join('\n'),
+        )
+        const url = new URL(config.contact.url)
+        url.search = params.toString()
+        contact.href = url.toString()
+      }
+    }
+
+    input.addEventListener('input', sync)
+    form.addEventListener('submit', (event) => {
+      // Stay here: the question is ready in both routes, and the reader picks.
+      event.preventDefault()
+      sync()
+      lead.textContent = 'Your question is ready. Pick where it goes:'
+      root.classList.add('ask-ready')
+      github.focus()
+    })
+    sync()
+  }
+</script>
+
+<style>
+  .ask {
+    margin-top: var(--space-2xl);
+    padding: clamp(var(--space-s), 4vw, var(--space-l));
+    background: var(--surface);
+    border-top: 3px solid var(--accent-fill);
+    border-radius: var(--radius);
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-2xs);
+  }
+
+  .ask h2 {
+    margin: 0 0 var(--space-s);
+  }
+
+  .ask-lede {
+    max-width: var(--measure);
+    color: var(--muted);
+  }
+
+  .ask-form {
+    max-width: 48rem;
+    margin-top: var(--space-m);
+  }
+
+  .ask-form label {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .ask-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  /* min-width: 0 so the field can shrink below the browser's default input
+     width; on Linux Chromium that default is wider than a 320px screen's
+     column, and a flex item will not shrink past it on its own. */
+  .ask-row input {
+    flex: 1 1 min(18rem, 100%);
+    min-width: 0;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-2xs) var(--space-s);
+    font: inherit;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--text-strong);
+    background: var(--bg);
+    border: 2px solid var(--rule-strong);
+    border-radius: var(--radius);
+  }
+
+  .ask-row input:focus-visible {
+    border-color: var(--primary);
+  }
+
+  .ask-row button {
+    min-height: 2.75rem;
+    padding: var(--space-2xs) var(--space-m);
+    font: inherit;
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--on-primary);
+    background: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .ask-row button:hover {
+    background: var(--accent-fill);
+    border-color: var(--accent-fill);
+    color: #001769;
+  }
+
+  .ask-preview {
+    margin: var(--space-2xs) 0 0;
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .ask-preview-label {
+    font-family: var(--font-ui);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.75em;
+  }
+
+  .ask-preview output {
+    color: var(--text-strong);
+  }
+
+  .ask-routes {
+    margin-top: var(--space-m);
+  }
+
+  .ask-routes-lead {
+    margin: 0 0 var(--space-2xs);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .ask-ready .ask-routes-lead {
+    color: var(--accent);
+  }
+
+  .ask-routes ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .ask-routes li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-s);
+  }
+
+  .ask-route {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 2.75rem;
+    padding: var(--space-3xs) var(--space-s);
+    font-family: var(--font-ui);
+    font-weight: 700;
+    color: var(--text-strong);
+    border: 2px solid var(--text-strong);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+
+  .ask-route:hover {
+    background: var(--text-strong);
+    color: var(--bg);
+  }
+
+  .ask-route-quiet {
+    border-color: var(--rule-strong);
+    color: var(--muted);
+  }
+
+  .ask-route-note {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  @media (forced-colors: active) {
+    .ask-route,
+    .ask-row button {
+      border: 2px solid ButtonText;
+      forced-color-adjust: none;
+      background: ButtonFace !important;
+      color: ButtonText !important;
+    }
+  }
+</style>

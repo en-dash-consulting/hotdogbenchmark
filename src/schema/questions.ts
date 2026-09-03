@@ -50,6 +50,32 @@ export const questionEntrySchema = z.object({
   tagline: z.string().min(1).optional(),
   /** Disabled questions stay in the file (and in the archive) but are not asked. */
   enabled: z.boolean(),
+  /**
+   * Where the question is in its life. `proposed` is accepted and visible on
+   * the site as "up next" but not yet asked; `live` is asked; `retired` stays
+   * in the file for the archive's sake and is asked no more. Default `live`,
+   * so every registry written before this field existed still means what it
+   * meant.
+   */
+  status: z.enum(['proposed', 'live', 'retired']).default('live'),
+  /**
+   * Who sent the question in, when someone did. `credit` false means they
+   * asked not to be named; the site then renders nothing. Silence is not
+   * consent to be named: a question with no contributor is simply uncredited.
+   */
+  contributor: z
+    .object({
+      name: z.string().min(1),
+      url: z.string().url().optional(),
+      credit: z.boolean(),
+    })
+    .optional(),
+  /**
+   * How often the question runs. Every question runs in every edition by
+   * default; `monthly` is the escape hatch for the day the bill says so, and
+   * means the first edition of each calendar month.
+   */
+  cadence: z.enum(['every', 'monthly']).default('every'),
   /** Editorial note, rendered nowhere. Context for whoever reads the registry. */
   notes: z.string().optional(),
 })
@@ -98,5 +124,33 @@ export function parseQuestionsRegistry(
  * question, not because of anything the data says.
  */
 export function enabledQuestions(registry: QuestionsRegistry): QuestionEntry[] {
-  return registry.questions.filter((question) => question.enabled)
+  return registry.questions.filter((question) => question.enabled && question.status === 'live')
+}
+
+/** Questions accepted but not yet asked: what the site shows as up next. */
+export function proposedQuestions(registry: QuestionsRegistry): QuestionEntry[] {
+  return registry.questions.filter((question) => question.status === 'proposed')
+}
+
+/**
+ * Whether a question's cadence puts it in an edition run on this date.
+ *
+ * "The first edition of the month" for a weekly benchmark is the run whose
+ * date falls in the month's first seven days: exactly one weekly run does.
+ */
+export function isDue(question: Pick<QuestionEntry, 'cadence'>, date: Date): boolean {
+  if (question.cadence === 'every') return true
+  return date.getUTCDate() <= 7
+}
+
+/** The enabled, live questions whose cadence is due on this date: what the runner asks. */
+export function dueQuestions(registry: QuestionsRegistry, date: Date): QuestionEntry[] {
+  return enabledQuestions(registry).filter((question) => isDue(question, date))
+}
+
+/** "Sent in by Ada Lovelace", or null when there is nobody to credit or they declined. */
+export function creditLine(question: Pick<QuestionEntry, 'contributor'>): string | null {
+  const contributor = question.contributor
+  if (!contributor || !contributor.credit) return null
+  return `Sent in by ${contributor.name}`
 }

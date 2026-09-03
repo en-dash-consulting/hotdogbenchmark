@@ -14,7 +14,9 @@ import {
   getLatestRun,
   getModels,
   getQuestions,
+  getSite,
 } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
 import { formatEdition } from '../lib/format.ts'
 import { treatedConditions } from '../lib/sensitivity.ts'
 import { DEFAULT_SAMPLES } from '../../runner/run.ts'
@@ -29,12 +31,13 @@ export const GET: APIRoute = ({ site }) => {
   const conditions = getConditionsRegistry()
   const runs = getAllRuns()
   const latest = getLatestRun()
+  const registry = getSite()
 
   const lines: string[] = []
-  lines.push('# HOTDOG BENCHMARK')
+  lines.push(`# ${siteNameCaps(registry)}`)
   lines.push('')
   lines.push(
-    `> Every week, ${models.length} large language models from ${new Set(models.map((m) => m.vendor)).size} vendors are asked "${questions[0]?.text ?? 'Is a hot dog a sandwich? One word answer.'}" and ${questions.length - 1} more questions like it, ${DEFAULT_SAMPLES} times each, under ${conditions.length} framings: asked plainly, told the answer is yes, told the answer is no. The site publishes exactly what they said, how long each took, what it cost, and how far each model's answer moved when it was told what to think. An En Dash Consulting research project, MIT licensed, with the raw JSON for every edition in the repository.`,
+    `> Every week, ${models.length} large language models from ${new Set(models.map((m) => m.vendor)).size} vendors are asked "${questions[0]?.text ?? 'Is a hot dog a sandwich? One word answer.'}" and ${questions.length - 1} more questions like it, ${DEFAULT_SAMPLES} times each, under ${conditions.length} framings: asked plainly, told the answer is yes, told the answer is no. The site publishes exactly what they said, how long each took, what it cost, and how far each model's answer moved when it was told what to think. A ${registry.publisher.name} research project, MIT licensed, with the raw JSON for every edition in the repository.`,
   )
   lines.push('')
   lines.push('## What is measured')
@@ -103,8 +106,9 @@ export const GET: APIRoute = ({ site }) => {
       `- [${question.reportTitle}, week by week](${url(`history/${question.id}/`)}): how each model's answer has moved across editions, and sample consistency within the latest one.`,
     )
   }
-  lines.push(`- [History](${url('history/')}): pick a question to see its trends.`)
-  lines.push(`- [Every edition](${url('runs/')}): the archive, newest first.`)
+  lines.push(
+    `- [Editions](${url('runs/')}): every edition, newest first, with each question's week-by-week history.`,
+  )
   for (const run of runs) {
     lines.push(
       `- [${formatEdition(run.isoWeek)} edition](${url(`runs/${run.isoWeek}/`)}): every question asked that week, with the raw JSON at ${REPO_URL}/blob/main/data/runs/${run.isoWeek}.json.`,

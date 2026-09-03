@@ -3,7 +3,7 @@
   "modelId": "mistral-medium-2604",
   "source": "live",
   "recordedAt": "2026-09-02",
-  "note": "Captured from live calls to Mistral Medium 3.5.",
+  "note": "Captured from live calls to Mistral Medium 3.5. grilled-cheese, wrap and tuna-melt copied from the live Week 36 run c4a16030 (first sample per cell).",
   "responses": [
     {
       "questionId": "hot-dog",
@@ -139,6 +139,141 @@
       },
       "approxTotalMs": 336,
       "approxTtfbMs": 321
+    },
+    {
+      "questionId": "grilled-cheese",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 27,
+        "outputTokens": 3,
+        "totalTokens": 30,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 334,
+      "approxTtfbMs": 321
+    },
+    {
+      "questionId": "wrap",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "No.",
+      "usage": {
+        "inputTokens": 25,
+        "outputTokens": 3,
+        "totalTokens": 28,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 378,
+      "approxTtfbMs": 361
+    },
+    {
+      "questionId": "tuna-melt",
+      "conditionId": "control",
+      "systemPrompt": null,
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 27,
+        "outputTokens": 3,
+        "totalTokens": 30,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 325,
+      "approxTtfbMs": 311
+    },
+    {
+      "questionId": "grilled-cheese",
+      "conditionId": "asserted",
+      "systemPrompt": "A grilled cheese is a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 37,
+        "outputTokens": 3,
+        "totalTokens": 40,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 357,
+      "approxTtfbMs": 335
+    },
+    {
+      "questionId": "wrap",
+      "conditionId": "asserted",
+      "systemPrompt": "A wrap is a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 33,
+        "outputTokens": 3,
+        "totalTokens": 36,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 330,
+      "approxTtfbMs": 311
+    },
+    {
+      "questionId": "tuna-melt",
+      "conditionId": "asserted",
+      "systemPrompt": "A tuna melt is a sandwich.",
+      "text": "Yes.",
+      "usage": {
+        "inputTokens": 37,
+        "outputTokens": 3,
+        "totalTokens": 40,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 319,
+      "approxTtfbMs": 292
+    },
+    {
+      "questionId": "grilled-cheese",
+      "conditionId": "denied",
+      "systemPrompt": "A grilled cheese is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 38,
+        "outputTokens": 3,
+        "totalTokens": 41,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 375,
+      "approxTtfbMs": 357
+    },
+    {
+      "questionId": "wrap",
+      "conditionId": "denied",
+      "systemPrompt": "A wrap is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 34,
+        "outputTokens": 3,
+        "totalTokens": 37,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 367,
+      "approxTtfbMs": 352
+    },
+    {
+      "questionId": "tuna-melt",
+      "conditionId": "denied",
+      "systemPrompt": "A tuna melt is not a sandwich.",
+      "text": "No.",
+      "usage": {
+        "inputTokens": 38,
+        "outputTokens": 3,
+        "totalTokens": 41,
+        "reasoningTokens": null,
+        "cachedInputTokens": 0
+      },
+      "approxTotalMs": 393,
+      "approxTtfbMs": 378
     }
   ]
 }

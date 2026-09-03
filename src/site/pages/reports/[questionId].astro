@@ -2,18 +2,23 @@
 /**
  * One report per question, always showing the latest edition.
  *
+ * One comparison and one roster. The comparison is the KPI row, the summary,
+ * the framing section, the quadrant and the standings; the roster is one card
+ * per vendor. Every model appears in the standings and in its card, and
+ * nowhere else twice. On a phone the standings and the roster fold.
+ *
  * Archive pages under /runs/<isoWeek>/ render the same components against a
  * historical run.
  */
 import Base from '../../layouts/Base.astro'
+import QuestionSwitcher from '../../components/QuestionSwitcher.astro'
 import Masthead from '../../components/report/Masthead.astro'
 import ExecutiveSummary from '../../components/report/ExecutiveSummary.astro'
 import KpiTiles from '../../components/report/KpiTiles.astro'
-import VendorProfile from '../../components/report/VendorProfile.astro'
-import ResultsTable from '../../components/report/ResultsTable.astro'
+import VendorCard from '../../components/report/VendorCard.astro'
+import Standings from '../../components/report/Standings.astro'
 import Quadrant from '../../components/report/Quadrant.astro'
-import Leaderboard from '../../components/report/Leaderboard.astro'
-import Scorecard from '../../components/report/Scorecard.astro'
+import Fold from '../../components/report/Fold.astro'
 import ConditionNav from '../../components/report/ConditionNav.astro'
 import FramingSensitivity from '../../components/report/FramingSensitivity.astro'
 import { CONTROL_CONDITION_ID } from '../../../schema/conditions.ts'
@@ -26,7 +31,7 @@ import {
   getQuestionTextInRun,
 } from '../../lib/data.ts'
 import { formatEdition } from '../../lib/format.ts'
-import { breadcrumbJsonLd, reportDescription } from '../../lib/seo.ts'
+import { count, breadcrumbJsonLd, reportDescription } from '../../lib/seo.ts'
 import { routes } from '../../lib/urls.ts'
 
 export function getStaticPaths() {
@@ -37,11 +42,13 @@ export function getStaticPaths() {
 }
 
 const { question } = Astro.props
+const questions = getQuestions()
 /** "Sandwich Certainty Quadrant" for the shipped claim; the noun comes from the registry. */
 const noun = (question.claim ?? 'is a sandwich').split(' ').at(-1) ?? 'sandwich'
 const quadrantTitle = `${noun.charAt(0).toUpperCase()}${noun.slice(1)} Certainty Quadrant`
 const run = getLatestRun()
 const results = run ? getModelResults(run, question.id) : []
+const answering = results.filter((result) => result.samples.length > 0)
 const previous = run ? getPreviousRun(run.isoWeek) : null
 const previousResults = previous ? getModelResults(previous, question.id) : null
 const askedText = run ? getQuestionTextInRun(run, question.id) : null
@@ -73,13 +80,24 @@ const framingTile =
   {
     run ? (
       <>
+        <QuestionSwitcher
+          questions={questions}
+          current={question.id}
+          hrefFor={(id) => routes.report(id)}
+        />
         <ConditionNav run={run} questionId={question.id} current={CONTROL_CONDITION_ID} />
-        <Masthead question={question} run={run} questionText={askedText ?? question.text} />
+        <Masthead
+          question={question}
+          run={run}
+          questionText={askedText ?? question.text}
+          pdfHref={routes.reportPdf(question.id)}
+          shareUrl={new URL(routes.report(question.id), Astro.site ?? 'http://localhost:4321').href}
+        />
 
         {results.length === 0 ? (
           <p class="empty">
-            This question was not evaluated in the {formatEdition(run.isoWeek)} edition. See the{' '}
-            <a href={routes.history()}>archive</a> for prior editions.
+            This question was not evaluated in the {formatEdition(run.isoWeek)} edition. Earlier
+            editions are in <a href={routes.runs()}>the archive</a>.
           </p>
         ) : (
           <>
@@ -90,44 +108,30 @@ const framingTile =
 
             <Quadrant results={results} title={quadrantTitle} />
 
-            <Leaderboard
-              results={results}
-              previous={previousResults}
-              caption={`Vendor standings — ${formatEdition(run.isoWeek)} edition`}
-            />
+            <Fold
+              id="standings-heading"
+              title="Vendor standings"
+              hint={`${count(answering.length, 'model')} ranked by composite score, with latency, tokens and cost`}
+            >
+              <Standings
+                results={results}
+                previous={previousResults}
+                caption={`Vendor standings — ${formatEdition(run.isoWeek)} edition`}
+                framing={framingColumn}
+              />
+            </Fold>
 
-            <section aria-labelledby="scorecards-heading">
-              <h2 id="scorecards-heading">Vendor scorecards</h2>
-              <div class="scorecard-grid">
-                {results
-                  .filter((result) => result.samples.length > 0)
-                  .map((result) => (
-                    <Scorecard result={result} peers={results} />
-                  ))}
-              </div>
-            </section>
-
-            <section aria-labelledby="profiles-heading">
-              <h2 id="profiles-heading">Vendor profiles</h2>
+            <Fold
+              id="profiles-heading"
+              title="Vendor profiles"
+              hint={`One card per model: the verbatim answer, the shape of its numbers, and what they cost`}
+            >
               <div class="profile-grid">
                 {results.map((result) => (
-                  <VendorProfile result={result} />
+                  <VendorCard result={result} peers={results} />
                 ))}
               </div>
-            </section>
-
-            <ResultsTable
-              results={results}
-              caption={`${question.reportTitle} — ${formatEdition(run.isoWeek)} edition`}
-              framing={framingColumn}
-            />
-
-            <p class="pdf-download">
-              <a href={routes.reportPdf(question.id)} download>
-                Download this report (PDF)
-              </a>
-              <span class="muted"> — the print edition, generated from this page.</span>
-            </p>
+            </Fold>
           </>
         )}
       </>
@@ -152,21 +156,8 @@ const framingTile =
    */
   .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
     gap: var(--space-s);
-  }
-
-  .scorecard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
-    gap: var(--space-s);
-    margin-bottom: var(--space-xl);
-  }
-
-  .pdf-download {
-    padding: var(--space-s);
-    border-top: var(--hairline) solid var(--rule);
-    font-size: var(--step--1);
   }
 
   .empty {

@@ -15,14 +15,16 @@ import {
   loadConditionsRegistry,
   loadModelsRegistry,
   loadQuestionsRegistry,
+  loadSiteRegistry,
   REPO_ROOT,
 } from '../../data/registries.ts'
-import { enabledQuestions } from '../../schema/questions.ts'
+import { enabledQuestions, proposedQuestions } from '../../schema/questions.ts'
 import { enabledModels } from '../../schema/models.ts'
 import { CONTROL_CONDITION_ID, enabledConditions } from '../../schema/conditions.ts'
 import type { ConditionEntry } from '../../schema/conditions.ts'
 import type { ModelEntry } from '../../schema/models.ts'
 import type { QuestionEntry } from '../../schema/questions.ts'
+import type { SiteRegistry } from '../../schema/site.ts'
 import type { BenchmarkRun, ModelResult, QuestionResult, RunCondition } from '../../schema/run.ts'
 
 /**
@@ -33,6 +35,7 @@ const runs: BenchmarkRun[] = loadAllRuns(REPO_ROOT).map((file) => file.run)
 const questionsRegistry = loadQuestionsRegistry(REPO_ROOT)
 const modelsRegistry = loadModelsRegistry(REPO_ROOT)
 const conditionsRegistry = loadConditionsRegistry(REPO_ROOT)
+const siteRegistry = loadSiteRegistry(REPO_ROOT)
 
 /**
  * Every edition, newest first.
@@ -69,9 +72,19 @@ export function getNextRun(isoWeek: string): BenchmarkRun | null {
   return runs[index - 1] ?? null
 }
 
+/** Who publishes this, what it is called, and where its code lives. */
+export function getSite(): SiteRegistry {
+  return siteRegistry
+}
+
 /** The questions currently asked, in registry order. The hot dog leads. */
 export function getQuestions(): QuestionEntry[] {
   return enabledQuestions(questionsRegistry)
+}
+
+/** Questions accepted but not yet asked, in registry order: what is up next. */
+export function getProposedQuestions(): QuestionEntry[] {
+  return proposedQuestions(questionsRegistry)
 }
 
 /** One question's registry entry, or null. */

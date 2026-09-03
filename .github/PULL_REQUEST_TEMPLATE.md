@@ -24,3 +24,10 @@
       inside output tokens for this vendor.
 - [ ] Key variable added to `.env.example` and `src/env.ts`.
 - [ ] Adapter imports no `node:` builtins and reads no `process.env`.
+
+## If this adds a question
+
+- [ ] The entry in `questions.json` has `"status": "proposed"` until a maintainer switches it
+      live, so it appears under "Up next" first.
+- [ ] `contributor` says how you want to be credited, with `"credit": false` if you would rather
+      not be named. No `contributor` means the question is shown uncredited.

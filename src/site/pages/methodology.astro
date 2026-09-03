@@ -12,8 +12,16 @@ import { SCORE_DEFINITIONS } from '../lib/scores.ts'
 import { SENSITIVITY_DEFINITION } from '../lib/sensitivity.ts'
 import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_SAMPLES } from '../../runner/run.ts'
 import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../../schema/conditions.ts'
-import { getConditionsRegistry, getModels, getQuestions } from '../lib/data.ts'
+import {
+  getConditionsRegistry,
+  getLatestRun,
+  getModels,
+  getQuestions,
+  getSite,
+} from '../lib/data.ts'
 import { questionHeadline } from '../lib/prose.ts'
+import { formatCost, runCost } from '../lib/cost.ts'
+import { formatEdition } from '../lib/format.ts'
 import { REPO_URL, routes, sourceUrl } from '../lib/urls.ts'
 
 const questions = getQuestions()
@@ -24,6 +32,8 @@ const asOf = models[0]?.pricing.asOf ?? 'the date recorded in models.json'
 const callsPerWeek = conditions.length * questions.length * models.length * DEFAULT_SAMPLES
 const controlOnlyCalls = questions.length * models.length * DEFAULT_SAMPLES
 const exampleQuestion = questions[0]
+const latest = getLatestRun()
+const latestCost = latest ? runCost(latest) : null
 
 /**
  * The first arm that states an answer, rendered for the first question:
@@ -48,7 +58,7 @@ const contested = exampleQuestion
 
 <Base
   title="Methodology and caveats"
-  description="How the Hotdog Benchmark is conducted, what it measures, and what it does not."
+  description={`How the ${getSite().name} is conducted, what it measures, and what it does not.`}
 >
   <div class="prose">
     <h1>How it is measured</h1>
@@ -135,8 +145,10 @@ const contested = exampleQuestion
     </dl>
 
     <p>
-      Conditions are defined in <a href={sourceUrl('conditions.json')}
-        ><code>conditions.json</code></a
+      Conditions are defined in <a
+        target="_blank"
+        rel="noopener"
+        href={sourceUrl('conditions.json')}><code>conditions.json</code></a
       >{' '}
       and this list is rendered from it. The control must come first and must add nothing: it is the question
       asked plainly, which is also exactly what every edition before conditions existed asked, so those
@@ -147,9 +159,19 @@ const contested = exampleQuestion
       <strong>This multiplies the cost of collection.</strong>{' '}
       {conditions.length} conditions ×{' '}
       {questions.length} questions × {models.length} models × {DEFAULT_SAMPLES} samples is{' '}
-      {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone. Every arm other
-      than the control can be disabled in the registry, so a fork that does not want the extra spend is
-      not made to incur it.
+      {callsPerWeek} calls per period, against {controlOnlyCalls} for the control alone.{' '}
+      {
+        latest && latestCost !== null && (
+          <>
+            The {formatEdition(latest.isoWeek)} edition cost an estimated{' '}
+            <strong>{formatCost(latestCost)}</strong>, and each edition's figure is on its page
+            under <a href={routes.runs()}>Editions</a>.{' '}
+          </>
+        )
+      }
+      Every question runs in every edition; a question can be put on a monthly cadence in the registry
+      if the bill ever says so, and every arm other than the control can be disabled, so a fork that does
+      not want the extra spend is not made to incur it.
     </p>
 
     <h3 id="sensitivity">Framing sensitivity</h3>
@@ -275,10 +297,12 @@ const contested = exampleQuestion
 
     <p class="list-source">
       These lists are imported directly from{' '}
-      <a href={sourceUrl('src/runner/analyze.ts')}><code>src/runner/analyze.ts</code></a> when this page
-      is built. They are what the classifier actually uses. If you disagree with an entry, that is a legitimate
-      disagreement about method, and the{' '}
-      <a href={`${REPO_URL}/issues`}>issue tracker</a> is the right place for it.
+      <a target="_blank" rel="noopener" href={sourceUrl('src/runner/analyze.ts')}
+        ><code>src/runner/analyze.ts</code></a
+      > when this page is built. They are what the classifier actually uses. If you disagree with an entry,
+      that is a legitimate disagreement about method, and the{' '}
+      <a target="_blank" rel="noopener" href={`${REPO_URL}/issues`}>issue tracker</a> is the right place
+      for it.
     </p>
 
     <h2 id="compliance">6. One-word compliance</h2>
@@ -355,8 +379,9 @@ const contested = exampleQuestion
 
     <p>
       The full per-provider mapping is in{' '}
-      <a href={sourceUrl('docs/usage-normalization.md')}>usage-normalization.md</a>. Do not rank
-      models by token count.
+      <a target="_blank" rel="noopener" href={sourceUrl('docs/usage-normalization.md')}
+        >usage-normalization.md</a
+      >. Do not rank models by token count.
     </p>
 
     <h2 id="cost">9. Cost estimates</h2>
@@ -383,9 +408,14 @@ const contested = exampleQuestion
       <strong>No language model writes any of it.</strong> The executive summary, the key findings, the
       vendor profiles, the headlines and every number on this site are produced at build time by pure
       functions in{' '}
-      <a href={sourceUrl('src/site/lib/prose.ts')}><code>src/site/lib/prose.ts</code></a>,{' '}
-      <a href={sourceUrl('src/site/lib/scores.ts')}><code>src/site/lib/scores.ts</code></a> and{' '}
-      <a href={sourceUrl('src/site/lib/sensitivity.ts')}><code>src/site/lib/sensitivity.ts</code></a
+      <a target="_blank" rel="noopener" href={sourceUrl('src/site/lib/prose.ts')}
+        ><code>src/site/lib/prose.ts</code></a
+      >,{' '}
+      <a target="_blank" rel="noopener" href={sourceUrl('src/site/lib/scores.ts')}
+        ><code>src/site/lib/scores.ts</code></a
+      > and{' '}
+      <a target="_blank" rel="noopener" href={sourceUrl('src/site/lib/sensitivity.ts')}
+        ><code>src/site/lib/sensitivity.ts</code></a
       >, reading the committed edition. The same edition always renders the same words, and a
       sentence only appears when the data supports it — a quiet week gets fewer findings rather than
       padded ones.

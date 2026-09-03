@@ -58,6 +58,9 @@ const runs = await loadRuns()
 const questions = (await readJson('questions.json', { questions: [] })).questions.filter(
   (q) => q.enabled,
 )
+/** The site's own name, from site.json; the cards say whose they are. */
+const site = await readJson('site.json', { name: 'Benchmark' })
+const KICKER = site.name
 const models = (await readJson('models.json', { models: [] })).models.filter((m) => m.enabled)
 const latest = runs[0] ?? null
 
@@ -203,7 +206,7 @@ const cards = [
   {
     name: 'default',
     html: card({
-      kicker: 'Hotdog Benchmark',
+      kicker: KICKER,
       title: first ? headline(first) : 'Independent cross-vendor AI research',
       lines: [
         `<b>${models.length} AI models</b> answer, every week.`,
@@ -216,12 +219,14 @@ const cards = [
   },
   ...questions.map((question) => {
     const consensus = consensusFor(latest, question.id)
+    const credited = question.contributor?.credit ? question.contributor.name : null
     return {
       name: question.id,
       html: card({
-        kicker: 'Hotdog Benchmark',
+        kicker: KICKER,
         title: question.reportTitle,
         quote: headline(question),
+        lines: credited ? [`Sent in by ${esc(credited)}`] : undefined,
         edition,
         verdict: consensus?.label ?? null,
         detail: consensus?.detail ?? '',
@@ -236,7 +241,7 @@ const cards = [
   cards.push({
     name: 'reports',
     html: card({
-      kicker: 'Hotdog Benchmark · The reports',
+      kicker: `${KICKER} · The reports`,
       title: 'The full reports',
       lines: questions.map((question) => {
         const consensus = consensusFor(latest, question.id)
@@ -259,7 +264,7 @@ if (latest) {
       cards.push({
         name: `${question.id}-${condition.id}`,
         html: card({
-          kicker: `Hotdog Benchmark · ${condition.label} framing`,
+          kicker: `${KICKER} · ${condition.label} framing`,
           title: question.reportTitle,
           quote: systemPromptFor(latest, question.id, condition.id) ?? condition.label,
           edition,
@@ -289,7 +294,7 @@ for (const run of runs) {
   cards.push({
     name: `runs/${run.editionKey ?? run.isoWeek}`,
     html: card({
-      kicker: 'Hotdog Benchmark · Edition',
+      kicker: `${KICKER} · Edition`,
       title: `${editionLabel(run)} edition`,
       lines,
       edition: `${formatDate(run.finishedAt)} · ${modelCount} models · ${(run.conditions ?? []).length || 1} framings`,

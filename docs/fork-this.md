@@ -41,7 +41,12 @@ Set a spend limit in every console you use.
 
 ## 3. Replace the questions
 
-Edit `questions.json`. Delete the hot dog, hamburger and taco entries and add yours:
+Edit `site.json` first: the site's name, its wordmark lines, who publishes it, and the
+repository it is built from. Everything on the site that names itself reads this file, and the
+build test for a fork asserts that none of the upstream's name leaks. (`npm run bench -- init`
+writes it for you, named after your question and pointing at your git remote.)
+
+Then edit `questions.json`. Delete the hot dog, hamburger and taco entries and add yours:
 
 ```json
 {
@@ -223,7 +228,7 @@ to `prose.ts`.
 
 ## 10. Push and deploy
 
-Commit `questions.json`, `conditions.json`, `models.json`, the fixtures, and the data, then push
+Commit `site.json`, `questions.json`, `conditions.json`, `models.json`, the fixtures, and the data, then push
 to `main`. Do not commit `.env`.
 
 Then, in your fork on GitHub:

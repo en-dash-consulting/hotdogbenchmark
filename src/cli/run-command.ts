@@ -14,7 +14,14 @@ import { planJobs, runBenchmark } from '../runner/run.ts'
 import { getAdapter } from '../providers/registry.ts'
 import { registerAllAdapters } from '../providers/all.ts'
 import { installMockAdapters } from './mock-fixtures.ts'
-import { loadConditions, loadModels, loadQuestions, REPO_ROOT } from '../data/registries.ts'
+import {
+  loadConditions,
+  loadModels,
+  loadQuestions,
+  loadQuestionsRegistry,
+  REPO_ROOT,
+} from '../data/registries.ts'
+import { dueQuestions } from '../schema/questions.ts'
 import { CONTROL_CONDITION_ID, renderSystemPrompt } from '../schema/conditions.ts'
 import type { ConditionEntry } from '../schema/conditions.ts'
 import { writeManifest } from '../data/index.ts'
@@ -57,6 +64,17 @@ export async function runBenchCommand(options: RunCommandOptions): Promise<numbe
   let questions = loadQuestions(root)
   let models = loadModels(root)
   let conditions = loadConditions(root)
+
+  // Every question runs in every edition unless its cadence says otherwise;
+  // a question named on the command line runs regardless.
+  if (options.questionIds.length === 0) {
+    const due = dueQuestions(loadQuestionsRegistry(root), new Date())
+    const resting = questions.filter((q) => !due.some((d) => d.id === q.id))
+    if (resting.length > 0) {
+      console.log(`Not due this edition (monthly cadence): ${resting.map((q) => q.id).join(', ')}`)
+    }
+    questions = due
+  }
 
   if (options.questionIds.length > 0) {
     const wanted = new Set(options.questionIds)

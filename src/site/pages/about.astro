@@ -7,7 +7,7 @@
 import Base from '../layouts/Base.astro'
 import { DEFAULT_SAMPLES } from '../../runner/run.ts'
 import { CONTROL_CONDITION_ID } from '../../schema/conditions.ts'
-import { getConditionsRegistry, getQuestions } from '../lib/data.ts'
+import { getConditionsRegistry, getQuestions, getSite } from '../lib/data.ts'
 import { framingClaim, questionHeadline } from '../lib/prose.ts'
 import { softwareSourceCodeJsonLd } from '../lib/seo.ts'
 import { REPO_URL, routes } from '../lib/urls.ts'
@@ -16,7 +16,8 @@ const questions = getQuestions()
 const conditions = getConditionsRegistry()
 const first = questions[0]
 
-const description = 'What the Hotdog Benchmark is, who publishes it, and why it exists.'
+const site = getSite()
+const description = `What the ${site.name} is, who publishes it, and why it exists.`
 /** The one page about the code is the one page that describes it as code. */
 const jsonLd = softwareSourceCodeJsonLd(
   `A weekly cross-provider LLM benchmark that asks every major model ${first ? `"${questionHeadline(first)}"` : 'one question'} and publishes the results as a straight-faced analyst report. MIT-licensed, static site, no runtime services.`,
@@ -85,15 +86,25 @@ const howLine = `${times.charAt(0).toUpperCase()}${times.slice(1)} times each${
       One run per week, filed by ISO week and kept forever. Re-running a week replaces that week's
       edition and keeps the old one under <code>superseded/</code>. No vendor is asked, sponsors
       this, or sees it first. The code, the raw data, and the methodology are all{' '}
-      <a href={REPO_URL}>on GitHub</a>.
+      <a target="_blank" rel="noopener" href={REPO_URL}>on GitHub</a>.
     </p>
 
     <h2>Who</h2>
 
     <p>
-      An <a href="https://endash.us">En Dash Consulting</a> project, planned and built with{' '}
-      <a href="https://n-dx.dev">n-dx</a>, our AI-powered development toolkit. The questions, the
-      design, and the opinions are ours.
+      A <a target="_blank" rel="noopener" href={site.publisher.url}>{site.publisher.name}</a> project
+      {
+        site.credits.map((credit) => (
+          <>
+            , planned and built with{' '}
+            <a target="_blank" rel="noopener" href={credit.href}>
+              {credit.label}
+            </a>
+            {credit.description && <>, {credit.description}</>}
+          </>
+        ))
+      }
+      . The questions, the design, and the opinions are ours.
     </p>
 
     <h2>Corrections</h2>

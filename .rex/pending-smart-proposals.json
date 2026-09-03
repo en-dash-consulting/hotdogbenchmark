@@ -1,0 +1,136 @@
+{
+  "proposals": [
+    {
+      "epic": {
+        "title": "Static site: analyst-grade benchmark report, fast and accessible",
+        "source": "llm",
+        "existingId": "ffabad60-6363-47a0-a372-eca521366313"
+      },
+      "features": [
+        {
+          "title": "Learn pages: how it works, methodology and caveats, add a model",
+          "source": "llm",
+          "existingId": "fce91e19-2437-4a0a-ad3e-c0224616e8a0",
+          "tasks": [
+            {
+              "title": "Write the Add a question learner page",
+              "source": "llm",
+              "sourceFile": "",
+              "description": "Mirror the existing Add a model page with a new /learn/add-a-question/ page that walks a contributor through the questions.json schema (subjects, framings, claims, tagline), shows a worked example diff, and links directly to the new pull request template so someone proposing a new benchmark question has an equally clear, code-free on-ramp as someone proposing a model.",
+              "acceptanceCriteria": [
+                "Page lives at /learn/add-a-question/ and is reachable from the Learn section navigation",
+                "Documents each questions.json field (id, subjects, framings, claims, tagline) with a worked example diff",
+                "Links to the pull request template added for question/model contributions",
+                "Passes axe accessibility checks and the responsive audit like every other page"
+              ],
+              "priority": "high",
+              "tags": [
+                "docs",
+                "learn-pages",
+                "questions"
+              ],
+              "duplicateReason": {
+                "type": "completed_item_match",
+                "matchedItem": {
+                  "id": "c7a8e168-2152-48ca-b2f3-549e2d38a642",
+                  "title": "Write the Add a model page",
+                  "level": "task",
+                  "status": "completed"
+                },
+                "explanation": "Matches completed task \"Write the Add a model page\"."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "epic": {
+        "title": "Fork this: make spinning up your own cross-model analysis a five-minute path",
+        "source": "llm",
+        "existingId": "db1102b9-e087-4b0b-96d7-e29f8d3dd686"
+      },
+      "features": [
+        {
+          "title": "CONTRIBUTING sections and issue templates for adding a provider, a model, and a question",
+          "source": "llm",
+          "existingId": "57ade3dd-0163-4813-82ac-0e88d6eee2b4",
+          "tasks": [
+            {
+              "title": "Add a GitHub pull request template for question and model contributions",
+              "source": "llm",
+              "sourceFile": "",
+              "description": "The repo has issue templates for proposing a provider, model, or question, but no PR template steering the actual code change. Add a scoped PR template with a checklist (questions.json or models.json diff, mock-mode fixture added, npm run validate and npm test passing, screenshot of the new question/model rendering) so a contributor's first PR converges quickly during review.",
+              "acceptanceCriteria": [
+                ".github/PULL_REQUEST_TEMPLATE/ contains a template selectable for adding a question or model, or the default template gains a clearly labeled section for it",
+                "Checklist includes registry file diff, mock fixture, npm run validate, npm test, and a rendered screenshot",
+                "Template links to the Add a question learner page and CONTRIBUTING.md",
+                "Referenced from CONTRIBUTING.md so a contributor finds it before opening a PR"
+              ],
+              "priority": "high",
+              "tags": [
+                "github",
+                "contributing",
+                "process"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "epic": {
+        "title": "Community contribution pathway: on-site call-to-action for new questions and models (MVP)",
+        "source": "llm"
+      },
+      "features": [
+        {
+          "title": "Contribution call-to-action across the site",
+          "source": "llm",
+          "description": "Surface the ability to propose a new question or model directly on the live site, not just in repo docs, so a reader who wonders why their question isn't included finds the path immediately. Scoped to messaging and links only; account creation, in-browser key entry, and self-service runs stay deferred to the existing Run your own benchmark epic.",
+          "tasks": [
+            {
+              "title": "Add a sitewide 'Propose a question or model' call-to-action",
+              "source": "llm",
+              "sourceFile": "",
+              "description": "Add a persistent, no-JavaScript-required link (footer or masthead, matching the existing En Dash footer line pattern) that opens a prefilled GitHub issue for proposing a new benchmark question or model, so the ask is visible on every page rather than buried in docs.",
+              "acceptanceCriteria": [
+                "CTA is present in the site footer (or equivalent persistent location) on every page, including with JavaScript disabled",
+                "Link opens a GitHub issue prefilled with the appropriate template and query parameters (title/labels)",
+                "CTA copy is sourced from the site copy registry per the project's registry-driven copy rule, not hardcoded to 'hot dog'",
+                "Passes the existing axe, responsive, and keyboard audits with the new element included"
+              ],
+              "priority": "high",
+              "tags": [
+                "site",
+                "contribution",
+                "footer",
+                "cta"
+              ]
+            },
+            {
+              "title": "Add contribution messaging to the reports landing and history pages",
+              "source": "llm",
+              "sourceFile": "",
+              "description": "Explain, in the report and history pages themselves, that the question set grows through community-submitted PRs, and link to the new Add a question learner page and the sitewide CTA. This is the primary place a reader forms the 'I have a question idea' impulse, so the explanation belongs there, not only on a dedicated learn page.",
+              "acceptanceCriteria": [
+                "Reports landing page and /history/ page each carry a short paragraph or callout explaining how new questions get added, sourced from the copy registry",
+                "Callout links to /learn/add-a-question/ and the GitHub PR template",
+                "Copy renders correctly for a forked instance asking a different question, with no hardcoded 'hot dog' text outside questions.json",
+                "Passes npm run validate and the axe/responsive suites"
+              ],
+              "priority": "medium",
+              "tags": [
+                "site",
+                "copy",
+                "reports",
+                "history"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prdHash": "084807ce1e7f"
+}

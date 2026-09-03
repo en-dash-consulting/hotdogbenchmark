@@ -24,6 +24,7 @@ import {
   writeManifest,
 } from '../../src/data/index.ts'
 import { dataManifestSchema } from '../../src/schema/manifest.ts'
+import { loadQuestions } from '../../src/data/registries.ts'
 
 const example = JSON.parse(
   readFileSync(new URL('../fixtures/runs/example.json', import.meta.url), 'utf8'),
@@ -207,7 +208,8 @@ describe('the committed data directory', () => {
     const runs = loadAllRuns()
     expect(runs.length).toBeGreaterThan(0)
     const latest = runs[0]!.run
-    expect(latest.questions.map((q) => q.id)).toEqual(['hot-dog', 'hamburger', 'taco'])
+    // The edition asks what the registry has live, in registry order.
+    expect(latest.questions.map((q) => q.id)).toEqual(loadQuestions().map((q) => q.id))
   })
 
   it('labels any placeholder data as such, and real data as real', () => {

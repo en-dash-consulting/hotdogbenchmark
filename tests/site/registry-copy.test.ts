@@ -52,6 +52,18 @@ const QUESTIONS = {
       tagline: 'Folded, not stacked. The tortilla has opinions.',
       enabled: true,
     },
+    {
+      id: 'quesadilla',
+      subject: 'a quesadilla',
+      claim: 'is a wrap',
+      denial: 'is not a wrap',
+      text: 'Is a quesadilla a wrap? One word answer.',
+      reportTitle: 'The Quesadilla Question',
+      tagline: 'Folded once. Sent in.',
+      enabled: true,
+      status: 'proposed',
+      contributor: { name: '<b>Eve</b> & co', url: 'https://eve.example', credit: true },
+    },
   ],
 }
 
@@ -89,6 +101,32 @@ const CONDITIONS = {
     },
   ],
 }
+
+/** The fork's own name, publisher and repository: none of the upstream's. */
+const SITE = {
+  name: 'Burrito Benchmark',
+  wordmark: ['Burrito', 'Benchmark'],
+  shortName: 'Burrito',
+  byline: 'a Taqueria Labs research program',
+  publisher: { name: 'Taqueria Labs', url: 'https://taqueria.example' },
+  repository: 'https://github.com/taqueria-labs/burritobenchmark',
+  mark: { src: 'brand/mark.svg', alt: 'Taqueria Labs' },
+  footerNote: 'A Taqueria Labs research program of no consequence whatsoever.',
+  credits: [],
+  more: null,
+  contact: null,
+}
+
+/** What the upstream calls itself: none of it may appear in the fork. */
+const UPSTREAM_BRAND = [
+  /hotdog/i,
+  /hot dog/i,
+  /en dash/i,
+  /endash\.us/i,
+  /en-dash-consulting/i,
+  /n-dx\.dev/i,
+  /learn-langgraph/i,
+]
 
 /**
  * A minimal, schema-valid edition for the burrito: one model, one sample per
@@ -197,6 +235,8 @@ describe('a fork that asks whether a burrito is a wrap', () => {
         filter: (source) => !['dist', '.astro'].includes(basename(source)),
       })
     }
+    // A fork lives on its own domain, or on none: the upstream's CNAME is not its canonical host.
+    rmSync(join(root, 'public/CNAME'), { force: true })
     mkdirSync(join(root, 'data/runs'), { recursive: true })
     // Symlinked rather than copied: the build needs astro and zod, and a copy
     // of node_modules per test would dominate the run time.
@@ -209,11 +249,21 @@ describe('a fork that asks whether a burrito is a wrap', () => {
 
     writeFileSync(join(root, 'questions.json'), JSON.stringify(QUESTIONS, null, 2))
     writeFileSync(join(root, 'conditions.json'), JSON.stringify(CONDITIONS, null, 2))
+    writeFileSync(join(root, 'site.json'), JSON.stringify(SITE, null, 2))
     writeFileSync(join(root, 'data/runs/2026-W36.json'), JSON.stringify(editionFor(model), null, 2))
 
+    // A fork builds on its own domain. In Actions the upstream's repository
+    // name is in the environment and would become the canonical origin.
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      ASTRO_OUT_DIR: dist,
+      SITE_URL: 'https://burrito.example',
+    }
+    delete env.GITHUB_REPOSITORY
+    delete env.GITHUB_REPOSITORY_OWNER
     execFileSync(join(root, 'node_modules/.bin/astro'), ['build'], {
       cwd: root,
-      env: { ...process.env, ASTRO_OUT_DIR: dist },
+      env,
       stdio: 'ignore',
     })
 
@@ -260,6 +310,51 @@ describe('a fork that asks whether a burrito is a wrap', () => {
       const context = hit ? html.slice(Math.max(0, hit.index - 80), hit.index + 80) : ''
       expect(hit, `${page.path} mentions a sandwich: …${context}…`).toBeNull()
     }
+  })
+
+  it("carries the fork's own name, publisher and repository, and none of the upstream's", () => {
+    const home = pages.find((p) => p.path === '/index.html')!.html
+    expect(home).toContain('BURRITO BENCHMARK')
+    expect(home).toContain('https://github.com/taqueria-labs/burritobenchmark')
+    expect(home).toContain('Taqueria Labs')
+    const report = pages.find((p) => p.path === '/reports/burrito/index.html')!.html
+    expect(report).toContain('Burrito Benchmark, a Taqueria Labs research program')
+
+    const texts = [
+      ...pages.map((p) => ({ name: p.path, text: p.html })),
+      ...['feed.json', 'feed.xml', 'llms.txt', 'llms-full.txt', 'manifest.webmanifest'].map(
+        (file) => ({ name: file, text: readFileSync(join(dist, file), 'utf8') }),
+      ),
+    ]
+    for (const { name, text } of texts) {
+      for (const pattern of UPSTREAM_BRAND) {
+        const hit = pattern.exec(text)
+        const context = hit ? text.slice(Math.max(0, hit.index - 60), hit.index + 60) : ''
+        expect(hit, `${name} carries the upstream brand ${pattern}: …${context}…`).toBeNull()
+      }
+    }
+  })
+
+  it('shows a proposed question under Up next with its credit escaped, and asks it nowhere', () => {
+    const reports = pages.find((p) => p.path === '/reports/index.html')!.html
+    expect(reports).toContain('Up next')
+    expect(reports).toContain('Is a quesadilla a wrap?')
+    expect(reports).toContain('Sent in by')
+    expect(reports).toContain('&lt;b&gt;Eve&lt;/b&gt; &amp; co')
+    expect(reports).not.toContain('<b>Eve</b>')
+    expect(pages.some((p) => p.path === '/reports/quesadilla/index.html')).toBe(false)
+    const home = pages.find((p) => p.path === '/index.html')!.html
+    expect(home).not.toContain('quesadilla')
+  })
+
+  it("sends a question to the fork's own repository, with no contact route configured", () => {
+    const reports = pages.find((p) => p.path === '/reports/index.html')!.html
+    expect(reports).toContain(
+      'action="https://github.com/taqueria-labs/burritobenchmark/issues/new"',
+    )
+    // The script mentions the hook; no link carries it.
+    expect(reports).not.toMatch(/<a[^>]*data-ask-contact/)
+    expect(reports).toContain('Is a burrito a wrap?')
   })
 
   it('describes the feeds from the registry', () => {

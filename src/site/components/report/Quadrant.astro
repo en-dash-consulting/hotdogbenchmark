@@ -11,14 +11,20 @@
  * Participants" carry the same weightless authority without borrowing anyone's
  * marks.
  *
+ * **A chart only plots what varies.** In an edition where every model scores
+ * the same on one axis, the quadrant collapses to a strip along the other
+ * axis and says so in its caption; if both are uniform, there is no chart,
+ * only the sentence and the table. Eleven points on one line with their
+ * numbers overlapping is a picture of a column of 1.00s, and the column
+ * already exists.
+ *
  * Labels are placed with a simple collision-avoidance pass: any label that
- * would overlap one already placed is nudged downward until it does not. With
- * seven models on a 640×420 canvas that converges immediately, and a label that
+ * would overlap one already placed is nudged until it does not. A label that
  * cannot be placed cleanly is still readable in the data table below.
  */
 import ChartFrame from '../charts/ChartFrame.astro'
 import { plotArea, round, scaleLinear } from '../../lib/scale.ts'
-import { scoreModels } from '../../lib/scores.ts'
+import { scoreModels, uniformMeasures, uniformNote } from '../../lib/scores.ts'
 import { profileAnchor } from '../../lib/urls.ts'
 import type { ModelResult } from '../../../schema/run.ts'
 
@@ -29,15 +35,25 @@ interface Props {
 
 const { results, title } = Astro.props
 
-const BOX = { width: 640, height: 420, padding: { top: 28, right: 24, bottom: 48, left: 56 } }
-const area = plotArea(BOX)
-
 // Only models that produced data are plotted; an errored model has no
 // coordinates. They are listed under the chart instead of being placed at the
 // origin, which would read as a genuine score of zero.
 const scored = scoreModels(results)
 const plotted = scored.filter((entry) => entry.result.samples.length > 0)
 const absent = scored.filter((entry) => entry.result.samples.length === 0)
+
+const uniform = uniformMeasures(results)
+type Mode = 'scatter' | 'strip' | 'none'
+const mode: Mode =
+  uniform.decisiveness && uniform.efficiency
+    ? 'none'
+    : uniform.decisiveness || uniform.efficiency
+      ? 'strip'
+      : 'scatter'
+/** In strip mode, the one measure that varies. */
+const stripMeasure: 'efficiency' | 'decisiveness' = uniform.decisiveness
+  ? 'efficiency'
+  : 'decisiveness'
 
 const median = (values: number[]) => {
   if (values.length === 0) return 0.5
@@ -46,9 +62,16 @@ const median = (values: number[]) => {
   return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!
 }
 
+const ranked = [...plotted].sort(
+  (a, b) => b.composite - a.composite || a.result.displayName.localeCompare(b.result.displayName),
+)
+const leader = ranked[0]
+
+// --- Scatter --------------------------------------------------------------
+const BOX = { width: 640, height: 420, padding: { top: 28, right: 24, bottom: 48, left: 56 } }
+const area = plotArea(BOX)
 const crosshairX = median(plotted.map((entry) => entry.efficiency))
 const crosshairY = median(plotted.map((entry) => entry.decisiveness))
-
 const toX = (value: number) =>
   round(scaleLinear(value, { min: 0, max: 1 }, { start: area.x, end: area.x + area.width }))
 const toY = (value: number) =>
@@ -63,23 +86,17 @@ const toY = (value: number) =>
  * down until they clear.
  */
 const placed: Array<{ x: number; y: number }> = []
-const points = [...plotted]
-  .sort(
-    (a, b) => b.composite - a.composite || a.result.displayName.localeCompare(b.result.displayName),
-  )
-  .map((entry, index) => {
-    const x = toX(entry.efficiency)
-    const y = toY(entry.decisiveness)
-    const anchor = x > area.x + area.width * 0.85 ? 'end' : 'start'
-    // A number needs about 24px beside its dot; anything closer than 40px on
-    // the same line would run into a neighbor's dot or number, so it drops.
-    let labelY = y + 4
-    while (placed.some((p) => Math.abs(p.x - x) < 40 && Math.abs(p.y - labelY) < 12)) {
-      labelY += 12
-    }
-    placed.push({ x, y: labelY })
-    return { entry, number: index + 1, x, y, labelY, anchor }
-  })
+const points = ranked.map((entry, index) => {
+  const x = toX(entry.efficiency)
+  const y = toY(entry.decisiveness)
+  const anchor = x > area.x + area.width * 0.85 ? 'end' : 'start'
+  let labelY = y + 4
+  while (placed.some((p) => Math.abs(p.x - x) < 40 && Math.abs(p.y - labelY) < 12)) {
+    labelY += 12
+  }
+  placed.push({ x, y: labelY })
+  return { entry, number: index + 1, x, y, labelY, anchor }
+})
 
 const QUADRANTS = [
   { label: 'Considered Voices', x: 0.02, y: 0.97, align: 'start' },
@@ -88,118 +105,217 @@ const QUADRANTS = [
   { label: 'Rapid Responders', x: 0.98, y: 0.04, align: 'end' },
 ]
 
-const leader = [...plotted].sort((a, b) => b.composite - a.composite)[0]
+// --- Strip ----------------------------------------------------------------
+const STRIP = { width: 640, height: 150, padding: { top: 44, right: 28, bottom: 40, left: 28 } }
+const strip = plotArea(STRIP)
+const stripY = round(strip.y + strip.height / 2)
+const toStripX = (value: number) =>
+  round(scaleLinear(value, { min: 0, max: 1 }, { start: strip.x, end: strip.x + strip.width }))
+/** Numbers alternate above and below the line, and slide sideways when they still collide. */
+const stripPlaced: Array<{ x: number; side: number }> = []
+const stripPoints = ranked.map((entry, index) => {
+  const x = toStripX(entry[stripMeasure])
+  let side = index % 2 === 0 ? -1 : 1
+  let tier = 1
+  while (stripPlaced.some((p) => p.side === side * tier && Math.abs(p.x - x) < 18)) {
+    side = -side
+    if (side === (index % 2 === 0 ? -1 : 1)) tier += 1
+  }
+  stripPlaced.push({ x, side: side * tier })
+  return { entry, number: index + 1, x, labelY: stripY + side * (16 + (tier - 1) * 12) + 4 }
+})
+const stripLabel = stripMeasure === 'efficiency' ? 'Efficiency →' : 'Decisiveness →'
+
+// --- Words ----------------------------------------------------------------
+const note = uniformNote(uniform)
 const summary =
   plotted.length === 0
     ? 'Quadrant chart: no models produced data in this edition.'
-    : `Scatter chart plotting efficiency against decisiveness for ${plotted.length} models. ` +
-      `${leader?.result.displayName} holds the strongest combined position at decisiveness ${leader?.decisiveness.toFixed(2)} and efficiency ${leader?.efficiency.toFixed(2)}. ` +
-      `The full values are in the accompanying table.`
+    : mode === 'scatter'
+      ? `Scatter chart plotting efficiency against decisiveness for ${plotted.length} models. ` +
+        `${leader?.result.displayName} holds the strongest combined position at decisiveness ${leader?.decisiveness.toFixed(2)} and efficiency ${leader?.efficiency.toFixed(2)}. ` +
+        `The full values are in the accompanying table.`
+      : mode === 'strip'
+        ? `Strip chart plotting ${stripMeasure} for ${plotted.length} models. ${note} ` +
+          `${leader?.result.displayName} leads at ${stripMeasure} ${leader?.[stripMeasure].toFixed(2)}. The full values are in the accompanying table.`
+        : `No chart: ${note} The values are in the accompanying table.`
+const caption =
+  mode === 'scatter'
+    ? 'Axes are constructed measures, not observations. Efficiency is normalized against the other models in this edition, so a vendor’s horizontal position depends on the company it keeps. Quadrant boundaries are the medians of this edition, not fixed thresholds.'
+    : `${note} ${
+        mode === 'strip' && stripMeasure === 'efficiency'
+          ? 'Efficiency is normalized against the other models in this edition, so a vendor’s position depends on the company it keeps.'
+          : 'Both axes are constructed measures, not observations.'
+      }`
 ---
 
-<ChartFrame
-  title={title}
-  summary={summary}
-  caption="Axes are constructed measures, not observations. Efficiency is normalized against the other models in this edition, so a vendor's horizontal position depends on the company it keeps. Quadrant boundaries are the medians of this edition, not fixed thresholds."
->
-  <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} width={BOX.width} height={BOX.height}>
-    <rect
-      x={area.x}
-      y={area.y}
-      width={area.width}
-      height={area.height}
-      fill="var(--surface)"
-      stroke="var(--rule-strong)"
-      stroke-width="1"></rect>
+<ChartFrame title={title} summary={summary} caption={caption}>
+  {
+    mode === 'scatter' && (
+      <svg viewBox={`0 0 ${BOX.width} ${BOX.height}`} width={BOX.width} height={BOX.height}>
+        <rect
+          x={area.x}
+          y={area.y}
+          width={area.width}
+          height={area.height}
+          fill="var(--surface)"
+          stroke="var(--rule-strong)"
+          stroke-width="1"
+        />
 
-    {/* Median crosshairs — the quadrant boundaries. */}
-    <line
-      x1={toX(crosshairX)}
-      y1={area.y}
-      x2={toX(crosshairX)}
-      y2={area.y + area.height}
-      stroke="var(--chart-grid)"
-      stroke-width="1"
-      stroke-dasharray="4 3"></line>
-    <line
-      x1={area.x}
-      y1={toY(crosshairY)}
-      x2={area.x + area.width}
-      y2={toY(crosshairY)}
-      stroke="var(--chart-grid)"
-      stroke-width="1"
-      stroke-dasharray="4 3"></line>
+        {/* Median crosshairs — the quadrant boundaries. */}
+        <line
+          x1={toX(crosshairX)}
+          y1={area.y}
+          x2={toX(crosshairX)}
+          y2={area.y + area.height}
+          stroke="var(--chart-grid)"
+          stroke-width="1"
+          stroke-dasharray="4 3"
+        />
+        <line
+          x1={area.x}
+          y1={toY(crosshairY)}
+          x2={area.x + area.width}
+          y2={toY(crosshairY)}
+          stroke="var(--chart-grid)"
+          stroke-width="1"
+          stroke-dasharray="4 3"
+        />
 
-    {
-      QUADRANTS.map((quadrant) => (
-        <text
-          x={round(area.x + quadrant.x * area.width)}
-          y={quadrant.y > 0.5 ? area.y - 10 : area.y + area.height + 16}
-          text-anchor={quadrant.align}
-          class="quadrant-label"
-        >
-          {quadrant.label}
-        </text>
-      ))
-    }
-
-    {
-      points.map((point) => (
-        <a class="mark" href={`#${profileAnchor(point.entry.result)}`}>
-          <title>
-            {point.entry.result.displayName}: decisiveness {point.entry.decisiveness.toFixed(2)},
-            efficiency {point.entry.efficiency.toFixed(2)}, composite{' '}
-            {point.entry.composite.toFixed(2)}. Jump to its profile.
-          </title>
-          {/* A 24px hit area, invisible, so the dot is a real pointer target. */}
-          <circle class="mark-hit" cx={point.x} cy={point.y} r="12" fill="transparent" />
-          <circle class="mark-dot" cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
-        </a>
-      ))
-    }
-
-    {
-      /* Numbers are painted after every dot so a coincident neighbor cannot
-         cover one. They are decorative: the title on each mark and the key
-         below carry the names. */
-    }
-    <g class="point-labels" aria-hidden="true">
-      {
-        points.map((point) => (
+        {QUADRANTS.map((quadrant) => (
           <text
-            x={point.anchor === 'end' ? point.x - 9 : point.x + 9}
-            y={point.labelY}
-            text-anchor={point.anchor}
-            class="point-label"
+            x={round(area.x + quadrant.x * area.width)}
+            y={quadrant.y > 0.5 ? area.y - 10 : area.y + area.height + 16}
+            text-anchor={quadrant.align}
+            class="quadrant-label"
           >
-            {point.number}
+            {quadrant.label}
           </text>
-        ))
-      }
-    </g>
+        ))}
 
-    <text x={area.x} y={BOX.height - 16} class="axis-title">Efficiency →</text>
-    <text
-      x={-(area.y + area.height / 2)}
-      y="14"
-      transform="rotate(-90)"
-      text-anchor="middle"
-      class="axis-title">Decisiveness →</text
-    >
-  </svg>
-
-  <ol class="quadrant-key" aria-label="Which number is which model">
-    {
-      points.map((point) => (
-        <li>
-          <a href={`#${profileAnchor(point.entry.result)}`}>
-            <span class="key-number tabular">{point.number}</span>
-            {point.entry.result.displayName}
+        {points.map((point) => (
+          <a class="mark" href={`#${profileAnchor(point.entry.result)}`}>
+            <title>
+              {point.entry.result.displayName}: decisiveness {point.entry.decisiveness.toFixed(2)},
+              efficiency {point.entry.efficiency.toFixed(2)}, composite{' '}
+              {point.entry.composite.toFixed(2)}. Jump to its profile.
+            </title>
+            {/* A 24px hit area, invisible, so the dot is a real pointer target. */}
+            <circle class="mark-hit" cx={point.x} cy={point.y} r="12" fill="transparent" />
+            <circle class="mark-dot" cx={point.x} cy={point.y} r="5" fill="var(--chart-1)" />
           </a>
-        </li>
-      ))
-    }
-  </ol>
+        ))}
+
+        {/* Numbers are painted after every dot so a coincident neighbor cannot
+            cover one. They are decorative: the title on each mark and the key
+            below carry the names. */}
+        <g class="point-labels" aria-hidden="true">
+          {points.map((point) => (
+            <text
+              x={point.anchor === 'end' ? point.x - 9 : point.x + 9}
+              y={point.labelY}
+              text-anchor={point.anchor}
+              class="point-label"
+            >
+              {point.number}
+            </text>
+          ))}
+        </g>
+
+        <text x={area.x} y={BOX.height - 16} class="axis-title">
+          Efficiency →
+        </text>
+        <text
+          x={-(area.y + area.height / 2)}
+          y="14"
+          transform="rotate(-90)"
+          text-anchor="middle"
+          class="axis-title"
+        >
+          Decisiveness →
+        </text>
+      </svg>
+    )
+  }
+
+  {
+    mode === 'strip' && (
+      <svg viewBox={`0 0 ${STRIP.width} ${STRIP.height}`} width={STRIP.width} height={STRIP.height}>
+        <line
+          x1={strip.x}
+          y1={stripY}
+          x2={strip.x + strip.width}
+          y2={stripY}
+          stroke="var(--rule-strong)"
+          stroke-width="1"
+        />
+        {[0, 0.25, 0.5, 0.75, 1].map((tick) => (
+          <>
+            <line
+              x1={toStripX(tick)}
+              y1={stripY - 5}
+              x2={toStripX(tick)}
+              y2={stripY + 5}
+              stroke="var(--chart-axis)"
+              stroke-width="1"
+            />
+            <text x={toStripX(tick)} y={STRIP.height - 14} text-anchor="middle" class="tick-label">
+              {tick.toFixed(2)}
+            </text>
+          </>
+        ))}
+
+        {stripPoints.map((point) => (
+          <a class="mark" href={`#${profileAnchor(point.entry.result)}`}>
+            <title>
+              {point.entry.result.displayName}: {stripMeasure}{' '}
+              {point.entry[stripMeasure].toFixed(2)}, composite {point.entry.composite.toFixed(2)}.
+              Jump to its profile.
+            </title>
+            <circle class="mark-hit" cx={point.x} cy={stripY} r="12" fill="transparent" />
+            <circle class="mark-dot" cx={point.x} cy={stripY} r="5" fill="var(--chart-1)" />
+          </a>
+        ))}
+
+        <g class="point-labels" aria-hidden="true">
+          {stripPoints.map((point) => (
+            <text x={point.x} y={point.labelY} text-anchor="middle" class="point-label">
+              {point.number}
+            </text>
+          ))}
+        </g>
+
+        <text x={strip.x} y="18" class="axis-title">
+          {stripLabel}
+        </text>
+      </svg>
+    )
+  }
+
+  {
+    mode === 'none' && (
+      <p class="no-chart">
+        {note} The standings below carry the numbers; the table under this note lists them in the
+        chart's order.
+      </p>
+    )
+  }
+
+  {
+    plotted.length > 0 && mode !== 'none' && (
+      <ol class="quadrant-key" aria-label="Which number is which model">
+        {ranked.map((entry, index) => (
+          <li>
+            <a href={`#${profileAnchor(entry.result)}`}>
+              <span class="key-number tabular">{index + 1}</span>
+              {entry.result.displayName}
+            </a>
+          </li>
+        ))}
+      </ol>
+    )
+  }
 
   <table slot="table">
     <caption>{title} — plotted values</caption>
@@ -214,9 +330,9 @@ const summary =
     </thead>
     <tbody>
       {
-        points.map(({ entry, number }) => (
+        ranked.map((entry, index) => (
           <tr>
-            <td class="numeric">{number}</td>
+            <td class="numeric">{index + 1}</td>
             <th scope="row">
               <a href={`#${profileAnchor(entry.result)}`}>{entry.result.displayName}</a>
             </th>
@@ -256,6 +372,20 @@ const summary =
     letter-spacing: 0.08em;
   }
 
+  .tick-label {
+    font-size: 11px;
+    fill: var(--muted);
+  }
+
+  .no-chart {
+    max-width: var(--measure);
+    padding: var(--space-m);
+    margin: 0;
+    background: var(--surface);
+    border-left: 3px solid var(--rule-strong);
+    color: var(--muted);
+  }
+
   .quadrant-key {
     list-style: none;
     margin: var(--space-xs) 0 0;
@@ -287,8 +417,10 @@ const summary =
     height: 1.4em;
     padding-inline: 0.2em;
     border-radius: 999px;
-    background: var(--chart-1);
-    color: #ffffff;
+    /* Ink on ground, not the series color: the series flips to white in the
+       dark theme and took the white numerals with it. */
+    background: var(--text-strong);
+    color: var(--bg);
     font-weight: 700;
     font-size: 0.8em;
   }

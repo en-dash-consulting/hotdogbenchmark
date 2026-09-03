@@ -27,6 +27,8 @@ function question(id: string): QuestionEntry {
     text: `Is a ${id} a sandwich? One word answer.`,
     reportTitle: `Sandwich Classification Benchmark: ${id}`,
     enabled: true,
+    status: 'live',
+    cadence: 'every',
   }
 }
 

@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import {
   ONE_WORD_SUFFIX,
+  creditLine,
+  dueQuestions,
   enabledQuestions,
+  isDue,
+  proposedQuestions,
   questionsRegistrySchema,
 } from '../../src/schema/questions.ts'
 import { enabledModels, findModel, modelsRegistrySchema } from '../../src/schema/models.ts'
@@ -10,7 +14,9 @@ import {
   loadModelsRegistry,
   loadQuestions,
   loadQuestionsRegistry,
+  loadSiteRegistry,
 } from '../../src/data/registries.ts'
+import { defaultSiteRegistry, preparedBy, siteNameCaps } from '../../src/schema/site.ts'
 import { PROVIDER_IDS } from '../../src/env.ts'
 
 const questionsRegistry = loadQuestionsRegistry()
@@ -21,8 +27,15 @@ describe('the committed questions.json', () => {
     expect(questionsRegistrySchema.safeParse(questionsRegistry).success).toBe(true)
   })
 
-  it('ships the hot dog, hamburger and taco questions, enabled and in that order', () => {
-    expect(loadQuestions().map((q) => q.id)).toEqual(['hot-dog', 'hamburger', 'taco'])
+  it('ships the founding three, then the three that joined in Week 36, live and in that order', () => {
+    expect(loadQuestions().map((q) => q.id)).toEqual([
+      'hot-dog',
+      'hamburger',
+      'taco',
+      'grilled-cheese',
+      'wrap',
+      'tuna-melt',
+    ])
   })
 
   it('asks the exact one-word-answer prompt for each', () => {
@@ -30,6 +43,9 @@ describe('the committed questions.json', () => {
       'Is a hot dog a sandwich? One word answer.',
       'Is a hamburger a sandwich? One word answer.',
       'Is a taco a sandwich? One word answer.',
+      'Is a grilled cheese a sandwich? One word answer.',
+      'Is a wrap a sandwich? One word answer.',
+      'Is a tuna melt a sandwich? One word answer.',
     ])
   })
 
@@ -106,7 +122,10 @@ describe('enabledQuestions', () => {
   it('filters to enabled entries and preserves file order', () => {
     const registry = structuredClone(questionsRegistry) as any
     registry.questions[1].enabled = false
-    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(['hot-dog', 'taco'])
+    const expected = loadQuestions()
+      .map((q) => q.id)
+      .filter((id) => id !== 'hamburger')
+    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(expected)
   })
 })
 
@@ -224,5 +243,92 @@ describe('enabledModels and findModel', () => {
   it('finds an entry by provider and model id', () => {
     expect(findModel(modelsRegistry, 'anthropic', 'claude-opus-5')?.vendor).toBe('Anthropic')
     expect(findModel(modelsRegistry, 'anthropic', 'nope')).toBeUndefined()
+  })
+})
+
+describe('the committed site.json', () => {
+  const site = loadSiteRegistry()
+
+  it('names the site, its publisher and its repository', () => {
+    expect(siteNameCaps(site)).toBe('HOTDOG BENCHMARK')
+    expect(preparedBy(site)).toBe('Hotdog Benchmark, an En Dash research program')
+    expect(site.repository).toBe('https://github.com/en-dash-consulting/hotdogbenchmark')
+    expect(site.publisher.url).toBe('https://endash.us')
+  })
+
+  it('configures the En Dash contact route for the ask-a-question block', () => {
+    expect(site.contact?.messageField).toBe('contactMessage')
+    expect(site.contact?.params.contactSource).toBe('hotdogbenchmark-lol')
+  })
+})
+
+describe('defaultSiteRegistry', () => {
+  it('names a fork after its question and points it at its own repository', () => {
+    const site = defaultSiteRegistry({
+      subject: 'a burrito',
+      repository: 'https://github.com/someone/burritos',
+    })
+    expect(site.name).toBe('Burrito Benchmark')
+    expect(site.wordmark).toEqual(['Burrito', 'Benchmark'])
+    expect(site.repository).toBe('https://github.com/someone/burritos')
+    expect(site.contact).toBeNull()
+    expect(site.more).toBeNull()
+    expect(site.credits).toEqual([])
+  })
+})
+
+describe('the question lifecycle', () => {
+  const base = {
+    id: 'burrito',
+    subject: 'a burrito',
+    text: 'Is a burrito a sandwich? One word answer.',
+    reportTitle: 'The Burrito Question',
+    enabled: true,
+  }
+
+  it('defaults every existing entry to live, every edition, uncredited', () => {
+    const parsed = questionsRegistrySchema.parse({ questions: [base] })
+    expect(parsed.questions[0]!.status).toBe('live')
+    expect(parsed.questions[0]!.cadence).toBe('every')
+    expect(parsed.questions[0]!.contributor).toBeUndefined()
+  })
+
+  it('keeps a proposed question out of the asked set and in the up-next set', () => {
+    const registry = questionsRegistrySchema.parse({
+      questions: [base, { ...base, id: 'taco', status: 'proposed' }],
+    })
+    expect(enabledQuestions(registry).map((q) => q.id)).toEqual(['burrito'])
+    expect(proposedQuestions(registry).map((q) => q.id)).toEqual(['taco'])
+  })
+
+  it('asks a monthly question only in the first edition of the month', () => {
+    const monthly = { cadence: 'monthly' as const }
+    expect(isDue(monthly, new Date('2026-09-07T12:00:00Z'))).toBe(true)
+    expect(isDue(monthly, new Date('2026-09-14T12:00:00Z'))).toBe(false)
+    expect(isDue({ cadence: 'every' }, new Date('2026-09-14T12:00:00Z'))).toBe(true)
+    const registry = questionsRegistrySchema.parse({
+      questions: [base, { ...base, id: 'taco', cadence: 'monthly' }],
+    })
+    expect(dueQuestions(registry, new Date('2026-09-14T12:00:00Z')).map((q) => q.id)).toEqual([
+      'burrito',
+    ])
+    expect(dueQuestions(registry, new Date('2026-09-07T12:00:00Z')).map((q) => q.id)).toEqual([
+      'burrito',
+      'taco',
+    ])
+  })
+
+  it('credits a contributor only when they said yes', () => {
+    expect(creditLine({ contributor: { name: 'Ada', credit: true } })).toBe('Sent in by Ada')
+    expect(creditLine({ contributor: { name: 'Ada', credit: false } })).toBeNull()
+    expect(creditLine({})).toBeNull()
+  })
+
+  it('ships two proposed questions, credited only with consent, and every question on the weekly cadence', () => {
+    const proposed = proposedQuestions(questionsRegistry)
+    expect(proposed.map((q) => q.id)).toEqual(['burrito', 'sushi-roll'])
+    expect(creditLine(proposed[0]!)).toBe('Sent in by Nick Daniel')
+    expect(creditLine(proposed[1]!)).toBeNull()
+    for (const question of questionsRegistry.questions) expect(question.cadence).toBe('every')
   })
 })

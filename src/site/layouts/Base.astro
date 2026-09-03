@@ -9,7 +9,9 @@
  * it below.
  */
 import '../styles/global.css'
-import { getLatestRun } from '../lib/data.ts'
+import { getLatestRun, getSite } from '../lib/data.ts'
+import { siteNameCaps } from '../../schema/site.ts'
+import { nextEdition, nextEditionLine } from '../lib/next-edition.ts'
 import { formatDate, formatEdition } from '../lib/format.ts'
 import { REPO_URL, RUN_YOUR_OWN_ENABLED, href, routes } from '../lib/urls.ts'
 import ThemeToggle from '../components/ThemeToggle.astro'
@@ -49,14 +51,9 @@ const jsonLdBlocks = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).m
   JSON.stringify(block).replace(/</g, '\\u003c'),
 )
 
-/** The En Dash learning apps: free, no API key, same tab. */
-const LEARNING_APPS = [
-  { href: 'https://endash.us/apps/learn-langgraph', label: 'Learn LangGraph' },
-  { href: 'https://endash.us/apps/learn-langchain', label: 'Learn LangChain' },
-  { href: 'https://endash.us/apps/learn-agentcore', label: 'Learn AgentCore' },
-]
-
-const SITE_NAME = 'HOTDOG BENCHMARK'
+/** Who publishes this, what it is called, and where its code lives: site.json. */
+const site = getSite()
+const SITE_NAME = siteNameCaps(site)
 const fullTitle = bareTitle ? title : `${title} — ${SITE_NAME}`
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'http://localhost:4321').href
@@ -67,6 +64,7 @@ const ogImageUrl = new URL(
   Astro.site ?? 'http://localhost:4321',
 ).href
 const latest = getLatestRun()
+const upcoming = nextEditionLine(nextEdition(latest?.finishedAt ?? null, site.schedule, new Date()))
 
 /**
  * Google Analytics, only when a measurement ID is supplied at build time
@@ -97,28 +95,37 @@ const FONT_FACES = [
   fontFace('Merriweather', 'italic', '400', 'merriweather-italic-latin.woff2'),
 ].join('')
 
-const NAV = [
+/**
+ * `also`: further sections a nav item is current for. A question's
+ * week-by-week history is reached from Editions, so Editions is current there.
+ */
+const NAV: Array<{ href: string; label: string; also?: string[]; accent?: boolean }> = [
   { href: routes.reports(), label: 'Reports' },
-  { href: routes.history(), label: 'History' },
+  { href: routes.runs(), label: 'Editions', also: [routes.historyForQuestion('')] },
   // Only present when the deferred feature is switched on at build time.
   ...(RUN_YOUR_OWN_ENABLED ? [{ href: routes.runYourOwn(), label: 'Run your own' }] : []),
   { href: routes.methodology(), label: 'Methodology' },
   { href: routes.howItWorks(), label: 'How it works' },
   { href: routes.about(), label: 'About' },
+  // An action, not a section: the one thing a reader can do here.
+  { href: `${routes.home()}#ask`, label: 'Ask a question', accent: true },
 ]
 
 /**
- * Trailing slashes are normalized so `/history` and `/history/` both match, and
- * a section stays current on its children: Reports on every report, History
- * on every question's history. The home page matches only itself.
+ * Trailing slashes are normalized so `/runs` and `/runs/` both match, and a
+ * section stays current on its children: Reports on every report, Editions on
+ * every edition and every question's history. The home page matches only
+ * itself.
  */
 const normalize = (path: string) => path.replace(/\/+$/, '') || '/'
 const current = normalize(Astro.url.pathname)
 const home = normalize(routes.home())
-const isCurrent = (href: string) => {
+const under = (href: string) => {
   const target = normalize(href)
   return target === current || (target !== home && current.startsWith(`${target}/`))
 }
+const isCurrent = (item: { href: string; also?: string[] }) =>
+  under(item.href) || (item.also ?? []).some(under)
 ---
 
 <!doctype html>
@@ -131,9 +138,9 @@ const isCurrent = (href: string) => {
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     <meta name="theme-color" content="#001769" />
 
-    {/* The En Dash square, the same icon set the other En Dash properties use. */}
+    {/* The publisher's mark, from site.json; the same icon set as its other properties. */}
     <link rel="icon" href={href('favicon.ico')} sizes="any" />
-    <link rel="icon" type="image/svg+xml" href={href('brand/endash-square.svg')} />
+    <link rel="icon" type="image/svg+xml" href={href(site.mark.src)} />
     <link rel="apple-touch-icon" sizes="180x180" href={href('apple-touch-icon.png')} />
     <link rel="manifest" href={href('manifest.webmanifest')} />
     <link rel="canonical" href={canonical} />
@@ -153,7 +160,7 @@ const isCurrent = (href: string) => {
     }
 
     {
-      /* The En Dash faces, self-hosted and preloaded: no third-party request,
+      /* The type, self-hosted and preloaded: no third-party request,
          and the two upright files are in flight before the stylesheet asks
          for them. font-display: optional means a font that has not arrived by
          first paint is skipped for that page view rather than swapped in
@@ -225,14 +232,13 @@ const isCurrent = (href: string) => {
         <a class="wordmark" href={routes.home()}>
           <img
             class="brand-mark"
-            src={href('brand/endash-square.svg')}
-            alt="En Dash"
+            src={href(site.mark.src)}
+            alt={site.mark.alt}
             width="44"
             height="44"
           />
           <span class="wordmark-name">
-            <span class="wordmark-line">Hotdog</span>
-            <span class="wordmark-line">Benchmark</span>
+            {site.wordmark.map((line) => <span class="wordmark-line">{line}</span>)}
           </span>
         </a>
 
@@ -242,7 +248,11 @@ const isCurrent = (href: string) => {
               {
                 NAV.map((item) => (
                   <li>
-                    <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                    <a
+                      href={item.href}
+                      class:list={[item.accent && 'nav-accent']}
+                      aria-current={isCurrent(item) ? 'page' : undefined}
+                    >
                       {item.label}
                     </a>
                   </li>
@@ -250,7 +260,24 @@ const isCurrent = (href: string) => {
               }
             </ul>
           </nav>
-          <ThemeToggle />
+          <div class="masthead-actions">
+            <a
+              target="_blank"
+              rel="noopener"
+              class="github-link"
+              href={REPO_URL}
+              title="Source on GitHub"
+            >
+              <span class="visually-hidden">Source on GitHub: fork it, clone it</span>
+              <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                ></path>
+              </svg>
+            </a>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
       <div class="brand-line"></div>
@@ -269,7 +296,7 @@ const isCurrent = (href: string) => {
               latest ? (
                 <>
                   Data as of <strong>{formatEdition(latest.isoWeek)}</strong>, published{' '}
-                  {formatDate(latest.finishedAt)}.
+                  {formatDate(latest.finishedAt)}. {upcoming}
                   {latest.isMock && <span class="footer-mock"> Sample data.</span>}
                 </>
               ) : (
@@ -278,32 +305,45 @@ const isCurrent = (href: string) => {
             }
           </p>
           <p class="footer-links">
-            <a href={REPO_URL}>Source on GitHub</a>
+            <a target="_blank" rel="noopener" href={REPO_URL}>Source on GitHub</a>
             <span aria-hidden="true"> · </span>
             <a href={routes.methodology()}>Methodology</a>
             <span aria-hidden="true"> · </span>
-            <a href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
+            <a target="_blank" rel="noopener" href={`${REPO_URL}/blob/main/LICENSE`}>MIT license</a>
             <span aria-hidden="true"> · </span>
-            <a href="https://n-dx.dev">Built with n-dx</a>
+            <a href={routes.feedRss()} type="application/rss+xml" rel="alternate"> RSS </a>
+            <span aria-hidden="true"> · </span>
+            <a href={routes.feedJson()} type="application/json" rel="alternate"> JSON feed </a>
+            {
+              site.credits.map((credit) => (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <a target="_blank" rel="noopener" href={credit.href}>
+                    Built with {credit.label}
+                  </a>
+                </>
+              ))
+            }
           </p>
         </div>
         <p class="footer-note">
-          An <a href="https://endash.us">En Dash Consulting</a> research program of no consequence whatsoever,
-          published weekly. The questions are silly on purpose; the measurement is not. See <a
-            href={routes.about()}>About</a
-          >.
+          {site.footerNote} See <a href={routes.about()}>About</a>.
         </p>
-        <p class="footer-apps">
-          More from En Dash, free and no API key:{' '}
-          {
-            LEARNING_APPS.map((app, index) => (
-              <>
-                {index > 0 && <span aria-hidden="true"> · </span>}
-                <a href={app.href}>{app.label}</a>
-              </>
-            ))
-          }
-        </p>
+        {
+          site.more && (
+            <p class="footer-apps">
+              {site.more.lead}{' '}
+              {site.more.links.map((link, index) => (
+                <>
+                  {index > 0 && <span aria-hidden="true"> · </span>}
+                  <a target="_blank" rel="noopener" href={link.href}>
+                    {link.label}
+                  </a>
+                </>
+              ))}
+            </p>
+          )
+        }
       </div>
     </footer>
   </body>
@@ -369,6 +409,41 @@ const isCurrent = (href: string) => {
     flex-wrap: wrap;
   }
 
+  /* The two things beside the nav: the repository, and the theme. Both round,
+     both the same size, so the GitHub mark reads as "this is code you can
+     take" before a word is read. */
+  .masthead-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .github-link {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: var(--text-strong);
+    border: 2px solid var(--rule-strong);
+    border-radius: 50%;
+    transition:
+      border-color 150ms var(--ease-out),
+      background 150ms var(--ease-out);
+  }
+
+  .github-link:hover {
+    border-color: var(--text-strong);
+    background: var(--text-strong);
+    color: var(--bg);
+  }
+
+  @media (max-width: 52rem) {
+    .github-link {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+  }
+
   .nav-list {
     display: flex;
     flex-wrap: wrap;
@@ -396,6 +471,17 @@ const isCurrent = (href: string) => {
 
   .nav-list a:hover {
     background: var(--surface-sunken);
+  }
+
+  /* The one action in the nav wears the brand teal, so it reads as a button. */
+  .nav-list a.nav-accent {
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  .nav-list a.nav-accent:hover {
+    background: var(--text-strong);
+    color: var(--bg);
   }
 
   /* The current page is a filled pill, not a color change alone. */
@@ -480,19 +566,49 @@ const isCurrent = (href: string) => {
       display: contents;
     }
 
-    .masthead-controls .theme-toggle {
+    .masthead-controls .masthead-actions {
       grid-row: 1;
       grid-column: 2;
       justify-self: end;
     }
 
+    /*
+     * The row scrolls, and says so: a shadow on whichever edge has more
+     * behind it, drawn with background-attachment so it fades as the reader
+     * reaches the end. No script, and nothing to reveal that a pointer
+     * could not already reach.
+     */
     .masthead-controls nav {
       grid-row: 2;
       grid-column: 1 / -1;
       overflow-x: auto;
       scrollbar-width: none;
+      scroll-snap-type: x proximity;
       margin-inline: calc(-1 * var(--space-m));
       padding-inline: var(--space-m);
+      --scroll-shadow: color-mix(in srgb, var(--text-strong) 28%, transparent);
+      background:
+        linear-gradient(90deg, var(--bg) 40%, transparent) 0 0 / 3rem 100%,
+        linear-gradient(270deg, var(--bg) 40%, transparent) 100% 0 / 3rem 100%,
+        radial-gradient(farthest-side at 0 50%, var(--scroll-shadow), transparent) 0 0 / 1.25rem
+          100%,
+        radial-gradient(farthest-side at 100% 50%, var(--scroll-shadow), transparent) 100% 0 /
+          1.25rem 100%;
+      background-repeat: no-repeat;
+      background-attachment: local, local, scroll, scroll;
+    }
+
+    .nav-list li {
+      scroll-snap-align: start;
+    }
+
+    /* The system palette has no shadow. A hairline under the row marks it as
+       a strip of its own, which is what the reader needs to know. */
+    @media (forced-colors: active) {
+      .masthead-controls nav {
+        background: none;
+        border-bottom: 1px solid CanvasText;
+      }
     }
 
     .masthead-controls nav::-webkit-scrollbar {
