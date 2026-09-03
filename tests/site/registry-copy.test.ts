@@ -252,9 +252,14 @@ describe('a fork that asks whether a burrito is a wrap', () => {
     writeFileSync(join(root, 'site.json'), JSON.stringify(SITE, null, 2))
     writeFileSync(join(root, 'data/runs/2026-W36.json'), JSON.stringify(editionFor(model), null, 2))
 
+    // A fork builds on its own domain. In Actions the upstream's repository
+    // name is in the environment and would become the canonical origin.
+    const env = { ...process.env, ASTRO_OUT_DIR: dist, SITE_URL: 'https://burrito.example' }
+    delete env.GITHUB_REPOSITORY
+    delete env.GITHUB_REPOSITORY_OWNER
     execFileSync(join(root, 'node_modules/.bin/astro'), ['build'], {
       cwd: root,
-      env: { ...process.env, ASTRO_OUT_DIR: dist },
+      env,
       stdio: 'ignore',
     })
 

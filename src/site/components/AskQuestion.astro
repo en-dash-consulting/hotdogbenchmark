@@ -198,7 +198,7 @@ const payload = JSON.stringify({
 <style>
   .ask {
     margin-top: var(--space-2xl);
-    padding: var(--space-l);
+    padding: clamp(var(--space-s), 4vw, var(--space-l));
     background: var(--surface);
     border-top: 3px solid var(--accent-fill);
     border-radius: var(--radius);
@@ -245,8 +245,13 @@ const payload = JSON.stringify({
     gap: var(--space-2xs);
   }
 
+  /* min-width: 0 so the field can shrink below the browser's default input
+     width; on Linux Chromium that default is wider than a 320px screen's
+     column, and a flex item will not shrink past it on its own. */
   .ask-row input {
-    flex: 1 1 18rem;
+    flex: 1 1 min(18rem, 100%);
+    min-width: 0;
+    width: 100%;
     min-height: 2.75rem;
     padding: var(--space-2xs) var(--space-s);
     font: inherit;
