@@ -254,7 +254,11 @@ describe('a fork that asks whether a burrito is a wrap', () => {
 
     // A fork builds on its own domain. In Actions the upstream's repository
     // name is in the environment and would become the canonical origin.
-    const env = { ...process.env, ASTRO_OUT_DIR: dist, SITE_URL: 'https://burrito.example' }
+    const env: NodeJS.ProcessEnv = {
+      ...process.env,
+      ASTRO_OUT_DIR: dist,
+      SITE_URL: 'https://burrito.example',
+    }
     delete env.GITHUB_REPOSITORY
     delete env.GITHUB_REPOSITORY_OWNER
     execFileSync(join(root, 'node_modules/.bin/astro'), ['build'], {
