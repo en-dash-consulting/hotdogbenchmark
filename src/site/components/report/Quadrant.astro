@@ -417,8 +417,10 @@ const caption =
     height: 1.4em;
     padding-inline: 0.2em;
     border-radius: 999px;
-    background: var(--chart-1);
-    color: #ffffff;
+    /* Ink on ground, not the series color: the series flips to white in the
+       dark theme and took the white numerals with it. */
+    background: var(--text-strong);
+    color: var(--bg);
     font-weight: 700;
     font-size: 0.8em;
   }

@@ -21,9 +21,8 @@ import {
 } from '../../lib/data.ts'
 import { creditLine } from '../../../schema/questions.ts'
 import { nextEdition, nextEditionLine } from '../../lib/next-edition.ts'
-import { formatDate, formatDuration, formatEdition } from '../../lib/format.ts'
+import { formatDate, formatEdition } from '../../lib/format.ts'
 import { consensusOf, framingLabel, questionHeadline } from '../../lib/prose.ts'
-import { scoreModels } from '../../lib/scores.ts'
 import {
   count,
   flippedNames,
@@ -49,27 +48,7 @@ const VERDICT_WORD: Record<Verdict, string> = { yes: 'Yes', no: 'No', other: 'Hm
 
 const cards = questions.map((question, index) => {
   const results = latest ? getModelResults(latest, question.id) : []
-  const answering = results.filter((r) => r.samples.length > 0)
   const consensus = consensusOf(results)
-  const scored = scoreModels(results).filter((s) => s.result.samples.length > 0)
-  const bySureness = [...scored].sort((a, b) => b.decisiveness - a.decisiveness)
-  // A tie at the top names nobody: "surest" only means something when one
-  // model was surer than the rest.
-  const surest =
-    bySureness.length > 0 &&
-    (bySureness.length === 1 || bySureness[1]!.decisiveness < bySureness[0]!.decisiveness)
-      ? bySureness[0]!
-      : null
-  // Least sure is worth naming whenever one model was less sure than the top.
-  const leastSure =
-    bySureness.length > 1 && bySureness.at(-1)!.decisiveness < bySureness[0]!.decisiveness
-      ? bySureness.at(-1)!
-      : null
-  const timed = answering
-    .filter((r) => typeof r.aggregate.totalMs?.median === 'number')
-    .sort((a, b) => a.aggregate.totalMs!.median - b.aggregate.totalMs!.median)
-  const fastest = timed[0] ?? null
-  const slowest = timed.length > 1 ? (timed.at(-1) ?? null) : null
   const compared = latest
     ? questionShifts(latest, question.id).filter((row) =>
         row.cells.some((cell) => cell.shift.status !== 'incomparable'),
@@ -95,16 +74,35 @@ const cards = questions.map((question, index) => {
         : flipped.length === 0
           ? `Told the answer, nobody changed their mind.`
           : `Told the answer, ${nameList(flipped, 3)} changed their ${flipped.length === 1 ? 'mind' : 'minds'}.`,
-    surest,
-    leastSure,
-    fastest,
-    slowest:
-      slowest && fastest && slowest.aggregate.totalMs!.median > fastest.aggregate.totalMs!.median
-        ? slowest
-        : null,
     framings,
   }
 })
+
+/**
+ * Contested questions first: the ones the field split on are the reason to
+ * read a report. Settled ones, where every model agreed, follow as a shorter
+ * rack. A group with nothing in it is not rendered.
+ */
+const groups = [
+  {
+    id: 'contested',
+    title: 'Contested',
+    note: 'the field split',
+    cards: cards.filter((card) => card.asked && !card.consensus.unanimous),
+  },
+  {
+    id: 'settled',
+    title: 'Settled',
+    note: 'every model agreed',
+    cards: cards.filter((card) => card.asked && card.consensus.unanimous),
+  },
+  {
+    id: 'unasked',
+    title: 'Not in this edition',
+    note: '',
+    cards: cards.filter((card) => !card.asked),
+  },
+].filter((group) => group.cards.length > 0)
 ---
 
 <Base
@@ -145,75 +143,56 @@ const cards = questions.map((question, index) => {
 
   {
     hasData() && latest ? (
-      <ol class="rack">
-        {cards.map((card) => (
-          <li class="issue" style={`--issue-index: ${card.number}`}>
-            <p class="issue-number tabular" aria-hidden="true">
-              {card.number}
-            </p>
-            <h2 class="issue-title">
-              <a href={routes.report(card.question.id)}>{questionHeadline(card.question)}</a>
+      <>
+        {groups.map((group) => (
+          <section class="rack-group" aria-labelledby={`${group.id}-heading`}>
+            <h2 id={`${group.id}-heading`} class="rack-group-title">
+              {group.title} <span class="rack-group-note">{group.note}</span>
             </h2>
-            {card.asked ? (
-              <>
-                <p class="issue-verdict">
-                  <span class="verdict-word">
-                    {card.consensus.verdict ? VERDICT_WORD[card.consensus.verdict] : '—'}
-                  </span>
-                  <span class="verdict-tally">{card.tally}.</span>
-                </p>
-                <dl class="issue-facts">
-                  {card.minds && (
-                    <div>
-                      <dt>Minds</dt>
-                      <dd>{card.minds}</dd>
-                    </div>
+            <ol class="rack">
+              {group.cards.map((card) => (
+                <li class="issue" data-verdict={card.consensus.verdict ?? 'none'}>
+                  <p class="issue-number tabular" aria-hidden="true">
+                    {card.number}
+                  </p>
+                  <h3 class="issue-title">
+                    <a href={routes.report(card.question.id)}>{questionHeadline(card.question)}</a>
+                  </h3>
+                  {card.asked ? (
+                    <>
+                      <p class="issue-verdict">
+                        <span class="verdict-word">
+                          {card.consensus.verdict ? VERDICT_WORD[card.consensus.verdict] : 'Split'}
+                        </span>
+                        <span class="verdict-tally">{card.tally}.</span>
+                      </p>
+                      {card.minds && <p class="issue-minds">{card.minds}</p>}
+                      <p class="issue-links">
+                        <a class="issue-cta" href={routes.report(card.question.id)}>
+                          Read the report →
+                        </a>
+                        {card.framings.map((condition) => (
+                          <a href={routes.reportCondition(card.question.id, condition.id)}>
+                            {framingLabel(card.question, condition)}
+                          </a>
+                        ))}
+                        <a href={routes.reportPdf(card.question.id)}>PDF</a>
+                        <a href={routes.historyForQuestion(card.question.id)}>Week by week</a>
+                      </p>
+                    </>
+                  ) : (
+                    <p class="issue-verdict">
+                      <span class="verdict-tally">
+                        Not asked in the {formatEdition(latest.isoWeek)} edition.
+                      </span>
+                    </p>
                   )}
-                  {(card.surest || card.leastSure) && (
-                    <div>
-                      <dt>{card.surest ? 'Surest' : 'Least sure'}</dt>
-                      <dd>
-                        {card.surest?.result.displayName}
-                        {card.surest && card.leastSure && ', least sure '}
-                        {card.leastSure?.result.displayName}
-                      </dd>
-                    </div>
-                  )}
-                  {card.fastest && (
-                    <div>
-                      <dt>Clock</dt>
-                      <dd>
-                        {card.fastest.displayName} in{' '}
-                        {formatDuration(card.fastest.aggregate.totalMs?.median)}
-                        {card.slowest &&
-                          `, ${card.slowest.displayName} in ${formatDuration(card.slowest.aggregate.totalMs?.median)}`}
-                      </dd>
-                    </div>
-                  )}
-                </dl>
-                <p class="issue-links">
-                  <a class="issue-cta" href={routes.report(card.question.id)}>
-                    Read the report →
-                  </a>
-                  {card.framings.map((condition) => (
-                    <a href={routes.reportCondition(card.question.id, condition.id)}>
-                      {framingLabel(card.question, condition)}
-                    </a>
-                  ))}
-                  <a href={routes.reportPdf(card.question.id)}>PDF</a>
-                  <a href={routes.historyForQuestion(card.question.id)}>Week by week</a>
-                </p>
-              </>
-            ) : (
-              <p class="issue-verdict">
-                <span class="verdict-tally">
-                  Not asked in the {formatEdition(latest.isoWeek)} edition.
-                </span>
-              </p>
-            )}
-          </li>
+                </li>
+              ))}
+            </ol>
+          </section>
         ))}
-      </ol>
+      </>
     ) : null
   }
 
@@ -291,60 +270,77 @@ const cards = questions.map((question, index) => {
     margin: 0;
   }
 
+  .rack-group {
+    margin-top: var(--space-xl);
+  }
+
+  .rack-group-title {
+    font-size: var(--step-2);
+    margin: 0 0 var(--space-s);
+  }
+
+  .rack-group-note {
+    font-family: var(--font-text);
+    font-size: var(--step--1);
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  /* A grid, not a column: the rack has to hold twenty questions as well as three. */
   .rack {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(22rem, 100%), 1fr));
     gap: var(--space-m);
   }
 
   .issue {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      'number title'
-      'number verdict'
-      'number facts'
-      'number links';
-    column-gap: var(--space-m);
-    row-gap: var(--space-2xs);
-    padding: var(--space-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
     border-radius: var(--radius);
     background: var(--surface);
     border: 2px solid var(--rule-strong);
-    border-left-width: 0.6rem;
-    border-left-color: var(--issue-color, var(--accent-fill));
+    border-left-width: 0.4rem;
+    border-left-color: var(--issue-color);
   }
 
-  .issue:nth-child(3n + 1) {
-    --issue-color: #00e5b9;
+  /* The edge says what the field said, in the badges' own colors: teal for
+     yes, orange for no, purple for a hedge, and the plain rule when the
+     field is split. A decorative color per card read as a status. */
+  .issue {
+    --issue-color: var(--rule-strong);
   }
 
-  .issue:nth-child(3n + 2) {
-    --issue-color: #6c41f0;
+  .issue[data-verdict='yes'] {
+    --issue-color: var(--accent-fill);
   }
 
-  .issue:nth-child(3n + 3) {
-    --issue-color: #ff5926;
+  .issue[data-verdict='no'] {
+    --issue-color: var(--orange);
+  }
+
+  .issue[data-verdict='other'] {
+    --issue-color: var(--purple);
   }
 
   .issue-number {
-    grid-area: number;
     margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--step-4);
-    font-weight: 800;
-    line-height: 1;
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
     color: var(--muted);
   }
 
   .issue-title {
-    grid-area: title;
     margin: 0;
-    font-size: var(--step-4);
-    letter-spacing: -0.04em;
-    line-height: 0.95;
+    font-size: var(--step-2);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
   }
 
   .issue-title a {
@@ -354,64 +350,42 @@ const cards = questions.map((question, index) => {
 
   .issue-title a:hover {
     text-decoration: underline;
-    text-decoration-color: var(--issue-color, var(--accent-fill));
+    text-decoration-color: var(--issue-color);
     text-decoration-thickness: 0.12em;
   }
 
   .issue-verdict {
-    grid-area: verdict;
     margin: var(--space-2xs) 0 0;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: var(--space-s);
+    gap: var(--space-2xs) var(--space-s);
   }
 
   .verdict-word {
     font-family: var(--font-display);
-    font-size: var(--step-3);
+    font-size: var(--step-2);
     font-weight: 800;
     color: var(--text-strong);
   }
 
-  .verdict-tally {
+  .verdict-tally,
+  .issue-minds {
     font-family: var(--font-text);
-    color: var(--muted);
-  }
-
-  .issue-facts {
-    grid-area: facts;
-    margin: var(--space-xs) 0 0;
-    display: grid;
-    gap: var(--space-3xs);
-  }
-
-  .issue-facts div {
-    display: grid;
-    grid-template-columns: 5rem minmax(0, 1fr);
-    gap: var(--space-s);
-  }
-
-  .issue-facts dt {
-    font-family: var(--font-ui);
     font-size: var(--step--1);
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
     color: var(--muted);
   }
 
-  .issue-facts dd {
+  .issue-minds {
     margin: 0;
-    font-family: var(--font-text);
   }
 
   .issue-links {
-    grid-area: links;
-    margin: var(--space-s) 0 0;
+    margin: auto 0 0;
+    padding-top: var(--space-2xs);
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs) var(--space-s);
+    gap: var(--space-3xs) var(--space-s);
     font-family: var(--font-ui);
     font-weight: 700;
     font-size: var(--step--1);
@@ -420,19 +394,17 @@ const cards = questions.map((question, index) => {
   .issue-links a {
     display: inline-flex;
     align-items: center;
-    min-height: 2.75rem;
+    min-height: 1.75rem;
   }
 
   .issue-cta {
-    padding: 0 var(--space-m);
+    padding: 0 var(--space-s);
     border-radius: 999px;
     background: var(--text-strong);
     color: var(--surface);
     text-decoration: none;
   }
 
-  /* The hover inverts to the surface rather than the card color: navy on the
-     purple card would fall to 2.75:1. */
   .issue-cta:hover {
     background: var(--surface);
     color: var(--text-strong);
@@ -458,23 +430,6 @@ const cards = questions.map((question, index) => {
     }
   }
 
-  @media (max-width: 48rem) {
-    .issue {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        'number'
-        'title'
-        'verdict'
-        'facts'
-        'links';
-      padding: var(--space-m);
-    }
-
-    .issue-facts div {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0;
-    }
-  }
   .up-next {
     margin-top: var(--space-2xl);
   }

@@ -28,14 +28,25 @@ const MIME: Record<string, string> = {
   '.woff2': 'font/woff2',
 }
 
-const DESKTOP_BUDGET = 8500
-const PHONE_BUDGET = 10000
+/**
+ * The budget scales with the field: every model is one standings row and one
+ * card. Eleven models measured 8,049 px at 1280 and 7,380 at 390; twelve,
+ * 8,715 and 7,881. The base covers the masthead, summary, framing section and
+ * chart, and the per-model slice covers a row and a third of a card row.
+ */
+const modelCount = (
+  JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
+    models: Array<{ enabled: boolean }>
+  }
+).models.filter((m) => m.enabled).length
+const DESKTOP_BUDGET = 4200 + 400 * modelCount
+const PHONE_BUDGET = 5000 + 250 * modelCount
 
 const questions = (
   JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-    questions: Array<{ id: string; enabled: boolean }>
+    questions: Array<{ id: string; enabled: boolean; status?: string }>
   }
-).questions.filter((q) => q.enabled)
+).questions.filter((q) => q.enabled && (q.status ?? 'live') === 'live')
 
 let server: Server
 let port: number

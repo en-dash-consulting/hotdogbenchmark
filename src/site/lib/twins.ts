@@ -50,9 +50,9 @@ export const TWINS_MAX_SHARE = 0.25
 /**
  * Whether the thinking-alike line says something.
  *
- * True when there are enough questions that full agreement is selective, or
- * when fewer than a quarter of all possible pairs agree. Never when nobody
- * agrees, and never with fewer than two models.
+ * True when fewer than a quarter of all possible pairs agree; with few
+ * questions, only when the pairs can be named without an "and N more". Never
+ * when nobody agrees, and never with fewer than two models.
  */
 export function twinsWorthShowing(
   pairCount: number,
@@ -60,7 +60,7 @@ export function twinsWorthShowing(
   questionCount: number,
 ): boolean {
   if (pairCount === 0 || modelCount < 2) return false
-  if (questionCount >= TWINS_MIN_QUESTIONS) return true
+  if (questionCount < TWINS_MIN_QUESTIONS && pairCount > 3) return false
   const possible = (modelCount * (modelCount - 1)) / 2
   return pairCount / possible < TWINS_MAX_SHARE
 }

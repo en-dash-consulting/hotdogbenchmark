@@ -32,9 +32,9 @@ let pages: Page[] = []
 
 const questions = (
   JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-    questions: Array<{ id: string; text: string; enabled: boolean }>
+    questions: Array<{ id: string; text: string; enabled: boolean; status?: string }>
   }
-).questions.filter((q) => q.enabled)
+).questions.filter((q) => q.enabled && (q.status ?? 'live') === 'live')
 
 const models = (
   JSON.parse(readFileSync(join(ROOT, 'models.json'), 'utf8')) as {
@@ -288,7 +288,11 @@ describe('the substance is in the HTML', () => {
     expect(cells.length).toBeGreaterThan(0)
     for (const cell of cells) {
       for (const model of cell.models) {
-        const text = model.samples[0]?.text.trim()
+        // The board shows the majority sample, verbatim: the first sample that
+        // agrees with the model's verdict, or the first sample when none does.
+        const majority = model.aggregate.verdict
+        const sample = model.samples.find((s) => s.verdict === majority) ?? model.samples[0]
+        const text = sample?.text.trim()
         if (!text) continue
         expect(
           contains(home.html, text),

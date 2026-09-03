@@ -5,9 +5,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        A question is one entry in `questions.json`. The fields below map onto that entry
-        one to one, so a complete issue is most of a pull request. You are very welcome to
-        open the pull request yourself; see
+        Only the question itself is required. The other fields map onto the entry in
+        `questions.json`; fill in what you know and a maintainer will do the rest. You are
+        very welcome to open the pull request yourself; see
         [CONTRIBUTING.md](../../blob/main/CONTRIBUTING.md#adding-a-question).
 
         A new question does not have to be about sandwiches, but the shipped framings in
@@ -37,7 +37,7 @@ body:
         The framings use it: "{subject} is a sandwich." becomes "A burrito is a sandwich."
       placeholder: a burrito
     validations:
-      required: true
+      required: false
 
   - type: input
     id: slug
@@ -48,7 +48,7 @@ body:
         and with dashes read as spaces it must appear in the question text.
       placeholder: burrito
     validations:
-      required: true
+      required: false
 
   - type: input
     id: report-title
@@ -57,7 +57,7 @@ body:
       description: The heading of the question's report page. Short, and its own.
       placeholder: The Burrito Question
     validations:
-      required: true
+      required: false
 
   - type: input
     id: tagline
@@ -66,7 +66,7 @@ body:
       description: One line under the title saying what makes this question worth asking.
       placeholder: Bread on all sides. Massachusetts said no in 2006.
     validations:
-      required: true
+      required: false
 
   - type: textarea
     id: why
@@ -77,7 +77,7 @@ body:
         Every question costs models times framings times samples calls a week, so it has to
         earn its place.
     validations:
-      required: true
+      required: false
 
   - type: input
     id: credit-name

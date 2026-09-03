@@ -99,7 +99,7 @@ const FONT_FACES = [
  * `also`: further sections a nav item is current for. A question's
  * week-by-week history is reached from Editions, so Editions is current there.
  */
-const NAV: Array<{ href: string; label: string; also?: string[] }> = [
+const NAV: Array<{ href: string; label: string; also?: string[]; accent?: boolean }> = [
   { href: routes.reports(), label: 'Reports' },
   { href: routes.runs(), label: 'Editions', also: [routes.historyForQuestion('')] },
   // Only present when the deferred feature is switched on at build time.
@@ -107,6 +107,8 @@ const NAV: Array<{ href: string; label: string; also?: string[] }> = [
   { href: routes.methodology(), label: 'Methodology' },
   { href: routes.howItWorks(), label: 'How it works' },
   { href: routes.about(), label: 'About' },
+  // An action, not a section: the one thing a reader can do here.
+  { href: `${routes.home()}#ask`, label: 'Ask a question', accent: true },
 ]
 
 /**
@@ -246,7 +248,11 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
               {
                 NAV.map((item) => (
                   <li>
-                    <a href={item.href} aria-current={isCurrent(item) ? 'page' : undefined}>
+                    <a
+                      href={item.href}
+                      class:list={[item.accent && 'nav-accent']}
+                      aria-current={isCurrent(item) ? 'page' : undefined}
+                    >
                       {item.label}
                     </a>
                   </li>
@@ -409,6 +415,17 @@ const isCurrent = (item: { href: string; also?: string[] }) =>
 
   .nav-list a:hover {
     background: var(--surface-sunken);
+  }
+
+  /* The one action in the nav wears the brand teal, so it reads as a button. */
+  .nav-list a.nav-accent {
+    background: var(--accent-fill);
+    color: #001769;
+  }
+
+  .nav-list a.nav-accent:hover {
+    background: var(--text-strong);
+    color: var(--bg);
   }
 
   /* The current page is a filled pill, not a color change alone. */

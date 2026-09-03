@@ -25,7 +25,12 @@ interface Props {
   hrefFor?: (questionId: string) => string
   /** For `tabs`: the id of the panel the tabs control. */
   controls?: string
+  /** For `tabs`: where the questions beyond the first few live. */
+  moreHref?: string
 }
+
+/** Tabs beyond this many wrap into a second row of pills on the hero; the rest are a link. */
+const MAX_TABS = 6
 
 const {
   questions,
@@ -34,7 +39,11 @@ const {
   tone = 'plain',
   hrefFor = () => '#',
   controls = 'panel',
+  moreHref,
 } = Astro.props
+
+const shown = mode === 'tabs' ? questions.slice(0, MAX_TABS) : questions
+const hidden = questions.length - shown.length
 
 /** "a hot dog" becomes "hot dog": the pill is a label, not a sentence. */
 const bare = (subject: string) => subject.replace(/^(an?|the)\s+/i, '')
@@ -64,7 +73,7 @@ const bare = (subject: string) => subject.replace(/^(an?|the)\s+/i, '')
       data-subjects
       hidden
     >
-      {questions.map((question) => (
+      {shown.map((question) => (
         <button
           type="button"
           role="tab"
@@ -77,6 +86,11 @@ const bare = (subject: string) => subject.replace(/^(an?|the)\s+/i, '')
           {bare(question.subject)}
         </button>
       ))}
+      {hidden > 0 && moreHref && (
+        <a class="more" href={moreHref}>
+          +{hidden} more
+        </a>
+      )}
     </div>
   )
 }
@@ -151,6 +165,10 @@ const bare = (subject: string) => subject.replace(/^(an?|the)\s+/i, '')
 
   .tone-hero.subjects {
     margin-bottom: var(--space-l);
+  }
+
+  .more {
+    border-style: dashed;
   }
 
   /* Tabs need the script; they ship hidden but keep their space. */

@@ -7,6 +7,7 @@
  */
 import Base from '../layouts/Base.astro'
 import AnswerBoard from '../components/AnswerBoard.astro'
+import AskQuestion from '../components/AskQuestion.astro'
 import {
   getAllRuns,
   getLatestRun,
@@ -123,43 +124,48 @@ const QUICKSTART = [
               <thead>
                 <tr>
                   <th scope="col">
-                    <span class="visually-hidden">Model</span>
+                    <span class="visually-hidden">Question</span>
                   </th>
-                  {asked.map((q) => (
+                  {grid.map((row) => (
                     <th scope="col">
-                      <a href={routes.report(q.id)}>{q.subject.replace(/^an? /, '')}</a>
+                      <span class="model-head">{row.model.displayName}</span>
                     </th>
                   ))}
+                  <th scope="col" class="agree-head">
+                    Agree
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {grid.map((row) => (
+                {asked.map((question, qi) => (
                   <tr>
-                    <th scope="row">{row.model.displayName}</th>
-                    {row.verdicts.map((cell) => (
-                      <td>
-                        <a
-                          class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
-                          href={`${routes.report(cell.question.id)}#${profileAnchor(row.model)}`}
-                          title={`${row.model.displayName} on ${cell.question.subject}: ${cell.verdict ?? 'no data'}. Open its profile in the report.`}
-                        >
-                          {cell.verdict ? GLYPH[cell.verdict] : '—'}
-                        </a>
-                      </td>
-                    ))}
+                    <th scope="row">
+                      <a href={routes.report(question.id)}>
+                        {question.subject.replace(/^an? /, '')}
+                      </a>
+                    </th>
+                    {grid.map((row) => {
+                      const cell = row.verdicts[qi]!
+                      return (
+                        <td>
+                          <a
+                            class:list={['dot', cell.verdict ? `dot-${cell.verdict}` : 'dot-none']}
+                            href={`${routes.report(question.id)}#${profileAnchor(row.model)}`}
+                            title={`${row.model.displayName} on ${question.subject}: ${cell.verdict ?? 'no data'}. Open its profile in the report.`}
+                          >
+                            {cell.verdict ? GLYPH[cell.verdict] : '—'}
+                          </a>
+                        </td>
+                      )
+                    })}
+                    <td>
+                      <span class="agree tabular">
+                        {agreement[qi]!.total ? formatPercent(agreement[qi]!.share) : '—'}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr>
-                  <th scope="row">Agreement</th>
-                  {agreement.map((a) => (
-                    <td>
-                      <span class="agree tabular">{a.total ? formatPercent(a.share) : '—'}</span>
-                    </td>
-                  ))}
-                </tr>
-              </tfoot>
             </table>
           </div>
 
@@ -217,6 +223,8 @@ const QUICKSTART = [
           </section>
         )}
 
+        <AskQuestion />
+
         <section class="reports" aria-labelledby="fork-heading">
           <div class="fork">
             <div class="fork-copy">
@@ -237,8 +245,7 @@ const QUICKSTART = [
                 <a href={sourceUrl('CONTRIBUTING.md')}>Contributing</a>
               </p>
               <p class="fork-ask">
-                Have a question the models should get?{' '}
-                <a href={`${routes.reports()}#ask`}>Send it in</a>.
+                Have a question the models should get? <a href="#ask">Send it in</a>.
               </p>
             </div>
             <pre
@@ -307,20 +314,57 @@ const QUICKSTART = [
     min-width: min(100%, 40rem);
   }
 
+  /* Tight cells: twelve columns of answers have to fit a desk without a scrollbar. */
   .align-grid th,
   .align-grid td {
     border: 0;
-    padding: var(--space-2xs) var(--space-s);
+    padding: var(--space-2xs) var(--space-3xs);
     text-align: center;
     vertical-align: middle;
   }
 
+  /* Models across the top, questions down the side: the questions are what
+     grow, and rows scroll while columns do not. */
+  /* Model names stand on end, so twelve of them fit above twelve columns of
+     answers without the table growing a scrollbar at desk widths. */
   .align-grid thead th {
+    font-family: var(--font-ui);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    white-space: normal;
+    vertical-align: bottom;
+    padding-bottom: var(--space-2xs);
+  }
+
+  .model-head {
+    display: inline-block;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    max-height: 9rem;
+    line-height: 1.1;
+    text-align: left;
+  }
+
+  .agree-head {
+    vertical-align: bottom;
+  }
+
+  .align-grid tbody th a {
     font-family: var(--font-display);
     font-size: var(--step-1);
     font-weight: 800;
     text-transform: capitalize;
     letter-spacing: -0.02em;
+    color: var(--text-strong);
+    text-decoration: none;
+  }
+
+  .align-grid tbody th a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-fill);
+    text-decoration-thickness: 3px;
   }
 
   .align-grid thead th a {

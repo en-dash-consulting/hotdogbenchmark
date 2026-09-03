@@ -31,8 +31,10 @@ describe('twinsWorthShowing', () => {
     expect(twinsWorthShowing(3, 11, 3)).toBe(true)
   })
 
-  it('shows the line once there are enough questions for agreement to mean something', () => {
-    expect(twinsWorthShowing(25, 11, 5)).toBe(true)
+  it('keeps hiding it while most of the field agrees, however many questions', () => {
+    expect(twinsWorthShowing(25, 11, 5)).toBe(false)
+    expect(twinsWorthShowing(20, 12, 6)).toBe(false)
+    expect(twinsWorthShowing(10, 12, 6)).toBe(true)
   })
 
   it('never shows an empty line', () => {

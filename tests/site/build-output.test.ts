@@ -643,13 +643,19 @@ describe('SEO and social metadata', () => {
 
 describe('the reports landing page', () => {
   const read = (path: string) => readFileSync(join(DIST, path, 'index.html'), 'utf8')
+  const mainNav = (html: string) =>
+    html.match(/<ul class="nav-list"[^>]*>[\s\S]*?<\/ul>/)?.[0] ?? ''
+
   // The page renders enabled questions only, and framing links only for the
   // framings the latest edition actually ran, so the test derives both the
   // same way rather than assuming names.
   const registry = JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-    questions: Array<{ id: string; enabled?: boolean }>
+    questions: Array<{ id: string; text: string; enabled?: boolean; status?: string }>
   }
-  const questionIds = registry.questions.filter((q) => q.enabled !== false).map((q) => q.id)
+  // Proposed and retired questions have no report; only live ones do.
+  const questionIds = registry.questions
+    .filter((q) => q.enabled !== false && (q.status ?? 'live') === 'live')
+    .map((q) => q.id)
   const runFiles = readdirSync(join(ROOT, 'data/runs'))
     .filter((name) => name.endsWith('.json'))
     .sort()
@@ -710,8 +716,10 @@ describe('the reports landing page', () => {
       /href="https:\/\/endash\.us\/\?[^"]*contactMessage=[^"]*"[^>]*data-ask-contact/,
     )
     expect(html).toContain('Up next')
-    // The home page points at it in one line rather than a third block.
-    expect(read('')).toContain('href="/reports/#ask"')
+    // The home page carries the block itself, and the nav offers it as the one action.
+    const home = read('')
+    expect(home).toContain('id="ask"')
+    expect(mainNav(home)).toContain('>Ask a question<')
   })
 
   it('gives every report a share address as text, with the copy button hidden until scripts run', () => {
@@ -728,9 +736,18 @@ describe('the reports landing page', () => {
     }
   })
 
-  it('renders no Up next section while nothing is proposed', () => {
+  it('renders the Up next section exactly when a question is proposed', () => {
     const html = read('reports')
-    expect(html).not.toContain('id="up-next-heading"')
+    const proposed = registry.questions.filter((q) => q.status === 'proposed')
+    if (proposed.length === 0) {
+      expect(html).not.toContain('id="up-next-heading"')
+    } else {
+      expect(html).toContain('id="up-next-heading"')
+      for (const question of proposed) {
+        const headline = question.text.replace(/\s*One word answer\.$/, '')
+        expect(html, `${question.id} is not up next`).toContain(headline)
+      }
+    }
   })
 
   it('is where the home page hands off to', () => {
