@@ -33,6 +33,35 @@
       "tagline": "The only sandwich question with case law. Massachusetts, 2006.",
       "enabled": true,
       "notes": "The boundary case. A 2006 Massachusetts court ruling on whether a burrito is a sandwich makes this the only question here with case law."
+    },
+    {
+      "id": "burrito",
+      "subject": "a burrito",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
+      "text": "Is a burrito a sandwich? One word answer.",
+      "reportTitle": "The Burrito Ruling",
+      "tagline": "White City Shopping Center v. PR Restaurants, 2006. The court said no. The models get a vote.",
+      "enabled": true,
+      "status": "proposed",
+      "contributor": {
+        "name": "Nick Daniel",
+        "url": "https://endash.us",
+        "credit": true
+      },
+      "notes": "Proposed: accepted, shown under Up next, not yet asked. Switch status to live to ask it."
+    },
+    {
+      "id": "sushi-roll",
+      "subject": "a sushi roll",
+      "claim": "is a sandwich",
+      "denial": "is not a sandwich",
+      "text": "Is a sushi roll a sandwich? One word answer.",
+      "reportTitle": "The Sushi Roll Stretch",
+      "tagline": "Rice on the outside. Somebody will say yes.",
+      "enabled": true,
+      "status": "proposed",
+      "notes": "Proposed with no contributor, so shown uncredited."
     }
   ]
 }

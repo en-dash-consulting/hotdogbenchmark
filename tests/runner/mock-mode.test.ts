@@ -52,11 +52,14 @@ describe('the recorded response fixtures', () => {
     expect(haiku.text).toBe(recordedFor('anthropic', 'claude-haiku-4-5-20251001', 'hot-dog').text)
   })
 
-  it('cover every enabled question', () => {
+  it('cover every question the runner asks', () => {
     const questions = JSON.parse(readFileSync(join(ROOT, 'questions.json'), 'utf8')) as {
-      questions: Array<{ id: string; enabled: boolean }>
+      questions: Array<{ id: string; enabled: boolean; status?: string }>
     }
-    const enabled = questions.questions.filter((q) => q.enabled).map((q) => q.id)
+    // A proposed question is not asked yet, so nothing has been recorded for it.
+    const enabled = questions.questions
+      .filter((q) => q.enabled && (q.status ?? 'live') === 'live')
+      .map((q) => q.id)
     for (const [provider, fixture] of fixtures) {
       const recorded = fixture.responses.map((r) => r.questionId)
       for (const id of enabled) {

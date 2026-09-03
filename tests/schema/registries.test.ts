@@ -311,8 +311,11 @@ describe('the question lifecycle', () => {
     expect(creditLine({})).toBeNull()
   })
 
-  it('ships no proposed question and every shipped question on the weekly cadence', () => {
-    expect(proposedQuestions(questionsRegistry)).toEqual([])
+  it('ships two proposed questions, credited only with consent, and every question on the weekly cadence', () => {
+    const proposed = proposedQuestions(questionsRegistry)
+    expect(proposed.map((q) => q.id)).toEqual(['burrito', 'sushi-roll'])
+    expect(creditLine(proposed[0]!)).toBe('Sent in by Nick Daniel')
+    expect(creditLine(proposed[1]!)).toBeNull()
     for (const question of questionsRegistry.questions) expect(question.cadence).toBe('every')
   })
 })

@@ -5,9 +5,9 @@
       "isoWeek": "2026-W36",
       "editionKey": "2026-W36",
       "path": "data/runs/2026-W36.json",
-      "runId": "f2621d33-00f3-48bb-9759-1ab2407c3045",
-      "startedAt": "2026-09-02T16:36:10.281Z",
-      "finishedAt": "2026-09-02T16:42:42.086Z",
+      "runId": "2c060151-fd88-4f79-af67-26fdd4969e28",
+      "startedAt": "2026-09-03T03:01:14.271Z",
+      "finishedAt": "2026-09-03T03:08:26.515Z",
       "isMock": false,
       "questionIds": [
         "hot-dog",
@@ -19,26 +19,26 @@
         "asserted",
         "denied"
       ],
-      "modelCount": 11,
+      "modelCount": 12,
       "questions": [
         {
           "questionId": "hot-dog",
           "conditionId": "control",
-          "okCount": 11,
+          "okCount": 12,
           "errorCount": 0,
           "verdicts": {
             "yes": 5,
-            "no": 6,
+            "no": 7,
             "other": 0
           }
         },
         {
           "questionId": "hamburger",
           "conditionId": "control",
-          "okCount": 11,
+          "okCount": 12,
           "errorCount": 0,
           "verdicts": {
-            "yes": 11,
+            "yes": 12,
             "no": 0,
             "other": 0
           }
@@ -46,10 +46,10 @@
         {
           "questionId": "taco",
           "conditionId": "control",
-          "okCount": 11,
+          "okCount": 12,
           "errorCount": 0,
           "verdicts": {
-            "yes": 0,
+            "yes": 1,
             "no": 11,
             "other": 0
           }

@@ -38,6 +38,7 @@ const PRIMARY_TARGET = 44
 const PRIMARY_SELECTOR = [
   '.nav-list a',
   '.theme-toggle',
+  '.github-link',
   '[data-question]',
   '[data-condition]',
   '[data-replay]',

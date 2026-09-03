@@ -17,9 +17,9 @@
   class="theme-toggle"
   id="theme-toggle"
   aria-pressed="false"
-  title="Switch between light and dark"
+  title="Dark theme"
 >
-  <span class="theme-toggle-label">Dark</span>
+  <span class="visually-hidden">Dark theme</span>
 </button>
 
 <script>
@@ -57,22 +57,17 @@
 </script>
 
 <style>
-  /* A compact pill that reads as a switch: a dot that fills when dark is on. */
+  /* A round switch the size of a favicon: a ring that fills when dark is on. */
   .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
     color: var(--text-strong);
     background: transparent;
     border: 2px solid var(--rule-strong);
-    border-radius: 999px;
-    padding: 0.35rem 0.75rem 0.35rem 0.5rem;
-    min-height: 2.75rem;
+    border-radius: 50%;
     cursor: pointer;
     transition:
       border-color 150ms var(--ease-out),
@@ -81,8 +76,8 @@
 
   .theme-toggle::before {
     content: '';
-    width: 0.8rem;
-    height: 0.8rem;
+    width: 0.9rem;
+    height: 0.9rem;
     border-radius: 50%;
     border: 2px solid var(--text-strong);
     background: transparent;
@@ -105,5 +100,13 @@
   .theme-toggle:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
+  }
+
+  /* Fingers, not pointers. */
+  @media (max-width: 52rem) {
+    .theme-toggle {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
   }
 </style>
