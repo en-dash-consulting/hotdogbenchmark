@@ -2,6 +2,97 @@
   "schemaVersion": 2,
   "runs": [
     {
+      "isoWeek": "2026-W38",
+      "editionKey": "2026-W38",
+      "path": "data/runs/2026-W38.json",
+      "runId": "abd4ecc9-2b2d-4c85-96ed-c555f45e542d",
+      "startedAt": "2026-09-14T17:49:47.437Z",
+      "finishedAt": "2026-09-14T18:07:23.168Z",
+      "isMock": false,
+      "questionIds": [
+        "hot-dog",
+        "hamburger",
+        "taco",
+        "grilled-cheese",
+        "wrap",
+        "tuna-melt"
+      ],
+      "conditionIds": [
+        "control",
+        "asserted",
+        "denied"
+      ],
+      "modelCount": 12,
+      "questions": [
+        {
+          "questionId": "hot-dog",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 6,
+            "no": 4,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "hamburger",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 10,
+            "no": 0,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "taco",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 1,
+            "no": 9,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "grilled-cheese",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 10,
+            "no": 0,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "wrap",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 7,
+            "no": 3,
+            "other": 0
+          }
+        },
+        {
+          "questionId": "tuna-melt",
+          "conditionId": "control",
+          "okCount": 10,
+          "errorCount": 2,
+          "verdicts": {
+            "yes": 10,
+            "no": 0,
+            "other": 0
+          }
+        }
+      ]
+    },
+    {
       "isoWeek": "2026-W37",
       "editionKey": "2026-W37",
       "path": "data/runs/2026-W37.json",
